@@ -1,8 +1,12 @@
 [package]
 name = "yew-nav-link"
 version = "0.1.0"
+authors = ["RAprogramm <andrey.rozanov.vl@gmail.com>"]
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
+yew = { version = "0.21.0", features = ["csr"] } # Yew is a Rust framework that utilizes WebAssembly and a virtual DOM to provide fast rendering and reactive components that update automatically when data changes.
+yew-router = "0.18.0" # Is a routing library for the Yew web framework in Rust. It provides a simple and flexible way to handle client-side routing in single-page applications.
+
+[lib]
+crate-type = ["cdylib", "rlib"]
