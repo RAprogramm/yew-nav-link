@@ -1,7 +1,11 @@
 <h1>NavLink Component for Yew Router</h1>
 
 
+<img alt="Crates.io Version" src="https://img.shields.io/crates/v/yew-nav-link">
+<img alt="Crates.io Total Downloads" src="https://img.shields.io/crates/d/yew-nav-link">
+<img alt="Crates.io MSRV" src="https://img.shields.io/crates/msrv/yew-nav-link">
 <img alt="GitHub License" src="https://img.shields.io/github/license/RAprogramm/yew-nav-link">
+<img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/RAprogramm/yew-nav-link">
 <hr>
 
 <p>NavLink is a component for Yew applications using Yew Router. It creates a navigational link that is aware of its active state based on the current route in the application.</p>
@@ -32,7 +36,7 @@ pub fn app() -> Html {
 
 <h2>Examples</h2>
 
-### Example with [bootstrap](https://getbootstrap.com/)
+### Advanced example with [bootstrap](https://getbootstrap.com/)
 
 > [![yew](https://shields.io/badge/yew-0.21.0-darkgreen)](https://docs.rs/yew/0.21.0/yew/index.html)
 > [![yew-router](https://shields.io/badge/yew_router-0.18.0-darkgreen)](https://docs.rs/yew-router/0.18.0/yew_router/index.html)
@@ -182,12 +186,12 @@ pub fn app() -> Html {
 >             </NavLink<HomeRoute>>
 >         </li>
 >         <li class="nav-item">
->             <NavLink<MainRoute> to={AuthRoute::RegisterPage}>
+>             <NavLink<MainRoute> to={MainRoute::RegisterPage}>
 >                 {"Register"}
 >             </NavLink<MainRoute>>
 >         </li>
 >         <li class="nav-item">
->             <NavLink<MainRoute> to={AuthRoute::LoginPage}>
+>             <NavLink<MainRoute> to={MainRoute::LoginPage}>
 >                 {"Login"}
 >             </NavLink<MainRoute>>
 >         </li>
