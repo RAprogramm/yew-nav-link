@@ -64,3 +64,39 @@ pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<
         </Link<R>>
     }
 }
+
+/// Creates a NavLink component for the specified route with the provided children.
+///
+/// This function creates a NavLink component for Yew applications using Yew Router.
+/// It takes a route (`R`) and children text, and returns a NavLink component.
+///
+/// # Arguments
+///
+/// * `to` - The destination route for the link.
+/// * `children` - The text or other elements to be rendered within the link.
+///
+/// # Example
+///
+/// ```rust
+/// // Creating a NavLink for the Home route with the text "Home Page"
+/// <li class="nav-item">
+///     { nav_link(HomeRoute::IntroPage, "Home Page") }
+/// </li>
+/// ```
+///
+/// # Generic Type
+///
+/// * `R` - The route type that implements the `Routable` trait.
+///
+/// # Returns
+///
+/// An HTML representation of the NavLink component.
+///
+/// # Note
+///
+/// The `to` parameter must be of a type that implements the `Routable` trait.
+pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(to: R, children: &str) -> Html {
+    html! {
+        <NavLink<R> to={to}>{ children }</NavLink<R>>
+    }
+}

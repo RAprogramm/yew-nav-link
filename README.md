@@ -36,6 +36,27 @@ pub fn app() -> Html {
 
 <h2>Examples</h2>
 
+### Using *nav_link* function
+
+> <details>
+> <summary>in header or navbar</summary>
+>
+> ```html
+>     ...
+>     <li class="nav-item">
+>         { nav_link(HomeRoute::IntroPage, "Home") }
+>     </li>
+>     <!-- same  
+>     <li class="nav-item">
+>      <NavLink<HomeRoute> to={HomeRoute::IntroPage}>
+>          {"Home"}
+>      </NavLink<HomeRoute>>
+>     </li>
+>     -->
+>     ...
+> ```
+> </details>
+
 ### Advanced example with [bootstrap](https://getbootstrap.com/)
 
 > [![yew](https://shields.io/badge/yew-0.21.0-darkgreen)](https://docs.rs/yew/0.21.0/yew/index.html)
@@ -162,7 +183,7 @@ pub fn app() -> Html {
 > <details>
 > <summary>in navbar or header</summary>
 > 
-> ```rs
+> ```html
 >     ...
 >     <ul class="nav nav-pills d-inline-flex mt-2 mt-md-0 ms-md-auto" style="justify-content:center;">
 >         <li class="nav-item">
