@@ -2,11 +2,12 @@
 
 
 <div>
-<img alt="Crates.io Version" src="https://img.shields.io/crates/v/yew-nav-link">
-<img alt="Crates.io Total Downloads" src="https://img.shields.io/crates/d/yew-nav-link">
-<img alt="Crates.io MSRV" src="https://img.shields.io/crates/msrv/yew-nav-link">
-<img alt="GitHub License" src="https://img.shields.io/github/license/RAprogramm/yew-nav-link">
-<img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/RAprogramm/yew-nav-link">
+<a href="https://crates.io/crates/yew-nav-link"><img alt="Crates.io Version" src="https://img.shields.io/crates/v/yew-nav-link"></a>
+<a href="https://docs.rs/yew-nav-link/0.2.0/yew_nav_link"><img alt="docs.rs" src="https://img.shields.io/docsrs/yew-nav-link"></a>
+<a href="https://crates.io/crates/yew-nav-link"><img alt="Crates.io Total Downloads" src="https://img.shields.io/crates/d/yew-nav-link"></a>
+<a href="https://releases.rs/docs/1.75.0/"><img alt="Crates.io MSRV" src="https://img.shields.io/crates/msrv/yew-nav-link"></a>
+<a href="https://github.com/RAprogramm/yew-nav-link/blob/HEAD/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/RAprogramm/yew-nav-link"></a>
+<a href="https://github.com/RAprogramm/yew-nav-link"><img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/RAprogramm/yew-nav-link"></a>
 </div>
 <hr>
 
