@@ -30,6 +30,18 @@ pub struct NavLinkProps<R: Routable + PartialEq + Clone + 'static> {
 /// # Example
 ///
 /// ```rust
+/// use yew::prelude::*;
+/// use yew_nav_link::NavLink;
+/// use yew_router::prelude::*;
+///
+/// #[derive(Clone, PartialEq, Debug, Routable)]
+/// enum AppRoute {
+///     #[at("/")]
+///     Home,
+///     #[at("/about")]
+///     About
+/// }
+///
 /// #[function_component(App)]
 /// pub fn app() -> Html {
 ///     html! {
@@ -83,10 +95,32 @@ pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<
 /// # Example
 ///
 /// ```rust
-/// // Creating a NavLink for the Home route with the text "Home Page"
-/// <li class="nav-item">
-///     { nav_link(HomeRoute::IntroPage, "Home Page") }
-/// </li>
+/// use yew::prelude::*;
+/// use yew_nav_link::{NavLink, nav_link};
+/// use yew_router::prelude::*;
+///
+/// #[derive(Clone, PartialEq, Debug, Routable)]
+/// enum HomeRoute {
+///     #[at("/")]
+///     IntroPage,
+///     #[at("/about")]
+///     About
+/// }
+///
+/// #[function_component(Menu)]
+/// fn menu() -> Html {
+///     html! {
+///         <ul class="nav">
+///             // Creating a NavLink for the Home route with the text "Home Page"
+///             <li class="nav-item">
+///                 { nav_link(HomeRoute::IntroPage, "Home Page") }
+///             </li>
+///             <li class="nav-item">
+///                 { nav_link(HomeRoute::About, "About") }
+///             </li>
+///         </ul>
+///     }
+/// }
 /// ```
 ///
 /// # Generic Type

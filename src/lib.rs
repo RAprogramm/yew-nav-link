@@ -7,7 +7,7 @@
 //! # Example
 //!
 //! ```rust
-//! use yew-nav-link::{nav_link, NavLink};
+//! use yew_nav_link::{NavLink, nav_link};
 //! ```
 //!
 //! ```html
