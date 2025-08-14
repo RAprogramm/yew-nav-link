@@ -3,7 +3,7 @@
 
 <div>
 <a href="https://crates.io/crates/yew-nav-link"><img alt="Crates.io Version" src="https://img.shields.io/crates/v/yew-nav-link"></a>
-<a href="https://docs.rs/yew-nav-link/0.2.3/yew_nav_link"><img alt="docs.rs" src="https://img.shields.io/docsrs/yew-nav-link"></a>
+<a href="https://docs.rs/yew-nav-link/0.2.1/yew_nav_link"><img alt="docs.rs" src="https://img.shields.io/docsrs/yew-nav-link"></a>
 <a href="https://crates.io/crates/yew-nav-link"><img alt="Crates.io Total Downloads" src="https://img.shields.io/crates/d/yew-nav-link"></a>
 <a href="https://releases.rs/docs/1.89.0/"><img alt="Crates.io MSRV" src="https://img.shields.io/crates/msrv/yew-nav-link"></a>
 <a href="https://github.com/RAprogramm/yew-nav-link"><img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/RAprogramm/yew-nav-link"></a>
