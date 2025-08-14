@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Ensure nightly rustfmt is available
+if ! rustup toolchain list | grep -q "^nightly"; then
+  rustup toolchain install nightly >/dev/null
+fi
+rustup component add rustfmt --toolchain nightly >/dev/null
+
+echo "🧹 Running cargo fmt check..."
+cargo +nightly fmt --all -- --check
+
+echo "🧐 Running cargo clippy..."
+cargo clippy --workspace --all-targets --all-features -- -D warnings
+
+# echo "📦 Running sqlx prepare..."
+# cargo sqlx prepare --check --workspace
+
+echo "✅ All checks passed!"

@@ -1,21 +1,20 @@
 [package]
 name = "yew-nav-link"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["RAprogramm <andrey.rozanov.vl@gmail.com>"]
-edition = "2021"
-rust-version = "1.75"
+edition = "2024"
+rust-version = "1.89.0"
 description = "Navigation link component for yew-router"
 documentation = "https://docs.rs/yew-nav-link"
 readme = "README.md"
 repository = "https://github.com/RAprogramm/yew-nav-link"
-license = "Apache-2.0"
-license-file = "LICENSE"
+license = "MIT OR Apache-2.0"
 keywords = ["yew", "router", "nav", "link"]
 categories = ["gui", "wasm"]
 
 [dependencies]
-yew = { version = "0.21.0", features = ["csr"] }
-yew-router = "0.18.0"
+yew = { version = "0.21", features = ["csr"] }
+yew-router = "0.18"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
