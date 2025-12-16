@@ -1,31 +1,142 @@
-// Import necessary modules from Yew and Yew Router
+//! Navigation link component with automatic active state detection.
+//!
+//! This module provides the [`NavLink`] component and [`nav_link`] helper
+//! function for building navigation menus in Yew applications. The component
+//! automatically detects when its target route matches the current URL and
+//! applies an `active` CSS class accordingly.
+//!
+//! # Features
+//!
+//! - **Automatic Active State**: Compares the target route against the current
+//!   route and applies the `active` class when they match.
+//! - **Type-Safe Routing**: Leverages Yew Router's [`Routable`] trait for
+//!   compile-time route validation.
+//! - **Flexible Children**: Accepts any valid Yew children, including text,
+//!   HTML elements, or other components.
+//! - **CSS Integration**: Renders with `nav-link` base class, compatible with
+//!   Bootstrap and similar CSS frameworks.
+//!
+//! # CSS Classes
+//!
+//! The component applies the following CSS classes to the rendered `<a>`
+//! element:
+//!
+//! | Class | Condition |
+//! |-------|-----------|
+//! | `nav-link` | Always applied |
+//! | `active` | Applied when the target route matches the current route |
+//!
+//! # Usage
+//!
+//! ## Component Syntax
+//!
+//! ```rust
+//! use yew::prelude::*;
+//! use yew_nav_link::NavLink;
+//! use yew_router::prelude::*;
+//!
+//! #[derive(Clone, PartialEq, Debug, Routable)]
+//! enum Route {
+//!     #[at("/")]
+//!     Home,
+//!     #[at("/about")]
+//!     About
+//! }
+//!
+//! #[component]
+//! fn Navigation() -> Html {
+//!     html! {
+//!         <nav>
+//!             <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+//!             <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
+//!         </nav>
+//!     }
+//! }
+//! ```
+//!
+//! ## Function Syntax
+//!
+//! For simpler cases with text-only children:
+//!
+//! ```rust
+//! use yew::prelude::*;
+//! use yew_nav_link::nav_link;
+//! use yew_router::prelude::*;
+//!
+//! #[derive(Clone, PartialEq, Debug, Routable)]
+//! enum Route {
+//!     #[at("/")]
+//!     Home,
+//!     #[at("/about")]
+//!     About
+//! }
+//!
+//! #[component]
+//! fn Navigation() -> Html {
+//!     html! {
+//!         <ul class="nav">
+//!             <li>{ nav_link(Route::Home, "Home") }</li>
+//!             <li>{ nav_link(Route::About, "About") }</li>
+//!         </ul>
+//!     }
+//! }
+//! ```
+//!
+//! # Integration with CSS Frameworks
+//!
+//! The component works seamlessly with Bootstrap, Tailwind, and other CSS
+//! frameworks that use the `.nav-link` and `.active` class conventions:
+//!
+//! ```html
+//! <!-- Bootstrap Navigation -->
+//! <ul class="nav nav-pills">
+//!     <li class="nav-item">
+//!         <!-- NavLink renders: <a class="nav-link active" href="/"> -->
+//!     </li>
+//! </ul>
+//! ```
+
 use std::marker::PhantomData;
 
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-/// Props for NavLink component.
-/// R: Routable - A trait bound to ensure that this component can only be used
-/// with routable types.
-#[derive(Properties, PartialEq)]
+/// Properties for the [`NavLink`] component.
+///
+/// # Type Parameters
+///
+/// * `R` - A type implementing [`Routable`] that defines the target route.
+#[derive(Properties, PartialEq, Debug)]
 pub struct NavLinkProps<R: Routable + PartialEq + Clone + 'static> {
-    /// The destination route for the link.
-    pub to:             R,
-    /// Children of this component (usually text or other elements to be
-    /// rendered within the link).
-    pub children:       Children,
-    /// Marker for the generic type R. It does not hold any value.
+    /// Target route for navigation.
+    ///
+    /// When clicked, the application navigates to this route.
+    /// The component compares this value against the current route
+    /// to determine active state.
+    pub to: R,
+
+    /// Content rendered inside the link element.
+    ///
+    /// Accepts any valid Yew children: text, HTML elements, or components.
+    pub children: Children,
+
     #[prop_or_default]
     pub(crate) _marker: PhantomData<R>
 }
 
-/// NavLink component for Yew applications using Yew Router.
+/// Navigation link with automatic active state detection.
 ///
-/// This component creates a navigational link that is aware of its active
-/// state, based on the current route in the application.
+/// Wraps Yew Router's [`Link`] component and automatically applies the `active`
+/// CSS class when the target route matches the current URL.
 ///
-/// The component is generic over `R`, where `R` must implement the `Routable`
-/// trait. This allows the NavLink to be used with any set of routable types.
+/// # CSS Classes
+///
+/// - `nav-link` - Always applied
+/// - `active` - Applied when route matches current URL
+///
+/// # Type Parameters
+///
+/// * `R` - Route type implementing [`Routable`]
 ///
 /// # Example
 ///
@@ -34,48 +145,34 @@ pub struct NavLinkProps<R: Routable + PartialEq + Clone + 'static> {
 /// use yew_nav_link::NavLink;
 /// use yew_router::prelude::*;
 ///
-/// #[derive(Clone, PartialEq, Debug, Routable)]
-/// enum AppRoute {
+/// #[derive(Clone, PartialEq, Routable)]
+/// enum Route {
 ///     #[at("/")]
 ///     Home,
 ///     #[at("/about")]
 ///     About
 /// }
 ///
-/// #[function_component(App)]
-/// pub fn app() -> Html {
+/// #[component]
+/// fn Navigation() -> Html {
 ///     html! {
 ///         <nav>
-///             <NavLink<AppRoute> to={AppRoute::Home}>{ "Home" }</NavLink<AppRoute>>
-///             <NavLink<AppRoute> to={AppRoute::About}>{ "About" }</NavLink<AppRoute>>
-///             // ... other NavLinks
+///             <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+///             <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
 ///         </nav>
 ///     }
 /// }
 /// ```
-#[function_component(NavLink)]
-pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R>) -> Html {
-    // use_route hook is used to get the current route of the application.
+#[component]
+pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R>) -> Html {
     let current_route = use_route::<R>();
-
-    // Determine if the NavLink's route matches the current route.
-    // If they match, the link is considered 'active'.
-    let is_active = if let Some(route) = current_route {
-        route == props.to
-    } else {
-        false
-    };
-
-    // CSS class for the NavLink.
-    // The 'active' class is conditionally added based on the active state.
+    let is_active = current_route.is_some_and(|route| route == props.to);
     let class = format!("nav-link {}", if is_active { "active" } else { "" });
-
-    // Render the NavLink using the Yew's Link component.
-    // The Link component is responsible for handling the navigation.
     html! {
         <Link<R> to={props.to.clone()} classes={classes!(class)}>
-            // Rendering children elements passed to the NavLink.
-            { for props.children.iter() }
+            for child in props.children.iter() {
+                { child }
+            }
         </Link<R>>
     }
 }
@@ -107,8 +204,8 @@ pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<
 ///     About
 /// }
 ///
-/// #[function_component(Menu)]
-/// fn menu() -> Html {
+/// #[component]
+/// fn Menu() -> Html {
 ///     html! {
 ///         <ul class="nav">
 ///             // Creating a NavLink for the Home route with the text "Home Page"
@@ -136,6 +233,59 @@ pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<
 /// The `to` parameter must be of a type that implements the `Routable` trait.
 pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(to: R, children: &str) -> Html {
     html! {
-        <NavLink<R> to={to}>{ children }</NavLink<R>>
+        <NavLink<R> to={to}>{ Html::from(children) }</NavLink<R>>
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use wasm_bindgen_test::*;
+
+    use super::*;
+
+    wasm_bindgen_test_configure!(run_in_browser);
+
+    #[derive(Clone, PartialEq, Debug, Routable)]
+    enum TestRoute {
+        #[at("/")]
+        Home,
+        #[at("/about")]
+        About
+    }
+
+    #[wasm_bindgen_test]
+    fn nav_link_creates_html() {
+        let html = nav_link(TestRoute::Home, "Home");
+        assert!(matches!(html, Html::VTag(_) | Html::VComp(_)));
+    }
+
+    #[wasm_bindgen_test]
+    fn nav_link_props_equality() {
+        let props1 = NavLinkProps {
+            to:       TestRoute::Home,
+            children: Default::default(),
+            _marker:  PhantomData
+        };
+        let props2 = NavLinkProps {
+            to:       TestRoute::Home,
+            children: Default::default(),
+            _marker:  PhantomData
+        };
+        assert_eq!(props1, props2);
+    }
+
+    #[wasm_bindgen_test]
+    fn nav_link_props_different_routes() {
+        let props1 = NavLinkProps {
+            to:       TestRoute::Home,
+            children: Default::default(),
+            _marker:  PhantomData
+        };
+        let props2 = NavLinkProps {
+            to:       TestRoute::About,
+            children: Default::default(),
+            _marker:  PhantomData
+        };
+        assert_ne!(props1, props2);
     }
 }

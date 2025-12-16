@@ -1,20 +1,24 @@
 [package]
 name = "yew-nav-link"
-version = "0.2.1"
+version = "0.3.0"
 authors = ["RAprogramm <andrey.rozanov.vl@gmail.com>"]
 edition = "2024"
-rust-version = "1.89.0"
-description = "Navigation link component for yew-router"
+rust-version = "1.91.0"
+description = "Navigation link component for Yew with automatic active state detection"
 documentation = "https://docs.rs/yew-nav-link"
 readme = "README.md"
+homepage = "https://github.com/RAprogramm/yew-nav-link"
 repository = "https://github.com/RAprogramm/yew-nav-link"
-license = "MIT OR Apache-2.0"
-keywords = ["yew", "router", "nav", "link"]
-categories = ["gui", "wasm"]
+license = "MIT"
+keywords = ["yew", "router", "navigation", "wasm", "frontend"]
+categories = ["gui", "wasm", "web-programming"]
 
 [dependencies]
-yew = { version = "0.21", features = ["csr"] }
-yew-router = "0.18"
+yew = { version = "0.22", features = ["csr"] }
+yew-router = "0.19"
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
 
 [lib]
 crate-type = ["cdylib", "rlib"]

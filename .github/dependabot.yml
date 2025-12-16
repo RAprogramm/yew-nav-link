@@ -1,0 +1,55 @@
+version: 2
+
+updates:
+  - package-ecosystem: cargo
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Europe/Moscow
+    commit-message:
+      prefix: "deps(cargo)"
+    labels:
+      - dependencies
+      - rust
+      - automerge
+    open-pull-requests-limit: 5
+    groups:
+      yew-ecosystem:
+        patterns:
+          - "yew*"
+          - "gloo*"
+          - "wasm-bindgen*"
+          - "web-sys"
+          - "js-sys"
+        update-types:
+          - minor
+          - patch
+      rust-minor:
+        update-types:
+          - minor
+          - patch
+        exclude-patterns:
+          - "yew*"
+          - "gloo*"
+          - "wasm-bindgen*"
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Europe/Moscow
+    commit-message:
+      prefix: "ci(deps)"
+    labels:
+      - dependencies
+      - ci
+      - automerge
+    open-pull-requests-limit: 3
+    groups:
+      actions:
+        patterns:
+          - "*"
