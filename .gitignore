@@ -1,1 +1,4 @@
 /target
+examples/*/target
+examples/*/dist
+examples/*/Cargo.lock

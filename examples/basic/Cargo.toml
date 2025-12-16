@@ -1,0 +1,10 @@
+[package]
+name = "basic-example"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+yew = { version = "0.22", features = ["csr"] }
+yew-router = "0.19"
+yew-nav-link = { path = "../.." }

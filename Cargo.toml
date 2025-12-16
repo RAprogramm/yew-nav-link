@@ -12,6 +12,7 @@ repository = "https://github.com/RAprogramm/yew-nav-link"
 license = "MIT"
 keywords = ["yew", "router", "navigation", "wasm", "frontend"]
 categories = ["gui", "wasm", "web-programming"]
+exclude = ["examples/*"]
 
 [dependencies]
 yew = { version = "0.22", features = ["csr"] }
