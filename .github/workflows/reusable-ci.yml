@@ -172,10 +172,68 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "📥 Coverage HTML report available in artifacts" >> $GITHUB_STEP_SUMMARY
 
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run cargo-quality
+        uses: RAprogramm/cargo-quality@v0
+        with:
+          path: src/
+          fail_on_issues: true
+          post_comment: ${{ github.event_name == 'pull_request' }}
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Code Quality" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Code quality standards met" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Quality issues found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  pr-analysis:
+    name: PR Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Analyze PR size
+        uses: RAprogramm/rust-prod-diff-checker@v1
+        with:
+          max_prod_units: 30
+          max_weighted_score: 100
+          fail_on_exceed: true
+          post_comment: true
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## PR Size Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ PR size within limits" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ PR exceeds size limits" >> $GITHUB_STEP_SUMMARY
+          fi
+
   package:
     name: Package
     runs-on: ubuntu-latest
-    needs: [fmt, clippy, test]
+    needs: [fmt, clippy, test, quality]
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust
