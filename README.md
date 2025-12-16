@@ -7,6 +7,8 @@
 <a href="https://crates.io/crates/yew-nav-link"><img alt="Crates.io Total Downloads" src="https://img.shields.io/crates/d/yew-nav-link"></a>
 <a href="https://releases.rs/docs/1.89.0/"><img alt="Crates.io MSRV" src="https://img.shields.io/crates/msrv/yew-nav-link"></a>
 <a href="https://github.com/RAprogramm/yew-nav-link"><img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/RAprogramm/yew-nav-link"></a>
+<a href="https://api.reuse.software/info/github.com/RAprogramm/yew-nav-link"><img alt="REUSE status" src="https://api.reuse.software/badge/github.com/RAprogramm/yew-nav-link"></a>
+<a href="https://codecov.io/gh/RAprogramm/yew-nav-link"><img alt="Codecov" src="https://codecov.io/gh/RAprogramm/yew-nav-link/branch/main/graph/badge.svg"></a>
 </div>
 <hr>
 
@@ -226,4 +228,4 @@ pub fn app() -> Html {
 
 <h2>License</h2>
 
-<p>This project is licensed under the <a href="LICENSE">Apache License 2.0</a>.</p>
+<p>This project is licensed under the <a href="LICENSE-MIT">MIT License</a>.</p>
