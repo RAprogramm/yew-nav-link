@@ -58,13 +58,7 @@ pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R
     // use_route hook is used to get the current route of the application.
     let current_route = use_route::<R>();
 
-    // Determine if the NavLink's route matches the current route.
-    // If they match, the link is considered 'active'.
-    let is_active = if let Some(route) = current_route {
-        route == props.to
-    } else {
-        false
-    };
+    let is_active = current_route.is_some_and(|route| route == props.to);
 
     // CSS class for the NavLink.
     // The 'active' class is conditionally added based on the active state.
