@@ -1,3 +1,5 @@
+<a id="top"></a>
+
 # yew-nav-link
 
 Navigation link component for [Yew](https://yew.rs) with automatic active state detection.
@@ -14,9 +16,26 @@ Navigation link component for [Yew](https://yew.rs) with automatic active state 
 
 </div>
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Installation](#installation)
+- [Requirements](#requirements)
+- [Usage](#usage)
+  - [Component Syntax](#component-syntax)
+  - [Function Syntax](#function-syntax)
+- [CSS Classes](#css-classes)
+  - [Bootstrap Integration](#bootstrap-integration)
+  - [Tailwind CSS](#tailwind-css)
+- [API Reference](#api-reference)
+- [Coverage](#coverage)
+- [License](#license)
+
 ## Overview
 
 `yew-nav-link` provides a `NavLink` component that wraps Yew Router's `Link` with automatic active state management. When the target route matches the current URL, an `active` CSS class is applied automatically.
+
+<div align="right"><a href="#top">↑ top</a></div>
 
 ## Installation
 
@@ -25,12 +44,16 @@ Navigation link component for [Yew](https://yew.rs) with automatic active state 
 yew-nav-link = "0.3"
 ```
 
+<div align="right"><a href="#top">↑ top</a></div>
+
 ## Requirements
 
 | Dependency | Version |
 |------------|---------|
 | yew | 0.22+ |
 | yew-router | 0.19+ |
+
+<div align="right"><a href="#top">↑ top</a></div>
 
 ## Usage
 
@@ -107,6 +130,8 @@ fn Menu() -> Html {
 }
 ```
 
+<div align="right"><a href="#top">↑ top</a></div>
+
 ## CSS Classes
 
 The component applies these classes to the rendered `<a>` element:
@@ -138,6 +163,8 @@ The component applies these classes to the rendered `<a>` element:
 }
 ```
 
+<div align="right"><a href="#top">↑ top</a></div>
+
 ## API Reference
 
 ### `NavLink<R>` Component
@@ -154,6 +181,8 @@ fn nav_link<R: Routable>(to: R, children: &str) -> Html
 ```
 
 Creates a `NavLink` with text content.
+
+<div align="right"><a href="#top">↑ top</a></div>
 
 <details>
 <summary><h2>Coverage</h2></summary>
@@ -190,8 +219,12 @@ The top section represents the entire project. Proceeding with folders and final
   </a>
 </p>
 
+<div align="right"><a href="#top">↑ top</a></div>
+
 </details>
 
 ## License
 
 Licensed under the [MIT License](LICENSE-MIT).
+
+<div align="right"><a href="#top">↑ top</a></div>
