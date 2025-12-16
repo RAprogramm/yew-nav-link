@@ -10,6 +10,7 @@ jobs:
     permissions:
       contents: read
       security-events: write
+      pull-requests: write
     uses: ./.github/workflows/reusable-ci.yml
     with:
       all-features: true
