@@ -155,6 +155,43 @@ fn nav_link<R: Routable>(to: R, children: &str) -> Html
 
 Creates a `NavLink` with text content.
 
+<details>
+<summary><h2>Coverage</h2></summary>
+
+Code coverage is tracked via [Codecov](https://codecov.io/gh/RAprogramm/yew-nav-link). Target: **95%+** coverage.
+
+### Sunburst
+
+The inner-most circle is the entire project, moving away from the center are folders then, finally, a single file. The size and color of each slice represents the number of statements and the coverage, respectively.
+
+<p align="center">
+  <a href="https://codecov.io/gh/RAprogramm/yew-nav-link">
+    <img src="https://codecov.io/gh/RAprogramm/yew-nav-link/graphs/sunburst.svg?token=E93AERE3UC" alt="Sunburst"/>
+  </a>
+</p>
+
+### Grid
+
+Each block represents a single file in the project. The size and color of each block represents the number of statements and the coverage, respectively.
+
+<p align="center">
+  <a href="https://codecov.io/gh/RAprogramm/yew-nav-link">
+    <img src="https://codecov.io/gh/RAprogramm/yew-nav-link/graphs/tree.svg?token=E93AERE3UC" alt="Grid"/>
+  </a>
+</p>
+
+### Icicle
+
+The top section represents the entire project. Proceeding with folders and finally individual files. The size and color of each slice represents the number of statements and the coverage, respectively.
+
+<p align="center">
+  <a href="https://codecov.io/gh/RAprogramm/yew-nav-link">
+    <img src="https://codecov.io/gh/RAprogramm/yew-nav-link/graphs/icicle.svg?token=E93AERE3UC" alt="Icicle"/>
+  </a>
+</p>
+
+</details>
+
 ## License
 
 Licensed under the [MIT License](LICENSE-MIT).
