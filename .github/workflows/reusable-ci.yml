@@ -214,8 +214,7 @@ jobs:
       - name: Analyze PR size
         uses: RAprogramm/rust-prod-diff-checker@v1
         with:
-          max_prod_units: 30
-          max_weighted_score: 100
+          max_prod_lines: 100
           fail_on_exceed: true
           post_comment: true
 
