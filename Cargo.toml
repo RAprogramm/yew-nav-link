@@ -4,13 +4,14 @@ version = "0.3.0"
 authors = ["RAprogramm <andrey.rozanov.vl@gmail.com>"]
 edition = "2024"
 rust-version = "1.91.0"
-description = "Navigation link component for yew-router"
+description = "Navigation link component for Yew with automatic active state detection"
 documentation = "https://docs.rs/yew-nav-link"
 readme = "README.md"
+homepage = "https://github.com/RAprogramm/yew-nav-link"
 repository = "https://github.com/RAprogramm/yew-nav-link"
 license = "MIT"
-keywords = ["yew", "router", "nav", "link"]
-categories = ["gui", "wasm"]
+keywords = ["yew", "router", "navigation", "wasm", "frontend"]
+categories = ["gui", "wasm", "web-programming"]
 
 [dependencies]
 yew = { version = "0.22", features = ["csr"] }

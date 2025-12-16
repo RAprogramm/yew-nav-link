@@ -1,231 +1,160 @@
-<h1>NavLink Component for Yew Router</h1>
+# yew-nav-link
 
+Navigation link component for [Yew](https://yew.rs) with automatic active state detection.
 
-<div>
-<a href="https://crates.io/crates/yew-nav-link"><img alt="Crates.io Version" src="https://img.shields.io/crates/v/yew-nav-link"></a>
-<a href="https://docs.rs/yew-nav-link/0.2.1/yew_nav_link"><img alt="docs.rs" src="https://img.shields.io/docsrs/yew-nav-link"></a>
-<a href="https://crates.io/crates/yew-nav-link"><img alt="Crates.io Total Downloads" src="https://img.shields.io/crates/d/yew-nav-link"></a>
-<a href="https://releases.rs/docs/1.89.0/"><img alt="Crates.io MSRV" src="https://img.shields.io/crates/msrv/yew-nav-link"></a>
-<a href="https://github.com/RAprogramm/yew-nav-link"><img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/RAprogramm/yew-nav-link"></a>
-<a href="https://api.reuse.software/info/github.com/RAprogramm/yew-nav-link"><img alt="REUSE status" src="https://api.reuse.software/badge/github.com/RAprogramm/yew-nav-link"></a>
-<a href="https://codecov.io/gh/RAprogramm/yew-nav-link"><img alt="Codecov" src="https://codecov.io/gh/RAprogramm/yew-nav-link/branch/main/graph/badge.svg"></a>
+<div align="center">
+
+[![Crates.io](https://img.shields.io/crates/v/yew-nav-link)](https://crates.io/crates/yew-nav-link)
+[![docs.rs](https://img.shields.io/docsrs/yew-nav-link)](https://docs.rs/yew-nav-link)
+[![Downloads](https://img.shields.io/crates/d/yew-nav-link)](https://crates.io/crates/yew-nav-link)
+[![MSRV](https://img.shields.io/crates/msrv/yew-nav-link)](https://crates.io/crates/yew-nav-link)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE-MIT)
+[![REUSE](https://api.reuse.software/badge/github.com/RAprogramm/yew-nav-link)](https://api.reuse.software/info/github.com/RAprogramm/yew-nav-link)
+[![Codecov](https://codecov.io/gh/RAprogramm/yew-nav-link/branch/main/graph/badge.svg)](https://codecov.io/gh/RAprogramm/yew-nav-link)
+
 </div>
-<hr>
 
-<p>NavLink is a component for Yew applications using Yew Router. It creates a navigational link that is aware of its active state based on the current route in the application.</p>
-<hr>
+## Overview
 
+`yew-nav-link` provides a `NavLink` component that wraps Yew Router's `Link` with automatic active state management. When the target route matches the current URL, an `active` CSS class is applied automatically.
 
-<h2>Usage</h2>
+## Installation
 
-```rs
-use yew::{html, prelude::*};
+```toml
+[dependencies]
+yew-nav-link = "0.3"
+```
+
+## Requirements
+
+| Dependency | Version |
+|------------|---------|
+| yew | 0.22+ |
+| yew-router | 0.19+ |
+
+## Usage
+
+### Component Syntax
+
+```rust
+use yew::prelude::*;
+use yew_nav_link::NavLink;
 use yew_router::prelude::*;
 
-#[function_component(App)]
-pub fn app() -> Html {
+#[derive(Clone, PartialEq, Routable)]
+enum Route {
+    #[at("/")]
+    Home,
+    #[at("/about")]
+    About,
+}
+
+#[component]
+fn App() -> Html {
+    html! {
+        <BrowserRouter>
+            <Navigation />
+            <main>
+                <Switch<Route> render={switch} />
+            </main>
+        </BrowserRouter>
+    }
+}
+
+#[component]
+fn Navigation() -> Html {
     html! {
         <nav>
-            <NavLink<AppRoute> to={AppRoute::Home}>{ "Home" }</NavLink<AppRoute>>
-            <NavLink<AppRoute> to={AppRoute::About}>{ "About" }</NavLink<AppRoute>>
-            <!-- ... other NavLinks -->
+            <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+            <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
         </nav>
+    }
+}
+
+fn switch(route: Route) -> Html {
+    match route {
+        Route::Home => html! { <h1>{ "Home" }</h1> },
+        Route::About => html! { <h1>{ "About" }</h1> },
     }
 }
 ```
 
-<br>
-<hr></hr>
+### Function Syntax
 
+For text-only links, use the `nav_link` helper:
 
-<h2>Examples</h2>
+```rust
+use yew::prelude::*;
+use yew_nav_link::nav_link;
+use yew_router::prelude::*;
 
-### Using *nav_link* function
+#[derive(Clone, PartialEq, Routable)]
+enum Route {
+    #[at("/")]
+    Home,
+    #[at("/about")]
+    About,
+}
 
-> <details>
-> <summary>in header or navbar</summary>
->
-> ```html
->     ...
->     <li class="nav-item">
->         { nav_link(HomeRoute::IntroPage, "Home") }
->     </li>
->     <!-- same  
->     <li class="nav-item">
->      <NavLink<HomeRoute> to={HomeRoute::IntroPage}>
->          {"Home"}
->      </NavLink<HomeRoute>>
->     </li>
->     -->
->     ...
-> ```
-> </details>
+#[component]
+fn Menu() -> Html {
+    html! {
+        <ul class="nav">
+            <li>{ nav_link(Route::Home, "Home") }</li>
+            <li>{ nav_link(Route::About, "About") }</li>
+        </ul>
+    }
+}
+```
 
-### Advanced example with [bootstrap](https://getbootstrap.com/)
+## CSS Classes
 
-> [![yew](https://shields.io/badge/yew-0.21.0-darkgreen)](https://docs.rs/yew/0.21.0/yew/index.html)
-> [![yew-router](https://shields.io/badge/yew_router-0.18.0-darkgreen)](https://docs.rs/yew-router/0.18.0/yew_router/index.html)
-> 
-> <details>
-> <summary>index.html</summary>
-> 
-> ```html
-> <!doctype html>
-> <html lang="en">
-> 
-> <head>
->   <meta charset="UTF-8" />
->   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
->   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-> 
->   <title>Your title</title>
-> 
->   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
-> </head>
-> 
-> <body>
->   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
->   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
-> </body>
-> 
-> </html>
-> ```
-> </details>
-> 
-> <details>
-> <summary>main.rs</summary>
-> 
-> ```rs
-> fn main() {
->     yew::Renderer::<app::App>::new().render();
-> }
-> ```
-> </details>
-> 
-> <details>
-> <summary>app.rs</summary>
-> 
-> ```rs
-> #[function_component(App)]
-> pub fn app() -> Html {
->     html! {
->         <BrowserRouter>
->             <Switch<MainRoute> render={switch_main} />
->         </BrowserRouter>
->     }
-> }
-> ```
-> </details>
-> 
-> <details>
-> <summary>main_routes.rs</summary>
-> 
-> ```rs
-> #[derive(Clone, Routable, PartialEq)]
-> pub enum MainRoute {
->     #[at("/home")]
->     HomeRoot,
->     #[at("/home/*")]
->     Home,
->     #[at("/register")]
->     RegisterPage,
->     #[at("/login")]
->     LoginPage,
->     #[not_found]
->     #[at("/404")]
->     NotFoundPage,
-> }
-> 
-> pub fn switch_main(routes: MainRoute) -> Html {
->     match routes {
->         MainRoute::HomeRoot | MainRoute::Home => {
->             html! { <Switch<HomeRoute> render={switch_home} /> }
->         }
->         MainRoute::RegisterPage => html! { <HomeLayout> {html! { <RegisterPage/> }} </HomeLayout> },
->         MainRoute::LoginPage => html! { <HomeLayout> {html! { <LoginPage/> }} </HomeLayout> },
->         MainRoute::NotFoundPage => html! { <NotFoundPage/> },
->     }
-> }
-> ```
-> 
-> </details>
-> 
-> <details>
-> <summary>home_routes.rs</summary>
-> 
-> ```rs
-> #[derive(Clone, Routable, PartialEq)]
-> pub enum HomeRoute {
->     #[at("/home")]
->     HomePage,
->     #[at("/home/intro")]
->     IntroPage,
->     #[at("/home/features")]
->     FeaturesPage,
->     #[at("/home/billings")]
->     BillingsPage,
->     #[at("/home/faq")]
->     FaqPage,
->     #[not_found]
->     #[at("/home/404")]
->     NotFoundPage,
-> }
-> 
-> pub fn switch_home(route: HomeRoute) -> Html {
->     match route {
->         HomeRoute::HomePage => html! {<Intro/>},
->         HomeRoute::IntroPage => html! { <HomeLayout> { html! { <Intro/> } } </HomeLayout> },
->         HomeRoute::FeaturesPage => html! { <HomeLayout> { html! { <Features/> } } </HomeLayout> },
->         HomeRoute::BillingsPage => html! { <HomeLayout> { html! { <Billings/> } } </HomeLayout> },
->         HomeRoute::FaqPage => html! { <HomeLayout> { html! { <FAQ/> } } </HomeLayout> },
->         HomeRoute::NotFoundPage => html! {<Redirect<MainRoute> to={MainRoute::NotFoundPage}/>},
->     }
-> }
-> ```
-> </details>
-> 
-> <details>
-> <summary>in navbar or header</summary>
-> 
-> ```html
->     ...
->     <ul class="nav nav-pills d-inline-flex mt-2 mt-md-0 ms-md-auto" style="justify-content:center;">
->         <li class="nav-item">
->             <NavLink<HomeRoute> to={HomeRoute::IntroPage}>
->                 {"Home"}
->             </NavLink<HomeRoute>>
->         </li>
->         <li class="nav-item">
->             <NavLink<HomeRoute> to={HomeRoute::FeaturesPage}>
->                 {"Features"}
->             </NavLink<HomeRoute>>
->         </li>
->         <li class="nav-item">
->             <NavLink<HomeRoute> to={HomeRoute::BillingsPage}>
->                 {"Billing"}
->             </NavLink<HomeRoute>>
->         </li>
->         <li class="nav-item">
->             <NavLink<HomeRoute> to={HomeRoute::FaqPage}>
->                 {"FAQ"}
->             </NavLink<HomeRoute>>
->         </li>
->         <li class="nav-item">
->             <NavLink<MainRoute> to={MainRoute::RegisterPage}>
->                 {"Register"}
->             </NavLink<MainRoute>>
->         </li>
->         <li class="nav-item">
->             <NavLink<MainRoute> to={MainRoute::LoginPage}>
->                 {"Login"}
->             </NavLink<MainRoute>>
->         </li>
->     </ul>
->     ...
-> ```
-> </details>
+The component applies these classes to the rendered `<a>` element:
 
+| Class | When Applied |
+|-------|--------------|
+| `nav-link` | Always |
+| `active` | Route matches current URL |
 
-<h2>License</h2>
+### Bootstrap Integration
 
-<p>This project is licensed under the <a href="LICENSE-MIT">MIT License</a>.</p>
+```html
+<ul class="nav nav-pills">
+    <li class="nav-item">
+        <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+        <!-- Renders: <a class="nav-link active" href="/">Home</a> -->
+    </li>
+</ul>
+```
+
+### Tailwind CSS
+
+```css
+.nav-link {
+    @apply px-4 py-2 text-gray-600 hover:text-gray-900;
+}
+.nav-link.active {
+    @apply text-blue-600 font-semibold;
+}
+```
+
+## API Reference
+
+### `NavLink<R>` Component
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `to` | `R: Routable` | Target route |
+| `children` | `Children` | Link content |
+
+### `nav_link<R>` Function
+
+```rust
+fn nav_link<R: Routable>(to: R, children: &str) -> Html
+```
+
+Creates a `NavLink` with text content.
+
+## License
+
+Licensed under the [MIT License](LICENSE-MIT).
