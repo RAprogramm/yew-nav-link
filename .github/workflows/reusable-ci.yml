@@ -21,11 +21,29 @@ jobs:
         with:
           toolchain: nightly
           components: rustfmt
-      - run: cargo +nightly fmt --all -- --check
+
+      - name: Check formatting
+        run: cargo +nightly fmt --all -- --check
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Format Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ All files formatted correctly" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Formatting issues found" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Run \`cargo +nightly fmt\` to fix" >> $GITHUB_STEP_SUMMARY
+          fi
 
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust
@@ -35,7 +53,37 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           save-if: false
-      - run: cargo clippy --workspace --all-targets ${{ inputs.all-features && '--all-features' || '' }} -- -D warnings
+
+      - name: Install SARIF tools
+        run: cargo install clippy-sarif sarif-fmt
+
+      - name: Run Clippy
+        run: |
+          cargo clippy --workspace --all-targets ${{ inputs.all-features && '--all-features' || '' }} \
+            --message-format=json -- -D warnings 2>&1 | clippy-sarif | tee clippy.sarif | sarif-fmt
+        continue-on-error: true
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: clippy.sarif
+          wait-for-processing: true
+
+      - name: Check Clippy exit code
+        run: |
+          cargo clippy --workspace --all-targets ${{ inputs.all-features && '--all-features' || '' }} -- -D warnings
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Clippy Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ No warnings or errors" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Issues found - check Security tab for details" >> $GITHUB_STEP_SUMMARY
+          fi
 
   test:
     name: Test
@@ -48,22 +96,33 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           save-if: false
-      - run: cargo test --workspace ${{ inputs.all-features && '--all-features' || '' }} --no-fail-fast
 
-  package:
-    name: Package
-    runs-on: ubuntu-latest
-    needs: [fmt, clippy, test]
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-rust
-        with:
-          toolchain: stable
-      - uses: ./.github/actions/check-lockfile
-      - uses: Swatinem/rust-cache@v2
-        with:
-          save-if: ${{ github.ref == 'refs/heads/main' }}
-      - run: cargo package --locked
+      - name: Install nextest
+        uses: taiki-e/install-action@nextest
+
+      - name: Run tests
+        run: |
+          cargo nextest run --workspace ${{ inputs.all-features && '--all-features' || '' }} \
+            --no-fail-fast --profile ci 2>&1 | tee test-output.txt
+
+      - name: Run doctests
+        run: cargo test --doc --workspace ${{ inputs.all-features && '--all-features' || '' }}
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ All tests passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Some tests failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Output" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          tail -20 test-output.txt >> $GITHUB_STEP_SUMMARY || true
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
   coverage:
     name: Coverage
@@ -78,9 +137,75 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           save-if: false
-      - run: cargo llvm-cov --workspace --all-features --lcov --output-path lcov.info
-      - uses: codecov/codecov-action@v5
+
+      - name: Generate coverage
+        run: |
+          cargo llvm-cov --workspace --all-features --lcov --output-path lcov.info
+          cargo llvm-cov report --workspace --all-features --html --output-dir coverage-html
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-html/
+          retention-days: 7
+
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: lcov.info
           fail_ci_if_error: false
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          cargo llvm-cov report --workspace --all-features 2>&1 | tail -10 >> $GITHUB_STEP_SUMMARY || true
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 [View detailed report on Codecov](https://codecov.io/gh/${{ github.repository }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📥 Coverage HTML report available in artifacts" >> $GITHUB_STEP_SUMMARY
+
+  package:
+    name: Package
+    runs-on: ubuntu-latest
+    needs: [fmt, clippy, test]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-rust
+        with:
+          toolchain: stable
+      - uses: ./.github/actions/check-lockfile
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Package
+        run: cargo package --locked --list > package-contents.txt && cargo package --locked
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: crate-package
+          path: target/package/*.crate
+          retention-days: 7
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Package" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Package created successfully" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Contents" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            cat package-contents.txt >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "📥 Crate available in artifacts" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Package failed" >> $GITHUB_STEP_SUMMARY
+          fi
