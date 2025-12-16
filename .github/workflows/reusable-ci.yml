@@ -17,7 +17,7 @@ jobs:
     outputs:
       version: ${{ steps.msrv.outputs.msrv }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/read-msrv
         id: msrv
 
@@ -25,7 +25,7 @@ jobs:
     name: Format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust
         with:
           toolchain: nightly-2025-08-01
@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: msrv
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust
         with:
           toolchain: ${{ needs.msrv.outputs.version }}
@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: msrv
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust
         with:
           toolchain: ${{ needs.msrv.outputs.version }}
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [msrv, fmt, clippy, test]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup-rust
@@ -99,7 +99,7 @@ jobs:
     name: Coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust
         with:
           toolchain: stable
