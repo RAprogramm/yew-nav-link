@@ -167,7 +167,7 @@ pub struct NavLinkProps<R: Routable + PartialEq + Clone + 'static> {
 pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R>) -> Html {
     let current_route = use_route::<R>();
     let is_active = current_route.is_some_and(|route| route == props.to);
-    let class = format!("nav-link {}", if is_active { "active" } else { "" });
+    let class = build_class(is_active);
     html! {
         <Link<R> to={props.to.clone()} classes={classes!(class)}>
             for child in props.children.iter() {
@@ -237,13 +237,19 @@ pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(to: R, children: &str
     }
 }
 
+/// Generates CSS class string based on active state.
+#[inline]
+fn build_class(is_active: bool) -> String {
+    if is_active {
+        "nav-link active".to_string()
+    } else {
+        "nav-link".to_string()
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use wasm_bindgen_test::*;
-
     use super::*;
-
-    wasm_bindgen_test_configure!(run_in_browser);
 
     #[derive(Clone, PartialEq, Debug, Routable)]
     enum TestRoute {
@@ -253,20 +259,24 @@ mod tests {
         About
     }
 
-    #[wasm_bindgen_test]
-    fn nav_link_creates_html() {
-        let html = nav_link(TestRoute::Home, "Home");
-        assert!(matches!(html, Html::VTag(_) | Html::VComp(_)));
+    #[test]
+    fn build_class_active() {
+        assert_eq!(build_class(true), "nav-link active");
     }
 
-    #[wasm_bindgen_test]
-    fn nav_link_props_equality() {
-        let props1 = NavLinkProps {
+    #[test]
+    fn build_class_inactive() {
+        assert_eq!(build_class(false), "nav-link");
+    }
+
+    #[test]
+    fn props_equality_same_route() {
+        let props1: NavLinkProps<TestRoute> = NavLinkProps {
             to:       TestRoute::Home,
             children: Default::default(),
             _marker:  PhantomData
         };
-        let props2 = NavLinkProps {
+        let props2: NavLinkProps<TestRoute> = NavLinkProps {
             to:       TestRoute::Home,
             children: Default::default(),
             _marker:  PhantomData
@@ -274,18 +284,62 @@ mod tests {
         assert_eq!(props1, props2);
     }
 
-    #[wasm_bindgen_test]
-    fn nav_link_props_different_routes() {
-        let props1 = NavLinkProps {
+    #[test]
+    fn props_equality_different_routes() {
+        let props1: NavLinkProps<TestRoute> = NavLinkProps {
             to:       TestRoute::Home,
             children: Default::default(),
             _marker:  PhantomData
         };
-        let props2 = NavLinkProps {
+        let props2: NavLinkProps<TestRoute> = NavLinkProps {
             to:       TestRoute::About,
             children: Default::default(),
             _marker:  PhantomData
         };
         assert_ne!(props1, props2);
+    }
+
+    #[test]
+    fn props_debug_impl() {
+        let props: NavLinkProps<TestRoute> = NavLinkProps {
+            to:       TestRoute::Home,
+            children: Default::default(),
+            _marker:  PhantomData
+        };
+        let debug_str = format!("{:?}", props);
+        assert!(debug_str.contains("NavLinkProps"));
+        assert!(debug_str.contains("Home"));
+    }
+
+    #[test]
+    fn nav_link_fn_returns_html() {
+        let html = nav_link(TestRoute::Home, "Home");
+        assert!(matches!(html, Html::VComp(_)));
+    }
+
+    #[test]
+    fn nav_link_fn_different_routes() {
+        let html1 = nav_link(TestRoute::Home, "Home");
+        let html2 = nav_link(TestRoute::About, "About");
+        assert!(matches!(html1, Html::VComp(_)));
+        assert!(matches!(html2, Html::VComp(_)));
+    }
+
+    #[test]
+    fn nav_link_fn_empty_text() {
+        let html = nav_link(TestRoute::Home, "");
+        assert!(matches!(html, Html::VComp(_)));
+    }
+
+    #[test]
+    fn nav_link_fn_long_text() {
+        let html = nav_link(TestRoute::Home, "This is a very long navigation link text");
+        assert!(matches!(html, Html::VComp(_)));
+    }
+
+    #[test]
+    fn route_equality() {
+        assert_eq!(TestRoute::Home, TestRoute::Home);
+        assert_ne!(TestRoute::Home, TestRoute::About);
     }
 }
