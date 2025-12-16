@@ -183,7 +183,7 @@ jobs:
           save-if: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Package
-        run: cargo package --locked --list > package-contents.txt && cargo package --locked
+        run: cargo package --locked
 
       - name: Upload package artifact
         uses: actions/upload-artifact@v4
@@ -202,7 +202,7 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "### Contents" >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            cat package-contents.txt >> $GITHUB_STEP_SUMMARY
+            cargo package --locked --list >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "📥 Crate available in artifacts" >> $GITHUB_STEP_SUMMARY
