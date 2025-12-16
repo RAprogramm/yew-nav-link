@@ -1,49 +1,31 @@
 # Contributing
 
-Thanks for your interest in contributing to `yew-nav-link`!
+## Workflow
 
-## Quick Start
+### 1. Create branch from issue number
 
-1. Fork and clone the repo
-2. Create a branch from an issue: `git checkout -b 123-feature-name`
-3. Make changes following our standards
-4. Submit a PR
-
-## Standards
-
-This project follows [RustManifest](https://github.com/RAprogramm/RustManifest) guidelines:
-
-### Code Style
-
-- Format with `cargo +nightly fmt`
-- Max 99 characters per line
-- No `mod.rs` files
-- Use `::` only in imports
-
-### Quality
-
-- No `unwrap()` or `expect()` in library code
-- Avoid unnecessary `clone()`
-- Prefer `&str` over `String`, `&[T]` over `Vec<T>`
-
-### Documentation
-
-- Doc comments (`///`) on all public items
-- Include examples in doc comments
-
-### Commits
-
-Format: `#issue type: description`
-
-```
-#42 feat: add custom class support
-#15 fix: active state detection
-#8 docs: update usage examples
+```bash
+git checkout -b 123
 ```
 
-Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`
+Branch name = issue number only.
 
-## Before PR
+### 2. Commit format
+
+```bash
+git commit -m "#123 add custom class support"
+```
+
+Format: `#<issue> <description>`
+
+### 3. Create PR
+
+- Title: `123`
+- Description must include: `Closes #123`
+
+## Before commit
+
+Run locally:
 
 ```bash
 cargo +nightly fmt
@@ -51,6 +33,25 @@ cargo clippy -- -D warnings
 cargo test
 ```
 
-## Questions?
+## CI checks
 
-Open an issue or check [RustManifest](https://github.com/RAprogramm/RustManifest) for detailed guidelines.
+| Check | Command |
+|-------|---------|
+| Format | `cargo +nightly fmt --check` |
+| Lint | `cargo clippy -- -D warnings` |
+| Test | `cargo test` |
+| Coverage | `cargo llvm-cov` (95%+ required) |
+
+## Code standards
+
+| Rule | Example |
+|------|---------|
+| No `unwrap()` / `expect()` | Use `?` or `.ok_or()` |
+| No unnecessary `clone()` | Pass references |
+| `::` only in imports | `use foo::bar` ok, `foo::bar()` bad |
+| Doc comments on public items | `/// Description` |
+| Max line width | 99 chars |
+
+## Full guidelines
+
+See [RustManifest](https://github.com/RAprogramm/RustManifest)
