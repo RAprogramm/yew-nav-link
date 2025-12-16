@@ -1,8 +1,0 @@
-Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: yew-nav-link
-Upstream-Contact: RAprogramm <andrey.rozanov.vl@gmail.com>
-Source: https://github.com/RAprogramm/yew-nav-link
-
-Files: *
-Copyright: 2024-2025 RAprogramm <andrey.rozanov.vl@gmail.com>
-License: MIT
