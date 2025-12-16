@@ -1,0 +1,44 @@
+architect:
+  - RAprogramm
+
+docker:
+  image: rust:1.91
+
+install: |
+  rustup toolchain install nightly
+  rustup component add rustfmt --toolchain nightly
+  rustup component add clippy --toolchain stable
+  rustup component add llvm-tools-preview --toolchain stable
+  cargo install cargo-nextest --locked
+  cargo install cargo-llvm-cov --locked
+
+merge:
+  script: |
+    echo "=== Format check (nightly) ==="
+    cargo +nightly fmt --all -- --check
+
+    echo "=== Clippy (stable) ==="
+    cargo clippy --workspace --all-targets --all-features -- -D warnings
+
+    echo "=== Tests (nextest) ==="
+    cargo nextest run --workspace --all-features --no-fail-fast
+
+    echo "=== Doctests ==="
+    cargo test --doc --workspace --all-features
+
+    echo "=== Coverage check ==="
+    cargo llvm-cov --workspace --all-features --fail-under-lines 95
+
+    echo "=== Package check ==="
+    cargo package --locked
+
+release:
+  pre: false
+  commanders:
+    - RAprogramm
+  script: |
+    sed -i "s/^version = .*/version = \"${tag}\"/" Cargo.toml
+    cargo +nightly fmt --all
+    cargo check --all-features
+    cargo package --locked --allow-dirty
+    git commit -am "Release ${tag}"
