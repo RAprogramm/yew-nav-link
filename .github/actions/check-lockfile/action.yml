@@ -1,0 +1,14 @@
+name: Check Lockfile
+description: Verify Cargo.lock is committed
+
+runs:
+  using: composite
+  steps:
+    - name: Verify lockfile is committed
+      shell: bash
+      run: |
+        set -euo pipefail
+        if [ ! -f Cargo.lock ]; then
+          echo "Cargo.lock is missing. Commit it or drop CARGO_LOCKED."
+          exit 1
+        fi
