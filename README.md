@@ -70,11 +70,16 @@ Full working examples are available in the [examples/](https://github.com/RAprog
 ### Running Examples
 
 ```bash
+# Install prerequisites (once)
+rustup target add wasm32-unknown-unknown
+cargo install trunk
+
+# Run example
 cd examples/basic
 trunk serve
 ```
 
-Open http://localhost:8080 in your browser.
+Open http://127.0.0.1:8080 in your browser.
 
 <div align="right"><a href="#top">↑ top</a></div>
 

@@ -4,7 +4,13 @@ Working examples demonstrating `yew-nav-link` usage.
 
 ## Prerequisites
 
-Install [Trunk](https://trunkrs.dev/) for building and serving Yew applications:
+1. Add WebAssembly target:
+
+```bash
+rustup target add wasm32-unknown-unknown
+```
+
+2. Install [Trunk](https://trunkrs.dev/) - bundler for Yew/WASM apps:
 
 ```bash
 cargo install trunk
