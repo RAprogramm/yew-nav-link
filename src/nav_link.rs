@@ -1,4 +1,101 @@
-// Import necessary modules from Yew and Yew Router
+//! Navigation link component with automatic active state detection.
+//!
+//! This module provides the [`NavLink`] component and [`nav_link`] helper
+//! function for building navigation menus in Yew applications. The component
+//! automatically detects when its target route matches the current URL and
+//! applies an `active` CSS class accordingly.
+//!
+//! # Features
+//!
+//! - **Automatic Active State**: Compares the target route against the current
+//!   route and applies the `active` class when they match.
+//! - **Type-Safe Routing**: Leverages Yew Router's [`Routable`] trait for
+//!   compile-time route validation.
+//! - **Flexible Children**: Accepts any valid Yew children, including text,
+//!   HTML elements, or other components.
+//! - **CSS Integration**: Renders with `nav-link` base class, compatible with
+//!   Bootstrap and similar CSS frameworks.
+//!
+//! # CSS Classes
+//!
+//! The component applies the following CSS classes to the rendered `<a>`
+//! element:
+//!
+//! | Class | Condition |
+//! |-------|-----------|
+//! | `nav-link` | Always applied |
+//! | `active` | Applied when the target route matches the current route |
+//!
+//! # Usage
+//!
+//! ## Component Syntax
+//!
+//! ```rust
+//! use yew::prelude::*;
+//! use yew_nav_link::NavLink;
+//! use yew_router::prelude::*;
+//!
+//! #[derive(Clone, PartialEq, Debug, Routable)]
+//! enum Route {
+//!     #[at("/")]
+//!     Home,
+//!     #[at("/about")]
+//!     About
+//! }
+//!
+//! #[component]
+//! fn Navigation() -> Html {
+//!     html! {
+//!         <nav>
+//!             <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+//!             <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
+//!         </nav>
+//!     }
+//! }
+//! ```
+//!
+//! ## Function Syntax
+//!
+//! For simpler cases with text-only children:
+//!
+//! ```rust
+//! use yew::prelude::*;
+//! use yew_nav_link::nav_link;
+//! use yew_router::prelude::*;
+//!
+//! #[derive(Clone, PartialEq, Debug, Routable)]
+//! enum Route {
+//!     #[at("/")]
+//!     Home,
+//!     #[at("/about")]
+//!     About
+//! }
+//!
+//! #[component]
+//! fn Navigation() -> Html {
+//!     html! {
+//!         <ul class="nav">
+//!             <li>{ nav_link(Route::Home, "Home") }</li>
+//!             <li>{ nav_link(Route::About, "About") }</li>
+//!         </ul>
+//!     }
+//! }
+//! ```
+//!
+//! # Integration with CSS Frameworks
+//!
+//! The component works seamlessly with Bootstrap, Tailwind, and other CSS
+//! frameworks that use the `.nav-link` and `.active` class conventions:
+//!
+//! ```html
+//! <!-- Bootstrap Navigation -->
+//! <ul class="nav nav-pills">
+//!     <li class="nav-item">
+//!         <!-- NavLink renders: <a class="nav-link active" href="/"> -->
+//!     </li>
+//! </ul>
+//! ```
+
 use std::marker::PhantomData;
 
 use yew::prelude::*;
@@ -55,17 +152,9 @@ pub struct NavLinkProps<R: Routable + PartialEq + Clone + 'static> {
 /// ```
 #[component]
 pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R>) -> Html {
-    // use_route hook is used to get the current route of the application.
     let current_route = use_route::<R>();
-
     let is_active = current_route.is_some_and(|route| route == props.to);
-
-    // CSS class for the NavLink.
-    // The 'active' class is conditionally added based on the active state.
     let class = format!("nav-link {}", if is_active { "active" } else { "" });
-
-    // Render the NavLink using the Yew's Link component.
-    // The Link component is responsible for handling the navigation.
     html! {
         <Link<R> to={props.to.clone()} classes={classes!(class)}>
             for child in props.children.iter() {
