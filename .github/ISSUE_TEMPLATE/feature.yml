@@ -1,0 +1,30 @@
+name: Feature Request
+description: Suggest a feature
+labels: ["enhancement"]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What do you want to add?
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: Why is this needed?
+    validations:
+      required: true
+
+  - type: textarea
+    id: api
+    attributes:
+      label: Proposed API
+      description: How should it look?
+      placeholder: |
+        ```rust
+        // example usage
+        ```
