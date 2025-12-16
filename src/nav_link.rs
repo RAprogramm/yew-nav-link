@@ -74,8 +74,9 @@ pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R
     // The Link component is responsible for handling the navigation.
     html! {
         <Link<R> to={props.to.clone()} classes={classes!(class)}>
-            // Rendering children elements passed to the NavLink.
-            { for props.children.iter() }
+            for child in props.children.iter() {
+                { child }
+            }
         </Link<R>>
     }
 }
