@@ -136,6 +136,6 @@ pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<
 /// The `to` parameter must be of a type that implements the `Routable` trait.
 pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(to: R, children: &str) -> Html {
     html! {
-        <NavLink<R> to={to}>{ children }</NavLink<R>>
+        <NavLink<R> to={to}>{ Html::from(children) }</NavLink<R>>
     }
 }
