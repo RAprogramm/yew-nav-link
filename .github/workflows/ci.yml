@@ -5,11 +5,16 @@ on:
     branches: [ "main" ]
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   ci:
     permissions:
       contents: read
       security-events: write
+      pull-requests: write
     uses: ./.github/workflows/reusable-ci.yml
     with:
       all-features: true

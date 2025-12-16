@@ -12,9 +12,41 @@ env:
   RUST_BACKTRACE: 1
 
 jobs:
+  pr-analysis:
+    name: PR Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Analyze PR size
+        uses: RAprogramm/rust-prod-diff-checker@v1
+        with:
+          max_prod_lines: 100
+          fail_on_exceed: true
+          post_comment: true
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## PR Size Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ PR size within limits" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ PR exceeds size limits" >> $GITHUB_STEP_SUMMARY
+          fi
+
   fmt:
     name: Format
     runs-on: ubuntu-latest
+    needs: [pr-analysis]
+    if: ${{ !cancelled() && (needs.pr-analysis.result == 'success' || needs.pr-analysis.result == 'skipped') }}
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust
@@ -41,6 +73,8 @@ jobs:
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
+    needs: [pr-analysis]
+    if: ${{ !cancelled() && (needs.pr-analysis.result == 'success' || needs.pr-analysis.result == 'skipped') }}
     permissions:
       contents: read
       security-events: write
@@ -64,7 +98,7 @@ jobs:
         continue-on-error: true
 
       - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: clippy.sarif
@@ -85,9 +119,40 @@ jobs:
             echo "❌ Issues found - check Security tab for details" >> $GITHUB_STEP_SUMMARY
           fi
 
+  quality:
+    name: Quality
+    runs-on: ubuntu-latest
+    needs: [pr-analysis]
+    if: ${{ !cancelled() && (needs.pr-analysis.result == 'success' || needs.pr-analysis.result == 'skipped') }}
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run cargo-quality
+        uses: RAprogramm/cargo-quality@v0
+        with:
+          path: src/
+          fail_on_issues: true
+          post_comment: ${{ github.event_name == 'pull_request' }}
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Code Quality" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Code quality standards met" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Quality issues found" >> $GITHUB_STEP_SUMMARY
+          fi
+
   test:
     name: Test
     runs-on: ubuntu-latest
+    needs: [pr-analysis]
+    if: ${{ !cancelled() && (needs.pr-analysis.result == 'success' || needs.pr-analysis.result == 'skipped') }}
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust
@@ -103,7 +168,7 @@ jobs:
       - name: Run tests
         run: |
           cargo nextest run --workspace ${{ inputs.all-features && '--all-features' || '' }} \
-            --no-fail-fast --profile ci 2>&1 | tee test-output.txt
+            --no-fail-fast --profile ci --color=never 2>&1 | tee test-output.txt
 
       - name: Run doctests
         run: cargo test --doc --workspace ${{ inputs.all-features && '--all-features' || '' }}
@@ -127,6 +192,8 @@ jobs:
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
+    needs: [pr-analysis]
+    if: ${{ !cancelled() && (needs.pr-analysis.result == 'success' || needs.pr-analysis.result == 'skipped') }}
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust
@@ -162,7 +229,11 @@ jobs:
         run: |
           echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          cargo llvm-cov report 2>&1 | tail -10 >> $GITHUB_STEP_SUMMARY || true
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Coverage report generated" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Coverage generation failed" >> $GITHUB_STEP_SUMMARY
+          fi
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "📊 [View detailed report on Codecov](https://codecov.io/gh/${{ github.repository }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -171,7 +242,7 @@ jobs:
   package:
     name: Package
     runs-on: ubuntu-latest
-    needs: [fmt, clippy, test]
+    needs: [fmt, clippy, test, quality]
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust

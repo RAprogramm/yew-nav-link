@@ -1,0 +1,45 @@
+name: Cargo Info
+description: Extract package metadata from Cargo.toml
+
+outputs:
+  name:
+    description: Package name
+    value: ${{ steps.meta.outputs.name }}
+  version:
+    description: Package version
+    value: ${{ steps.meta.outputs.version }}
+  msrv:
+    description: Minimum supported Rust version
+    value: ${{ steps.meta.outputs.msrv }}
+  license:
+    description: Package license
+    value: ${{ steps.meta.outputs.license }}
+
+runs:
+  using: composite
+  steps:
+    - id: meta
+      shell: bash
+      run: |
+        set -euo pipefail
+        META=$(cargo metadata --no-deps --format-version=1)
+
+        NAME=$(echo "$META" | jq -r '.packages[0].name')
+        VERSION=$(echo "$META" | jq -r '.packages[0].version')
+        LICENSE=$(echo "$META" | jq -r '.packages[0].license // empty')
+        MSRV=$(echo "$META" | jq -r '.packages[0].rust_version // empty')
+
+        if [ -z "$MSRV" ]; then
+          echo "::error::rust-version is not set in Cargo.toml"
+          exit 1
+        fi
+
+        # Normalize MSRV to x.y.z format
+        if [[ "$MSRV" =~ ^[0-9]+\.[0-9]+$ ]]; then
+          MSRV="${MSRV}.0"
+        fi
+
+        echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+        echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+        echo "msrv=${MSRV}" >> "$GITHUB_OUTPUT"
+        echo "license=${LICENSE}" >> "$GITHUB_OUTPUT"
