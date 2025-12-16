@@ -7,6 +7,9 @@ on:
 
 jobs:
   ci:
+    permissions:
+      contents: read
+      security-events: write
     uses: ./.github/workflows/reusable-ci.yml
     with:
       all-features: true
