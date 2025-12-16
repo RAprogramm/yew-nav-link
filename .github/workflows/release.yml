@@ -20,39 +20,33 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Read MSRV from Cargo.toml
-        id: msrv
-        shell: bash
-        run: |
-          set -euo pipefail
-          if ! command -v jq >/dev/null 2>&1; then
-            sudo apt-get update -y && sudo apt-get install -y jq
-          fi
-          RV=$(cargo metadata --no-deps --format-version=1 | jq -r '.packages[0].rust_version // empty')
-          if [ -z "$RV" ]; then
-            echo "rust-version is not set in Cargo.toml"
-            exit 1
-          fi
-          if [[ "$RV" =~ ^[0-9]+\.[0-9]+$ ]]; then
-            RV="${RV}.0"
-          fi
-          echo "msrv=${RV}" >> "$GITHUB_OUTPUT"
+      - uses: ./.github/actions/cargo-info
+        id: cargo
 
-      - name: Ensure tag matches Cargo.toml version
-        shell: bash
+      - name: Verify tag matches version
         run: |
-          set -euo pipefail
           TAG="${GITHUB_REF#refs/tags/}"
-          FILE_VER=$(cargo metadata --no-deps --format-version=1 | jq -r '.packages[0].version')
-          if [ "v${FILE_VER}" != "${TAG}" ]; then
-            echo "Tag ${TAG} != Cargo.toml version v${FILE_VER}"
+          if [ "v${{ steps.cargo.outputs.version }}" != "${TAG}" ]; then
+            echo "::error::Tag ${TAG} != Cargo.toml version v${{ steps.cargo.outputs.version }}"
             exit 1
           fi
 
-      - name: Install Rust (${{ steps.msrv.outputs.msrv }})
+      - name: Install Rust (${{ steps.cargo.outputs.msrv }})
         uses: dtolnay/rust-toolchain@v1
         with:
-          toolchain: ${{ steps.msrv.outputs.msrv }}
+          toolchain: ${{ steps.cargo.outputs.msrv }}
 
       - name: Publish to crates.io
-        run: cargo +${{ steps.msrv.outputs.msrv }} publish --locked --token ${{ secrets.CRATES_IO_TOKEN }}
+        run: cargo +${{ steps.cargo.outputs.msrv }} publish --locked --token ${{ secrets.CRATES_IO_TOKEN }}
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Release" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Field | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Package | ${{ steps.cargo.outputs.name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | ${{ steps.cargo.outputs.version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| MSRV | ${{ steps.cargo.outputs.msrv }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| License | ${{ steps.cargo.outputs.license }} |" >> $GITHUB_STEP_SUMMARY
