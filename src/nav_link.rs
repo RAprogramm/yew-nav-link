@@ -53,8 +53,8 @@ pub struct NavLinkProps<R: Routable + PartialEq + Clone + 'static> {
 ///     }
 /// }
 /// ```
-#[function_component(NavLink)]
-pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R>) -> Html {
+#[component]
+pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R>) -> Html {
     // use_route hook is used to get the current route of the application.
     let current_route = use_route::<R>();
 
