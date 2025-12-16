@@ -141,7 +141,7 @@ jobs:
       - name: Generate coverage
         run: |
           cargo llvm-cov --workspace --all-features --lcov --output-path lcov.info
-          cargo llvm-cov report --workspace --all-features --html --output-dir coverage-html
+          cargo llvm-cov report --html --output-dir coverage-html
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
@@ -162,7 +162,7 @@ jobs:
         run: |
           echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          cargo llvm-cov report --workspace --all-features 2>&1 | tail -10 >> $GITHUB_STEP_SUMMARY || true
+          cargo llvm-cov report 2>&1 | tail -10 >> $GITHUB_STEP_SUMMARY || true
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "📊 [View detailed report on Codecov](https://codecov.io/gh/${{ github.repository }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
