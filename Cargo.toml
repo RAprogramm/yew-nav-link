@@ -16,5 +16,8 @@ categories = ["gui", "wasm"]
 yew = { version = "0.22", features = ["csr"] }
 yew-router = "0.19"
 
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
+
 [lib]
 crate-type = ["cdylib", "rlib"]

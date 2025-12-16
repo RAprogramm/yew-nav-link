@@ -7,7 +7,7 @@ use yew_router::prelude::*;
 /// Props for NavLink component.
 /// R: Routable - A trait bound to ensure that this component can only be used
 /// with routable types.
-#[derive(Properties, PartialEq)]
+#[derive(Properties, PartialEq, Debug)]
 pub struct NavLinkProps<R: Routable + PartialEq + Clone + 'static> {
     /// The destination route for the link.
     pub to:             R,
@@ -132,5 +132,58 @@ pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R
 pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(to: R, children: &str) -> Html {
     html! {
         <NavLink<R> to={to}>{ Html::from(children) }</NavLink<R>>
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use wasm_bindgen_test::*;
+
+    use super::*;
+
+    wasm_bindgen_test_configure!(run_in_browser);
+
+    #[derive(Clone, PartialEq, Debug, Routable)]
+    enum TestRoute {
+        #[at("/")]
+        Home,
+        #[at("/about")]
+        About
+    }
+
+    #[wasm_bindgen_test]
+    fn nav_link_creates_html() {
+        let html = nav_link(TestRoute::Home, "Home");
+        assert!(matches!(html, Html::VTag(_) | Html::VComp(_)));
+    }
+
+    #[wasm_bindgen_test]
+    fn nav_link_props_equality() {
+        let props1 = NavLinkProps {
+            to:       TestRoute::Home,
+            children: Default::default(),
+            _marker:  PhantomData
+        };
+        let props2 = NavLinkProps {
+            to:       TestRoute::Home,
+            children: Default::default(),
+            _marker:  PhantomData
+        };
+        assert_eq!(props1, props2);
+    }
+
+    #[wasm_bindgen_test]
+    fn nav_link_props_different_routes() {
+        let props1 = NavLinkProps {
+            to:       TestRoute::Home,
+            children: Default::default(),
+            _marker:  PhantomData
+        };
+        let props2 = NavLinkProps {
+            to:       TestRoute::About,
+            children: Default::default(),
+            _marker:  PhantomData
+        };
+        assert_ne!(props1, props2);
     }
 }
