@@ -13,10 +13,12 @@ Branch name = issue number only.
 ### 2. Commit format
 
 ```bash
-git commit -m "#123 add custom class support"
+git commit -m "#123 feat: add custom class support"
 ```
 
-Format: `#<issue> <description>`
+Format: `#<issue> <type>: <description>`
+
+Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`
 
 ### 3. Create PR
 
