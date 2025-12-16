@@ -21,6 +21,7 @@ Navigation link component for [Yew](https://yew.rs) with automatic active state 
 - [Overview](#overview)
 - [Installation](#installation)
 - [Requirements](#requirements)
+- [Examples](#examples)
 - [Usage](#usage)
   - [Component Syntax](#component-syntax)
   - [Function Syntax](#function-syntax)
@@ -52,6 +53,28 @@ yew-nav-link = "0.3"
 |------------|---------|
 | yew | 0.22+ |
 | yew-router | 0.19+ |
+
+<div align="right"><a href="#top">↑ top</a></div>
+
+## Examples
+
+Full working examples are available in the [examples/](https://github.com/RAprogramm/yew-nav-link/tree/main/examples) directory:
+
+| Example | Description |
+|---------|-------------|
+| [basic](https://github.com/RAprogramm/yew-nav-link/tree/main/examples/basic) | Simple navigation with Home, About, Contact pages |
+| [bootstrap](https://github.com/RAprogramm/yew-nav-link/tree/main/examples/bootstrap) | Integration with Bootstrap 5 navbar |
+| [tailwind](https://github.com/RAprogramm/yew-nav-link/tree/main/examples/tailwind) | Sidebar navigation styled with Tailwind CSS |
+| [nested-routes](https://github.com/RAprogramm/yew-nav-link/tree/main/examples/nested-routes) | Multi-level navigation with nested routing |
+
+### Running Examples
+
+```bash
+cd examples/basic
+trunk serve
+```
+
+Open http://localhost:8080 in your browser.
 
 <div align="right"><a href="#top">↑ top</a></div>
 

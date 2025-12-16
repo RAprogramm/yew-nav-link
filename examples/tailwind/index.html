@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>yew-nav-link + Tailwind CSS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link data-trunk rel="rust" data-wasm-opt="z" />
+    <style>
+        /* Style the nav-link and active classes using Tailwind */
+        .nav-link {
+            @apply px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition-colors;
+        }
+        .nav-link.active {
+            @apply bg-indigo-600 text-white font-medium;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+</body>
+</html>
