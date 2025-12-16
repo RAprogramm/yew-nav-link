@@ -103,7 +103,7 @@ jobs:
       - name: Run tests
         run: |
           cargo nextest run --workspace ${{ inputs.all-features && '--all-features' || '' }} \
-            --no-fail-fast --profile ci 2>&1 | tee test-output.txt
+            --no-fail-fast --profile ci --color=never 2>&1 | tee test-output.txt
 
       - name: Run doctests
         run: cargo test --doc --workspace ${{ inputs.all-features && '--all-features' || '' }}
