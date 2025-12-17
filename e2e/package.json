@@ -1,0 +1,21 @@
+{
+  "name": "yew-nav-link-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:basic": "playwright test tests/basic.spec.ts",
+    "test:nested": "playwright test tests/nested-routes.spec.ts",
+    "test:bootstrap": "playwright test tests/bootstrap.spec.ts",
+    "test:tailwind": "playwright test tests/tailwind.spec.ts",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}
