@@ -13,6 +13,8 @@ release:
   commanders:
     - RAprogramm
   script: |
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source $HOME/.cargo/env
     rustup toolchain install nightly
     rustup component add rustfmt --toolchain nightly
     sed -i "s/^version = .*/version = \"${tag}\"/" Cargo.toml
