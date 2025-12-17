@@ -13,6 +13,8 @@ Navigation link component for [Yew](https://yew.rs) with automatic active state 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE-MIT)
 [![REUSE](https://api.reuse.software/badge/github.com/RAprogramm/yew-nav-link)](https://api.reuse.software/info/github.com/RAprogramm/yew-nav-link)
 [![Codecov](https://codecov.io/gh/RAprogramm/yew-nav-link/branch/main/graph/badge.svg)](https://codecov.io/gh/RAprogramm/yew-nav-link)
+[![Hits-of-Code](https://hitsofcode.com/github/RAprogramm/yew-nav-link?branch=main&label=HoC&exclude=Cargo.lock,.gitignore,LICENSE,LICENSES,.reuse,)](https://hitsofcode.com/github/RAprogramm/yew-nav-link/view?branch=main&exclude=Cargo.lock,.gitignore,LICENSE,LICENSES,.reuse,.claude)
+[![Hits-of-Code](https://hitsofcode.com/github/RAprogramm/yew-nav-link?branch=main&label=HoC%20(src)&exclude=Cargo.lock,Cargo.toml,.gitignore,LICENSE,LICENSES,.reuse,.github,.hooks,.config,.claude,examples,README.md,CONTRIBUTING.md,CODE_OF_CONDUCT.md,SECURITY.md,Makefile.toml,REUSE.toml,.rustfmt.toml,.rultor.yml)](https://hitsofcode.com/github/RAprogramm/yew-nav-link/view?branch=main&exclude=Cargo.lock,Cargo.toml,.gitignore,LICENSE,LICENSES,.reuse,.github,.hooks,.config,.claude,examples,README.md,CONTRIBUTING.md,CODE_OF_CONDUCT.md,SECURITY.md,Makefile.toml,REUSE.toml,.rustfmt.toml,.rultor.yml)
 
 </div>
 
