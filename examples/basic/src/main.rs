@@ -3,7 +3,7 @@
 //! Run with: `trunk serve` from the examples/basic directory.
 
 use yew::prelude::*;
-use yew_nav_link::{NavLink, nav_link};
+use yew_nav_link::{Match, NavLink, nav_link};
 use yew_router::prelude::*;
 
 /// Application routes.
@@ -47,7 +47,7 @@ fn Navigation() -> Html {
                     <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
                 </li>
                 // Method 2: Function syntax (convenient for text-only links)
-                <li>{ nav_link(Route::Contact, "Contact") }</li>
+                <li>{ nav_link(Route::Contact, "Contact", Match::Exact) }</li>
             </ul>
         </nav>
     }

@@ -1,7 +1,7 @@
 //! # yew-nav-link
 //!
-//! A navigation link component for [Yew](https://yew.rs) applications with
-//! automatic active state detection based on the current route.
+//! Navigation link component for [Yew](https://yew.rs) with automatic active
+//! state detection.
 //!
 //! [![Crates.io](https://img.shields.io/crates/v/yew-nav-link)](https://crates.io/crates/yew-nav-link)
 //! [![Documentation](https://docs.rs/yew-nav-link/badge.svg)](https://docs.rs/yew-nav-link)
@@ -10,20 +10,17 @@
 //! ## Overview
 //!
 //! `yew-nav-link` provides a [`NavLink`] component that wraps Yew Router's
-//! `Link` component with automatic active state management. When the link's
-//! target route matches the current URL, an `active` CSS class is automatically
-//! applied.
+//! `Link` with automatic active state management. When the target route matches
+//! the current URL, an `active` CSS class is applied.
 //!
 //! ## Quick Start
 //!
-//! Add to your `Cargo.toml`:
-//!
 //! ```toml
 //! [dependencies]
-//! yew-nav-link = "0.3"
+//! yew-nav-link = "0.4"
 //! ```
 //!
-//! ## Usage
+//! ## Component Syntax
 //!
 //! ```rust
 //! use yew::prelude::*;
@@ -39,55 +36,76 @@
 //! }
 //!
 //! #[component]
-//! fn App() -> Html {
+//! fn Navigation() -> Html {
 //!     html! {
-//!         <BrowserRouter>
-//!             <nav>
-//!                 <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-//!                 <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
-//!             </nav>
-//!             <Switch<Route> render={switch} />
-//!         </BrowserRouter>
-//!     }
-//! }
-//!
-//! fn switch(route: Route) -> Html {
-//!     match route {
-//!         Route::Home => html! { <h1>{ "Home" }</h1> },
-//!         Route::About => html! { <h1>{ "About" }</h1> }
+//!         <nav>
+//!             <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+//!             <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
+//!         </nav>
 //!     }
 //! }
 //! ```
 //!
-//! ## Helper Function
+//! ## Function Syntax
 //!
-//! For text-only links, use the [`nav_link`] helper function:
+//! For text-only links, use [`nav_link`] with explicit [`Match`] mode:
 //!
 //! ```rust
 //! use yew::prelude::*;
-//! use yew_nav_link::nav_link;
+//! use yew_nav_link::{Match, nav_link};
 //! use yew_router::prelude::*;
 //!
 //! # #[derive(Clone, PartialEq, Debug, Routable)]
 //! # enum Route {
 //! #     #[at("/")]
 //! #     Home,
+//! #     #[at("/docs")]
+//! #     Docs,
 //! # }
 //! #[component]
 //! fn Menu() -> Html {
 //!     html! {
-//!         <ul class="nav">
-//!             <li>{ nav_link(Route::Home, "Home") }</li>
-//!         </ul>
+//!         <nav>
+//!             { nav_link(Route::Home, "Home", Match::Exact) }
+//!             { nav_link(Route::Docs, "Docs", Match::Partial) }
+//!         </nav>
+//!     }
+//! }
+//! ```
+//!
+//! ## Partial Matching
+//!
+//! Use `partial` prop to keep parent links active on nested routes:
+//!
+//! ```rust
+//! use yew::prelude::*;
+//! use yew_nav_link::NavLink;
+//! use yew_router::prelude::*;
+//!
+//! # #[derive(Clone, PartialEq, Debug, Routable)]
+//! # enum Route {
+//! #     #[at("/docs")]
+//! #     Docs,
+//! #     #[at("/docs/api")]
+//! #     DocsApi,
+//! # }
+//! #[component]
+//! fn Navigation() -> Html {
+//!     html! {
+//!         <nav>
+//!             // Active on /docs, /docs/api, /docs/*
+//!             <NavLink<Route> to={Route::Docs} partial=true>{ "Docs" }</NavLink<Route>>
+//!         </nav>
 //!     }
 //! }
 //! ```
 //!
 //! ## CSS Classes
 //!
-//! The rendered `<a>` element receives:
-//! - `nav-link` - always applied
-//! - `active` - applied when route matches current URL
+//! | Class | Condition |
+//! |-------|-----------|
+//! | `nav-link` | Always |
+//! | `active` | Route matches |
 //!
 //! Compatible with Bootstrap, Tailwind, and other CSS frameworks.
 //!
@@ -95,11 +113,7 @@
 //!
 //! - Yew 0.22+
 //! - yew-router 0.19+
-//!
-//! ## License
-//!
-//! Licensed under the MIT License. See [LICENSE-MIT](LICENSE-MIT) for details.
 
 mod nav_link;
 
-pub use nav_link::{NavLink, NavLinkProps, nav_link};
+pub use nav_link::{Match, NavLink, NavLinkProps, nav_link};
