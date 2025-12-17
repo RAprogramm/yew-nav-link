@@ -50,6 +50,10 @@ test.describe("Nested Routes Example", () => {
       await expect(nestedRoutes.subNavLink("Overview")).not.toHaveClass(
         /active/
       );
+      // Main nav Documentation stays active due to partial matching
+      await expect(nestedRoutes.mainNavLink("Documentation")).toHaveClass(
+        /active/
+      );
       await expect(nestedRoutes.heading()).toHaveText("Getting Started");
     });
 
@@ -125,6 +129,10 @@ test.describe("Nested Routes Example", () => {
   test("direct URL to nested route works", async ({ nestedRoutes }) => {
     await nestedRoutes.goto("/docs/api");
 
+    // Main nav stays active due to partial matching
+    await expect(nestedRoutes.mainNavLink("Documentation")).toHaveClass(
+      /active/
+    );
     await expect(nestedRoutes.subNavLink("API Reference")).toHaveClass(/active/);
     await expect(nestedRoutes.heading()).toHaveText("API Reference");
   });

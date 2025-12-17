@@ -1,6 +1,6 @@
 [package]
 name = "yew-nav-link"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["RAprogramm <andrey.rozanov.vl@gmail.com>"]
 edition = "2024"
 rust-version = "1.91.0"

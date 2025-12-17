@@ -27,6 +27,7 @@ Navigation link component for [Yew](https://yew.rs) with automatic active state 
 - [Usage](#usage)
   - [Component Syntax](#component-syntax)
   - [Function Syntax](#function-syntax)
+  - [Partial Matching](#partial-matching)
 - [CSS Classes](#css-classes)
   - [Bootstrap Integration](#bootstrap-integration)
   - [Tailwind CSS](#tailwind-css)
@@ -38,16 +39,16 @@ Navigation link component for [Yew](https://yew.rs) with automatic active state 
 
 `yew-nav-link` provides a `NavLink` component that wraps Yew Router's `Link` with automatic active state management. When the target route matches the current URL, an `active` CSS class is applied automatically.
 
-<div align="right"><a href="#top">↑ top</a></div>
+<div align="right"><a href="#top">^ top</a></div>
 
 ## Installation
 
 ```toml
 [dependencies]
-yew-nav-link = "0.3"
+yew-nav-link = "0.4"
 ```
 
-<div align="right"><a href="#top">↑ top</a></div>
+<div align="right"><a href="#top">^ top</a></div>
 
 ## Requirements
 
@@ -56,7 +57,7 @@ yew-nav-link = "0.3"
 | yew | 0.22+ |
 | yew-router | 0.19+ |
 
-<div align="right"><a href="#top">↑ top</a></div>
+<div align="right"><a href="#top">^ top</a></div>
 
 ## Examples
 
@@ -67,7 +68,7 @@ Full working examples are available in the [examples/](https://github.com/RAprog
 | [basic](https://github.com/RAprogramm/yew-nav-link/tree/main/examples/basic) | Simple navigation with Home, About, Contact pages |
 | [bootstrap](https://github.com/RAprogramm/yew-nav-link/tree/main/examples/bootstrap) | Integration with Bootstrap 5 navbar |
 | [tailwind](https://github.com/RAprogramm/yew-nav-link/tree/main/examples/tailwind) | Sidebar navigation styled with Tailwind CSS |
-| [nested-routes](https://github.com/RAprogramm/yew-nav-link/tree/main/examples/nested-routes) | Multi-level navigation with nested routing |
+| [nested-routes](https://github.com/RAprogramm/yew-nav-link/tree/main/examples/nested-routes) | Multi-level navigation with partial matching |
 
 ### Running Examples
 
@@ -83,7 +84,7 @@ trunk serve
 
 Open http://127.0.0.1:8080 in your browser.
 
-<div align="right"><a href="#top">↑ top</a></div>
+<div align="right"><a href="#top">^ top</a></div>
 
 ## Usage
 
@@ -103,18 +104,6 @@ enum Route {
 }
 
 #[component]
-fn App() -> Html {
-    html! {
-        <BrowserRouter>
-            <Navigation />
-            <main>
-                <Switch<Route> render={switch} />
-            </main>
-        </BrowserRouter>
-    }
-}
-
-#[component]
 fn Navigation() -> Html {
     html! {
         <nav>
@@ -123,44 +112,65 @@ fn Navigation() -> Html {
         </nav>
     }
 }
-
-fn switch(route: Route) -> Html {
-    match route {
-        Route::Home => html! { <h1>{ "Home" }</h1> },
-        Route::About => html! { <h1>{ "About" }</h1> },
-    }
-}
 ```
 
 ### Function Syntax
 
-For text-only links, use the `nav_link` helper:
+For text-only links, use `nav_link` with explicit `Match` mode:
 
 ```rust
 use yew::prelude::*;
-use yew_nav_link::nav_link;
+use yew_nav_link::{nav_link, Match};
 use yew_router::prelude::*;
 
 #[derive(Clone, PartialEq, Routable)]
 enum Route {
     #[at("/")]
     Home,
-    #[at("/about")]
-    About,
+    #[at("/docs")]
+    Docs,
 }
 
 #[component]
 fn Menu() -> Html {
     html! {
-        <ul class="nav">
-            <li>{ nav_link(Route::Home, "Home") }</li>
-            <li>{ nav_link(Route::About, "About") }</li>
-        </ul>
+        <nav>
+            { nav_link(Route::Home, "Home", Match::Exact) }
+            { nav_link(Route::Docs, "Docs", Match::Partial) }
+        </nav>
     }
 }
 ```
 
-<div align="right"><a href="#top">↑ top</a></div>
+### Partial Matching
+
+Use `partial` prop to keep parent links active on nested routes:
+
+```rust
+use yew::prelude::*;
+use yew_nav_link::NavLink;
+use yew_router::prelude::*;
+
+#[derive(Clone, PartialEq, Routable)]
+enum Route {
+    #[at("/docs")]
+    Docs,
+    #[at("/docs/api")]
+    DocsApi,
+}
+
+#[component]
+fn Navigation() -> Html {
+    html! {
+        <nav>
+            // Active on /docs, /docs/api, /docs/*
+            <NavLink<Route> to={Route::Docs} partial=true>{ "Docs" }</NavLink<Route>>
+        </nav>
+    }
+}
+```
+
+<div align="right"><a href="#top">^ top</a></div>
 
 ## CSS Classes
 
@@ -193,26 +203,34 @@ The component applies these classes to the rendered `<a>` element:
 }
 ```
 
-<div align="right"><a href="#top">↑ top</a></div>
+<div align="right"><a href="#top">^ top</a></div>
 
 ## API Reference
 
 ### `NavLink<R>` Component
 
-| Prop | Type | Description |
-|------|------|-------------|
-| `to` | `R: Routable` | Target route |
-| `children` | `Children` | Link content |
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `to` | `R: Routable` | required | Target route |
+| `children` | `Children` | required | Link content |
+| `partial` | `bool` | `false` | Enable prefix matching |
+
+### `Match` Enum
+
+| Variant | Description |
+|---------|-------------|
+| `Match::Exact` | Active only on exact path match |
+| `Match::Partial` | Active when current path starts with target |
 
 ### `nav_link<R>` Function
 
 ```rust
-fn nav_link<R: Routable>(to: R, children: &str) -> Html
+fn nav_link<R: Routable>(to: R, children: &str, match_mode: Match) -> Html
 ```
 
-Creates a `NavLink` with text content.
+Creates a `NavLink` with text content and specified match mode.
 
-<div align="right"><a href="#top">↑ top</a></div>
+<div align="right"><a href="#top">^ top</a></div>
 
 <details>
 <summary><h2>Coverage</h2></summary>
@@ -249,7 +267,7 @@ The top section represents the entire project. Proceeding with folders and final
   </a>
 </p>
 
-<div align="right"><a href="#top">↑ top</a></div>
+<div align="right"><a href="#top">^ top</a></div>
 
 </details>
 
@@ -257,4 +275,4 @@ The top section represents the entire project. Proceeding with folders and final
 
 Licensed under the [MIT License](LICENSE-MIT).
 
-<div align="right"><a href="#top">↑ top</a></div>
+<div align="right"><a href="#top">^ top</a></div>

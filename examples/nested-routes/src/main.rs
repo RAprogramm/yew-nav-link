@@ -67,14 +67,15 @@ fn App() -> Html {
 }
 
 /// Main navigation bar.
+/// Uses `partial=true` so section links stay active on nested routes.
 #[component]
 fn MainNav() -> Html {
     html! {
         <nav class="main-nav">
             <ul>
                 <li><NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>></li>
-                <li><NavLink<Route> to={Route::DocsRoot}>{ "Documentation" }</NavLink<Route>></li>
-                <li><NavLink<Route> to={Route::BlogRoot}>{ "Blog" }</NavLink<Route>></li>
+                <li><NavLink<Route> to={Route::DocsRoot} partial=true>{ "Documentation" }</NavLink<Route>></li>
+                <li><NavLink<Route> to={Route::BlogRoot} partial=true>{ "Blog" }</NavLink<Route>></li>
             </ul>
         </nav>
     }
