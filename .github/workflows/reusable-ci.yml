@@ -211,7 +211,7 @@ jobs:
           cargo llvm-cov report --html --output-dir coverage-html
 
       - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-report
           path: coverage-html/
@@ -257,7 +257,7 @@ jobs:
         run: cargo package --locked
 
       - name: Upload package artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: crate-package
           path: target/package/*.crate
