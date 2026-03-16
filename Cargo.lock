@@ -1062,31 +1062,6 @@ dependencies = [
 
 [[package]]
 name = "yew"
-version = "0.22.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94b446be974884d87d58548f1662bc50c051996203a17d2558f8d6c56942b6ac"
-dependencies = [
- "console_error_panic_hook",
- "futures",
- "gloo",
- "implicit-clone",
- "indexmap",
- "js-sys",
- "rustversion",
- "serde",
- "slab",
- "thiserror 2.0.17",
- "tokio",
- "tokise",
- "tracing",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
- "yew-macro 0.22.1",
-]
-
-[[package]]
-name = "yew"
 version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2c154fadfa97eabdd3f3b79345ceeb9c05ee8f13f76d3d881d17fba618bf558d"
@@ -1107,21 +1082,7 @@ dependencies = [
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
- "yew-macro 0.23.0",
-]
-
-[[package]]
-name = "yew-macro"
-version = "0.22.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a708a4027c143be6ca160a341700b59f9ecc36a7ebd95e3c477018de8cf71c75"
-dependencies = [
- "prettyplease",
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "rustversion",
- "syn 2.0.111",
+ "yew-macro",
 ]
 
 [[package]]
@@ -1143,7 +1104,7 @@ name = "yew-nav-link"
 version = "0.4.0"
 dependencies = [
  "wasm-bindgen-test",
- "yew 0.22.1",
+ "yew",
  "yew-router",
 ]
 
@@ -1162,7 +1123,7 @@ dependencies = [
  "urlencoding",
  "wasm-bindgen",
  "web-sys",
- "yew 0.23.0",
+ "yew",
  "yew-router-macro",
 ]
 

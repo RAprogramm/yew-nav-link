@@ -15,7 +15,7 @@ categories = ["gui", "wasm", "web-programming"]
 exclude = ["examples/*"]
 
 [dependencies]
-yew = { version = "0.22", features = ["csr"] }
+yew = { version = "0.23", features = ["csr"] }
 yew-router = "0.20"
 
 [dev-dependencies]
