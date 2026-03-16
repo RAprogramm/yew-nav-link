@@ -16,7 +16,7 @@ exclude = ["examples/*"]
 
 [dependencies]
 yew = { version = "0.22", features = ["csr"] }
-yew-router = "0.19"
+yew-router = "0.20"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"
