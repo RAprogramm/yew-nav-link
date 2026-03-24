@@ -1096,6 +1096,9 @@ dependencies = [
 name = "yew-nav-link"
 version = "0.4.1"
 dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.117",
  "wasm-bindgen-test",
  "yew",
  "yew-router",
