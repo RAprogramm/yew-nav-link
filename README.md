@@ -45,7 +45,7 @@ Navigation link component for [Yew](https://yew.rs) with automatic active state 
 
 ```toml
 [dependencies]
-yew-nav-link = "0.4"
+yew-nav-link = "0.4.1"
 ```
 
 <div align="right"><a href="#top">^ top</a></div>
@@ -54,8 +54,8 @@ yew-nav-link = "0.4"
 
 | Dependency | Version |
 |------------|---------|
-| yew | 0.22+ |
-| yew-router | 0.19+ |
+| yew | 0.23+ |
+| yew-router | 0.20+ |
 
 <div align="right"><a href="#top">^ top</a></div>
 

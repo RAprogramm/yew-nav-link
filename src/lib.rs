@@ -17,7 +17,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! yew-nav-link = "0.4"
+//! yew-nav-link = "0.4.1"
 //! ```
 //!
 //! ## Component Syntax
@@ -111,9 +111,9 @@
 //!
 //! ## Requirements
 //!
-//! - Yew 0.22+
-//! - yew-router 0.19+
+//! - Yew 0.23+
+//! - yew-router 0.20+
 
 mod nav_link;
 
-pub use nav_link::{Match, NavLink, NavLinkProps, nav_link};
+pub use nav_link::{nav_link, Match, NavLink, NavLinkProps};
