@@ -16,7 +16,7 @@ pub struct NavDropdownProps {
     pub id: Option<&'static str>,
 
     #[prop_or_default]
-    pub children: Children,
+    pub children: Children
 }
 
 #[function_component]
@@ -50,7 +50,7 @@ pub struct NavDropdownItemProps {
     #[prop_or_default]
     pub disabled: bool,
 
-    pub children: Children,
+    pub children: Children
 }
 
 #[function_component]
@@ -74,7 +74,7 @@ pub fn NavDropdownItem(props: &NavDropdownItemProps) -> Html {
 #[derive(Properties, Clone, PartialEq, Debug)]
 pub struct NavDropdownDividerProps {
     #[prop_or_default]
-    pub classes: Classes,
+    pub classes: Classes
 }
 
 #[function_component]
@@ -94,10 +94,10 @@ mod tests {
     #[test]
     fn nav_dropdown_props_default() {
         let props = NavDropdownProps {
-            classes: Classes::default(),
+            classes:     Classes::default(),
             toggle_text: "Menu",
-            id: None,
-            children: Children::new(vec![]),
+            id:          None,
+            children:    Children::new(vec![])
         };
 
         assert_eq!(props.toggle_text, "Menu");
@@ -107,9 +107,9 @@ mod tests {
     #[test]
     fn nav_dropdown_item_default() {
         let props = NavDropdownItemProps {
-            classes: Classes::default(),
+            classes:  Classes::default(),
             disabled: false,
-            children: Children::new(vec![]),
+            children: Children::new(vec![])
         };
 
         assert!(!props.disabled);
@@ -118,9 +118,9 @@ mod tests {
     #[test]
     fn nav_dropdown_item_disabled() {
         let props = NavDropdownItemProps {
-            classes: Classes::default(),
+            classes:  Classes::default(),
             disabled: true,
-            children: Children::new(vec![]),
+            children: Children::new(vec![])
         };
 
         assert!(props.disabled);
@@ -129,7 +129,7 @@ mod tests {
     #[test]
     fn nav_dropdown_divider_props() {
         let props = NavDropdownDividerProps {
-            classes: Classes::default(),
+            classes: Classes::default()
         };
 
         assert!(props.classes.is_empty());

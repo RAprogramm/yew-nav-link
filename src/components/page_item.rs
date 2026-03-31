@@ -16,7 +16,7 @@ pub struct PageItemProps {
     pub disabled: bool,
 
     #[prop_or_default]
-    pub children: Children,
+    pub children: Children
 }
 
 #[function_component]
@@ -48,11 +48,11 @@ mod tests {
     #[test]
     fn page_item_props() {
         let props = PageItemProps {
-            classes: Classes::default(),
-            page: 1,
-            active: false,
+            classes:  Classes::default(),
+            page:     1,
+            active:   false,
             disabled: false,
-            children: Children::new(vec![]),
+            children: Children::new(vec![])
         };
 
         assert_eq!(props.page, 1);

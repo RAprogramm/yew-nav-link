@@ -6,7 +6,7 @@ use super::codec::{urlencoding_decode, urlencoding_encode};
 
 #[derive(Clone, Debug, Default)]
 pub struct QueryParams {
-    params: HashMap<String, String>,
+    params: HashMap<String, String>
 }
 
 impl QueryParams {
@@ -27,13 +27,15 @@ impl QueryParams {
                 if !key.is_empty() {
                     params.insert(
                         urlencoding_decode(key).unwrap_or_else(|| key.to_string()),
-                        value.unwrap_or_default(),
+                        value.unwrap_or_default()
                     );
                 }
             }
         }
 
-        Self { params }
+        Self {
+            params
+        }
     }
 
     pub fn get(&self, key: &str) -> Option<&str> {

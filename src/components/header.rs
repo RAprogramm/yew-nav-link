@@ -11,7 +11,7 @@ pub struct NavHeaderProps {
     pub text: Option<&'static str>,
 
     #[prop_or_default]
-    pub children: Children,
+    pub children: Children
 }
 
 #[function_component]
@@ -41,9 +41,9 @@ mod tests {
     #[test]
     fn nav_header_props_with_text() {
         let props = NavHeaderProps {
-            classes: Classes::default(),
-            text: Some("Header"),
-            children: Children::new(vec![]),
+            classes:  Classes::default(),
+            text:     Some("Header"),
+            children: Children::new(vec![])
         };
 
         assert_eq!(props.text, Some("Header"));
@@ -52,9 +52,9 @@ mod tests {
     #[test]
     fn nav_header_clone() {
         let props1 = NavHeaderProps {
-            classes: Classes::default(),
-            text: Some("Header"),
-            children: Children::new(vec![]),
+            classes:  Classes::default(),
+            text:     Some("Header"),
+            children: Children::new(vec![])
         };
 
         let props2 = props1.clone();

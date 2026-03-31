@@ -2,15 +2,15 @@
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct KeyboardNavConfig {
-    pub wrap: bool,
-    pub vertical: bool,
+    pub wrap:     bool,
+    pub vertical: bool
 }
 
 impl KeyboardNavConfig {
     pub fn new() -> Self {
         Self {
-            wrap: true,
-            vertical: false,
+            wrap:     true,
+            vertical: false
         }
     }
 

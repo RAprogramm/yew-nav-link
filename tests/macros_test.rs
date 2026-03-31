@@ -1,7 +1,7 @@
 //! Integration tests for yew-nav-link macros
 
 use yew::prelude::*;
-use yew_nav_link::{nav_link, Match};
+use yew_nav_link::{Match, nav_link};
 use yew_router::prelude::Routable;
 
 #[derive(Clone, PartialEq, Routable)]
@@ -15,7 +15,7 @@ enum TestRoute {
     #[at("/docs/api")]
     DocsApi,
     #[at("/contact")]
-    Contact,
+    Contact
 }
 
 #[test]

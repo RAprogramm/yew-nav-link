@@ -16,7 +16,7 @@ pub struct NavIconProps {
     pub size: NavIconSize,
 
     #[prop_or_default]
-    pub children: Children,
+    pub children: Children
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -24,7 +24,7 @@ pub enum NavIconSize {
     Small,
     #[default]
     Medium,
-    Large,
+    Large
 }
 
 impl NavIconSize {
@@ -32,7 +32,7 @@ impl NavIconSize {
         match self {
             NavIconSize::Small => "nav-icon-sm",
             NavIconSize::Medium => "nav-icon-md",
-            NavIconSize::Large => "nav-icon-lg",
+            NavIconSize::Large => "nav-icon-lg"
         }
     }
 }
@@ -65,7 +65,7 @@ pub struct NavLinkWithIconProps {
 
     pub icon: NavIconSize,
 
-    pub children: Children,
+    pub children: Children
 }
 
 #[function_component]
@@ -87,10 +87,10 @@ mod tests {
     #[test]
     fn nav_icon_props_default() {
         let props = NavIconProps {
-            classes: Classes::default(),
-            name: None,
-            size: NavIconSize::default(),
-            children: Children::new(vec![]),
+            classes:  Classes::default(),
+            name:     None,
+            size:     NavIconSize::default(),
+            children: Children::new(vec![])
         };
 
         assert!(props.name.is_none());
@@ -100,10 +100,10 @@ mod tests {
     #[test]
     fn nav_icon_with_name() {
         let props = NavIconProps {
-            classes: Classes::default(),
-            name: Some("home"),
-            size: NavIconSize::Small,
-            children: Children::new(vec![]),
+            classes:  Classes::default(),
+            name:     Some("home"),
+            size:     NavIconSize::Small,
+            children: Children::new(vec![])
         };
 
         assert_eq!(props.name, Some("home"));

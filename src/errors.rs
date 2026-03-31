@@ -26,7 +26,7 @@
 pub enum NavError {
     RouteNotFound,
     InvalidRoute(String),
-    NavigationCancelled,
+    NavigationCancelled
 }
 
 impl NavError {

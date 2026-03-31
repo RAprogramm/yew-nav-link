@@ -16,7 +16,7 @@ pub struct NavTabsProps {
     #[prop_or_default]
     pub full_width: bool,
 
-    pub children: Children,
+    pub children: Children
 }
 
 #[function_component]
@@ -46,11 +46,11 @@ mod tests {
     #[test]
     fn nav_tabs_props_default() {
         let props = NavTabsProps {
-            classes: Classes::default(),
-            role: "tablist",
-            id: None,
+            classes:    Classes::default(),
+            role:       "tablist",
+            id:         None,
             full_width: false,
-            children: Children::new(vec![]),
+            children:   Children::new(vec![])
         };
 
         assert_eq!(props.role, "tablist");
@@ -60,11 +60,11 @@ mod tests {
     #[test]
     fn nav_tabs_full_width() {
         let props = NavTabsProps {
-            classes: Classes::default(),
-            role: "tablist",
-            id: Some("main-tabs"),
+            classes:    Classes::default(),
+            role:       "tablist",
+            id:         Some("main-tabs"),
             full_width: true,
-            children: Children::new(vec![]),
+            children:   Children::new(vec![])
         };
 
         assert!(props.full_width);

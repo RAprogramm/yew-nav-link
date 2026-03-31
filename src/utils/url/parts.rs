@@ -4,12 +4,12 @@ use super::query::QueryParams;
 
 #[derive(Clone, Debug, Default)]
 pub struct UrlParts {
-    pub scheme: Option<String>,
-    pub host: Option<String>,
-    pub port: Option<String>,
-    pub path: String,
-    pub query: Option<String>,
-    pub fragment: Option<String>,
+    pub scheme:   Option<String>,
+    pub host:     Option<String>,
+    pub port:     Option<String>,
+    pub path:     String,
+    pub query:    Option<String>,
+    pub fragment: Option<String>
 }
 
 impl UrlParts {

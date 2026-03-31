@@ -6,13 +6,13 @@
 //!
 //! ```rust
 //! use yew::prelude::*;
-//! use yew_nav_link::{NavList, NavItem, NavLink};
+//! use yew_nav_link::{NavItem, NavLink, NavList};
 //! use yew_router::prelude::*;
 //!
 //! #[derive(Clone, PartialEq, Routable)]
 //! enum Route {
 //!     #[at("/")]
-//!     Home,
+//!     Home
 //! }
 //!
 //! #[component]
@@ -44,7 +44,7 @@ pub struct NavItemProps {
     pub disabled: bool,
 
     #[prop_or_default]
-    pub children: Children,
+    pub children: Children
 }
 
 #[function_component]
@@ -75,9 +75,9 @@ mod tests {
     #[test]
     fn nav_item_props_default() {
         let props = NavItemProps {
-            classes: Classes::default(),
+            classes:  Classes::default(),
             disabled: false,
-            children: Children::new(vec![]),
+            children: Children::new(vec![])
         };
 
         assert!(props.classes.is_empty());
@@ -87,9 +87,9 @@ mod tests {
     #[test]
     fn nav_item_props_disabled() {
         let props = NavItemProps {
-            classes: Classes::default(),
+            classes:  Classes::default(),
             disabled: true,
-            children: Children::new(vec![]),
+            children: Children::new(vec![])
         };
 
         assert!(props.disabled);
@@ -98,9 +98,9 @@ mod tests {
     #[test]
     fn nav_item_props_with_class() {
         let props = NavItemProps {
-            classes: Classes::from("my-item"),
+            classes:  Classes::from("my-item"),
             disabled: false,
-            children: Children::new(vec![]),
+            children: Children::new(vec![])
         };
 
         assert!(props.classes.contains("my-item"));
@@ -109,9 +109,9 @@ mod tests {
     #[test]
     fn nav_item_props_clone() {
         let props1 = NavItemProps {
-            classes: Classes::from("test"),
+            classes:  Classes::from("test"),
             disabled: true,
-            children: Children::new(vec![]),
+            children: Children::new(vec![])
         };
 
         let props2 = props1.clone();
@@ -122,15 +122,15 @@ mod tests {
     #[test]
     fn nav_item_disabled_state() {
         let enabled = NavItemProps {
-            classes: Classes::default(),
+            classes:  Classes::default(),
             disabled: false,
-            children: Children::new(vec![]),
+            children: Children::new(vec![])
         };
 
         let disabled = NavItemProps {
-            classes: Classes::default(),
+            classes:  Classes::default(),
             disabled: true,
-            children: Children::new(vec![]),
+            children: Children::new(vec![])
         };
 
         assert_ne!(enabled, disabled);

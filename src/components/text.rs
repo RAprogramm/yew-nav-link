@@ -7,7 +7,7 @@ pub struct NavTextProps {
     #[prop_or_default]
     pub classes: Classes,
 
-    pub text: &'static str,
+    pub text: &'static str
 }
 
 #[function_component]
@@ -30,7 +30,7 @@ mod tests {
     fn nav_text_props() {
         let props = NavTextProps {
             classes: Classes::default(),
-            text: "Hello",
+            text:    "Hello"
         };
 
         assert_eq!(props.text, "Hello");
@@ -40,7 +40,7 @@ mod tests {
     fn nav_text_clone() {
         let props1 = NavTextProps {
             classes: Classes::from("custom"),
-            text: "Text",
+            text:    "Text"
         };
 
         let props2 = props1.clone();

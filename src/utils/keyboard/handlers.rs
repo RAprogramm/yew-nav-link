@@ -1,25 +1,24 @@
 //! Keyboard navigation handlers.
 
-use super::config::KeyboardNavConfig;
-use super::direction::KeyboardDirection;
+use super::{config::KeyboardNavConfig, direction::KeyboardDirection};
 
 pub fn handle_arrow_key(
     key: &str,
     current_index: usize,
     total_items: usize,
-    config: &KeyboardNavConfig,
+    config: &KeyboardNavConfig
 ) -> Option<usize> {
     let direction = if config.vertical {
         match key {
             "ArrowDown" => Some(KeyboardDirection::Forward),
             "ArrowUp" => Some(KeyboardDirection::Backward),
-            _ => None,
+            _ => None
         }
     } else {
         match key {
             "ArrowRight" => Some(KeyboardDirection::Forward),
             "ArrowLeft" => Some(KeyboardDirection::Backward),
-            _ => None,
+            _ => None
         }
     };
 
@@ -27,7 +26,7 @@ pub fn handle_arrow_key(
 
     let next = match direction {
         KeyboardDirection::Forward => current_index + 1,
-        KeyboardDirection::Backward => current_index.saturating_sub(1),
+        KeyboardDirection::Backward => current_index.saturating_sub(1)
     };
 
     if config.wrap {
@@ -45,7 +44,7 @@ pub fn handle_home_end(key: &str, _current_index: usize, total_items: usize) -> 
     match key {
         "Home" => Some(0),
         "End" => Some(total_items.saturating_sub(1)),
-        _ => None,
+        _ => None
     }
 }
 

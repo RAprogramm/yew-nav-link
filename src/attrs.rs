@@ -17,11 +17,11 @@ use yew::prelude::*;
 
 #[derive(Clone, Debug, Default)]
 pub struct NavLinkAttrs {
-    pub class: Classes,
-    pub id: Option<&'static str>,
+    pub class:        Classes,
+    pub id:           Option<&'static str>,
     pub aria_current: Option<&'static str>,
-    pub data_toggle: Option<&'static str>,
-    pub role: Option<&'static str>,
+    pub data_toggle:  Option<&'static str>,
+    pub role:         Option<&'static str>
 }
 
 impl NavLinkAttrs {
@@ -57,10 +57,10 @@ impl NavLinkAttrs {
 
 #[derive(Clone, Debug, Default)]
 pub struct NavItemAttrs {
-    pub class: Classes,
-    pub id: Option<&'static str>,
-    pub role: Option<&'static str>,
-    pub disabled: bool,
+    pub class:    Classes,
+    pub id:       Option<&'static str>,
+    pub role:     Option<&'static str>,
+    pub disabled: bool
 }
 
 impl NavItemAttrs {
@@ -91,9 +91,9 @@ impl NavItemAttrs {
 
 #[derive(Clone, Debug, Default)]
 pub struct NavListAttrs {
-    pub class: Classes,
-    pub id: Option<&'static str>,
-    pub aria_label: Option<&'static str>,
+    pub class:      Classes,
+    pub id:         Option<&'static str>,
+    pub aria_label: Option<&'static str>
 }
 
 impl NavListAttrs {
