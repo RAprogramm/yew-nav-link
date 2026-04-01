@@ -17,7 +17,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! yew-nav-link = "0.4.1"
+//! yew-nav-link = "0.6"
 //! ```
 //!
 //! ## Component Syntax
@@ -100,6 +100,16 @@
 //! }
 //! ```
 //!
+//! ## Optional Macros
+//!
+//! Enable the `macros` feature to use helper declarative macros without adding
+//! a separate crate:
+//!
+//! ```toml
+//! [dependencies]
+//! yew-nav-link = { version = "0.6", features = ["macros"] }
+//! ```
+//!
 //! ## CSS Classes
 //!
 //! | Class | Condition |
@@ -114,6 +124,9 @@
 //! - Yew 0.23+
 //! - yew-router 0.20+
 
+#[cfg(feature = "macros")]
+mod lib_macros;
+
 pub mod attrs;
 pub mod components;
 pub mod errors;
@@ -126,9 +139,9 @@ pub use attrs::{NavItemAttrs, NavLinkAttrs, NavListAttrs};
 pub use components::{NavBadge, NavBadgeProps, NavHeader, NavHeaderProps, NavText, NavTextProps};
 pub use errors::{NavError, NavResult};
 pub use hooks::{
-    BreadcrumbItem, use_breadcrumbs, use_is_active, use_is_exact_active, use_is_partial_active,
-    use_route_info
+    use_breadcrumbs, use_is_active, use_is_exact_active, use_is_partial_active, use_route_info,
+    BreadcrumbItem,
 };
 pub use nav::{NavDivider, NavDividerProps, NavItem, NavItemProps, NavList, NavListProps};
-pub use nav_link::{Match, NavLink, NavLinkProps, nav_link};
+pub use nav_link::{nav_link, Match, NavLink, NavLinkProps};
 pub use utils::{is_absolute, join_paths, normalize_path};

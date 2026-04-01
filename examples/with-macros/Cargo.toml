@@ -6,4 +6,4 @@ edition = "2024"
 [dependencies]
 yew = { version = "0.23", features = ["csr"] }
 yew-router = "0.20"
-yew-nav-link = { path = "../../" }
+yew-nav-link = { path = "../../", features = ["macros"] }

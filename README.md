@@ -23,6 +23,7 @@ Navigation link component for [Yew](https://yew.rs) with automatic active state 
 - [Overview](#overview)
 - [Installation](#installation)
 - [Requirements](#requirements)
+- [Optional Macros](#optional-macros)
 - [Examples](#examples)
 - [Usage](#usage)
   - [Component Syntax](#component-syntax)
@@ -45,7 +46,7 @@ Navigation link component for [Yew](https://yew.rs) with automatic active state 
 
 ```toml
 [dependencies]
-yew-nav-link = "0.4.1"
+yew-nav-link = "0.6"
 ```
 
 <div align="right"><a href="#top">^ top</a></div>
@@ -56,6 +57,19 @@ yew-nav-link = "0.4.1"
 |------------|---------|
 | yew | 0.23+ |
 | yew-router | 0.20+ |
+
+<div align="right"><a href="#top">^ top</a></div>
+
+## Optional Macros
+
+Macros are now provided directly by `yew-nav-link` through the `macros` feature:
+
+```toml
+[dependencies]
+yew-nav-link = { version = "0.6", features = ["macros"] }
+```
+
+Available macros include `nav_link!`, `routable_ext!`, and `nav_item!`.
 
 <div align="right"><a href="#top">^ top</a></div>
 

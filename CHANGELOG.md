@@ -27,6 +27,8 @@
 
 ### Features
 
+- add `macros` feature to expose `nav_link!`, `routable_ext!`, and `nav_item!` directly from `yew-nav-link`
+- remove separate macro crate manifests in favor of a single-crate feature flow
 - add navigation components, hooks and integration tests
 
 ## [0.4.0] - 2025-12-17
