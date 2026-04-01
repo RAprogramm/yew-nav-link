@@ -2,7 +2,7 @@
 name = "yew-nav-link-macros"
 version = "0.1.0"
 edition = "2024"
-rust-version = "1.85.0"
+rust-version = "1.94.1"
 description = "Procedural macros for yew-nav-link"
 license = "MIT"
 
