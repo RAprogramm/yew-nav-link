@@ -127,12 +127,25 @@
 #[cfg(feature = "macros")]
 mod lib_macros;
 
+/// HTML attribute builders for navigation components.
 pub mod attrs;
+
+/// Reusable navigation UI components (badges, dropdowns, tabs, pagination).
 pub mod components;
+
+/// Error types returned by navigation operations.
 pub mod errors;
+
+/// Reactive hooks for route and navigation state.
 pub mod hooks;
+
+/// Core navigation primitives (lists, items, dividers).
 pub mod nav;
+
+/// [`NavLink`] component and [`Match`] strategy for active state detection.
 pub mod nav_link;
+
+/// Path, URL, query string, and keyboard navigation utilities.
 pub mod utils;
 
 pub use attrs::{NavItemAttrs, NavLinkAttrs, NavListAttrs};

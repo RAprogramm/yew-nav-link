@@ -78,6 +78,9 @@ impl Parse for BreadcrumbsArgs {
     }
 }
 
+/// Creates breadcrumbs navigation from route-label pairs.
+///
+/// The last entry automatically receives `aria-current="page"`.
 #[proc_macro]
 pub fn breadcrumbs(input: TokenStream) -> TokenStream {
     let args = parse_macro_input!(input as BreadcrumbsArgs);

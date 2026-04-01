@@ -1,3 +1,8 @@
+//! Core navigation primitives.
+//!
+//! Provides semantic building blocks for navigation lists: items, lists,
+//! and dividers with proper ARIA attributes.
+
 mod divider;
 mod item;
 mod list;

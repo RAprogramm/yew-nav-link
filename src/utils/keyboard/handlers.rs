@@ -2,6 +2,17 @@
 
 use super::{config::KeyboardNavConfig, direction::KeyboardDirection};
 
+/// Computes the next index for an arrow key press.
+///
+/// Returns `None` if the key is not an arrow key, or if the boundary
+/// is reached and wrapping is disabled.
+///
+/// # Arguments
+///
+/// * `key` - The key name (`"ArrowUp"`, `"ArrowDown"`, `"ArrowLeft"`, `"ArrowRight"`).
+/// * `current_index` - The currently focused item index.
+/// * `total_items` - Total number of navigable items.
+/// * `config` - Navigation configuration (wrap, vertical).
 pub fn handle_arrow_key(
     key: &str,
     current_index: usize,
@@ -40,6 +51,9 @@ pub fn handle_arrow_key(
     }
 }
 
+/// Returns the target index for `Home` (first item) or `End` (last item) key presses.
+///
+/// Returns `None` for any other key.
 pub fn handle_home_end(key: &str, _current_index: usize, total_items: usize) -> Option<usize> {
     match key {
         "Home" => Some(0),
@@ -48,10 +62,12 @@ pub fn handle_home_end(key: &str, _current_index: usize, total_items: usize) -> 
     }
 }
 
+/// Returns `true` if the key activates a focused element (`Enter`, space).
 pub fn is_activation_key(key: &str) -> bool {
     matches!(key, "Enter" | " " | "Space")
 }
 
+/// Returns `true` if the key is a navigation key (arrows, Home, End, Tab).
 pub fn is_navigation_key(key: &str) -> bool {
     matches!(
         key,

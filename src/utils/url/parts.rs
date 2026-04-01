@@ -2,17 +2,28 @@
 
 use super::query::QueryParams;
 
+/// Parsed components of a URL.
 #[derive(Clone, Debug, Default)]
 pub struct UrlParts {
-    pub scheme:   Option<String>,
-    pub host:     Option<String>,
-    pub port:     Option<String>,
-    pub path:     String,
-    pub query:    Option<String>,
-    pub fragment: Option<String>
+    /// URL scheme (e.g. `"https"`).
+    pub scheme: Option<String>,
+    /// Host name (e.g. `"example.com"`).
+    pub host: Option<String>,
+    /// Port number as a string (e.g. `"8080"`).
+    pub port: Option<String>,
+    /// Path component (e.g. `"/api/v1"`).
+    pub path: String,
+    /// Raw query string without the leading `?`.
+    pub query: Option<String>,
+    /// Fragment identifier without the leading `#`.
+    pub fragment: Option<String>,
 }
 
 impl UrlParts {
+    /// Parses a URL string into its component parts.
+    ///
+    /// Supports both absolute URLs (`scheme://host/path`) and
+    /// path-only strings (`/path?query#fragment`).
     pub fn parse(url: &str) -> Self {
         let mut parts = Self::default();
 
@@ -56,6 +67,7 @@ impl UrlParts {
         parts
     }
 
+    /// Returns the query string parsed into [`QueryParams`], if present.
     pub fn query_params(&self) -> Option<QueryParams> {
         self.query.as_ref().map(|q| QueryParams::parse(q))
     }

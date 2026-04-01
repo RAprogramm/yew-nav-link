@@ -92,6 +92,10 @@ impl Parse for NavListArgs {
     }
 }
 
+/// Creates a navigation list with multiple nav items from route tuples.
+///
+/// Each entry is `(Route, "Label", MatchMode)`. An optional `disabled = vec![...]`
+/// argument controls which items are disabled.
 #[proc_macro]
 pub fn nav_list(input: TokenStream) -> TokenStream {
     let args = parse_macro_input!(input as NavListArgs);

@@ -1,7 +1,7 @@
-//! Navigation list container component.
+//! # NavList
 //!
-//! Provides a semantic `<ul>` wrapper for navigation links with proper
-//! ARIA attributes and class propagation.
+//! Semantic `<ul>` container for navigation items with `role="list"`
+//! and a configurable `aria-label`.
 //!
 //! # Example
 //!
@@ -10,18 +10,12 @@
 //! use yew_nav_link::{NavLink, NavList};
 //! use yew_router::prelude::*;
 //!
-//! #[derive(Clone, PartialEq, Routable)]
-//! enum Route {
-//!     #[at("/")]
-//!     Home,
-//!     #[at("/about")]
-//!     About
-//! }
-//!
+//! # #[derive(Clone, PartialEq, Routable)]
+//! # enum Route { #[at("/")] Home, #[at("/about")] About }
 //! #[component]
-//! fn Navigation() -> Html {
+//! fn Nav() -> Html {
 //!     html! {
-//!         <NavList>
+//!         <NavList aria_label="Main Navigation">
 //!             <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
 //!             <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
 //!         </NavList>
@@ -31,26 +25,54 @@
 //!
 //! # CSS Classes
 //!
-//! | Class | Description |
-//! |-------|-------------|
-//! | `nav-list` | Base class for the list container |
+//! | Class | Condition |
+//! |-------|-----------|
+//! | `nav-list` | Always applied |
+//!
+//! # Props
+//!
+//! | Prop | Type | Default | Description |
+//! |------|------|---------|-------------|
+//! | `aria_label` | `Option<&'static str>` | `"navigation"` | ARIA label |
+//! | `id` | `Option<&'static str>` | `None` | Element id |
+//! | `classes` | `Classes` | — | Additional CSS classes |
+//! | `children` | `Children` | — | Navigation items |
 
 use yew::prelude::*;
 
+/// Properties for the [`NavList`] component.
+///
+/// | Prop | Type | Default | Description |
+/// |------|------|---------|-------------|
+/// | `aria_label` | `Option<&'static str>` | `"navigation"` | ARIA label |
+/// | `id` | `Option<&'static str>` | `None` | Element id |
+/// | `classes` | `Classes` | — | Additional CSS classes |
+/// | `children` | `Children` | — | Navigation items |
 #[derive(Properties, Clone, PartialEq, Debug)]
 pub struct NavListProps {
+    /// Additional CSS classes applied to the list.
     #[prop_or_default]
     pub classes: Classes,
 
+    /// Optional `id` attribute for the list element.
     #[prop_or_default]
     pub id: Option<&'static str>,
 
+    /// `aria-label` for screen readers. Defaults to `"navigation"`.
     #[prop_or_default]
     pub aria_label: Option<&'static str>,
 
-    pub children: Children
+    /// Navigation items rendered inside the list.
+    pub children: Children,
 }
 
+/// Semantic `<ul>` container for navigation items.
+///
+/// Renders with `role="list"` and an `aria-label` for accessibility.
+///
+/// # CSS Classes
+///
+/// - `nav-list` - Always applied
 #[function_component]
 pub fn NavList(props: &NavListProps) -> Html {
     let mut classes = props.classes.clone();
@@ -77,10 +99,10 @@ mod tests {
     #[test]
     fn nav_list_props_default() {
         let props = NavListProps {
-            classes:    Classes::default(),
-            id:         None,
+            classes: Classes::default(),
+            id: None,
             aria_label: None,
-            children:   Children::new(vec![])
+            children: Children::new(vec![]),
         };
 
         assert!(props.classes.is_empty());
@@ -91,10 +113,10 @@ mod tests {
     #[test]
     fn nav_list_props_with_values() {
         let props = NavListProps {
-            classes:    Classes::from("custom-class"),
-            id:         Some("nav-id"),
+            classes: Classes::from("custom-class"),
+            id: Some("nav-id"),
             aria_label: Some("navigation"),
-            children:   Children::new(vec![])
+            children: Children::new(vec![]),
         };
 
         assert!(props.classes.contains("custom-class"));
@@ -105,10 +127,10 @@ mod tests {
     #[test]
     fn nav_list_props_clone() {
         let props1 = NavListProps {
-            classes:    Classes::from("test"),
-            id:         Some("id"),
+            classes: Classes::from("test"),
+            id: Some("id"),
             aria_label: Some("label"),
-            children:   Children::new(vec![])
+            children: Children::new(vec![]),
         };
 
         let props2 = props1.clone();

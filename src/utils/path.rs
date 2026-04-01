@@ -1,17 +1,29 @@
-//! Utility functions for navigation.
+//! # Path Utilities
 //!
-//! Provides helper functions for working with paths and URLs.
+//! Helper functions for working with URL paths: normalization,
+//! absolute path detection, and path joining.
 //!
 //! # Example
 //!
-//! ```ignore
-//! use yew_nav_link::normalize_path;
-//! use yew_nav_link::is_absolute;
+//! ```rust
+//! use yew_nav_link::{normalize_path, is_absolute, join_paths};
 //!
-//! let path = normalize_path("/docs//api/");
-//! assert_eq!(path, "/docs/api");
+//! assert_eq!(normalize_path("/docs//api/"), "/docs/api");
+//! assert!(is_absolute("/docs"));
+//! assert_eq!(join_paths("/base", "child"), "/base/child");
 //! ```
+//!
+//! # Functions
+//!
+//! | Function | Signature | Description |
+//! |----------|-----------|-------------|
+//! | `normalize_path` | `(path: &str) -> String` | Collapse double slashes, trim trailing `/` |
+//! | `is_absolute` | `(path: &str) -> bool` | Check if path starts with `/` |
+//! | `join_paths` | `(base: &str, path: &str) -> String` | Join or replace base path |
 
+/// Normalizes a path by collapsing duplicate slashes and removing trailing slashes.
+///
+/// Preserves the root `/` path.
 pub fn normalize_path(path: &str) -> String {
     let mut result = String::with_capacity(path.len());
     let mut prev_was_slash = false;
@@ -35,10 +47,15 @@ pub fn normalize_path(path: &str) -> String {
     result
 }
 
+/// Returns `true` if the path starts with `/` (i.e. is absolute).
 pub fn is_absolute(path: &str) -> bool {
     path.starts_with('/')
 }
 
+/// Joins a base path with a child path.
+///
+/// If `path` is absolute, it is returned (normalized) directly.
+/// Otherwise the two paths are concatenated and normalized.
 pub fn join_paths(base: &str, path: &str) -> String {
     if path.starts_with('/') {
         normalize_path(path)

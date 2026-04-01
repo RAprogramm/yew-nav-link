@@ -1,5 +1,9 @@
 //! URL encoding/decoding utilities.
 
+/// Decodes a percent-encoded string (e.g. `"%20"` becomes a space).
+///
+/// Also converts `+` to a space. Returns `None` only if the input is malformed
+/// in a way that prevents decoding (currently always returns `Some`).
 pub fn urlencoding_decode(input: &str) -> Option<String> {
     let mut result = String::with_capacity(input.len());
     let mut chars = input.chars().peekable();
@@ -28,6 +32,10 @@ pub fn urlencoding_decode(input: &str) -> Option<String> {
     Some(result)
 }
 
+/// Percent-encodes a string for safe use in URLs.
+///
+/// Unreserved characters (`a-z`, `A-Z`, `0-9`, `-`, `_`, `.`, `~`) are
+/// passed through unchanged. Spaces are encoded as `+`.
 pub fn urlencoding_encode(input: &str) -> String {
     let mut result = String::with_capacity(input.len() * 3);
 

@@ -1,0 +1,49 @@
+// ── Hero section ───────────────────────────────────────────────
+
+.hero {
+    text-align: center;
+    padding: 2.5rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+}
+
+.hero h1 {
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.hero p {
+    font-size: 1rem;
+    color: var(--text-dim);
+    max-width: 30rem;
+    margin: 0 auto 1.5rem;
+    line-height: 1.6;
+}
+
+.hero-badges {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+
+    &-accent { border-color: var(--accent); color: var(--accent); }
+    &-green  { border-color: var(--green);  color: var(--green); }
+    &-purple { border-color: var(--purple); color: var(--purple); }
+}

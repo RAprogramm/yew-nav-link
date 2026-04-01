@@ -1,3 +1,8 @@
+//! Navigation UI components.
+//!
+//! Provides a collection of reusable components for building navigation
+//! interfaces, including badges, dropdowns, tabs, pagination, and more.
+
 mod badge;
 mod dropdown;
 mod header;

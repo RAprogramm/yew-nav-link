@@ -89,6 +89,9 @@ impl Parse for NavTabsArgs {
     }
 }
 
+/// Creates a tabbed navigation interface from route-label pairs.
+///
+/// An optional `active = Route::Variant` selects the initially active tab.
 #[proc_macro]
 pub fn nav_tabs(input: TokenStream) -> TokenStream {
     let args = parse_macro_input!(input as NavTabsArgs);

@@ -1,6 +1,7 @@
-//! Navigation divider component.
+//! # NavDivider
 //!
-//! Provides a semantic separator for navigation lists.
+//! Semantic separator for dividing sections within a navigation list.
+//! Renders a `<li>` with `role="separator"` and an optional text label.
 //!
 //! # Example
 //!
@@ -9,25 +10,15 @@
 //! use yew_nav_link::{NavDivider, NavItem, NavLink, NavList};
 //! use yew_router::prelude::*;
 //!
-//! #[derive(Clone, PartialEq, Routable)]
-//! enum Route {
-//!     #[at("/")]
-//!     Home,
-//!     #[at("/about")]
-//!     About
-//! }
-//!
+//! # #[derive(Clone, PartialEq, Routable)]
+//! # enum Route { #[at("/")] Home, #[at("/about")] About }
 //! #[component]
-//! fn Navigation() -> Html {
+//! fn Nav() -> Html {
 //!     html! {
 //!         <NavList>
-//!             <NavItem>
-//!                 <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-//!             </NavItem>
+//!             <NavItem><NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>></NavItem>
 //!             <NavDivider />
-//!             <NavItem>
-//!                 <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
-//!             </NavItem>
+//!             <NavItem><NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>></NavItem>
 //!         </NavList>
 //!     }
 //! }
@@ -35,24 +26,53 @@
 //!
 //! # CSS Classes
 //!
-//! | Class | Description |
-//! |-------|-------------|
-//! | `nav-divider` | Base class for the divider |
+//! | Class | Condition |
+//! |-------|-----------|
+//! | `nav-divider` | Always applied |
+//! | `nav-divider-vertical` | Applied when `vertical` is `true` |
+//! | `nav-divider-text` | Inner text span when `text` is set |
+//!
+//! # Props
+//!
+//! | Prop | Type | Default | Description |
+//! |------|------|---------|-------------|
+//! | `text` | `Option<&'static str>` | `None` | Optional text label |
+//! | `vertical` | `bool` | `false` | Vertical divider style |
+//! | `classes` | `Classes` | — | Additional CSS classes |
 
 use yew::prelude::*;
 
+/// Properties for the [`NavDivider`] component.
+///
+/// | Prop | Type | Default | Description |
+/// |------|------|---------|-------------|
+/// | `text` | `Option<&'static str>` | `None` | Optional text label |
+/// | `vertical` | `bool` | `false` | Vertical divider style |
+/// | `classes` | `Classes` | — | Additional CSS classes |
 #[derive(Properties, Clone, PartialEq, Debug, Default)]
 pub struct NavDividerProps {
+    /// Additional CSS classes applied to the divider.
     #[prop_or_default]
     pub classes: Classes,
 
+    /// Whether to render a vertical divider instead of horizontal.
     #[prop_or_default]
     pub vertical: bool,
 
+    /// Optional text label displayed in the center of the divider.
     #[prop_or_default]
-    pub text: Option<&'static str>
+    pub text: Option<&'static str>,
 }
 
+/// Semantic separator for dividing sections within a navigation list.
+///
+/// Renders a `<li>` element with `role="separator"`.
+///
+/// # CSS Classes
+///
+/// - `nav-divider` - Always applied
+/// - `nav-divider-vertical` - Applied when `vertical` is `true`
+/// - `nav-divider-text` - Applied to inner text span when `text` is set
 #[function_component]
 pub fn NavDivider(props: &NavDividerProps) -> Html {
     let mut classes = props.classes.clone();
@@ -82,9 +102,9 @@ mod tests {
     #[test]
     fn nav_divider_props_default() {
         let props = NavDividerProps {
-            classes:  Classes::default(),
+            classes: Classes::default(),
             vertical: false,
-            text:     None
+            text: None,
         };
 
         assert!(!props.vertical);
@@ -94,9 +114,9 @@ mod tests {
     #[test]
     fn nav_divider_props_vertical() {
         let props = NavDividerProps {
-            classes:  Classes::default(),
+            classes: Classes::default(),
             vertical: true,
-            text:     None
+            text: None,
         };
 
         assert!(props.vertical);
@@ -105,9 +125,9 @@ mod tests {
     #[test]
     fn nav_divider_props_with_text() {
         let props = NavDividerProps {
-            classes:  Classes::default(),
+            classes: Classes::default(),
             vertical: false,
-            text:     Some("Or")
+            text: Some("Or"),
         };
 
         assert_eq!(props.text, Some("Or"));
@@ -116,9 +136,9 @@ mod tests {
     #[test]
     fn nav_divider_props_clone() {
         let props1 = NavDividerProps {
-            classes:  Classes::from("custom"),
+            classes: Classes::from("custom"),
             vertical: true,
-            text:     Some("Divider")
+            text: Some("Divider"),
         };
 
         let props2 = props1.clone();

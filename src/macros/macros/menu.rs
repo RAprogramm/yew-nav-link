@@ -144,6 +144,9 @@ fn generate_menu_html(entries: &[MenuEntry]) -> proc_macro2::TokenStream {
     quote! { #(#items)* }
 }
 
+/// Creates a nested navigation menu from a hierarchical structure.
+///
+/// Supports one level of nesting by appending `{ ... }` after a menu group entry.
 #[proc_macro]
 pub fn nav_menu(input: TokenStream) -> TokenStream {
     let args = parse_macro_input!(input as NavMenuArgs);

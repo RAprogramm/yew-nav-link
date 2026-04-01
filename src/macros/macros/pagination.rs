@@ -80,6 +80,10 @@ impl Parse for PaginationConfig {
     }
 }
 
+/// Creates a pagination component with configurable options.
+///
+/// Supports `current_page`, `total_pages`, `siblings`, `show_first_last`,
+/// `show_prev_next`, and `on_page_change` properties.
 #[proc_macro]
 pub fn nav_pagination(input: TokenStream) -> TokenStream {
     let config = parse_macro_input!(input as PaginationConfig);

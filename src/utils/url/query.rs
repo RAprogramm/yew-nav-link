@@ -5,16 +5,22 @@ use std::fmt;
 
 use super::codec::{urlencoding_decode, urlencoding_encode};
 
+/// A collection of URL query parameters with get, set, and serialization support.
+///
+/// Keys and values are automatically percent-decoded on parse and
+/// percent-encoded on serialization.
 #[derive(Clone, Debug, Default)]
 pub struct QueryParams {
     params: HashMap<String, String>,
 }
 
 impl QueryParams {
+    /// Creates an empty [`QueryParams`].
     pub fn new() -> Self {
         Self::default()
     }
 
+    /// Parses a query string (with or without a leading `?`) into parameters.
     pub fn parse(query: &str) -> Self {
         let query = query.trim_start_matches('?');
         let mut params = HashMap::new();
@@ -37,22 +43,29 @@ impl QueryParams {
         Self { params }
     }
 
+    /// Returns the value for the given key, if present.
     pub fn get(&self, key: &str) -> Option<&str> {
         self.params.get(key).map(|s| s.as_str())
     }
 
+    /// Returns `true` if the given key exists in the parameters.
     pub fn has(&self, key: &str) -> bool {
         self.params.contains_key(key)
     }
 
+    /// Inserts or replaces a key-value pair.
     pub fn set(&mut self, key: &str, value: &str) {
         self.params.insert(key.to_string(), value.to_string());
     }
 
+    /// Removes a key and its value, if present.
     pub fn remove(&mut self, key: &str) {
         self.params.remove(key);
     }
 
+    /// Serializes the parameters to a query string starting with `?`.
+    ///
+    /// Returns an empty string if there are no parameters.
     pub fn to_query_string(&self) -> String {
         if self.params.is_empty() {
             return String::new();
@@ -67,18 +80,22 @@ impl QueryParams {
         format!("?{}", pairs.join("&"))
     }
 
+    /// Returns the number of parameters.
     pub fn len(&self) -> usize {
         self.params.len()
     }
 
+    /// Returns `true` if there are no parameters.
     pub fn is_empty(&self) -> bool {
         self.params.is_empty()
     }
 
+    /// Returns an iterator over parameter keys.
     pub fn keys(&self) -> impl Iterator<Item = &str> {
         self.params.keys().map(|s| s.as_str())
     }
 
+    /// Returns an iterator over parameter values.
     pub fn values(&self) -> impl Iterator<Item = &str> {
         self.params.values().map(|s| s.as_str())
     }
