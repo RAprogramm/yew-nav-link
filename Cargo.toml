@@ -1,6 +1,6 @@
 [package]
 name = "yew-nav-link"
-version = "0.5.0"
+version = "0.6.0"
 authors = ["RAprogramm <andrey.rozanov.vl@gmail.com>"]
 edition = "2024"
 rust-version = "1.94.1"
@@ -14,12 +14,13 @@ keywords = ["yew", "router", "navigation", "wasm", "frontend"]
 categories = ["gui", "wasm", "web-programming"]
 exclude = ["examples/*"]
 
+[features]
+default = []
+macros = []
+
 [dependencies]
 yew = { version = "0.23", features = ["csr"] }
 yew-router = "0.20"
-quote = "1.0"
-syn = { version = "2.0", features = ["full"] }
-proc-macro2 = "1.0"
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"
