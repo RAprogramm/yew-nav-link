@@ -1,33 +1,22 @@
+use crate::demo_popup::DemoBox;
+use crate::doc_parser::{parse_doc_block, DocRenderer};
 use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::{nav_link, Match, NavLink};
 
-fn code_block(lines: &[&str]) -> Html {
-    html! {
-        <pre><code>
-            { for lines.iter().map(|l| html! { <>{ l }{"\n"}</> }) }
-        </code></pre>
-    }
-}
+const NAV_LINK_SRC: &str = include_str!("../../../../src/nav_link.rs");
 
 #[function_component]
 pub fn NavLinkDoc() -> Html {
+    let doc = parse_doc_block(NAV_LINK_SRC);
+
     html! {
         <div>
-            <div class="card">
-                <h2>{ "NavLink" }</h2>
-                <p>
-                    { "Wraps " }<code>{ "yew-router" }</code>{ " Link with automatic " }
-                    <code>{ "active" }</code>{ " CSS class when the route matches." }
-                </p>
-            </div>
+            <DocRenderer {doc} />
 
             <div class="card">
-                <h3>{ "Component Syntax — Exact Match" }</h3>
-                <p>{ "NavLink adds the active class when the current route matches exactly:" }</p>
-
-                <div class="demo">
-                    <div class="demo-label">{ "Live Demo" }</div>
+                <h3>{ "Live Demo — Exact Match" }</h3>
+                <DemoBox>
                     <nav>
                         <ul class="nav-list">
                             <li class="nav-item">
@@ -41,30 +30,12 @@ pub fn NavLinkDoc() -> Html {
                             </li>
                         </ul>
                     </nav>
-                </div>
-
-                { code_block(&[
-                    "use yew_nav_link::NavLink;",
-                    "use yew_router::prelude::*;",
-                    "",
-                    "html! {",
-                    "    <nav>",
-                    "        <NavLink<Route> to={Route::Home}>",
-                    "            { \"Home\" }",
-                    "        </NavLink<Route>>",
-                    "    </nav>",
-                    "}",
-                ]) }
+                </DemoBox>
             </div>
 
             <div class="card">
-                <h3>{ "Partial Matching" }</h3>
-                <p>
-                    { "Use " }<code>{ "partial=true" }</code>{ " to keep parent links active on nested routes." }
-                </p>
-
-                <div class="demo">
-                    <div class="demo-label">{ "Live Demo" }</div>
+                <h3>{ "Live Demo — Partial Match" }</h3>
+                <DemoBox>
                     <nav>
                         <ul class="nav-list">
                             <li class="nav-item">
@@ -74,60 +45,19 @@ pub fn NavLinkDoc() -> Html {
                             </li>
                         </ul>
                     </nav>
-                </div>
-
-                { code_block(&[
-                    "<NavLink<Route> to={Route::Docs} partial=true>",
-                    "    { \"Docs\" }",
-                    "</NavLink<Route>>",
-                    "",
-                    "// Active on /docs, /docs/api, /docs/guide, ...",
-                ]) }
+                </DemoBox>
             </div>
 
             <div class="card">
-                <h3>{ "Function Syntax — nav_link()" }</h3>
-                <p>
-                    { "For text-only links, use " }<code>{ "nav_link()" }</code>{ " with " }
-                    <code>{ "Match" }</code>{ " mode:" }
-                </p>
-
-                <div class="demo">
-                    <div class="demo-label">{ "Live Demo" }</div>
+                <h3>{ "Live Demo — Function Syntax" }</h3>
+                <DemoBox>
                     <nav>
                         <ul class="nav-list">
                             <li>{ nav_link(Route::Home, "Home (Exact)", Match::Exact) }</li>
                             <li>{ nav_link(Route::NavLinkDoc, "NavLink Doc (Exact)", Match::Exact) }</li>
                         </ul>
                     </nav>
-                </div>
-
-                { code_block(&[
-                    "use yew_nav_link::{nav_link, Match};",
-                    "",
-                    "html! {",
-                    "    { nav_link(Route::Home, \"Home\", Match::Exact) }",
-                    "    { nav_link(Route::Docs, \"Docs\", Match::Partial) }",
-                    "}",
-                ]) }
-            </div>
-
-            <div class="card">
-                <h3>{ "Props" }</h3>
-                <table>
-                    <tr>
-                        <td><code>{ "to" }</code></td>
-                        <td>{ "Route value (required)" }</td>
-                    </tr>
-                    <tr>
-                        <td><code>{ "partial" }</code></td>
-                        <td>{ "bool — Enable partial path matching (default: false)" }</td>
-                    </tr>
-                    <tr>
-                        <td><code>{ "classes" }</code></td>
-                        <td>{ "Classes — Additional CSS classes" }</td>
-                    </tr>
-                </table>
+                </DemoBox>
             </div>
         </div>
     }

@@ -1,3 +1,5 @@
+use crate::demo_popup::DemoBox;
+use crate::doc_parser::{parse_doc_block, DocRenderer};
 use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::{
@@ -5,27 +7,19 @@ use yew_nav_link::{
     NavItem, NavLink, NavList,
 };
 
-fn code_block(lines: &[&str]) -> Html {
-    html! {
-        <pre><code>
-            { for lines.iter().map(|l| html! { <>{ l }{"\n"}</> }) }
-        </code></pre>
-    }
-}
+const DROPDOWN_SRC: &str = include_str!("../../../../src/components/dropdown.rs");
 
 #[function_component]
 pub fn DropdownDoc() -> Html {
+    let doc = parse_doc_block(DROPDOWN_SRC);
+
     html! {
         <div>
-            <div class="card">
-                <h2>{ "NavDropdown" }</h2>
-                <p>{ "Collapsible dropdown menu for grouped navigation items." }</p>
-            </div>
+            <DocRenderer {doc} />
 
             <div class="card">
-                <h3>{ "Basic Dropdown" }</h3>
-                <div class="demo">
-                    <div class="demo-label">{ "Live Demo" }</div>
+                <h3>{ "Live Demo — Basic Dropdown" }</h3>
+                <DemoBox>
                     <NavList>
                         <NavItem>
                             <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
@@ -43,51 +37,7 @@ pub fn DropdownDoc() -> Html {
                             </NavDropdownItem>
                         </NavDropdown>
                     </NavList>
-                </div>
-
-                { code_block(&[
-                    "use yew_nav_link::{",
-                    "    NavLink, NavList, NavItem,",
-                    "    components::{",
-                    "        NavDropdown, NavDropdownItem,",
-                    "        NavDropdownDivider",
-                    "    }",
-                    "};",
-                    "",
-                    "html! {",
-                    "    <NavList>",
-                    "        <NavItem>",
-                    "            <NavLink<Route> to={Route::Home}>",
-                    "                { \"Home\" }",
-                    "            </NavLink<Route>>",
-                    "        </NavItem>",
-                    "        <NavDropdown toggle_text=\"Settings\">",
-                    "            <NavDropdownItem>",
-                    "                <NavLink<Route> to={Route::Profile}>",
-                    "                    { \"Profile\" }",
-                    "                </NavLink<Route>>",
-                    "            </NavDropdownItem>",
-                    "            <NavDropdownDivider />",
-                    "            <NavDropdownItem disabled=true>",
-                    "                { \"Admin\" }",
-                    "            </NavDropdownItem>",
-                    "        </NavDropdown>",
-                    "    </NavList>",
-                    "}",
-                ]) }
-            </div>
-
-            <div class="card">
-                <h3>{ "Props" }</h3>
-                <p><strong>{ "NavDropdown" }</strong></p>
-                <table>
-                    <tr><td><code>{ "toggle_text" }</code></td><td>{ "Button label (default: \"dropdown\")" }</td></tr>
-                    <tr><td><code>{ "id" }</code></td><td>{ "Optional element id" }</td></tr>
-                </table>
-                <p style="margin-top:16px;"><strong>{ "NavDropdownItem" }</strong></p>
-                <table>
-                    <tr><td><code>{ "disabled" }</code></td><td>{ "bool — disable the item" }</td></tr>
-                </table>
+                </DemoBox>
             </div>
         </div>
     }

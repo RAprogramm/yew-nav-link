@@ -1,3 +1,5 @@
+use crate::demo_popup::DemoBox;
+use crate::doc_parser::{parse_doc_block, DocRenderer};
 use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::{
@@ -5,27 +7,19 @@ use yew_nav_link::{
     NavItem, NavLink, NavList,
 };
 
-fn code_block(lines: &[&str]) -> Html {
-    html! {
-        <pre><code>
-            { for lines.iter().map(|l| html! { <>{ l }{"\n"}</> }) }
-        </code></pre>
-    }
-}
+const ICON_SRC: &str = include_str!("../../../../src/components/icon.rs");
 
 #[function_component]
 pub fn IconDoc() -> Html {
+    let doc = parse_doc_block(ICON_SRC);
+
     html! {
         <div>
-            <div class="card">
-                <h2>{ "NavIcon" }</h2>
-                <p>{ "Icon wrapper with size variants for navigation items." }</p>
-            </div>
+            <DocRenderer {doc} />
 
             <div class="card">
-                <h3>{ "Icon Sizes" }</h3>
-                <div class="demo">
-                    <div class="demo-label">{ "Live Demo" }</div>
+                <h3>{ "Live Demo — Icon Sizes" }</h3>
+                <DemoBox>
                     <NavList>
                         <NavItem>
                             <NavLink<Route> to={Route::Home}>
@@ -46,48 +40,17 @@ pub fn IconDoc() -> Html {
                             </NavLink<Route>>
                         </NavItem>
                     </NavList>
-                </div>
-
-                { code_block(&[
-                    "use yew_nav_link::{",
-                    "    NavList, NavItem, NavLink,",
-                    "    components::{NavIcon, NavIconSize}",
-                    "};",
-                    "",
-                    "<NavIcon name=\"home\" size={NavIconSize::Small} />",
-                    "<NavIcon name=\"gear\" size={NavIconSize::Medium} />",
-                    "<NavIcon name=\"user\" size={NavIconSize::Large} />",
-                ]) }
+                </DemoBox>
             </div>
 
             <div class="card">
-                <h3>{ "NavLinkWithIcon" }</h3>
-                <p>{ "Wrapper combining icon and content:" }</p>
-                <div class="demo">
-                    <div class="demo-label">{ "Live Demo" }</div>
+                <h3>{ "Live Demo — NavLinkWithIcon" }</h3>
+                <DemoBox>
                     <NavLinkWithIcon icon={NavIconSize::Medium}>
                         <NavIcon name="star" />
                         { " Featured" }
                     </NavLinkWithIcon>
-                </div>
-
-                { code_block(&[
-                    "use yew_nav_link::components::{NavLinkWithIcon, NavIcon, NavIconSize};",
-                    "",
-                    "<NavLinkWithIcon icon={NavIconSize::Medium}>",
-                    "    <NavIcon name=\"star\" />",
-                    "    { \"Featured\" }",
-                    "</NavLinkWithIcon>",
-                ]) }
-            </div>
-
-            <div class="card">
-                <h3>{ "Props" }</h3>
-                <p><strong>{ "NavIcon" }</strong></p>
-                <table>
-                    <tr><td><code>{ "name" }</code></td><td>{ "Icon name identifier" }</td></tr>
-                    <tr><td><code>{ "size" }</code></td><td>{ "NavIconSize::Small / Medium / Large" }</td></tr>
-                </table>
+                </DemoBox>
             </div>
         </div>
     }

@@ -1,29 +1,22 @@
+use crate::demo_popup::DemoBox;
+use crate::doc_parser::{parse_doc_block, DocRenderer};
 use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::{NavItem, NavLink, NavList};
 
-fn code_block(lines: &[&str]) -> Html {
-    html! {
-        <pre><code>
-            { for lines.iter().map(|l| html! { <>{ l }{"\n"}</> }) }
-        </code></pre>
-    }
-}
+const NAV_LIST_SRC: &str = include_str!("../../../../src/nav/list.rs");
 
 #[function_component]
 pub fn NavListDoc() -> Html {
+    let doc = parse_doc_block(NAV_LIST_SRC);
+
     html! {
         <div>
-            <div class="card">
-                <h2>{ "NavList & NavItem" }</h2>
-                <p>{ "Semantic wrappers that render " }<code>{ "<ul>" }</code>{ " and " }
-                    <code>{ "<li>" }</code>{ " with proper ARIA roles." }</p>
-            </div>
+            <DocRenderer {doc} />
 
             <div class="card">
-                <h3>{ "Basic Usage" }</h3>
-                <div class="demo">
-                    <div class="demo-label">{ "Live Demo" }</div>
+                <h3>{ "Live Demo — Basic Usage" }</h3>
+                <DemoBox>
                     <NavList aria_label="Main Navigation">
                         <NavItem>
                             <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
@@ -35,27 +28,12 @@ pub fn NavListDoc() -> Html {
                             <NavLink<Route> to={Route::NavListDoc}>{ "NavList" }</NavLink<Route>>
                         </NavItem>
                     </NavList>
-                </div>
-
-                { code_block(&[
-                    "use yew_nav_link::{NavLink, NavList, NavItem};",
-                    "",
-                    "html! {",
-                    "    <NavList aria_label=\"Primary Navigation\">",
-                    "        <NavItem>",
-                    "            <NavLink<Route> to={Route::Home}>",
-                    "                { \"Home\" }",
-                    "            </NavLink<Route>>",
-                    "        </NavItem>",
-                    "    </NavList>",
-                    "}",
-                ]) }
+                </DemoBox>
             </div>
 
             <div class="card">
-                <h3>{ "Disabled Items" }</h3>
-                <div class="demo">
-                    <div class="demo-label">{ "Live Demo" }</div>
+                <h3>{ "Live Demo — Disabled Items" }</h3>
+                <DemoBox>
                     <NavList>
                         <NavItem>
                             <NavLink<Route> to={Route::Home}>{ "Enabled" }</NavLink<Route>>
@@ -64,30 +42,7 @@ pub fn NavListDoc() -> Html {
                             <NavLink<Route> to={Route::NotFound}>{ "Disabled Item" }</NavLink<Route>>
                         </NavItem>
                     </NavList>
-                </div>
-
-                { code_block(&[
-                    "<NavItem disabled=true>",
-                    "    <NavLink<Route> to={Route::Settings}>",
-                    "        { \"Settings\" }",
-                    "    </NavLink<Route>>",
-                    "</NavItem>",
-                ]) }
-            </div>
-
-            <div class="card">
-                <h3>{ "Props" }</h3>
-                <p><strong>{ "NavList" }</strong></p>
-                <table>
-                    <tr><td><code>{ "aria_label" }</code></td><td>{ "ARIA label for navigation" }</td></tr>
-                    <tr><td><code>{ "id" }</code></td><td>{ "HTML id attribute" }</td></tr>
-                    <tr><td><code>{ "classes" }</code></td><td>{ "Additional CSS classes" }</td></tr>
-                </table>
-                <p style="margin-top:16px;"><strong>{ "NavItem" }</strong></p>
-                <table>
-                    <tr><td><code>{ "disabled" }</code></td><td>{ "bool — disabled state" }</td></tr>
-                    <tr><td><code>{ "classes" }</code></td><td>{ "Additional CSS classes" }</td></tr>
-                </table>
+                </DemoBox>
             </div>
         </div>
     }
