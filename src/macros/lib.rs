@@ -3,10 +3,10 @@
 //! This module provides procedural macros for reducing boilerplate
 //! and improving compile-time safety.
 
-// Export macros from submodules
 pub use derive::*;
 pub use function::*;
 
+pub mod function;
 pub mod macros;
 
 #[cfg(test)]

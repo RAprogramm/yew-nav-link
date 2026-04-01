@@ -1,0 +1,45 @@
+[changelog]
+header = "# Changelog\n\n"
+body = """
+{% if version %}\
+## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}\
+## [Unreleased]
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | upper_first }}
+{% for commit in commits %}
+- {% set username = commit.remote.username | default(value="") %}{% if username and username != "dependabot[bot]" %}![{{ username }}](https://github.com/{{ username }}.png?size=20) {% elif username == "dependabot[bot]" %}![dependabot](https://github.com/dependabot.png?size=20) {% endif %}{% if commit.scope %}**{{ commit.scope }}:** {% endif %}{{ commit.message }}
+{% endfor %}
+{% endfor %}
+"""
+trim = true
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+split_commits = false
+commit_preprocessors = [
+  { pattern = '\(#(\d+)\)', replace = "([#${1}](https://github.com/RAprogramm/yew-nav-link/issues/${1}))" },
+]
+commit_parsers = [
+  { author = "dependabot", group = "Dependencies" },
+  { message = "^feat", group = "Features" },
+  { message = "^fix", group = "Bug Fixes" },
+  { message = "^refactor", group = "Refactoring" },
+  { message = "^docs", group = "Documentation" },
+  { message = "^ci", group = "CI" },
+  { message = "^deps|^chore\\(deps\\)", group = "Dependencies" },
+  { message = "^chore", skip = true },
+  { message = "^test", skip = true },
+  { body = ".*", group = "Other" },
+]
+filter_commits = false
+tag_pattern = "v[0-9].*"
+topo_order = false
+sort_commits = "oldest"
+
+[remote.github]
+owner = "RAprogramm"
+repo = "yew-nav-link"
+token = ""
