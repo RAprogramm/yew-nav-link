@@ -1,12 +1,13 @@
 //! Query parameters utilities.
 
 use std::collections::HashMap;
+use std::fmt;
 
 use super::codec::{urlencoding_decode, urlencoding_encode};
 
 #[derive(Clone, Debug, Default)]
 pub struct QueryParams {
-    params: HashMap<String, String>
+    params: HashMap<String, String>,
 }
 
 impl QueryParams {
@@ -27,15 +28,13 @@ impl QueryParams {
                 if !key.is_empty() {
                     params.insert(
                         urlencoding_decode(key).unwrap_or_else(|| key.to_string()),
-                        value.unwrap_or_default()
+                        value.unwrap_or_default(),
                     );
                 }
             }
         }
 
-        Self {
-            params
-        }
+        Self { params }
     }
 
     pub fn get(&self, key: &str) -> Option<&str> {
@@ -54,7 +53,7 @@ impl QueryParams {
         self.params.remove(key);
     }
 
-    pub fn to_string(&self) -> String {
+    pub fn to_query_string(&self) -> String {
         if self.params.is_empty() {
             return String::new();
         }
@@ -82,6 +81,12 @@ impl QueryParams {
 
     pub fn values(&self) -> impl Iterator<Item = &str> {
         self.params.values().map(|s| s.as_str())
+    }
+}
+
+impl fmt::Display for QueryParams {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.to_query_string())
     }
 }
 

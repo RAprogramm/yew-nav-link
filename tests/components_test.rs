@@ -1,15 +1,14 @@
 //! Integration tests for components module.
 
 use yew::prelude::*;
-use yew_nav_link::components::{NavBadge, NavHeader, NavText};
 
 #[test]
 fn nav_badge_default_props() {
     let props = yew_nav_link::NavBadgeProps {
-        classes:  Classes::default(),
-        variant:  "primary",
-        pill:     false,
-        children: Children::new(vec![])
+        classes: Classes::default(),
+        variant: "primary",
+        pill: false,
+        children: Children::new(vec![]),
     };
 
     assert_eq!(props.variant, "primary");
@@ -19,10 +18,10 @@ fn nav_badge_default_props() {
 #[test]
 fn nav_badge_with_variant() {
     let props = yew_nav_link::NavBadgeProps {
-        classes:  Classes::default(),
-        variant:  "success",
-        pill:     false,
-        children: Children::new(vec![])
+        classes: Classes::default(),
+        variant: "success",
+        pill: false,
+        children: Children::new(vec![]),
     };
 
     assert_eq!(props.variant, "success");
@@ -31,10 +30,10 @@ fn nav_badge_with_variant() {
 #[test]
 fn nav_badge_pill_style() {
     let props = yew_nav_link::NavBadgeProps {
-        classes:  Classes::default(),
-        variant:  "danger",
-        pill:     true,
-        children: Children::new(vec![])
+        classes: Classes::default(),
+        variant: "danger",
+        pill: true,
+        children: Children::new(vec![]),
     };
 
     assert!(props.pill);
@@ -43,10 +42,10 @@ fn nav_badge_pill_style() {
 #[test]
 fn nav_badge_clone() {
     let props1 = yew_nav_link::NavBadgeProps {
-        classes:  Classes::from("custom"),
-        variant:  "warning",
-        pill:     true,
-        children: Children::new(vec![])
+        classes: Classes::from("custom"),
+        variant: "warning",
+        pill: true,
+        children: Children::new(vec![]),
     };
 
     let props2 = props1.clone();
@@ -57,9 +56,9 @@ fn nav_badge_clone() {
 #[test]
 fn nav_header_with_text() {
     let props = yew_nav_link::NavHeaderProps {
-        classes:  Classes::default(),
-        text:     Some("Settings"),
-        children: Children::new(vec![])
+        classes: Classes::default(),
+        text: Some("Settings"),
+        children: Children::new(vec![]),
     };
 
     assert_eq!(props.text, Some("Settings"));
@@ -68,9 +67,9 @@ fn nav_header_with_text() {
 #[test]
 fn nav_header_without_text() {
     let props = yew_nav_link::NavHeaderProps {
-        classes:  Classes::default(),
-        text:     None,
-        children: Children::new(vec![])
+        classes: Classes::default(),
+        text: None,
+        children: Children::new(vec![]),
     };
 
     assert!(props.text.is_none());
@@ -79,9 +78,9 @@ fn nav_header_without_text() {
 #[test]
 fn nav_header_clone() {
     let props1 = yew_nav_link::NavHeaderProps {
-        classes:  Classes::from("nav-header-primary"),
-        text:     Some("Menu"),
-        children: Children::new(vec![])
+        classes: Classes::from("nav-header-primary"),
+        text: Some("Menu"),
+        children: Children::new(vec![]),
     };
 
     let props2 = props1.clone();
@@ -93,7 +92,7 @@ fn nav_header_clone() {
 fn nav_text_required_props() {
     let props = yew_nav_link::NavTextProps {
         classes: Classes::default(),
-        text:    "Hello World"
+        text: "Hello World",
     };
 
     assert_eq!(props.text, "Hello World");
@@ -103,7 +102,7 @@ fn nav_text_required_props() {
 fn nav_text_with_class() {
     let props = yew_nav_link::NavTextProps {
         classes: Classes::from("nav-text-muted"),
-        text:    "Copyright"
+        text: "Copyright",
     };
 
     assert!(props.classes.contains("nav-text-muted"));

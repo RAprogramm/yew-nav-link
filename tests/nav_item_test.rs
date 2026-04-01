@@ -1,14 +1,13 @@
 //! Integration tests for nav components.
 
 use yew::prelude::*;
-use yew_nav_link::nav::{NavDivider, NavItem};
 
 #[test]
 fn nav_item_default_props() {
     let props = yew_nav_link::NavItemProps {
-        classes:  Classes::default(),
+        classes: Classes::default(),
         disabled: false,
-        children: Children::new(vec![])
+        children: Children::new(vec![]),
     };
 
     assert!(!props.disabled);
@@ -18,9 +17,9 @@ fn nav_item_default_props() {
 #[test]
 fn nav_item_disabled_state() {
     let props = yew_nav_link::NavItemProps {
-        classes:  Classes::default(),
+        classes: Classes::default(),
         disabled: true,
-        children: Children::new(vec![])
+        children: Children::new(vec![]),
     };
 
     assert!(props.disabled);
@@ -29,9 +28,9 @@ fn nav_item_disabled_state() {
 #[test]
 fn nav_item_with_custom_class() {
     let props = yew_nav_link::NavItemProps {
-        classes:  Classes::from("nav-item-active"),
+        classes: Classes::from("nav-item-active"),
         disabled: false,
-        children: Children::new(vec![])
+        children: Children::new(vec![]),
     };
 
     assert!(props.classes.contains("nav-item-active"));
@@ -40,9 +39,9 @@ fn nav_item_with_custom_class() {
 #[test]
 fn nav_item_clone() {
     let props1 = yew_nav_link::NavItemProps {
-        classes:  Classes::from("test"),
+        classes: Classes::from("test"),
         disabled: true,
-        children: Children::new(vec![])
+        children: Children::new(vec![]),
     };
 
     let props2 = props1.clone();
@@ -53,9 +52,9 @@ fn nav_item_clone() {
 #[test]
 fn nav_divider_default_props() {
     let props = yew_nav_link::NavDividerProps {
-        classes:  Classes::default(),
+        classes: Classes::default(),
         vertical: false,
-        text:     None
+        text: None,
     };
 
     assert!(!props.vertical);
@@ -65,9 +64,9 @@ fn nav_divider_default_props() {
 #[test]
 fn nav_divider_vertical() {
     let props = yew_nav_link::NavDividerProps {
-        classes:  Classes::default(),
+        classes: Classes::default(),
         vertical: true,
-        text:     None
+        text: None,
     };
 
     assert!(props.vertical);
@@ -76,9 +75,9 @@ fn nav_divider_vertical() {
 #[test]
 fn nav_divider_with_text() {
     let props = yew_nav_link::NavDividerProps {
-        classes:  Classes::default(),
+        classes: Classes::default(),
         vertical: false,
-        text:     Some("Or")
+        text: Some("Or"),
     };
 
     assert_eq!(props.text, Some("Or"));
@@ -87,9 +86,9 @@ fn nav_divider_with_text() {
 #[test]
 fn nav_divider_clone() {
     let props1 = yew_nav_link::NavDividerProps {
-        classes:  Classes::from("custom"),
+        classes: Classes::from("custom"),
         vertical: true,
-        text:     Some("Divider")
+        text: Some("Divider"),
     };
 
     let props2 = props1.clone();
