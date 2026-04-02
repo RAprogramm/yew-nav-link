@@ -152,9 +152,9 @@ pub use attrs::{NavItemAttrs, NavLinkAttrs, NavListAttrs};
 pub use components::{NavBadge, NavBadgeProps, NavHeader, NavHeaderProps, NavText, NavTextProps};
 pub use errors::{NavError, NavResult};
 pub use hooks::{
-    use_breadcrumbs, use_is_active, use_is_exact_active, use_is_partial_active, use_route_info,
-    BreadcrumbItem,
+    BreadcrumbItem, use_breadcrumbs, use_is_active, use_is_exact_active, use_is_partial_active,
+    use_route_info
 };
 pub use nav::{NavDivider, NavDividerProps, NavItem, NavItemProps, NavList, NavListProps};
-pub use nav_link::{nav_link, Match, NavLink, NavLinkProps};
+pub use nav_link::{Match, NavLink, NavLinkProps, nav_link};
 pub use utils::{is_absolute, join_paths, normalize_path};

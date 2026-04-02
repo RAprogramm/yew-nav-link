@@ -9,7 +9,8 @@ use super::{config::KeyboardNavConfig, direction::KeyboardDirection};
 ///
 /// # Arguments
 ///
-/// * `key` - The key name (`"ArrowUp"`, `"ArrowDown"`, `"ArrowLeft"`, `"ArrowRight"`).
+/// * `key` - The key name (`"ArrowUp"`, `"ArrowDown"`, `"ArrowLeft"`,
+///   `"ArrowRight"`).
 /// * `current_index` - The currently focused item index.
 /// * `total_items` - Total number of navigable items.
 /// * `config` - Navigation configuration (wrap, vertical).
@@ -17,19 +18,19 @@ pub fn handle_arrow_key(
     key: &str,
     current_index: usize,
     total_items: usize,
-    config: &KeyboardNavConfig,
+    config: &KeyboardNavConfig
 ) -> Option<usize> {
     let direction = if config.vertical {
         match key {
             "ArrowDown" => Some(KeyboardDirection::Forward),
             "ArrowUp" => Some(KeyboardDirection::Backward),
-            _ => None,
+            _ => None
         }
     } else {
         match key {
             "ArrowRight" => Some(KeyboardDirection::Forward),
             "ArrowLeft" => Some(KeyboardDirection::Backward),
-            _ => None,
+            _ => None
         }
     };
 
@@ -37,7 +38,7 @@ pub fn handle_arrow_key(
 
     let next = match direction {
         KeyboardDirection::Forward => current_index + 1,
-        KeyboardDirection::Backward => current_index.saturating_sub(1),
+        KeyboardDirection::Backward => current_index.saturating_sub(1)
     };
 
     if config.wrap {
@@ -51,14 +52,15 @@ pub fn handle_arrow_key(
     }
 }
 
-/// Returns the target index for `Home` (first item) or `End` (last item) key presses.
+/// Returns the target index for `Home` (first item) or `End` (last item) key
+/// presses.
 ///
 /// Returns `None` for any other key.
 pub fn handle_home_end(key: &str, _current_index: usize, total_items: usize) -> Option<usize> {
     match key {
         "Home" => Some(0),
         "End" => Some(total_items.saturating_sub(1)),
-        _ => None,
+        _ => None
     }
 }
 

@@ -2,7 +2,8 @@
 //!
 //! Reactive hooks that read the current route from Yew Router. All of these
 //! re-render automatically when the URL changes — no manual subscriptions
-//! needed. They all require a `<BrowserRouter>` ancestor in your component tree.
+//! needed. They all require a `<BrowserRouter>` ancestor in your component
+//! tree.
 //!
 //! # use_route_info
 //!
@@ -56,9 +57,9 @@
 //! # use_is_partial_active
 //!
 //! Returns `true` when the current path **starts with** the given route's path.
-//! Compares path segments, so `/docs` matches `/docs/api` but NOT `/documentation`.
-//! Perfect for sidebar navigation where a parent link should stay highlighted
-//! on nested pages.
+//! Compares path segments, so `/docs` matches `/docs/api` but NOT
+//! `/documentation`. Perfect for sidebar navigation where a parent link should
+//! stay highlighted on nested pages.
 //!
 //! ```rust
 //! use yew::prelude::*;
@@ -100,7 +101,7 @@ pub fn use_route_info<R: Routable + 'static>() -> Option<R> {
 #[hook]
 pub fn use_is_active<R>(route: R) -> bool
 where
-    R: Routable + Clone + PartialEq + 'static,
+    R: Routable + Clone + PartialEq + 'static
 {
     let current = use_route::<R>();
     current.as_ref() == Some(&route)
@@ -112,7 +113,7 @@ where
 #[hook]
 pub fn use_is_exact_active<R>(route: R) -> bool
 where
-    R: Routable + Clone + PartialEq + 'static,
+    R: Routable + Clone + PartialEq + 'static
 {
     let current = use_route::<R>();
     current.as_ref() == Some(&route)
@@ -120,11 +121,12 @@ where
 
 /// Returns `true` when the current URL starts with the given route's path.
 ///
-/// Matches segment-wise, so `/docs` matches `/docs/api` but not `/documentation`.
+/// Matches segment-wise, so `/docs` matches `/docs/api` but not
+/// `/documentation`.
 #[hook]
 pub fn use_is_partial_active<R>(route: R) -> bool
 where
-    R: Routable + Clone + PartialEq + 'static,
+    R: Routable + Clone + PartialEq + 'static
 {
     let current = use_route::<R>();
     match current.as_ref() {
@@ -133,11 +135,12 @@ where
             let current_path = current_route.to_path();
             is_path_prefix(&target_path, &current_path)
         }
-        None => false,
+        None => false
     }
 }
 
-/// Returns a list of [`BreadcrumbItem`]s representing the current navigation path.
+/// Returns a list of [`BreadcrumbItem`]s representing the current navigation
+/// path.
 ///
 /// Splits the current URL into segments and returns one item per level.
 /// For a path like `/docs/api/reference`, returns items for `/`, `/docs`,
@@ -145,7 +148,7 @@ where
 #[hook]
 pub fn use_breadcrumbs<R>() -> Vec<BreadcrumbItem<R>>
 where
-    R: Routable + Clone + PartialEq + 'static,
+    R: Routable + Clone + PartialEq + 'static
 {
     let current = use_route::<R>();
     match current {
@@ -157,9 +160,9 @@ where
 
             // Root
             items.push(BreadcrumbItem {
-                route: route.clone(),
-                label: "/".to_string(),
-                is_active: segments.is_empty(),
+                route:     route.clone(),
+                label:     "/".to_string(),
+                is_active: segments.is_empty()
             });
 
             for (i, seg) in segments.iter().enumerate() {
@@ -167,15 +170,15 @@ where
                 built.push_str(seg);
                 let is_last = i == segments.len() - 1;
                 items.push(BreadcrumbItem {
-                    route: route.clone(),
-                    label: built.clone(),
-                    is_active: is_last,
+                    route:     route.clone(),
+                    label:     built.clone(),
+                    is_active: is_last
                 });
             }
 
             items
         }
-        None => vec![],
+        None => vec![]
     }
 }
 
@@ -189,11 +192,11 @@ where
 #[derive(Clone, Debug)]
 pub struct BreadcrumbItem<R> {
     /// The route this breadcrumb points to.
-    pub route: R,
+    pub route:     R,
     /// Human-readable label for the breadcrumb.
-    pub label: String,
+    pub label:     String,
     /// Whether this breadcrumb represents the currently active route.
-    pub is_active: bool,
+    pub is_active: bool
 }
 
 fn is_path_prefix(target: &str, current: &str) -> bool {
@@ -241,9 +244,9 @@ mod tests {
         #[derive(Clone, PartialEq)]
         struct TestRoute;
         let item = BreadcrumbItem {
-            route: TestRoute,
-            label: "/test".to_string(),
-            is_active: true,
+            route:     TestRoute,
+            label:     "/test".to_string(),
+            is_active: true
         };
         assert_eq!(item.label, "/test");
         assert!(item.is_active);

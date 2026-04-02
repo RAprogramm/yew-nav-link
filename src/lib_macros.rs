@@ -31,7 +31,8 @@ macro_rules! nav_item {
     };
 }
 
-/// Convenience wrapper around [`nav_link`](yew_nav_link::nav_link) for declarative macro usage.
+/// Convenience wrapper around [`nav_link`](yew_nav_link::nav_link) for
+/// declarative macro usage.
 #[macro_export]
 macro_rules! nav_link {
     ($route:path, $label:expr, $mode:expr) => {

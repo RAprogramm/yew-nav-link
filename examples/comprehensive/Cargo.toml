@@ -1,0 +1,13 @@
+[package]
+name = "comprehensive"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+yew = { version = "0.23", features = ["csr"] }
+yew-router = "0.20"
+yew-nav-link = { path = "../../" }
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+web-sys = { version = "0.3", features = ["HtmlElement", "Element", "Clipboard", "Navigator", "Window"] }
+gloo-timers = { version = "0.3", features = ["futures"] }

@@ -1,14 +1,17 @@
 //! # NavIcon
 //!
 //! Icon wrapper for embedding icons in navigation items.
-//! Renders an `<i>` element with `aria-hidden="true"` and a configurable size class.
+//! Renders an `<i>` element with `aria-hidden="true"` and a configurable size
+//! class.
 //!
 //! # Example
 //!
 //! ```rust
 //! use yew::prelude::*;
-//! use yew_nav_link::{NavItem, NavLink, NavList};
-//! use yew_nav_link::components::{NavIcon, NavIconSize};
+//! use yew_nav_link::{
+//!     NavItem, NavLink, NavList,
+//!     components::{NavIcon, NavIconSize}
+//! };
 //! use yew_router::prelude::*;
 //!
 //! # #[derive(Clone, PartialEq, Routable)]
@@ -86,7 +89,7 @@ pub struct NavIconProps {
 
     /// Content rendered inside the icon when `name` is `None`.
     #[prop_or_default]
-    pub children: Children,
+    pub children: Children
 }
 
 /// Available size variants for [`NavIcon`].
@@ -98,7 +101,7 @@ pub enum NavIconSize {
     #[default]
     Medium,
     /// Large icon (`nav-icon-lg`).
-    Large,
+    Large
 }
 
 impl NavIconSize {
@@ -106,7 +109,7 @@ impl NavIconSize {
         match self {
             NavIconSize::Small => "nav-icon-sm",
             NavIconSize::Medium => "nav-icon-md",
-            NavIconSize::Large => "nav-icon-lg",
+            NavIconSize::Large => "nav-icon-lg"
         }
     }
 }
@@ -157,7 +160,7 @@ pub struct NavLinkWithIconProps {
     pub icon: NavIconSize,
 
     /// Content rendered inside the span.
-    pub children: Children,
+    pub children: Children
 }
 
 /// Wraps content alongside an icon within a navigation link.
@@ -184,10 +187,10 @@ mod tests {
     #[test]
     fn nav_icon_props_default() {
         let props = NavIconProps {
-            classes: Classes::default(),
-            name: None,
-            size: NavIconSize::default(),
-            children: Children::new(vec![]),
+            classes:  Classes::default(),
+            name:     None,
+            size:     NavIconSize::default(),
+            children: Children::new(vec![])
         };
 
         assert!(props.name.is_none());
@@ -197,10 +200,10 @@ mod tests {
     #[test]
     fn nav_icon_with_name() {
         let props = NavIconProps {
-            classes: Classes::default(),
-            name: Some("home"),
-            size: NavIconSize::Small,
-            children: Children::new(vec![]),
+            classes:  Classes::default(),
+            name:     Some("home"),
+            size:     NavIconSize::Small,
+            children: Children::new(vec![])
         };
 
         assert_eq!(props.name, Some("home"));

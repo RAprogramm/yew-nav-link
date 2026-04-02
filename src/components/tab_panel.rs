@@ -69,7 +69,7 @@ pub struct NavTabPanelProps {
     pub hidden: bool,
 
     /// Content rendered inside the panel.
-    pub children: Children,
+    pub children: Children
 }
 
 /// Tab panel component that holds the content for a single tab.
@@ -104,11 +104,11 @@ mod tests {
     #[test]
     fn nav_tab_panel_hidden() {
         let props = NavTabPanelProps {
-            classes: Classes::default(),
-            id: Some("panel-1"),
+            classes:     Classes::default(),
+            id:          Some("panel-1"),
             labelled_by: Some("tab-1"),
-            hidden: true,
-            children: Children::new(vec![]),
+            hidden:      true,
+            children:    Children::new(vec![])
         };
 
         assert!(props.hidden);
@@ -118,11 +118,11 @@ mod tests {
     #[test]
     fn nav_tab_panel_visible() {
         let props = NavTabPanelProps {
-            classes: Classes::default(),
-            id: Some("panel-1"),
+            classes:     Classes::default(),
+            id:          Some("panel-1"),
             labelled_by: Some("tab-1"),
-            hidden: false,
-            children: Children::new(vec![]),
+            hidden:      false,
+            children:    Children::new(vec![])
         };
 
         assert!(!props.hidden);

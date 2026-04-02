@@ -6,17 +6,17 @@ use super::query::QueryParams;
 #[derive(Clone, Debug, Default)]
 pub struct UrlParts {
     /// URL scheme (e.g. `"https"`).
-    pub scheme: Option<String>,
+    pub scheme:   Option<String>,
     /// Host name (e.g. `"example.com"`).
-    pub host: Option<String>,
+    pub host:     Option<String>,
     /// Port number as a string (e.g. `"8080"`).
-    pub port: Option<String>,
+    pub port:     Option<String>,
     /// Path component (e.g. `"/api/v1"`).
-    pub path: String,
+    pub path:     String,
     /// Raw query string without the leading `?`.
-    pub query: Option<String>,
+    pub query:    Option<String>,
     /// Fragment identifier without the leading `#`.
-    pub fragment: Option<String>,
+    pub fragment: Option<String>
 }
 
 impl UrlParts {

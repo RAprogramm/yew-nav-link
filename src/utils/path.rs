@@ -6,7 +6,7 @@
 //! # Example
 //!
 //! ```rust
-//! use yew_nav_link::{normalize_path, is_absolute, join_paths};
+//! use yew_nav_link::{is_absolute, join_paths, normalize_path};
 //!
 //! assert_eq!(normalize_path("/docs//api/"), "/docs/api");
 //! assert!(is_absolute("/docs"));
@@ -21,7 +21,8 @@
 //! | `is_absolute` | `(path: &str) -> bool` | Check if path starts with `/` |
 //! | `join_paths` | `(base: &str, path: &str) -> String` | Join or replace base path |
 
-/// Normalizes a path by collapsing duplicate slashes and removing trailing slashes.
+/// Normalizes a path by collapsing duplicate slashes and removing trailing
+/// slashes.
 ///
 /// Preserves the root `/` path.
 pub fn normalize_path(path: &str) -> String {

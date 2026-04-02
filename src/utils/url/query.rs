@@ -1,17 +1,17 @@
 //! Query parameters utilities.
 
-use std::collections::HashMap;
-use std::fmt;
+use std::{collections::HashMap, fmt};
 
 use super::codec::{urlencoding_decode, urlencoding_encode};
 
-/// A collection of URL query parameters with get, set, and serialization support.
+/// A collection of URL query parameters with get, set, and serialization
+/// support.
 ///
 /// Keys and values are automatically percent-decoded on parse and
 /// percent-encoded on serialization.
 #[derive(Clone, Debug, Default)]
 pub struct QueryParams {
-    params: HashMap<String, String>,
+    params: HashMap<String, String>
 }
 
 impl QueryParams {
@@ -34,13 +34,15 @@ impl QueryParams {
                 if !key.is_empty() {
                     params.insert(
                         urlencoding_decode(key).unwrap_or_else(|| key.to_string()),
-                        value.unwrap_or_default(),
+                        value.unwrap_or_default()
                     );
                 }
             }
         }
 
-        Self { params }
+        Self {
+            params
+        }
     }
 
     /// Returns the value for the given key, if present.

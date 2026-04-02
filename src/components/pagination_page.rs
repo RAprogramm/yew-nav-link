@@ -12,7 +12,8 @@
 //! assert_eq!(pages, vec![1, 0, 4, 5, 6, 0, 10]);
 //! ```
 
-/// Generates a list of page numbers to display, with `0` representing ellipsis gaps.
+/// Generates a list of page numbers to display, with `0` representing ellipsis
+/// gaps.
 ///
 /// # Arguments
 ///
