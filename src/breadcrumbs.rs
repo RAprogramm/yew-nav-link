@@ -35,6 +35,3 @@
 //! The hook allocates a `Vec<BreadcrumbItem<R>>` on every render where the
 //! route changes. Each item holds a cloned `R` and a `String` label. For a
 //! typical 3-level path this is ~4 small allocations — negligible for web use.
-//!
-//! If you need to avoid allocations, use `use_route_info()` and build the
-//! trail manually from the path string.

@@ -1,78 +1,131 @@
-use crate::demo_popup::DemoBox;
-use crate::doc_parser::{parse_doc_block, DocRenderer};
+use crate::doc_page::{DemoCard, DocPage, Tip};
 use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::{NavBadge, NavHeader, NavItem, NavLink, NavList, NavText};
 
-const BADGE_SRC: &str = include_str!("../../../../src/components/badge.rs");
+const SRC: &str = include_str!("../../../../src/components/badge.rs");
+
+const CODE_BADGE: &str = "\
+use yew_nav_link::{NavBadge, NavItem, NavLink, NavList};
+
+# #[derive(Clone, PartialEq, Routable)]
+# enum Route { #[at(\"/\")] Home }
+#[component]
+fn Nav() -> Html {
+    html! {
+        <NavList>
+            <NavItem>
+                <NavLink<Route> to={Route::Home}>
+                    { \"Messages \" }
+                    <NavBadge variant=\"danger\">{ \"3\" }</NavBadge>
+                </NavLink<Route>>
+            </NavItem>
+            <NavItem>
+                <NavLink<Route> to={Route::Home}>
+                    { \"Tasks \" }
+                    <NavBadge variant=\"success\" pill=true>{ \"12\" }</NavBadge>
+                </NavLink<Route>>
+            </NavItem>
+        </NavList>
+    }
+}";
+
+const CODE_HEADER: &str = "\
+use yew_nav_link::{NavHeader, NavItem, NavLink, NavList};
+
+# #[derive(Clone, PartialEq, Routable)]
+# enum Route { #[at(\"/\")] Home, #[at(\"/nav-link\")] NavLinkDoc }
+#[component]
+fn Nav() -> Html {
+    html! {
+        <NavList>
+            <NavHeader text=\"Main\" />
+            <NavItem><NavLink<Route> to={Route::Home}>{ \"Home\" }</NavLink<Route>></NavItem>
+            <NavHeader text=\"Docs\" />
+            <NavItem><NavLink<Route> to={Route::NavLinkDoc}>{ \"NavLink\" }</NavLink<Route>></NavItem>
+        </NavList>
+    }
+}";
 
 #[function_component]
 pub fn BadgeDoc() -> Html {
-    let doc = parse_doc_block(BADGE_SRC);
-
     html! {
-        <div>
-            <DocRenderer {doc} />
+        <DocPage source={SRC.to_string()}>
 
-            <div class="card">
-                <h3>{ "NavBadge — Live Demo" }</h3>
-                <p>{ "Place " }<code>{ "<NavBadge>" }</code>{ " inside a link to show counts or status." }</p>
-                <DemoBox>
-                    <NavList>
-                        <NavItem>
-                            <NavLink<Route> to={Route::Home}>
-                                { "Messages " }
-                                <NavBadge variant="danger">{ "3" }</NavBadge>
-                            </NavLink<Route>>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink<Route> to={Route::Home}>
-                                { "Tasks " }
-                                <NavBadge variant="success" pill=true>{ "12" }</NavBadge>
-                            </NavLink<Route>>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink<Route> to={Route::Home}>
-                                { "Alerts " }
-                                <NavBadge variant="warning">{ "!" }</NavBadge>
-                            </NavLink<Route>>
-                        </NavItem>
-                    </NavList>
-                </DemoBox>
-                <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.8125rem;">
-                    { "Variants: " }<code>{ "primary" }</code>{ ", " }<code>{ "danger" }</code>
-                    { ", " }<code>{ "success" }</code>{ ", " }<code>{ "warning" }</code>
-                    { ". Use " }<code>{ "pill=true" }</code>{ " for rounded shape." }
-                </p>
-            </div>
+            <DemoCard
+                title="NavBadge"
+                description={html!{
+                    <>
+                        { "Place " }<code>{ "<NavBadge>" }</code>
+                        { " inside a link to show counts or status:" }
+                    </>
+                }}
+                code={CODE_BADGE.to_string()}
+                tip={html!{
+                    <Tip>
+                        { "Variants: " }<code>{ "primary" }</code>{ ", " }<code>{ "danger" }</code>
+                        { ", " }<code>{ "success" }</code>{ ", " }<code>{ "warning" }</code>
+                        { ". Use " }<code>{ "pill=true" }</code>{ " for rounded shape." }
+                    </Tip>
+                }}
+            >
+                <NavList>
+                    <NavItem>
+                        <NavLink<Route> to={Route::Home}>
+                            { "Messages " }
+                            <NavBadge variant="danger">{ "3" }</NavBadge>
+                        </NavLink<Route>>
+                    </NavItem>
+                    <NavItem>
+                        <NavLink<Route> to={Route::Home}>
+                            { "Tasks " }
+                            <NavBadge variant="success" pill=true>{ "12" }</NavBadge>
+                        </NavLink<Route>>
+                    </NavItem>
+                    <NavItem>
+                        <NavLink<Route> to={Route::Home}>
+                            { "Alerts " }
+                            <NavBadge variant="warning">{ "!" }</NavBadge>
+                        </NavLink<Route>>
+                    </NavItem>
+                </NavList>
+            </DemoCard>
 
-            <div class="card">
-                <h3>{ "NavHeader — Live Demo" }</h3>
-                <p>{ "Label sections inside a navigation list:" }</p>
-                <DemoBox>
-                    <NavList>
-                        <NavHeader text="Main" />
-                        <NavItem><NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>></NavItem>
-                        <NavHeader text="Documentation" />
-                        <NavItem><NavLink<Route> to={Route::NavLinkDoc}>{ "NavLink" }</NavLink<Route>></NavItem>
-                    </NavList>
-                </DemoBox>
-                <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.8125rem;">
-                    { "Renders a " }<code>{ "<li role=\"presentation\">" }</code>
-                    { " with " }<code>{ "class=\"nav-header\"" }</code>{ "." }
-                </p>
-            </div>
+            <DemoCard
+                title="NavHeader"
+                description={html!{ "Label sections inside a navigation list:" }}
+                code={CODE_HEADER.to_string()}
+                tip={html!{
+                    <Tip>
+                        { "Renders " }<code>{ "<li role=\"presentation\">" }</code>
+                        { " with " }<code>{ "class=\"nav-header\"" }</code>{ "." }
+                    </Tip>
+                }}
+            >
+                <NavList>
+                    <NavHeader text="Main" />
+                    <NavItem><NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>></NavItem>
+                    <NavHeader text="Documentation" />
+                    <NavItem><NavLink<Route> to={Route::NavLinkDoc}>{ "NavLink" }</NavLink<Route>></NavItem>
+                </NavList>
+            </DemoCard>
 
-            <div class="card">
-                <h3>{ "NavText — Live Demo" }</h3>
-                <p>{ "Static text label, useful for version info or notes:" }</p>
-                <DemoBox>
-                    <NavList>
-                        <NavItem><NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>></NavItem>
-                        <NavText text="v0.6.0" />
-                    </NavList>
-                </DemoBox>
-            </div>
-        </div>
+            <DemoCard
+                title="NavText"
+                description={html!{
+                    <>
+                        { "Static text label, useful for version info:" }
+                    </>
+                }}
+                code={"use yew_nav_link::NavText;\n\nhtml! { <NavText text=\"v0.6.0\" /> }".to_string()}
+                tip={html! { <></> }}
+            >
+                <NavList>
+                    <NavItem><NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>></NavItem>
+                    <NavText text="v0.6.0" />
+                </NavList>
+            </DemoCard>
+
+        </DocPage>
     }
 }

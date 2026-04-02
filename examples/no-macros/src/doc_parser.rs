@@ -184,14 +184,50 @@ struct CodeBlockProps {
     code: String,
 }
 
+/// Strips `# ` prefix and cleans formatting for display.
+pub fn strip_hidden_lines(code: &str) -> String {
+    let stripped: Vec<&str> = code
+        .lines()
+        .map(|line| {
+            if let Some(rest) = line.strip_prefix("# ") {
+                rest
+            } else {
+                line
+            }
+        })
+        .collect();
+
+    // Add blank line before top-level attrs that follow non-empty lines
+    let mut result: Vec<String> = Vec::new();
+    for (i, line) in stripped.iter().enumerate() {
+        let trimmed = line.trim();
+        let prev = if i > 0 { stripped[i - 1].trim() } else { "" };
+
+        // Only add blank line before #[derive or #[component at column 0
+        // (not #[at( inside enums which are indented)
+        if !prev.is_empty()
+            && !line.starts_with(" ")
+            && !line.starts_with("\t")
+            && (trimmed.starts_with("#[derive") || trimmed.starts_with("#[component") || trimmed.starts_with("#[function_component"))
+        {
+            result.push(String::new());
+        }
+
+        result.push(line.to_string());
+    }
+
+    result.join("\n")
+}
+
 #[function_component]
 fn CodeBlock(props: &CodeBlockProps) -> Html {
     let copied = use_state(|| false);
-    let code = props.code.clone();
+    let display_code = strip_hidden_lines(&props.code);
+    let copy_code = props.code.clone();
 
     let on_copy = {
         let copied = copied.clone();
-        let code = code.clone();
+        let code = copy_code.clone();
         Callback::from(move |e: MouseEvent| {
             e.prevent_default();
             e.stop_propagation();
@@ -212,7 +248,7 @@ fn CodeBlock(props: &CodeBlockProps) -> Html {
     html! {
         <div class="code-block">
             <button class={btn_class} onclick={on_copy}>{ btn_text }</button>
-            <pre><code>{ highlight_rust(&props.code) }</code></pre>
+            <pre><code>{ highlight_rust(&display_code) }</code></pre>
         </div>
     }
 }

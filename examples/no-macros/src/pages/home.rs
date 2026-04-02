@@ -1,4 +1,3 @@
-use crate::doc_parser::highlight_rust;
 use crate::routes::Route;
 use yew::prelude::*;
 use yew_router::prelude::*;
@@ -184,24 +183,6 @@ pub fn Home() -> Html {
                 </div>
             </div>
 
-            // ── Quick Start ────────────────────────────────
-            <div class="card">
-                <h2>{ "Quick Start" }</h2>
-                <CodeBlock code={format!(
-                    "[dependencies]\nyew-nav-link = \"{}\"",
-                    version
-                )} />
-
-                <h3>{ "Component Syntax" }</h3>
-                <CodeBlock code={COMPONENT_SYNTAX.to_string()} />
-
-                <h3>{ "Function Syntax" }</h3>
-                <CodeBlock code={FUNCTION_SYNTAX.to_string()} />
-
-                <h3>{ "Partial Matching" }</h3>
-                <CodeBlock code={PARTIAL_SYNTAX.to_string()} />
-            </div>
-
             // ── Stats ──────────────────────────────────────
             <div class="card">
                 <h2>{ "API at a Glance" }</h2>
@@ -253,126 +234,7 @@ pub fn Home() -> Html {
     }
 }
 
-// ── Code examples from README ──────────────────────────────────
-
-const COMPONENT_SYNTAX: &str = "\
-use yew::prelude::*;
-use yew_nav_link::NavLink;
-use yew_router::prelude::*;
-
-#[derive(Clone, PartialEq, Routable)]
-enum Route {
-    #[at(\"/\")]
-    Home,
-    #[at(\"/about\")]
-    About,
-}
-
-#[component]
-fn Navigation() -> Html {
-    html! {
-        <nav>
-            <NavLink<Route> to={Route::Home}>{ \"Home\" }</NavLink<Route>>
-            <NavLink<Route> to={Route::About}>{ \"About\" }</NavLink<Route>>
-        </nav>
-    }
-}";
-
-const FUNCTION_SYNTAX: &str = "\
-use yew::prelude::*;
-use yew_nav_link::{nav_link, Match};
-use yew_router::prelude::*;
-
-#[derive(Clone, PartialEq, Routable)]
-enum Route {
-    #[at(\"/\")]
-    Home,
-    #[at(\"/docs\")]
-    Docs,
-}
-
-#[component]
-fn Menu() -> Html {
-    html! {
-        <nav>
-            { nav_link(Route::Home, \"Home\", Match::Exact) }
-            { nav_link(Route::Docs, \"Docs\", Match::Partial) }
-        </nav>
-    }
-}";
-
-const PARTIAL_SYNTAX: &str = "\
-use yew::prelude::*;
-use yew_nav_link::NavLink;
-use yew_router::prelude::*;
-
-#[derive(Clone, PartialEq, Routable)]
-enum Route {
-    #[at(\"/docs\")]
-    Docs,
-    #[at(\"/docs/api\")]
-    DocsApi,
-}
-
-#[component]
-fn Navigation() -> Html {
-    html! {
-        <nav>
-            // Active on /docs, /docs/api, /docs/*
-            <NavLink<Route> to={Route::Docs} partial=true>
-                { \"Docs\" }
-            </NavLink<Route>>
-        </nav>
-    }
-}";
-
 // ── Helpers ────────────────────────────────────────────────────
-
-#[derive(Properties, PartialEq)]
-struct CodeBlockProps {
-    code: String,
-}
-
-#[function_component]
-fn CodeBlock(props: &CodeBlockProps) -> Html {
-    let copied = use_state(|| false);
-    let code = props.code.clone();
-
-    let on_copy = {
-        let copied = copied.clone();
-        let code = code.clone();
-        Callback::from(move |e: MouseEvent| {
-            e.prevent_default();
-            e.stop_propagation();
-            let code = code.clone();
-            let copied = copied.clone();
-            wasm_bindgen_futures::spawn_local(async move {
-                copy_to_clipboard(&code);
-                copied.set(true);
-                gloo_timers::future::TimeoutFuture::new(1500).await;
-                copied.set(false);
-            });
-        })
-    };
-
-    let btn_text = if *copied { "✓ Copied" } else { "Copy" };
-    let btn_class = if *copied { "code-copy copied" } else { "code-copy" };
-
-    html! {
-        <div class="code-block">
-            <button class={btn_class} onclick={on_copy}>{ btn_text }</button>
-            <pre><code>{ highlight_rust(&props.code) }</code></pre>
-        </div>
-    }
-}
-
-fn copy_to_clipboard(text: &str) {
-    let window = web_sys::window().unwrap();
-    let navigator = window.navigator();
-    let clipboard = navigator.clipboard();
-    let promise = clipboard.write_text(text);
-    let _ = wasm_bindgen_futures::JsFuture::from(promise);
-}
 
 #[derive(Properties, PartialEq)]
 struct FeatureCardProps {

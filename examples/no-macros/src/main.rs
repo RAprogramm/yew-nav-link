@@ -8,6 +8,7 @@ use yew_nav_link::NavLink;
 use yew_router::prelude::*;
 
 mod demo_popup;
+mod doc_page;
 mod doc_parser;
 mod pages;
 mod routes;
