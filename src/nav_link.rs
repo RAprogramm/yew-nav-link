@@ -117,6 +117,26 @@
 //! | `to` | `R` | — | Target route (required) |
 //! | `children` | `Children` | — | Link content (required) |
 //! | `partial` | `bool` | `false` | Enable prefix matching |
+//!
+//! # How It Works
+//!
+//! On every render, NavLink calls `use_route::<R>()` to get the current route,
+//! then compares it with the `to` prop using Yew Router's `Routable::eq()`.
+//! If they match (exactly or by prefix), the `active` class is added.
+//!
+//! Partial matching compares path segments: `/docs` matches `/docs/api` and
+//! `/docs/api/v1`, but NOT `/documentation`. This prevents false positives
+//! on similar-looking paths.
+//!
+//! # Memory & Performance
+//!
+//! NavLink is lightweight — it only clones the route `R` once per render and
+//! does a single `==` comparison (or one `starts_with` for partial). No heap
+//! allocations beyond what Yew Router's `use_route()` already does.
+//!
+//! If you have many links (100+), each one independently calls `use_route()`.
+//! Yew batches these into a single subscription, so there's no extra cost
+//! per link beyond the comparison itself.
 
 use std::marker::PhantomData;
 

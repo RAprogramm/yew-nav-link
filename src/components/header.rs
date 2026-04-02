@@ -11,7 +11,12 @@
 //! use yew_router::prelude::*;
 //!
 //! # #[derive(Clone, PartialEq, Routable)]
-//! # enum Route { #[at("/")] Home, #[at("/about")] About }
+//! # enum Route {
+//! #     #[at("/")]
+//! #     Home,
+//! #     #[at("/about")]
+//! #     About,
+//! # }
 //! #[component]
 //! fn Nav() -> Html {
 //!     html! {

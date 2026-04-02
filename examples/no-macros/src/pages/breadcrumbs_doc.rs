@@ -9,7 +9,10 @@ const CODE_SIMPLE: &str = "\
 use yew_nav_link::hooks::use_breadcrumbs;
 
 # #[derive(Clone, PartialEq, Debug, Routable)]
-# enum Route { #[at(\"/\")] Home }
+# enum Route {
+#     #[at(\"/\")]
+#     Home,
+# }
 #[component]
 fn BreadcrumbTrail() -> Html {
     let crumbs = use_breadcrumbs::<Route>();
@@ -35,7 +38,10 @@ const CODE_STYLED: &str = "\
 use yew_nav_link::hooks::use_breadcrumbs;
 
 # #[derive(Clone, PartialEq, Debug, Routable)]
-# enum Route { #[at(\"/\")] Home }
+# enum Route {
+#     #[at(\"/\")]
+#     Home,
+# }
 #[component]
 fn BreadcrumbStyled() -> Html {
     let crumbs = use_breadcrumbs::<Route>();

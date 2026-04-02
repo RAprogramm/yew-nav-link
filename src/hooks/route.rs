@@ -14,7 +14,12 @@
 //! use yew_router::prelude::*;
 //!
 //! # #[derive(Clone, PartialEq, Debug, Routable)]
-//! # enum Route { #[at("/")] Home, #[at("/docs")] Docs }
+//! # enum Route {
+//! #     #[at("/")]
+//! #     Home,
+//! #     #[at("/docs")]
+//! #     Docs,
+//! # }
 //! #[component]
 //! fn CurrentPage() -> Html {
 //!     let route = use_route_info::<Route>();
@@ -33,7 +38,10 @@
 //! use yew_router::prelude::*;
 //!
 //! # #[derive(Clone, PartialEq, Debug, Routable)]
-//! # enum Route { #[at("/")] Home }
+//! # enum Route {
+//! #     #[at("/")]
+//! #     Home,
+//! # }
 //! #[component]
 //! fn Nav() -> Html {
 //!     let active = use_is_active(Route::Home);
@@ -58,7 +66,10 @@
 //! use yew_router::prelude::*;
 //!
 //! # #[derive(Clone, PartialEq, Debug, Routable)]
-//! # enum Route { #[at("/docs")] Docs }
+//! # enum Route {
+//! #     #[at("/docs")]
+//! #     Docs,
+//! # }
 //! #[component]
 //! fn Sidebar() -> Html {
 //!     let docs_active = use_is_partial_active(Route::Docs);
