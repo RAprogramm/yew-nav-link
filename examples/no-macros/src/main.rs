@@ -17,16 +17,22 @@ use routes::Route;
 #[function_component]
 fn App() -> Html {
     let menu_open = use_state(|| false);
+
     let toggle = {
         let menu_open = menu_open.clone();
         Callback::from(move |_: MouseEvent| menu_open.set(!*menu_open))
     };
+
     let close = {
         let menu_open = menu_open.clone();
         Callback::from(move |_: MouseEvent| menu_open.set(false))
     };
 
-    let open_class = if *menu_open { " open" } else { "" };
+    let sidebar_class = if *menu_open {
+        "sidebar open"
+    } else {
+        "sidebar"
+    };
     let overlay_class = if *menu_open {
         "overlay visible"
     } else {
@@ -36,7 +42,7 @@ fn App() -> Html {
     html! {
         <BrowserRouter>
             <div class="topbar">
-                <button class="hamburger" onclick={toggle.clone()}>
+                <button class="hamburger" onclick={toggle}>
                     <span class="hamburger-line" />
                     <span class="hamburger-line" />
                     <span class="hamburger-line" />
@@ -45,11 +51,11 @@ fn App() -> Html {
                 <div class="topbar-spacer" />
             </div>
 
-            <div class={format!("sidebar{}", open_class)}>
-                <SidebarContent on_link_click={close.clone()} />
+            <div class={sidebar_class} onclick={close.clone()}>
+                <SidebarContent />
             </div>
 
-            <div class={overlay_class} onclick={close.clone()} />
+            <div class={overlay_class} onclick={close} />
 
             <main class="main">
                 <Switch<Route> render={switch} />
@@ -76,15 +82,8 @@ fn switch(route: Route) -> Html {
     }
 }
 
-#[derive(Properties, PartialEq, Clone)]
-struct SidebarProps {
-    on_link_click: Callback<MouseEvent>,
-}
-
 #[function_component]
-fn SidebarContent(props: &SidebarProps) -> Html {
-    let onclick = props.on_link_click.clone();
-
+fn SidebarContent() -> Html {
     html! {
         <div class="sidebar-inner">
             <div class="sidebar-header">
@@ -95,30 +94,30 @@ fn SidebarContent(props: &SidebarProps) -> Html {
             <div class="sidebar-section">
                 <div class="sidebar-section-title">{ "Getting Started" }</div>
                 <nav>
-                    <NavLink<Route> to={Route::Home} onclick={onclick.clone()}>{ "Overview" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::Home}>{ "Overview" }</NavLink<Route>>
                 </nav>
             </div>
 
             <div class="sidebar-section">
                 <div class="sidebar-section-title">{ "Components" }</div>
                 <nav>
-                    <NavLink<Route> to={Route::NavLinkDoc} onclick={onclick.clone()}>{ "NavLink" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::NavListDoc} onclick={onclick.clone()}>{ "NavList & NavItem" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::NavDividerDoc} onclick={onclick.clone()}>{ "NavDivider" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::BadgeDoc} onclick={onclick.clone()}>{ "Badge / Header / Text" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::DropdownDoc} onclick={onclick.clone()}>{ "NavDropdown" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::IconDoc} onclick={onclick.clone()}>{ "NavIcon" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::TabsDoc} onclick={onclick.clone()}>{ "NavTabs / NavTab" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::PaginationDoc} onclick={onclick.clone()}>{ "Pagination" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::NavLinkDoc}>{ "NavLink" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::NavListDoc}>{ "NavList & NavItem" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::NavDividerDoc}>{ "NavDivider" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::BadgeDoc}>{ "Badge / Header / Text" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::DropdownDoc}>{ "NavDropdown" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::IconDoc}>{ "NavIcon" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::TabsDoc}>{ "NavTabs / NavTab" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::PaginationDoc}>{ "Pagination" }</NavLink<Route>>
                 </nav>
             </div>
 
             <div class="sidebar-section">
                 <div class="sidebar-section-title">{ "Hooks & Utilities" }</div>
                 <nav>
-                    <NavLink<Route> to={Route::HooksDoc} onclick={onclick.clone()}>{ "Route Hooks" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::BreadcrumbsDoc} onclick={onclick.clone()}>{ "Breadcrumbs" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::UtilsDoc} onclick={onclick.clone()}>{ "Path Utilities" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::HooksDoc}>{ "Route Hooks" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::BreadcrumbsDoc}>{ "Breadcrumbs" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::UtilsDoc}>{ "Path Utilities" }</NavLink<Route>>
                 </nav>
             </div>
         </div>

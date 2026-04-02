@@ -306,8 +306,8 @@ fn render_code_section(lines: &[String]) -> Html {
     }
 }
 
-/// Simple Rust syntax highlighter — wraps tokens in `<span class="...">`.
-fn highlight_rust(code: &str) -> Html {
+/// Rust syntax highlighter — wraps tokens in `<span class="...">`.
+pub fn highlight_rust(code: &str) -> Html {
     let tokens = tokenize_rust(code);
     html! {
         <>
@@ -324,7 +324,7 @@ fn highlight_rust(code: &str) -> Html {
     }
 }
 
-fn tokenize_rust(code: &str) -> Vec<(String, String)> {
+pub fn tokenize_rust(code: &str) -> Vec<(String, String)> {
     let mut out: Vec<(String, String)> = Vec::new();
     let bytes = code.as_bytes();
     let len = bytes.len();
