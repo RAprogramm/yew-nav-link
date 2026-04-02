@@ -18,7 +18,8 @@ pub fn DropdownDoc() -> Html {
             <DocRenderer {doc} />
 
             <div class="card">
-                <h3>{ "Live Demo — Basic Dropdown" }</h3>
+                <h3>{ "NavDropdown — Live Demo" }</h3>
+                <p>{ "Click the toggle to open the menu:" }</p>
                 <DemoBox>
                     <NavList>
                         <NavItem>
@@ -38,6 +39,11 @@ pub fn DropdownDoc() -> Html {
                         </NavDropdown>
                     </NavList>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.8125rem;">
+                    { "Use " }<code>{ "<NavDropdownDivider />" }</code>
+                    { " between groups. Set " }<code>{ "disabled=true" }</code>
+                    { " on items to prevent selection." }
+                </p>
             </div>
         </div>
     }

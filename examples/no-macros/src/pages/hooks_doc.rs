@@ -2,9 +2,7 @@ use crate::demo_popup::DemoBox;
 use crate::doc_parser::{parse_doc_block, DocRenderer};
 use crate::routes::Route;
 use yew::prelude::*;
-use yew_nav_link::hooks::{
-    use_breadcrumbs, use_is_active, use_is_exact_active, use_is_partial_active, use_route_info,
-};
+use yew_nav_link::hooks::{use_breadcrumbs, use_is_active, use_is_partial_active, use_route_info};
 use yew_router::prelude::*;
 
 const HOOKS_SRC: &str = include_str!("../../../../src/hooks/route.rs");
@@ -17,28 +15,30 @@ pub fn HooksDoc() -> Html {
     let current_path = current.as_ref().map(|r| r.to_path()).unwrap_or("/".into());
 
     let is_home_active = use_is_active(Route::Home);
-    let is_home_exact = use_is_exact_active(Route::Home);
     let is_hooks_partial = use_is_partial_active(Route::HooksDoc);
-
     let crumbs = use_breadcrumbs::<Route>();
 
     html! {
         <div>
             <DocRenderer {doc} />
 
+            // ── use_route_info ────────────────────────────
             <div class="card">
-                <h3>{ "Live — Current Route" }</h3>
+                <h3>{ "use_route_info — Live" }</h3>
+                <p>{ "Returns the current route, or " }<code>{ "None" }</code>{ " if no route matches:" }</p>
                 <DemoBox>
                     <p>{ "Route: " }<code>{ format!("{:?}", current) }</code></p>
                     <p>{ "Path: " }<code>{ &current_path }</code></p>
-                    <p style="margin-top:12px; color: var(--text-dim); font-size: 13px;">
-                        { "Click links in sidebar to change route." }
-                    </p>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.8125rem;">
+                    { "Navigate with the sidebar to see the value change." }
+                </p>
             </div>
 
+            // ── use_is_active ─────────────────────────────
             <div class="card">
-                <h3>{ "Live — use_is_active" }</h3>
+                <h3>{ "use_is_active — Live" }</h3>
+                <p>{ "Returns " }<code>{ "true" }</code>{ " when the route matches exactly:" }</p>
                 <DemoBox>
                     <p>{ "Is Home active? " }
                         <strong style={if is_home_active { "color: var(--green)" } else { "color: var(--red)" }}>
@@ -46,32 +46,35 @@ pub fn HooksDoc() -> Html {
                         </strong>
                     </p>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.8125rem;">
+                    { "Go to the Home page to see " }<code>{ "true" }</code>{ "." }
+                </p>
             </div>
 
+            // ── use_is_partial_active ─────────────────────
             <div class="card">
-                <h3>{ "Live — use_is_exact_active" }</h3>
+                <h3>{ "use_is_partial_active — Live" }</h3>
+                <p>{ "Returns " }<code>{ "true" }</code>{ " when the current path starts with the target:" }</p>
                 <DemoBox>
-                    <p>{ "Is Home exactly active? " }
-                        <strong style={if is_home_exact { "color: var(--green)" } else { "color: var(--red)" }}>
-                            { if is_home_exact { "Yes" } else { "No" } }
-                        </strong>
-                    </p>
-                </DemoBox>
-            </div>
-
-            <div class="card">
-                <h3>{ "Live — use_is_partial_active" }</h3>
-                <DemoBox>
-                    <p>{ "Is Hooks partially active? " }
+                    <p>{ "Is /hooks partially active on this page? " }
                         <strong style={if is_hooks_partial { "color: var(--green)" } else { "color: var(--red)" }}>
                             { if is_hooks_partial { "Yes" } else { "No" } }
                         </strong>
                     </p>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.8125rem;">
+                    { "This page is " }<code>{ "/hooks" }</code>
+                    { ", so " }<code>{ "use_is_partial_active(Route::HooksDoc)" }</code>
+                    { " returns " }<code>{ "true" }</code>
+                    { ". Also true on " }<code>{ "/hooks/anything" }</code>{ "." }
+                </p>
             </div>
 
+            // ── use_breadcrumbs ───────────────────────────
             <div class="card">
-                <h3>{ "Live — Breadcrumbs" }</h3>
+                <h3>{ "use_breadcrumbs — Live" }</h3>
+                <p>{ "Returns a " }<code>{ "Vec<BreadcrumbItem<R>>" }</code>
+                { " with route hierarchy:" }</p>
                 <DemoBox>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb-list">
@@ -85,6 +88,11 @@ pub fn HooksDoc() -> Html {
                         </ol>
                     </nav>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.8125rem;">
+                    { "Each item has " }<code>{ "route" }</code>{ ", " }<code>{ "label" }</code>
+                    { ", and " }<code>{ "is_active" }</code>
+                    { " (true for the current page)." }
+                </p>
             </div>
         </div>
     }

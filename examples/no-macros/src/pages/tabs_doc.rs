@@ -32,7 +32,8 @@ pub fn TabsDoc() -> Html {
             <DocRenderer {doc} />
 
             <div class="card">
-                <h3>{ "Live Demo — Interactive Tabs" }</h3>
+                <h3>{ "Interactive Tabs — Live Demo" }</h3>
+                <p>{ "Click tabs to switch panels. The " }<code>{ "onclick" }</code>{ " callback controls state:" }</p>
                 <DemoBox>
                     <NavTabs id="demo-tabs">
                         <NavTab active={*tab1} id="dtab-1" panel_id="dpanel-1" onclick={Some(on_1)}>
@@ -52,10 +53,15 @@ pub fn TabsDoc() -> Html {
                         <p>{ "This is the details panel." }</p>
                     </NavTabPanel>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.8125rem;">
+                    { "Link tabs to panels with " }<code>{ "id" }</code>{ "/" }<code>{ "panel_id" }</code>
+                    { " and " }<code>{ "labelled_by" }</code>{ " for ARIA." }
+                </p>
             </div>
 
             <div class="card">
-                <h3>{ "Live Demo — Full Width Tabs" }</h3>
+                <h3>{ "Full Width Tabs — Live Demo" }</h3>
+                <p>{ "Use " }<code>{ "full_width=true" }</code>{ " to stretch tabs across the container:" }</p>
                 <DemoBox>
                     <NavTabs full_width=true>
                         <NavTab active=true onclick={None}>{ "Tab A" }</NavTab>

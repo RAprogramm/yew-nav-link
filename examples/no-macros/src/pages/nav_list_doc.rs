@@ -15,7 +15,8 @@ pub fn NavListDoc() -> Html {
             <DocRenderer {doc} />
 
             <div class="card">
-                <h3>{ "Live Demo — Basic Usage" }</h3>
+                <h3>{ "NavList — Live Demo" }</h3>
+                <p>{ "Wrap " }<code>{ "<NavLink>" }</code>{ " items inside " }<code>{ "<NavList>" }</code>{ ":" }</p>
                 <DemoBox>
                     <NavList aria_label="Main Navigation">
                         <NavItem>
@@ -29,10 +30,15 @@ pub fn NavListDoc() -> Html {
                         </NavItem>
                     </NavList>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.8125rem;">
+                    { "Renders " }<code>{ "<ul role=\"list\" aria-label=\"...\">" }</code>
+                    { ". Each child gets " }<code>{ "<li role=\"listitem\">" }</code>{ "." }
+                </p>
             </div>
 
             <div class="card">
-                <h3>{ "Live Demo — Disabled Items" }</h3>
+                <h3>{ "Disabled Items — Live Demo" }</h3>
+                <p>{ "Use " }<code>{ "disabled=true" }</code>{ " on " }<code>{ "<NavItem>" }</code>{ ":" }</p>
                 <DemoBox>
                     <NavList>
                         <NavItem>
@@ -43,6 +49,9 @@ pub fn NavListDoc() -> Html {
                         </NavItem>
                     </NavList>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.8125rem;">
+                    { "Disabled items get " }<code>{ "class=\"nav-item disabled\"" }</code>{ "." }
+                </p>
             </div>
         </div>
     }

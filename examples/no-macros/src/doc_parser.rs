@@ -39,6 +39,7 @@ pub fn parse_doc_block(source: &str) -> DocBlock {
     let mut sections: Vec<DocSection> = Vec::new();
     let mut current_section: Option<DocSection> = None;
     let mut in_code_block = false;
+    let mut is_first_header = true;
 
     for line in &doc_lines {
         let trimmed = line.trim();
@@ -46,7 +47,6 @@ pub fn parse_doc_block(source: &str) -> DocBlock {
         // Track code fences — don't parse headers inside them
         if trimmed.starts_with("```") {
             in_code_block = !in_code_block;
-            // Add fence line to current section/overview
             match &mut current_section {
                 Some(sec) => sec.lines.push(line.clone()),
                 None => overview.push(line.clone()),
@@ -57,11 +57,15 @@ pub fn parse_doc_block(source: &str) -> DocBlock {
         // Only treat `# ` as header OUTSIDE code blocks
         if !in_code_block {
             if let Some(header) = trimmed.strip_prefix("# ") {
+                // First header → just set title, keep content in overview
+                if is_first_header {
+                    is_first_header = false;
+                    title = header.to_string();
+                    continue;
+                }
+                // Subsequent headers → start new section
                 if let Some(sec) = current_section.take() {
                     sections.push(sec);
-                }
-                if title.is_empty() {
-                    title = header.to_string();
                 }
                 current_section = Some(DocSection {
                     title: header.to_string(),
@@ -213,7 +217,7 @@ fn CodeBlock(props: &CodeBlockProps) -> Html {
     }
 }
 
-fn copy_to_clipboard(text: &str) {
+pub fn copy_to_clipboard(text: &str) {
     let window = web_sys::window().unwrap();
     let navigator = window.navigator();
     let clipboard = navigator.clipboard();
@@ -253,6 +257,40 @@ fn render_text_block(lines: &[String]) -> Html {
     }
 }
 
+/// Checks if a line starts a numbered list item like "1. " or "23. "
+fn is_numbered_item(line: &str) -> bool {
+    let trimmed = line.trim();
+    let mut chars = trimmed.chars();
+    // Must start with digit
+    let first = match chars.next() {
+        Some(c) if c.is_ascii_digit() => c,
+        _ => return false,
+    };
+    // Consume all digits
+    let mut rest = &trimmed[first.len_utf8()..];
+    while rest.starts_with(|c: char| c.is_ascii_digit()) {
+        rest = &rest[1..];
+    }
+    // Must be followed by ". "
+    rest.starts_with(". ") || rest == "."
+}
+
+/// Extracts the text after "1. " or "- " prefix.
+fn strip_list_prefix(line: &str) -> &str {
+    let trimmed = line.trim();
+    if let Some(rest) = trimmed.strip_prefix("- ") {
+        return rest;
+    }
+    // Numbered: find ". " and skip it
+    if let Some(dot_pos) = trimmed.find(". ") {
+        let prefix = &trimmed[..dot_pos];
+        if prefix.chars().all(|c| c.is_ascii_digit()) {
+            return &trimmed[dot_pos + 2..];
+        }
+    }
+    trimmed
+}
+
 /// Renders one block (no empty lines inside) — may be a paragraph, list, or table.
 fn render_single_block(lines: &[&str]) -> Html {
     // Table block: all lines contain |
@@ -260,22 +298,27 @@ fn render_single_block(lines: &[&str]) -> Html {
         return render_inline_table(lines);
     }
 
-    // Check if any line starts with "- " → it's a list (possibly with continuations)
-    let has_list_items = lines.iter().any(|l| l.starts_with("- "));
+    // Check if any line starts with "- " or "1. " → it's a list
+    let has_bullet = lines.iter().any(|l| l.starts_with("- "));
+    let has_numbered = lines.iter().any(|l| is_numbered_item(l));
 
-    if has_list_items {
+    if has_bullet || has_numbered {
         // Merge continuation lines into list items
         let mut items: Vec<String> = Vec::new();
+        let mut is_numbered = false;
+
         for line in lines {
-            if line.starts_with("- ") {
-                items.push(line.trim_start_matches("- ").to_string());
+            let trimmed = line.trim();
+            if trimmed.starts_with("- ") {
+                items.push(trimmed.trim_start_matches("- ").to_string());
+            } else if is_numbered_item(trimmed) {
+                is_numbered = true;
+                items.push(strip_list_prefix(trimmed).to_string());
             } else if let Some(last) = items.last_mut() {
-                // Continuation: append with a space
                 last.push(' ');
-                last.push_str(line);
+                last.push_str(trimmed);
             } else {
-                // Text before first list item → paragraph
-                items.insert(0, format!("__PARA__{}", line));
+                items.insert(0, format!("__PARA__{}", trimmed));
             }
         }
 
@@ -287,7 +330,6 @@ fn render_single_block(lines: &[&str]) -> Html {
             if let Some(para) = item.strip_prefix("__PARA__") {
                 para_buf.push(para.to_string());
             } else {
-                // Flush paragraph buffer
                 if !para_buf.is_empty() {
                     let text = para_buf.join(" ");
                     result.push(html! { <p>{ render_inline(&text) }</p> });
@@ -296,20 +338,28 @@ fn render_single_block(lines: &[&str]) -> Html {
                 list_items.push(item);
             }
         }
-        // Flush remaining paragraph
         if !para_buf.is_empty() {
             let text = para_buf.join(" ");
             result.push(html! { <p>{ render_inline(&text) }</p> });
         }
-        // Render list
         if !list_items.is_empty() {
-            result.push(html! {
-                <ul>
-                    { for list_items.iter().map(|item| {
-                        html! { <li>{ render_inline(item) }</li> }
-                    })}
-                </ul>
-            });
+            if is_numbered {
+                result.push(html! {
+                    <ol>
+                        { for list_items.iter().map(|item| {
+                            html! { <li>{ render_inline(item) }</li> }
+                        })}
+                    </ol>
+                });
+            } else {
+                result.push(html! {
+                    <ul>
+                        { for list_items.iter().map(|item| {
+                            html! { <li>{ render_inline(item) }</li> }
+                        })}
+                    </ul>
+                });
+            }
         }
 
         return html! { <>{ for result }</> };

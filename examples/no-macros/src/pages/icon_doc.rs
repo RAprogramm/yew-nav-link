@@ -18,7 +18,8 @@ pub fn IconDoc() -> Html {
             <DocRenderer {doc} />
 
             <div class="card">
-                <h3>{ "Live Demo — Icon Sizes" }</h3>
+                <h3>{ "NavIcon Sizes — Live Demo" }</h3>
+                <p>{ "Three sizes: " }<code>{ "Small" }</code>{ ", " }<code>{ "Medium" }</code>{ ", " }<code>{ "Large" }</code>{ ":" }</p>
                 <DemoBox>
                     <NavList>
                         <NavItem>
@@ -41,10 +42,15 @@ pub fn IconDoc() -> Html {
                         </NavItem>
                     </NavList>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.8125rem;">
+                    { "Renders an " }<code>{ "<i aria-hidden=\"true\">" }</code>
+                    { " with size class " }<code>{ "nav-icon-sm" }</code>{ "/" }<code>{ "nav-icon-md" }</code>{ "/" }<code>{ "nav-icon-lg" }</code>{ "." }
+                </p>
             </div>
 
             <div class="card">
-                <h3>{ "Live Demo — NavLinkWithIcon" }</h3>
+                <h3>{ "NavLinkWithIcon — Live Demo" }</h3>
+                <p>{ "Wrap icon + text together:" }</p>
                 <DemoBox>
                     <NavLinkWithIcon icon={NavIconSize::Medium}>
                         <NavIcon name="star" />

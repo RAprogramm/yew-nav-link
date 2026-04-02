@@ -15,7 +15,8 @@ pub fn NavDividerDoc() -> Html {
             <DocRenderer {doc} />
 
             <div class="card">
-                <h3>{ "Live Demo — Basic Divider" }</h3>
+                <h3>{ "Basic Divider — Live Demo" }</h3>
+                <p>{ "Place " }<code>{ "<NavDivider />" }</code>{ " between items to separate sections:" }</p>
                 <DemoBox>
                     <NavList>
                         <NavItem>
@@ -27,10 +28,15 @@ pub fn NavDividerDoc() -> Html {
                         </NavItem>
                     </NavList>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.8125rem;">
+                    { "Renders " }<code>{ "<li role=\"separator\">" }</code>
+                    { " with a top border." }
+                </p>
             </div>
 
             <div class="card">
-                <h3>{ "Live Demo — Divider with Text" }</h3>
+                <h3>{ "Divider with Text — Live Demo" }</h3>
+                <p>{ "Add a label with " }<code>{ "text=\"...\"" }</code>{ ":" }</p>
                 <DemoBox>
                     <NavList>
                         <NavItem>
@@ -42,6 +48,9 @@ pub fn NavDividerDoc() -> Html {
                         </NavItem>
                     </NavList>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.8125rem;">
+                    { "Text is centered on the divider line. Useful for grouping nav items." }
+                </p>
             </div>
         </div>
     }

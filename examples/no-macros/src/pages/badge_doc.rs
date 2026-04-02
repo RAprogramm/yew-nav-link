@@ -15,7 +15,8 @@ pub fn BadgeDoc() -> Html {
             <DocRenderer {doc} />
 
             <div class="card">
-                <h3>{ "Live Demo — NavBadge" }</h3>
+                <h3>{ "NavBadge — Live Demo" }</h3>
+                <p>{ "Place " }<code>{ "<NavBadge>" }</code>{ " inside a link to show counts or status." }</p>
                 <DemoBox>
                     <NavList>
                         <NavItem>
@@ -38,10 +39,16 @@ pub fn BadgeDoc() -> Html {
                         </NavItem>
                     </NavList>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.8125rem;">
+                    { "Variants: " }<code>{ "primary" }</code>{ ", " }<code>{ "danger" }</code>
+                    { ", " }<code>{ "success" }</code>{ ", " }<code>{ "warning" }</code>
+                    { ". Use " }<code>{ "pill=true" }</code>{ " for rounded shape." }
+                </p>
             </div>
 
             <div class="card">
-                <h3>{ "Live Demo — NavHeader" }</h3>
+                <h3>{ "NavHeader — Live Demo" }</h3>
+                <p>{ "Label sections inside a navigation list:" }</p>
                 <DemoBox>
                     <NavList>
                         <NavHeader text="Main" />
@@ -50,10 +57,15 @@ pub fn BadgeDoc() -> Html {
                         <NavItem><NavLink<Route> to={Route::NavLinkDoc}>{ "NavLink" }</NavLink<Route>></NavItem>
                     </NavList>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.8125rem;">
+                    { "Renders a " }<code>{ "<li role=\"presentation\">" }</code>
+                    { " with " }<code>{ "class=\"nav-header\"" }</code>{ "." }
+                </p>
             </div>
 
             <div class="card">
-                <h3>{ "Live Demo — NavText" }</h3>
+                <h3>{ "NavText — Live Demo" }</h3>
+                <p>{ "Static text label, useful for version info or notes:" }</p>
                 <DemoBox>
                     <NavList>
                         <NavItem><NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>></NavItem>
