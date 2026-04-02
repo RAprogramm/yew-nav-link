@@ -1,5 +1,46 @@
 // ── Code blocks & syntax highlighting ──────────────────────────
 
+// Wrapper for code block + copy button
+.code-block {
+    position: relative;
+    margin: 0.625rem 0;
+
+    pre {
+        margin: 0;
+        padding-top: 2.5rem;
+    }
+}
+
+.code-copy {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.625rem;
+    z-index: 2;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all var(--transition);
+    font-family: inherit;
+    letter-spacing: 0.02em;
+
+    &:hover {
+        color: var(--text);
+        border-color: var(--accent);
+        background: var(--accent-dim);
+    }
+
+    &.copied {
+        color: var(--green);
+        border-color: var(--green);
+        background: rgba(74, 222, 128, 0.1);
+    }
+}
+
 pre {
     background: var(--bg-code);
     border: 1px solid var(--border);

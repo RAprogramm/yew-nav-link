@@ -1,12 +1,11 @@
 //! Popup overlay for live demo link clicks.
 //!
-//! Wraps demo content and intercepts `<a>` clicks to show link info
-//! instead of navigating.
+//! Wraps demo content and intercepts `<a>` clicks via `onmousedown`
+//! (fires before yew-router's `onclick`) to show link info.
 
 use web_sys::HtmlElement;
 use yew::prelude::*;
 
-/// Info displayed in the popup when a link is clicked in a demo.
 #[derive(Clone, PartialEq, Debug)]
 struct PopupInfo {
     text: String,
@@ -20,13 +19,16 @@ struct PopupInfo {
 pub fn DemoBox(props: &DemoBoxProps) -> Html {
     let popup = use_state(|| None::<PopupInfo>);
 
-    let on_click = {
+    // onmousedown fires BEFORE yew-router's onclick on NavLink
+    let on_mouse_down = {
         let popup = popup.clone();
         Callback::from(move |e: MouseEvent| {
-            // Find the closest <a> element
-            let target: HtmlElement = e.target_dyn_into().unwrap();
-            let el = target.closest("a").ok().flatten();
-            if let Some(a) = el {
+            let target: HtmlElement = match e.target_dyn_into() {
+                Some(t) => t,
+                None => return,
+            };
+
+            if let Ok(Some(a)) = target.closest("a") {
                 e.prevent_default();
                 e.stop_propagation();
 
@@ -47,20 +49,20 @@ pub fn DemoBox(props: &DemoBoxProps) -> Html {
 
     let close = {
         let popup = popup.clone();
-        Callback::from(move |e: MouseEvent| {
-            e.prevent_default();
-            popup.set(None);
-        })
+        Callback::from(move |_: MouseEvent| popup.set(None))
     };
 
     let overlay = if let Some(info) = (*popup).clone() {
-        let _cls = if info.is_active { "popup-active" } else { "" };
-        let badge_class = format!("popup-badge {}", _cls);
+        let badge_cls = if info.is_active {
+            "popup-badge popup-active"
+        } else {
+            "popup-badge"
+        };
         html! {
             <div class="popup-overlay" onclick={close.clone()}>
                 <div class="popup-card" onclick={Callback::from(|e: MouseEvent| e.stop_propagation())}>
                     <div class="popup-header">
-                        <span class={badge_class}>
+                        <span class={badge_cls}>
                             { if info.is_active { "ACTIVE" } else { "INACTIVE" } }
                         </span>
                         <button class="popup-close" onclick={close}>{ "×" }</button>
@@ -76,9 +78,7 @@ pub fn DemoBox(props: &DemoBoxProps) -> Html {
                     </div>
                     <div class="popup-row">
                         <span class="popup-label">{ "Classes" }</span>
-                        <code>
-                            { if info.classes.is_empty() { "(none)" } else { &info.classes } }
-                        </code>
+                        <code>{ if info.classes.is_empty() { "(none)" } else { &info.classes } }</code>
                     </div>
                     <div class="popup-row">
                         <span class="popup-label">{ "Active" }</span>
@@ -94,7 +94,7 @@ pub fn DemoBox(props: &DemoBoxProps) -> Html {
     };
 
     html! {
-        <div class="demo" onclick={on_click}>
+        <div class="demo" onmousedown={on_mouse_down}>
             <div class="demo-label">{ "Live Demo" }</div>
             { for props.children.iter() }
             { overlay }

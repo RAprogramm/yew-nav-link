@@ -335,9 +335,43 @@ struct CodeBlockProps {
 
 #[function_component]
 fn CodeBlock(props: &CodeBlockProps) -> Html {
+    let copied = use_state(|| false);
+    let code = props.code.clone();
+
+    let on_copy = {
+        let copied = copied.clone();
+        let code = code.clone();
+        Callback::from(move |e: MouseEvent| {
+            e.prevent_default();
+            e.stop_propagation();
+            let code = code.clone();
+            let copied = copied.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                copy_to_clipboard(&code);
+                copied.set(true);
+                gloo_timers::future::TimeoutFuture::new(1500).await;
+                copied.set(false);
+            });
+        })
+    };
+
+    let btn_text = if *copied { "✓ Copied" } else { "Copy" };
+    let btn_class = if *copied { "code-copy copied" } else { "code-copy" };
+
     html! {
-        <pre><code>{ highlight_rust(&props.code) }</code></pre>
+        <div class="code-block">
+            <button class={btn_class} onclick={on_copy}>{ btn_text }</button>
+            <pre><code>{ highlight_rust(&props.code) }</code></pre>
+        </div>
     }
+}
+
+fn copy_to_clipboard(text: &str) {
+    let window = web_sys::window().unwrap();
+    let navigator = window.navigator();
+    let clipboard = navigator.clipboard();
+    let promise = clipboard.write_text(text);
+    let _ = wasm_bindgen_futures::JsFuture::from(promise);
 }
 
 #[derive(Properties, PartialEq)]

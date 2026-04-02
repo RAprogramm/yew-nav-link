@@ -1,9 +1,10 @@
 //! # NavBadge
 //!
-//! Inline badge for displaying notification counts and status indicators
-//! within navigation items. Renders a `<span>` with variant-based CSS classes.
+//! Small colored label for showing counts, statuses, or labels inside
+//! navigation links. Renders a `<span>` you can place anywhere inside
+//! a `NavLink` or `NavItem`.
 //!
-//! # Example
+//! # Quick Start
 //!
 //! ```rust
 //! use yew::prelude::*;
@@ -27,20 +28,23 @@
 //! }
 //! ```
 //!
+//! Available variants: `"primary"`, `"success"`, `"warning"`, `"danger"`.
+//! Set `pill=true` for fully rounded corners.
+//!
 //! # CSS Classes
 //!
-//! | Class | Condition |
-//! |-------|-----------|
-//! | `nav-badge` | Always applied |
-//! | `nav-badge-pill` | Applied when `pill` is `true` |
-//! | `nav-badge-{variant}` | Applied based on the `variant` prop |
+//! | Class | When Applied |
+//! |-------|--------------|
+//! | `nav-badge` | Always |
+//! | `nav-badge-pill` | When `pill` is `true` |
+//! | `nav-badge-{variant}` | Based on the `variant` prop |
 //!
 //! # Props
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
-//! | `variant` | `&'static str` | `"primary"` | Visual variant name |
-//! | `pill` | `bool` | `false` | Pill-shaped corners |
+//! | `variant` | `&'static str` | `"primary"` | Color variant |
+//! | `pill` | `bool` | `false` | Rounded pill shape |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 //! | `children` | `Children` | — | Badge content |
 

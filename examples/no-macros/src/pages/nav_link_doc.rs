@@ -14,8 +14,10 @@ pub fn NavLinkDoc() -> Html {
         <div>
             <DocRenderer {doc} />
 
+            // ── Exact Match ────────────────────────────────
             <div class="card">
-                <h3>{ "Live Demo — Exact Match" }</h3>
+                <h3>{ "Exact Match — Live Demo" }</h3>
+                <p>{ "Click a link to see its active state in the popup." }</p>
                 <DemoBox>
                     <nav>
                         <ul class="nav-list">
@@ -31,33 +33,67 @@ pub fn NavLinkDoc() -> Html {
                         </ul>
                     </nav>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color: var(--text-muted); font-size:0.8125rem;">
+                    { "Only the link matching the current URL has " }
+                    <code>{ "class=\"nav-link active\"" }</code>
+                    { ". All others have " }
+                    <code>{ "class=\"nav-link\"" }</code>
+                    { "." }
+                </p>
             </div>
 
+            // ── Partial Match ──────────────────────────────
             <div class="card">
-                <h3>{ "Live Demo — Partial Match" }</h3>
+                <h3>{ "Partial Match — Live Demo" }</h3>
+                <p>
+                    { "With " }<code>{ "partial=true" }</code>
+                    { ", the link stays active on any nested route." }
+                </p>
                 <DemoBox>
                     <nav>
                         <ul class="nav-list">
                             <li class="nav-item">
                                 <NavLink<Route> to={Route::Home} partial=true>
-                                    { "Home (partial) — stays active on nested" }
+                                    { "Home (partial)" }
                                 </NavLink<Route>>
                             </li>
                         </ul>
                     </nav>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color: var(--text-muted); font-size:0.8125rem;">
+                    { "Partial matching compares segments: " }
+                    <code>{ "/docs" }</code>
+                    { " matches " }<code>{ "/docs/api" }</code>
+                    { " but NOT " }<code>{ "/documentation" }</code>
+                    { "." }
+                </p>
             </div>
 
+            // ── Function Syntax ────────────────────────────
             <div class="card">
-                <h3>{ "Live Demo — Function Syntax" }</h3>
+                <h3>{ "Function Syntax — Live Demo" }</h3>
+                <p>
+                    { "Use " }<code>{ "nav_link()" }</code>
+                    { " for text-only links without JSX:" }
+                </p>
                 <DemoBox>
                     <nav>
                         <ul class="nav-list">
-                            <li>{ nav_link(Route::Home, "Home (Exact)", Match::Exact) }</li>
-                            <li>{ nav_link(Route::NavLinkDoc, "NavLink Doc (Exact)", Match::Exact) }</li>
+                            <li class="nav-item">
+                                { nav_link(Route::Home, "Home (Exact)", Match::Exact) }
+                            </li>
+                            <li class="nav-item">
+                                { nav_link(Route::NavLinkDoc, "NavLink (Exact)", Match::Exact) }
+                            </li>
                         </ul>
                     </nav>
                 </DemoBox>
+                <p style="margin-top:0.5rem; color: var(--text-muted); font-size:0.8125rem;">
+                    { "The third argument controls matching: " }
+                    <code>{ "Match::Exact" }</code>
+                    { " or " }<code>{ "Match::Partial" }</code>
+                    { "." }
+                </p>
             </div>
         </div>
     }

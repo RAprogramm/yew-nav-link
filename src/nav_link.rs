@@ -1,80 +1,91 @@
-//! Navigation link component with automatic active state detection.
+//! # NavLink
 //!
-//! This module provides the [`NavLink`] component and [`nav_link`] helper
-//! function for building navigation menus in Yew applications. The component
-//! automatically detects when its target route matches the current URL and
-//! applies an `active` CSS class accordingly.
+//! Drop-in replacement for Yew Router's `<Link>` that automatically adds an
+//! `active` CSS class when the current URL matches the target route. This
+//! means you never have to manually track which page the user is on —
+//! `NavLink` does it for you.
 //!
-//! # Features
-//!
-//! - **Automatic Active State**: Compares the target route against the current
-//!   route and applies the `active` class when they match.
-//! - **Type-Safe Routing**: Leverages Yew Router's [`Routable`] trait for
-//!   compile-time route validation.
-//! - **Flexible Children**: Accepts any valid Yew children, including text,
-//!   HTML elements, or other components.
-//! - **CSS Integration**: Renders with `nav-link` base class, compatible with
-//!   Bootstrap and similar CSS frameworks.
-//!
-//! # CSS Classes
-//!
-//! | Class | Condition |
-//! |-------|-----------|
-//! | `nav-link` | Always applied |
-//! | `active` | Applied when the target route matches the current route |
-//!
-//! # Match Modes
-//!
-//! NavLink supports two matching modes via the `partial` prop:
-//!
-//! - **Exact** (default): Link is active only when paths match exactly
-//! - **Partial**: Link is active when current path starts with target path
+//! # Quick Start
 //!
 //! ```rust
 //! use yew::prelude::*;
 //! use yew_nav_link::NavLink;
 //! use yew_router::prelude::*;
 //!
-//! #[derive(Clone, PartialEq, Routable)]
-//! enum Route {
-//!     #[at("/docs")]
-//!     Docs,
-//!     #[at("/docs/api")]
-//!     DocsApi
-//! }
-//!
+//! # #[derive(Clone, PartialEq, Routable)]
+//! # enum Route { #[at("/")] Home, #[at("/about")] About }
 //! #[component]
-//! fn Navigation() -> Html {
+//! fn Nav() -> Html {
 //!     html! {
 //!         <nav>
-//!             // Exact: active only on /docs
-//!             <NavLink<Route> to={Route::Docs}>{ "Docs" }</NavLink<Route>>
-//!             // Partial: active on /docs, /docs/api, /docs/*
-//!             <NavLink<Route> to={Route::Docs} partial=true>{ "Docs" }</NavLink<Route>>
+//!             <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+//!             <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
 //!         </nav>
 //!     }
 //! }
 //! ```
 //!
-//! # Function Syntax
+//! When the user visits `/about`, the second link automatically gets
+//! `class="nav-link active"`. All other links get `class="nav-link"`.
 //!
-//! For text-only links, use [`nav_link`] with explicit [`Match`] mode:
+//! # CSS Classes
+//!
+//! | Class | When Applied |
+//! |-------|--------------|
+//! | `nav-link` | Always |
+//! | `active` | When the target route matches the current URL |
+//!
+//! This works out of the box with Bootstrap (`nav-link active`), Tailwind
+//! (use `class:` bindings), or any CSS framework.
+//!
+//! # Exact vs Partial Matching
+//!
+//! By default (`partial=false`), NavLink uses **exact** matching: the link
+//! is active only when the URL matches the route path exactly.
+//!
+//! With `partial=true`, NavLink uses **prefix** matching: the link stays
+//! active on any nested route. This is useful for sidebar navigation where
+//! a parent section should highlight even when the user is on a sub-page.
 //!
 //! ```rust
 //! use yew::prelude::*;
-//! use yew_nav_link::{Match, nav_link};
+//! use yew_nav_link::NavLink;
 //! use yew_router::prelude::*;
 //!
-//! #[derive(Clone, PartialEq, Debug, Routable)]
-//! enum Route {
-//!     #[at("/")]
-//!     Home,
-//!     #[at("/docs")]
-//!     Docs
-//! }
-//!
+//! # #[derive(Clone, PartialEq, Routable)]
+//! # enum Route { #[at("/docs")] Docs, #[at("/docs/api")] DocsApi }
 //! #[component]
-//! fn Navigation() -> Html {
+//! fn Nav() -> Html {
+//!     html! {
+//!         <nav>
+//!             // Exact: active ONLY on /docs
+//!             <NavLink<Route> to={Route::Docs}>{ "Docs (exact)" }</NavLink<Route>>
+//!
+//!             // Partial: active on /docs, /docs/api, /docs/anything
+//!             <NavLink<Route> to={Route::Docs} partial=true>
+//!                 { "Docs (partial)" }
+//!             </NavLink<Route>>
+//!         </nav>
+//!     }
+//! }
+//! ```
+//!
+//! Partial matching compares path segments, so `/docs` won't accidentally
+//! match `/documentation`.
+//!
+//! # Function Syntax
+//!
+//! If you prefer a function call instead of JSX, use `nav_link()`:
+//!
+//! ```rust
+//! use yew::prelude::*;
+//! use yew_nav_link::{nav_link, Match};
+//! use yew_router::prelude::*;
+//!
+//! # #[derive(Clone, PartialEq, Debug, Routable)]
+//! # enum Route { #[at("/")] Home, #[at("/docs")] Docs }
+//! #[component]
+//! fn Menu() -> Html {
 //!     html! {
 //!         <ul class="nav">
 //!             <li>{ nav_link(Route::Home, "Home", Match::Exact) }</li>
@@ -83,6 +94,14 @@
 //!     }
 //! }
 //! ```
+//!
+//! # Props
+//!
+//! | Prop | Type | Default | Description |
+//! |------|------|---------|-------------|
+//! | `to` | `R` | — | Target route (required) |
+//! | `children` | `Children` | — | Link content (required) |
+//! | `partial` | `bool` | `false` | Enable prefix matching |
 
 use std::marker::PhantomData;
 

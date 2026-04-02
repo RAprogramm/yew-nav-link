@@ -1,9 +1,11 @@
 //! # NavList
 //!
-//! Semantic `<ul>` container for navigation items with `role="list"`
-//! and a configurable `aria-label`.
+//! A `<ul>` wrapper for your navigation links. Renders with `role="list"`
+//! and an `aria-label` for screen readers. Use this as the outer container
+//! whenever you build a nav menu — it keeps your markup semantic and
+//! accessible by default.
 //!
-//! # Example
+//! # Quick Start
 //!
 //! ```rust
 //! use yew::prelude::*;
@@ -25,15 +27,18 @@
 //!
 //! # CSS Classes
 //!
-//! | Class | Condition |
-//! |-------|-----------|
-//! | `nav-list` | Always applied |
+//! | Class | When Applied |
+//! |-------|--------------|
+//! | `nav-list` | Always |
 //!
 //! # Props
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
-//! | `aria_label` | `Option<&'static str>` | `"navigation"` | ARIA label |
+//! | `aria_label` | `Option<&'static str>` | `"navigation"` | Screen reader label |
+//! | `id` | `Option<&'static str>` | `None` | Element id |
+//! | `classes` | `Classes` | — | Additional CSS classes |
+//! | `children` | `Children` | — | List items |
 //! | `id` | `Option<&'static str>` | `None` | Element id |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 //! | `children` | `Children` | — | Navigation items |
