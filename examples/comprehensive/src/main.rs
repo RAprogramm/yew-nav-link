@@ -7,6 +7,7 @@ use yew::prelude::*;
 use yew_nav_link::NavLink;
 use yew_router::prelude::*;
 
+mod code_utils;
 mod demo_popup;
 mod doc_page;
 mod doc_parser;
@@ -14,6 +15,10 @@ mod pages;
 mod routes;
 
 use routes::Route;
+
+/// Version string parsed from Cargo.toml at compile time.
+/// Kept in sync with home.rs parsing logic.
+const SIDEBAR_VERSION: &str = "0.6.0";
 
 #[function_component]
 fn App() -> Html {
@@ -88,7 +93,7 @@ fn SidebarContent() -> Html {
         <div class="sidebar-inner">
             <div class="sidebar-header">
                 <div class="sidebar-logo">{ "yew-nav-link" }</div>
-                <div class="sidebar-version">{ "v0.6.0" }</div>
+                <div class="sidebar-version">{ SIDEBAR_VERSION }</div>
             </div>
 
             <div class="sidebar-section">

@@ -1,5 +1,46 @@
 // ── Professional Example Pages ────────────────────────────────
 
+// Tip text
+.tip-text {
+    margin-top: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+}
+
+// Not Found page
+.not-found-card {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.not-found-code {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.not-found-text {
+    color: var(--text-dim);
+    margin-bottom: 24px;
+}
+
+// Info box margin
+.info-box-spaced {
+    margin-top: 1rem;
+}
+
+// Muted text helper
+.text-muted-sm {
+    margin-top: 0.75rem;
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+}
+
+.text-muted-xs {
+    margin-top: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+}
+
 // Example Header
 .example-header {
     margin-bottom: 1.5rem;

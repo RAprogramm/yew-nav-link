@@ -1,5 +1,5 @@
 use crate::demo_popup::DemoBox;
-use crate::doc_page::CopyCode;
+use crate::code_utils::CopyCode;
 use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::NavLink;

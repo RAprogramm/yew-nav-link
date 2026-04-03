@@ -2,7 +2,7 @@ use crate::routes::Route;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-#[derive(Properties, PartialEq)]
+#[derive(Properties, PartialEq, Clone)]
 struct ExampleCardProps {
     route: Route,
     title: String,
@@ -17,7 +17,7 @@ struct ExampleCardProps {
 fn ExampleCard(props: &ExampleCardProps) -> Html {
     let route = props.route.clone();
     html! {
-        <a href={route.to_path()} style="text-decoration:none;">
+        <Link<Route> to={route.clone()} classes="example-card-link">
             <div class="example-card-full">
                 <div class="example-card-header">
                     <span class={format!("example-tag tag-{}", props.tag_color)}>{ &props.tag }</span>
@@ -31,7 +31,7 @@ fn ExampleCard(props: &ExampleCardProps) -> Html {
                     })}
                 </div>
             </div>
-        </a>
+        </Link<Route>>
     }
 }
 

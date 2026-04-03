@@ -6,7 +6,7 @@
 use yew::prelude::*;
 
 /// Duration (ms) for the "Copied" feedback badge.
-pub const COPIED_FEEDBACK_MS: u64 = 1500;
+pub const COPIED_FEEDBACK_MS: u32 = 1500;
 
 // ── Clipboard ──────────────────────────────────────────────────
 

@@ -236,7 +236,7 @@ pub fn Home() -> Html {
 
 // ── Helpers ────────────────────────────────────────────────────
 
-#[derive(Properties, PartialEq)]
+#[derive(Properties, PartialEq, Clone)]
 struct FeatureCardProps {
     route: Route,
     title: String,
@@ -247,11 +247,11 @@ struct FeatureCardProps {
 fn FeatureCard(props: &FeatureCardProps) -> Html {
     let route = props.route.clone();
     html! {
-        <a href={route.to_path()} style="text-decoration:none;">
+        <Link<Route> to={route.clone()} classes="feature-card-link">
             <div class="feature-card">
                 <h4>{ &props.title }</h4>
                 <p>{ &props.desc }</p>
             </div>
-        </a>
+        </Link<Route>>
     }
 }

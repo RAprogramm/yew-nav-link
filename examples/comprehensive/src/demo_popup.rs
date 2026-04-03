@@ -75,7 +75,41 @@ pub fn DemoBox(props: &DemoBoxProps) -> Html {
         } else {
             "tooltip-badge"
         };
-        let style = format!("left:{}px; top:{}px;", info.x + 12, info.y + 20,);
+
+        let window = web_sys::window();
+        let vw = window
+            .as_ref()
+            .and_then(|w| w.inner_width().ok())
+            .and_then(|v| v.as_f64())
+            .unwrap_or(1920.0) as i32;
+        let vh = window
+            .as_ref()
+            .and_then(|w| w.inner_height().ok())
+            .and_then(|v| v.as_f64())
+            .unwrap_or(1080.0) as i32;
+
+        let tooltip_w = 220;
+        let tooltip_h = 120;
+        let offset_x = 12;
+        let offset_y = 20;
+
+        let mut x = info.x + offset_x;
+        let mut y = info.y + offset_y;
+
+        if x + tooltip_w > vw {
+            x = info.x - tooltip_w - offset_x;
+        }
+        if y + tooltip_h > vh {
+            y = vh - tooltip_h - 8;
+        }
+        if x < 0 {
+            x = 8;
+        }
+        if y < 0 {
+            y = 8;
+        }
+
+        let style = format!("left:{}px; top:{}px;", x, y);
         html! {
             <div class="tooltip-card" {style}>
                 <span class={badge_cls}>

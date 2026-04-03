@@ -33,7 +33,7 @@
 //! Macros have zero runtime cost — they expand at compile time into
 //! the same component tree you'd write manually.
 
-use crate::doc_page::CopyCode;
+use crate::code_utils::CopyCode;
 use crate::doc_parser::{parse_doc_block, DocRenderer};
 use crate::routes::Route;
 use yew::prelude::*;
