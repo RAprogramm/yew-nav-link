@@ -254,11 +254,15 @@ fn CodeBlock(props: &CodeBlockProps) -> Html {
 }
 
 pub fn copy_to_clipboard(text: &str) {
-    let window = web_sys::window().unwrap();
+    let Some(window) = web_sys::window() else { return };
     let navigator = window.navigator();
     let clipboard = navigator.clipboard();
     let promise = clipboard.write_text(text);
-    let _ = wasm_bindgen_futures::JsFuture::from(promise);
+    wasm_bindgen_futures::spawn_local(async move {
+        if let Err(e) = wasm_bindgen_futures::JsFuture::from(promise).await {
+            web_sys::console::error_1(&e);
+        }
+    });
 }
 
 // ── Text block (paragraphs + lists + tables) ───────────────────

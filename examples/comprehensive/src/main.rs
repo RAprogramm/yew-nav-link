@@ -72,6 +72,12 @@ fn switch(route: Route) -> Html {
         Route::BreadcrumbsDoc => html! { <pages::BreadcrumbsDoc /> },
         Route::UtilsDoc => html! { <pages::UtilsDoc /> },
         Route::MacrosDoc => html! { <pages::MacrosDoc /> },
+        Route::ExamplesHome => html! { <pages::ExamplesHome /> },
+        Route::BasicExample => html! { <pages::BasicExample /> },
+        Route::BootstrapExample => html! { <pages::BootstrapExample /> },
+        Route::TailwindExample => html! { <pages::TailwindExample /> },
+        Route::NestedRoutesExample => html! { <pages::NestedRoutesExample /> },
+        Route::WithMacrosExample => html! { <pages::WithMacrosExample /> },
         Route::NotFound => html! { <pages::NotFound /> },
     }
 }
@@ -119,6 +125,18 @@ fn SidebarContent() -> Html {
                 <div class="sidebar-section-title">{ "Macros" }</div>
                 <nav>
                     <NavLink<Route> to={Route::MacrosDoc}>{ "All Macros" }</NavLink<Route>>
+                </nav>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">{ "Examples" }</div>
+                <nav>
+                    <NavLink<Route> to={Route::ExamplesHome}>{ "Overview" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::BasicExample}>{ "Basic" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::BootstrapExample}>{ "Bootstrap 5" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::TailwindExample}>{ "Tailwind CSS" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::NestedRoutesExample}>{ "Nested Routes" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::WithMacrosExample}>{ "With Macros" }</NavLink<Route>>
                 </nav>
             </div>
         </div>

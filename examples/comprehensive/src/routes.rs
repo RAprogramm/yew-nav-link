@@ -28,6 +28,18 @@ pub enum Route {
     UtilsDoc,
     #[at("/macros")]
     MacrosDoc,
+    #[at("/examples")]
+    ExamplesHome,
+    #[at("/examples/basic")]
+    BasicExample,
+    #[at("/examples/bootstrap")]
+    BootstrapExample,
+    #[at("/examples/tailwind")]
+    TailwindExample,
+    #[at("/examples/nested-routes")]
+    NestedRoutesExample,
+    #[at("/examples/with-macros")]
+    WithMacrosExample,
     #[not_found]
     #[at("/404")]
     NotFound,
