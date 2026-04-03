@@ -63,9 +63,11 @@ pub fn DemoBox(props: &DemoBoxProps) -> Html {
             Some(t) => t,
             None => return,
         };
-        if target.closest("a").ok().flatten().is_some() {
+        if let Some(a) = target.closest("a").ok().flatten() {
+            // Only prevent navigation on <a> links, let other elements work normally
             e.prevent_default();
-            e.stop_propagation();
+            // Don't stop propagation — let clicks reach buttons and other interactive elements
+            let _ = a;
         }
     });
 

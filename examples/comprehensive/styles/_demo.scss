@@ -6,6 +6,7 @@
     border-radius: 0.625rem;
     padding: 1rem;
     margin: 0.75rem 0;
+    overflow: visible;
 }
 
 .demo-label {
@@ -105,11 +106,15 @@
 .demo .nav-icon {
     font-style: normal;
     margin-right: 0.25rem;
-
-    &-sm { font-size: 0.75rem; }
-    &-md { font-size: 1.5rem; }
-    &-lg { font-size: 2.25rem; }
+    display: inline-block;
+    line-height: 1;
 }
+.demo a .nav-icon.nav-icon-sm,
+.demo .nav-icon.nav-icon-sm { font-size: 0.75rem; }
+.demo a .nav-icon.nav-icon-md,
+.demo .nav-icon.nav-icon-md { font-size: 1.5rem; }
+.demo a .nav-icon.nav-icon-lg,
+.demo .nav-icon.nav-icon-lg { font-size: 2.25rem; }
 
 .demo .nav-link-with-icon {
     display: inline-flex;
@@ -129,6 +134,7 @@
 .demo .nav-dropdown {
     list-style: none;
     position: relative;
+    display: inline-block;
 }
 
 .demo .nav-dropdown-toggle {
@@ -139,21 +145,30 @@
     border-radius: 0.375rem;
     cursor: pointer;
     font-size: 0.8125rem;
-    width: 100%;
     text-align: left;
     transition: border-color var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
 
-    &:hover { border-color: var(--accent); }
+    &:hover { border-color: var(--accent); background: var(--accent-dim); }
 }
 
 .demo .nav-dropdown-menu {
     list-style: none;
     padding: 0.375rem 0;
-    margin-top: 0.1875rem;
+    margin: 0;
     background: var(--bg-elevated);
     border: 1px solid var(--border);
     border-radius: 0.5rem;
     box-shadow: 0 0.75rem 2rem rgba(0,0,0,.35);
+    display: none;
+    position: absolute;
+    margin-top: 3px;
+
+    &.open {
+        display: block !important;
+    }
 }
 
 .demo .nav-dropdown-item {
