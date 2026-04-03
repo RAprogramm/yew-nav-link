@@ -51,7 +51,8 @@
         border: 1px solid var(--border);
         font-size: 0.6875rem;
         color: var(--accent);
-        word-break: break-all;
+        white-space: nowrap;
+        word-break: keep-all;
     }
 }
 

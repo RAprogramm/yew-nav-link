@@ -11,6 +11,7 @@ mod code_utils;
 mod demo_popup;
 mod doc_page;
 mod doc_parser;
+mod file_tree;
 mod pages;
 mod routes;
 

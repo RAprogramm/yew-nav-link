@@ -80,6 +80,96 @@ pub fn highlight_rust(code: &str) -> Html {
     }
 }
 
+pub fn highlight_css(code: &str) -> Html {
+    let tokens = tokenize_css(code);
+    html! {
+        <>
+            { for tokens.iter().map(|(cls, txt)| {
+                if cls.is_empty() {
+                    html! { <>{ txt }</> }
+                } else {
+                    let class = (*cls).to_string();
+                    let text = txt.clone();
+                    html! { <span {class}>{ text }</span> }
+                }
+            })}
+        </>
+    }
+}
+
+pub fn tokenize_css(code: &str) -> Vec<(&'static str, String)> {
+    let mut out: Vec<(&'static str, String)> = Vec::new();
+    let bytes = code.as_bytes();
+    let len = bytes.len();
+    let mut i = 0;
+
+    while i < len {
+        let c = bytes[i] as char;
+
+        if c == '/' && i + 1 < len && bytes[i + 1] as char == '*' {
+            let start = i;
+            i += 2;
+            while i + 1 < len && !(bytes[i] as char == '*' && bytes[i + 1] as char == '/') { i += 1; }
+            if i + 1 < len { i += 2; }
+            out.push(("cm", code[start..i].to_string()));
+            continue;
+        }
+
+        if c == '.' || c == '#' {
+            let start = i;
+            i += 1;
+            while i < len && (bytes[i].is_ascii_alphanumeric() || bytes[i] == b'_' || bytes[i] == b'-') { i += 1; }
+            out.push(("sl", code[start..i].to_string()));
+            continue;
+        }
+
+        if c == '"' {
+            let start = i;
+            i += 1;
+            while i < len && bytes[i] as char != '"' {
+                if bytes[i] as char == '\\' { i += 1; }
+                i += 1;
+            }
+            if i < len { i += 1; }
+            out.push(("str", code[start..i].to_string()));
+            continue;
+        }
+
+        if c.is_ascii_digit() {
+            let start = i;
+            while i < len && (bytes[i].is_ascii_alphanumeric() || bytes[i] == b'.' || bytes[i] == b'%') { i += 1; }
+            out.push(("num", code[start..i].to_string()));
+            continue;
+        }
+
+        if c == ':' && (i == 0 || bytes[i - 1] as char != ':') {
+            let start = i;
+            i += 1;
+            while i < len && bytes[i].is_ascii_whitespace() { i += 1; }
+            let val_start = i;
+            while i < len && bytes[i] as char != ';' && bytes[i] as char != '}' { i += 1; }
+            if i > val_start {
+                out.push(("", code[start..val_start].to_string()));
+                out.push(("pr", code[val_start..i].to_string()));
+            } else {
+                out.push(("", code[start..i].to_string()));
+            }
+            continue;
+        }
+
+        if c == '{' || c == '}' || c == ';' {
+            out.push(("pn", c.to_string()));
+            i += 1;
+            continue;
+        }
+
+        out.push(("", c.to_string()));
+        i += 1;
+    }
+
+    out
+}
+
 pub fn tokenize_rust(code: &str) -> Vec<(&'static str, String)> {
     let mut out: Vec<(&'static str, String)> = Vec::new();
     let bytes = code.as_bytes();
@@ -199,6 +289,8 @@ pub fn tokenize_rust(code: &str) -> Vec<(&'static str, String)> {
 #[derive(Properties, PartialEq, Clone)]
 pub struct CopyCodeProps {
     pub code: String,
+    #[prop_or_default]
+    pub language: String,
 }
 
 /// Syntax-highlighted code block with a "Copy" button.
@@ -231,10 +323,172 @@ pub fn CopyCode(props: &CopyCodeProps) -> Html {
     let btn_text = if *copied { "\u{2713} Copied" } else { "Copy" };
     let btn_class = if *copied { "code-copy copied" } else { "code-copy" };
 
+    let highlighted = match props.language.as_str() {
+        "css" => highlight_css(&display_code),
+        "html" => highlight_html(&display_code),
+        "bash" => highlight_bash(&display_code),
+        _ => highlight_rust(&display_code),
+    };
+
     html! {
         <div class="code-block">
             <button class={btn_class} onclick={on_copy}>{ btn_text }</button>
-            <pre><code>{ highlight_rust(&display_code) }</code></pre>
+            <pre><code>{ highlighted }</code></pre>
         </div>
     }
+}
+
+// ── HTML highlighter ────────────────────────────────────────────
+
+pub fn highlight_html(code: &str) -> Html {
+    let tokens = tokenize_html(code);
+    html! {
+        <>
+            { for tokens.iter().map(|(cls, txt)| {
+                if cls.is_empty() {
+                    html! { <>{ txt }</> }
+                } else {
+                    let class = (*cls).to_string();
+                    let text = txt.clone();
+                    html! { <span {class}>{ text }</span> }
+                }
+            })}
+        </>
+    }
+}
+
+pub fn tokenize_html(code: &str) -> Vec<(&'static str, String)> {
+    let mut out: Vec<(&'static str, String)> = Vec::new();
+    let bytes = code.as_bytes();
+    let len = bytes.len();
+    let mut i = 0;
+
+    while i < len {
+        let c = bytes[i] as char;
+
+        if c == '<' && i + 1 < len && bytes[i + 1] as char == '!' {
+            let start = i;
+            i += 2;
+            while i < len && bytes[i] as char != '>' { i += 1; }
+            if i < len { i += 1; }
+            out.push(("cm", code[start..i].to_string()));
+            continue;
+        }
+
+        if c == '<' {
+            let start = i;
+            i += 1;
+            if i < len && bytes[i] as char == '/' { i += 1; }
+            while i < len && (bytes[i].is_ascii_alphanumeric() || bytes[i] == b'-') { i += 1; }
+            out.push(("tn", code[start..i].to_string()));
+
+            while i < len && bytes[i] as char != '>' {
+                if bytes[i] as char == '"' {
+                    let s = i;
+                    i += 1;
+                    while i < len && bytes[i] as char != '"' {
+                        if bytes[i] as char == '\\' { i += 1; }
+                        i += 1;
+                    }
+                    if i < len { i += 1; }
+                    out.push(("str", code[s..i].to_string()));
+                } else if bytes[i].is_ascii_whitespace() {
+                    let s = i;
+                    while i < len && bytes[i].is_ascii_whitespace() { i += 1; }
+                    out.push(("", code[s..i].to_string()));
+                } else if bytes[i] as char == '=' {
+                    out.push(("pn", "=".to_string()));
+                    i += 1;
+                } else {
+                    let s = i;
+                    while i < len && bytes[i] as char != '>' && bytes[i] as char != '"' && !bytes[i].is_ascii_whitespace() { i += 1; }
+                    out.push(("at", code[s..i].to_string()));
+                }
+            }
+            if i < len {
+                out.push(("pn", ">".to_string()));
+                i += 1;
+            }
+            continue;
+        }
+
+        out.push(("", c.to_string()));
+        i += 1;
+    }
+
+    out
+}
+
+// ── Bash highlighter ────────────────────────────────────────────
+
+pub fn highlight_bash(code: &str) -> Html {
+    let tokens = tokenize_bash(code);
+    html! {
+        <>
+            { for tokens.iter().map(|(cls, txt)| {
+                if cls.is_empty() {
+                    html! { <>{ txt }</> }
+                } else {
+                    let class = (*cls).to_string();
+                    let text = txt.clone();
+                    html! { <span {class}>{ text }</span> }
+                }
+            })}
+        </>
+    }
+}
+
+pub fn tokenize_bash(code: &str) -> Vec<(&'static str, String)> {
+    let mut out: Vec<(&'static str, String)> = Vec::new();
+    let bytes = code.as_bytes();
+    let len = bytes.len();
+    let mut i = 0;
+
+    while i < len {
+        let c = bytes[i] as char;
+
+        if c == '#' {
+            let start = i;
+            while i < len && bytes[i] as char != '\n' { i += 1; }
+            out.push(("cm", code[start..i].to_string()));
+            continue;
+        }
+
+        if c == '"' {
+            let start = i;
+            i += 1;
+            while i < len && bytes[i] as char != '"' {
+                if bytes[i] as char == '\\' { i += 1; }
+                i += 1;
+            }
+            if i < len { i += 1; }
+            out.push(("str", code[start..i].to_string()));
+            continue;
+        }
+
+        if c.is_ascii_digit() {
+            let start = i;
+            while i < len && bytes[i].is_ascii_alphanumeric() { i += 1; }
+            out.push(("num", code[start..i].to_string()));
+            continue;
+        }
+
+        if c.is_ascii_alphabetic() || c == '_' {
+            let start = i;
+            while i < len && (bytes[i].is_ascii_alphanumeric() || bytes[i] == b'_' || bytes[i] == b'-') { i += 1; }
+            let word = &code[start..i];
+            let cls: &'static str = match word {
+                "cd" | "cargo" | "trunk" | "rustup" | "rm" | "mkdir" | "ls" | "cat" => "kw",
+                "install" | "serve" | "build" | "add" | "check" | "test" | "target" => "fn",
+                _ => "",
+            };
+            out.push((cls, word.to_string()));
+            continue;
+        }
+
+        out.push(("", c.to_string()));
+        i += 1;
+    }
+
+    out
 }

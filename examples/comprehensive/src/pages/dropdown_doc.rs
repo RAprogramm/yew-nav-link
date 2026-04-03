@@ -1,5 +1,6 @@
-use crate::code_utils::CopyCode;
+use crate::code_utils::{highlight_css, CopyCode};
 use crate::demo_popup::DemoBox;
+use crate::doc_page::{DemoCard, DocPage, Tip};
 use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::{
@@ -48,7 +49,7 @@ fn Nav() -> Html {
     }
 }"#;
 
-const CODE_HTML_STRUCTURE: &str = r##"<li class="nav-dropdown" role="presentation">
+const CODE_HTML: &str = r##"<li class="nav-dropdown" role="presentation">
   <button class="nav-dropdown-toggle" aria-expanded="false">
     Settings
     <span class="nav-dropdown-caret"> ▼</span>
@@ -59,41 +60,91 @@ const CODE_HTML_STRUCTURE: &str = r##"<li class="nav-dropdown" role="presentatio
     </li>
     <li class="nav-dropdown-divider" role="separator"></li>
     <li class="nav-dropdown-item disabled" role="menuitem">
-      <a href="#">Admin</a>
+      <span>Admin</span>
     </li>
   </ul>
 </li>"##;
 
-const CODE_CUSTOM: &str = r#"<NavDropdown toggle_text="More" classes="custom-dropdown">
-    <NavDropdownItem classes="custom-item">
-        <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-    </NavDropdownItem>
-</NavDropdown>"#;
+const CODE_CSS: &str = r##".custom-dropdown .nav-dropdown-toggle {
+    background: #1e293b;
+    color: #e2e8f0;
+    border: 1px solid #334155;
+}
+
+.custom-dropdown .nav-dropdown-menu {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 0.5rem;
+}
+
+.custom-dropdown .nav-dropdown-item a {
+    color: #cbd5e1;
+}
+
+.custom-dropdown .nav-dropdown-item a:hover {
+    background: #1e293b;
+    color: #f8fafc;
+}"##;
+
+const STATE_CODE: &str = r#"let open = use_state(|| false);
+
+let on_toggle = Callback::from(move |e: MouseEvent| {
+    e.stop_propagation();
+    open.set(!*open);
+});
+
+let menu_class = if *open {
+    "nav-dropdown-menu open"
+} else {
+    "nav-dropdown-menu"
+};"#;
 
 #[function_component]
 pub fn DropdownDoc() -> Html {
     html! {
-        <div>
-            // ── Header ────────────────────────────────────────
-            <div class="example-header">
-                <div class="example-header-top">
-                    <span class="example-tag tag-indigo">{ "component" }</span>
-                    <span class="example-source">{ "src/components/dropdown.rs" }</span>
-                </div>
-                <h2>{ "NavDropdown" }</h2>
-                <p class="example-desc">
-                    { "Collapsible dropdown menu for grouping related navigation items. " }
-                    { "Renders a " }<code>{ "<li>" }</code>
-                    { " with a toggle button and a nested " }<code>{ "<ul>" }</code>
-                    { " menu. Supports dividers, disabled items, and custom CSS classes." }
-                </p>
-            </div>
+        <DocPage source={SRC.to_string()}>
+
+            <DemoCard
+                title="Basic Dropdown"
+                description={html!{
+                    <>
+                        { "A dropdown with items, a divider, and a disabled entry. " }
+                        { "Click the toggle to open/close the menu." }
+                    </>
+                }}
+                code={CODE_BASIC.to_string()}
+                tip={html!{
+                    <Tip>
+                        { "Use " }<code>{ "<NavDropdownDivider />" }</code>
+                        { " between groups. Set " }<code>{ "disabled=true" }</code>
+                        { " on items to prevent selection." }
+                    </Tip>
+                }}
+            >
+                <NavList>
+                    <NavItem>
+                        <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+                    </NavItem>
+                    <NavDropdown toggle_text="Settings">
+                        <NavDropdownItem>
+                            <NavLink<Route> to={Route::Home}>{ "Profile" }</NavLink<Route>>
+                        </NavDropdownItem>
+                        <NavDropdownItem>
+                            <NavLink<Route> to={Route::NavLinkDoc}>{ "Security" }</NavLink<Route>>
+                        </NavDropdownItem>
+                        <NavDropdownDivider />
+                        <NavDropdownItem disabled=true>
+                            { "Admin (disabled)" }
+                        </NavDropdownItem>
+                    </NavDropdown>
+                </NavList>
+            </DemoCard>
 
             // ── Architecture ──────────────────────────────────
             <div class="card">
                 <h3>{ "Architecture" }</h3>
                 <p>
-                    { "NavDropdown is a composite component built from three sub-components that work together to create a hierarchical navigation structure." }
+                    { "NavDropdown is a composite of three sub-components that render a semantic nested list structure." }
                 </p>
                 <div class="arch-diagram-small">
                     <div class="arch-box arch-box-indigo">{ "NavDropdown" }</div>
@@ -104,44 +155,6 @@ pub fn DropdownDoc() -> Html {
                     <div class="arch-arrow-sm">{ "+" }</div>
                     <div class="arch-box arch-box-orange">{ "NavLink<R>" }</div>
                 </div>
-                <div class="info-box">
-                    <strong>{ "DOM structure:" }</strong>
-                    { " The dropdown renders as " }<code>{ "<li>" }</code>
-                    { " (not " }<code>{ "<div>" }</code>{ ") to maintain semantic " }<code>{ "<ul>" }</code>
-                    { " list structure. The toggle is a " }<code>{ "<button>" }</code>
-                    { " (not " }<code>{ "<a>" }</code>{ ") for proper accessibility." }
-                </div>
-            </div>
-
-            // ── Basic Usage ───────────────────────────────────
-            <div class="card">
-                <h3>{ "Basic Dropdown" }</h3>
-                <p>
-                    { "A dropdown with items, a divider, and a disabled entry. " }
-                    { "Click the toggle to open/close the menu." }
-                </p>
-                <CopyCode code={CODE_BASIC.to_string()} />
-
-                <h3>{ "Live Result" }</h3>
-                <DemoBox>
-                    <NavList>
-                        <NavItem>
-                            <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-                        </NavItem>
-                        <NavDropdown toggle_text="Settings">
-                            <NavDropdownItem>
-                                <NavLink<Route> to={Route::Home}>{ "Profile" }</NavLink<Route>>
-                            </NavDropdownItem>
-                            <NavDropdownItem>
-                                <NavLink<Route> to={Route::NavLinkDoc}>{ "Security" }</NavLink<Route>>
-                            </NavDropdownItem>
-                            <NavDropdownDivider />
-                            <NavDropdownItem disabled=true>
-                                { "Admin (disabled)" }
-                            </NavDropdownItem>
-                        </NavDropdown>
-                    </NavList>
-                </DemoBox>
             </div>
 
             // ── HTML Output ───────────────────────────────────
@@ -150,8 +163,9 @@ pub fn DropdownDoc() -> Html {
                 <p>
                     { "Understanding the generated DOM helps with CSS customization and debugging." }
                 </p>
-                <CopyCode code={CODE_HTML_STRUCTURE.to_string()} />
-
+                <div class="code-block">
+                    <pre><code>{ CODE_HTML }</code></pre>
+                </div>
                 <table class="doc-table">
                     <thead>
                         <tr>
@@ -200,40 +214,6 @@ pub fn DropdownDoc() -> Html {
                 </table>
             </div>
 
-            // ── Custom Classes ────────────────────────────────
-            <div class="card">
-                <h3>{ "Custom CSS Classes" }</h3>
-                <p>
-                    { "All dropdown components accept a " }<code>{ "classes" }</code>
-                    { " prop for additional styling." }
-                </p>
-                <CopyCode code={CODE_CUSTOM.to_string()} />
-
-                <h3>{ "CSS Customization Example" }</h3>
-                <div class="code-block">
-                    <pre><code class="language-css">{ r#".custom-dropdown .nav-dropdown-toggle {
-    background: #1e293b;
-    color: #e2e8f0;
-    border: 1px solid #334155;
-}
-
-.custom-dropdown .nav-dropdown-menu {
-    background: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 0.5rem;
-}
-
-.custom-dropdown .nav-dropdown-item a {
-    color: #cbd5e1;
-}
-
-.custom-dropdown .nav-dropdown-item a:hover {
-    background: #1e293b;
-    color: #f8fafc;
-}"# }</code></pre>
-                </div>
-            </div>
-
             // ── Accessibility ─────────────────────────────────
             <div class="card">
                 <h3>{ "Accessibility" }</h3>
@@ -275,9 +255,9 @@ pub fn DropdownDoc() -> Html {
                             <td>{ "Indicates button opens a popup menu" }</td>
                         </tr>
                         <tr>
-                            <td><code>{ "aria-expanded=\"false\"" }</code></td>
+                            <td><code>{ "aria-expanded" }</code></td>
                             <td>{ "Toggle button" }</td>
-                            <td>{ "Indicates initial collapsed state" }</td>
+                            <td>{ "Dynamically toggles between \"true\" and \"false\"" }</td>
                         </tr>
                     </tbody>
                 </table>
@@ -298,17 +278,17 @@ pub fn DropdownDoc() -> Html {
                         <tr>
                             <td><code>{ "DOM nodes" }</code></td>
                             <td>{ "4 + 2n" }</td>
-                            <td>{ "4 base nodes (li, button, span, ul) + 2 per item (li, a)" }</td>
+                            <td>{ "4 base (li, button, span, ul) + 2 per item (li, content)" }</td>
+                        </tr>
+                        <tr>
+                            <td><code>{ "State" }</code></td>
+                            <td>{ "1 bool" }</td>
+                            <td>{ "use_state for open/closed — no subscriptions" }</td>
                         </tr>
                         <tr>
                             <td><code>{ "Re-renders" }</code></td>
-                            <td>{ "On toggle click" }</td>
-                            <td>{ "Menu visibility is CSS-driven; no state subscription" }</td>
-                        </tr>
-                        <tr>
-                            <td><code>{ "Event listeners" }</code></td>
-                            <td>{ "1 per item" }</td>
-                            <td>{ "onclick prevent_default on each NavDropdownItem" }</td>
+                            <td>{ "On toggle click only" }</td>
+                            <td>{ "No polling, no intervals" }</td>
                         </tr>
                         <tr>
                             <td><code>{ "Heap allocations" }</code></td>
@@ -326,7 +306,7 @@ pub fn DropdownDoc() -> Html {
 
             // ── When to Use ───────────────────────────────────
             <div class="card">
-                <h3>{ "When to Use This Pattern" }</h3>
+                <h3>{ "When to Use" }</h3>
                 <div class="feature-grid">
                     <div class="feature-card">
                         <h4>{ "Grouped Navigation" }</h4>
@@ -337,24 +317,120 @@ pub fn DropdownDoc() -> Html {
                         <p>{ "Collapse secondary navigation into a dropdown when horizontal space is limited" }</p>
                     </div>
                     <div class="feature-card">
-                        <h4>{ "Hierarchical Menus" }</h4>
-                        <p>{ "Create multi-level navigation by nesting dropdowns within dropdown items" }</p>
-                    </div>
-                    <div class="feature-card">
                         <h4>{ "Conditional Items" }</h4>
                         <p>{ "Show/hide menu items based on user roles using the disabled prop" }</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>{ "Nested Menus" }</h4>
+                        <p>{ "Create multi-level navigation by nesting dropdowns within dropdown items" }</p>
                     </div>
                 </div>
             </div>
 
-            // ── Source ────────────────────────────────────────
+            // ── State Management ──────────────────────────────
             <div class="card">
-                <h3>{ "Source Code" }</h3>
+                <h3>{ "State Management" }</h3>
                 <p>
-                    { "Full implementation with documentation:" }
+                    { "NavDropdown uses " }<code>{ "use_state(|| false)" }</code>
+                    { " internally to track open/closed state. Each click on the toggle button flips the state." }
                 </p>
-                <CopyCode code={SRC.to_string()} />
+                <CopyCode code={STATE_CODE.to_string()} language={"rust".to_string()} />
+
+                <h3>{ "State Flow" }</h3>
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <div class="flow-num">{ "1" }</div>
+                        <div class="flow-text">{ "Mount: " }<code>{ "open = false" }</code></div>
+                    </div>
+                    <div class="flow-arrow">{ "\u{2192}" }</div>
+                    <div class="flow-step">
+                        <div class="flow-num">{ "2" }</div>
+                        <div class="flow-text">{ "Click toggle" }</div>
+                    </div>
+                    <div class="flow-arrow">{ "\u{2192}" }</div>
+                    <div class="flow-step">
+                        <div class="flow-num">{ "3" }</div>
+                        <div class="flow-text">{ "open = " }<code>{ "true" }</code></div>
+                    </div>
+                    <div class="flow-arrow">{ "\u{2192}" }</div>
+                    <div class="flow-step flow-step-active">
+                        <div class="flow-num">{ "4" }</div>
+                        <div class="flow-text">{ "Menu shown, " }<code>{ "aria-expanded=\"true\"" }</code></div>
+                    </div>
+                </div>
+
+                <h3>{ "Live State Demo" }</h3>
+                <DemoBox>
+                    <div class="state-demo">
+                        <div class="state-indicator">
+                            <span class="state-label">{ "open:" }</span>
+                            <span class="state-value state-open">{ "true" }</span>
+                        </div>
+                        <div class="state-indicator">
+                            <span class="state-label">{ "aria-expanded:" }</span>
+                            <span class="state-value state-aria">{ "\"true\"" }</span>
+                        </div>
+                        <div class="state-indicator">
+                            <span class="state-label">{ "menu class:" }</span>
+                            <span class="state-value state-class">{ "\"nav-dropdown-menu open\"" }</span>
+                        </div>
+                    </div>
+                </DemoBox>
+                <p class="tip-text">
+                    { "Click the dropdown toggle above to see state values update in real time." }
+                </p>
+
+                <div class="info-box">
+                    <strong>{ "Note:" }</strong>
+                    { " The menu does NOT close on outside click by default. " }
+                    { "To add this behavior, listen for clicks on the document body and set open to false." }
+                </div>
             </div>
-        </div>
+
+            // ── Custom Styling ────────────────────────────────
+            <div class="card">
+                <h3>{ "Custom Styling" }</h3>
+                <p>
+                    { "All dropdown components accept a " }<code>{ "classes" }</code>
+                    { " prop for additional CSS customization." }
+                </p>
+                <div class="code-block">
+                    <pre><code>{ highlight_css(CODE_CSS) }</code></pre>
+                </div>
+
+                <h3>{ "Default vs Custom" }</h3>
+                <div class="style-comparison">
+                    <div class="style-col">
+                        <div class="style-col-label">{ "Default" }</div>
+                        <DemoBox>
+                            <NavDropdown toggle_text="Default">
+                                <NavDropdownItem>
+                                    <NavLink<Route> to={Route::Home}>{ "Item 1" }</NavLink<Route>>
+                                </NavDropdownItem>
+                                <NavDropdownItem>
+                                    <NavLink<Route> to={Route::NavLinkDoc}>{ "Item 2" }</NavLink<Route>>
+                                </NavDropdownItem>
+                            </NavDropdown>
+                        </DemoBox>
+                    </div>
+                    <div class="style-col">
+                        <div class="style-col-label">{ "Custom (Dark)" }</div>
+                        <DemoBox>
+                            <div class="custom-dropdown">
+                                <NavDropdown toggle_text="Custom" classes="custom-dropdown">
+                                    <NavDropdownItem classes="custom-dropdown-item">
+                                        <NavLink<Route> to={Route::Home}>{ "Item 1" }</NavLink<Route>>
+                                    </NavDropdownItem>
+                                    <NavDropdownItem classes="custom-dropdown-item">
+                                        <NavLink<Route> to={Route::NavLinkDoc}>{ "Item 2" }</NavLink<Route>>
+                                    </NavDropdownItem>
+                                </NavDropdown>
+                            </div>
+                        </DemoBox>
+                    </div>
+                </div>
+            </div>
+
+        </DocPage>
     }
 }

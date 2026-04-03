@@ -138,24 +138,32 @@ fn render_content(lines: &[String]) -> Html {
     #[derive(Debug)]
     enum Segment {
         Text(Vec<String>),
-        Code(Vec<String>),
+        Code(Vec<String>, String),
     }
 
     let mut segments: Vec<Segment> = Vec::new();
     let mut text_buf: Vec<String> = Vec::new();
     let mut code_buf: Vec<String> = Vec::new();
     let mut in_code = false;
+    let mut code_lang = String::new();
 
     for line in lines {
         let t = line.trim();
-        if t == "```rust" || t == "```ignore" || t == "```toml" || t == "```html" {
-            if !text_buf.is_empty() {
-                segments.push(Segment::Text(text_buf.drain(..).collect()));
+        if let Some(lang) = t.strip_prefix("```") {
+            if !in_code {
+                if !text_buf.is_empty() {
+                    segments.push(Segment::Text(text_buf.drain(..).collect()));
+                }
+                in_code = true;
+                code_lang = lang.to_string();
+            } else {
+                in_code = false;
+                segments.push(Segment::Code(
+                    code_buf.drain(..).collect(),
+                    code_lang.clone(),
+                ));
+                code_lang.clear();
             }
-            in_code = true;
-        } else if t == "```" && in_code {
-            in_code = false;
-            segments.push(Segment::Code(code_buf.drain(..).collect()));
         } else if in_code {
             code_buf.push(line.clone());
         } else {
@@ -170,9 +178,10 @@ fn render_content(lines: &[String]) -> Html {
         <>
             { for segments.iter().map(|seg| match seg {
                 Segment::Text(lines) => render_text_block(lines),
-                Segment::Code(code_lines) => {
+                Segment::Code(code_lines, lang) => {
                     let code = code_lines.join("\n");
-                    html! { <CopyCode {code} /> }
+                    let language = lang.clone();
+                    html! { <CopyCode {code} {language} /> }
                 }
             })}
         </>
@@ -328,22 +337,24 @@ fn render_table_section(lines: &[String]) -> Html {
         .collect();
 
     html! {
-        <table class="doc-table">
-            <thead>
-                <tr>
-                    { for header.iter().map(|h| html! { <th>{ render_inline(h.trim()) }</th> }) }
-                </tr>
-            </thead>
-            <tbody>
-                { for rows.iter().map(|row| {
-                    html! {
-                        <tr>
-                            { for row.iter().map(|cell| html! { <td>{ render_inline(cell.trim()) }</td> })}
-                        </tr>
-                    }
-                })}
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table class="doc-table">
+                <thead>
+                    <tr>
+                        { for header.iter().map(|h| html! { <th>{ render_inline(h.trim()) }</th> }) }
+                    </tr>
+                </thead>
+                <tbody>
+                    { for rows.iter().map(|row| {
+                        html! {
+                            <tr>
+                                { for row.iter().map(|cell| html! { <td>{ render_inline(cell.trim()) }</td> })}
+                            </tr>
+                        }
+                    })}
+                </tbody>
+            </table>
+        </div>
     }
 }
 
@@ -372,17 +383,19 @@ fn render_inline_table(lines: &[&str]) -> Html {
     }
 
     html! {
-        <table class="doc-table">
-            <tbody>
-                { for rows.iter().map(|row| {
-                    html! {
-                        <tr>
-                            { for row.iter().map(|cell| html! { <td>{ render_inline(cell) }</td> })}
-                        </tr>
-                    }
-                })}
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table class="doc-table">
+                <tbody>
+                    { for rows.iter().map(|row| {
+                        html! {
+                            <tr>
+                                { for row.iter().map(|cell| html! { <td>{ render_inline(cell) }</td> })}
+                            </tr>
+                        }
+                    })}
+                </tbody>
+            </table>
+        </div>
     }
 }
 

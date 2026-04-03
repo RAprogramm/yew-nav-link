@@ -68,7 +68,8 @@ td > code {
     border: 1px solid var(--border);
     font-size: 0.75rem;
     color: var(--accent);
-    word-break: break-all;
+    white-space: nowrap;
+    word-break: keep-all;
 }
 
 // Syntax highlighting tokens
@@ -79,3 +80,7 @@ td > code {
 .ty  { color: var(--yellow); }
 .pr  { color: var(--pink); }
 .pn  { color: var(--text-dim); }
+.num { color: var(--orange); }
+.sl  { color: var(--accent); }
+.tn  { color: var(--red); }
+.at  { color: var(--yellow); }

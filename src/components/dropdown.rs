@@ -102,7 +102,7 @@ pub struct NavDropdownProps {
 
     /// Content rendered inside the dropdown menu.
     #[prop_or_default]
-    pub children: Children
+    pub children: Children,
 }
 
 /// Collapsible dropdown menu for grouping navigation links.
@@ -118,18 +118,35 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
     let mut classes = props.classes.clone();
     classes.push("nav-dropdown");
 
+    let open = use_state(|| false);
+
+    let on_toggle = {
+        let open = open.clone();
+        Callback::from(move |e: MouseEvent| {
+            e.stop_propagation();
+            open.set(!*open);
+        })
+    };
+
+    let menu_class = if *open {
+        "nav-dropdown-menu open"
+    } else {
+        "nav-dropdown-menu"
+    };
+
     html! {
-        <li {classes} role="presentation" data-bs-toggle="dropdown">
+        <li {classes} role="presentation">
             <button
                 type="button"
                 class="nav-dropdown-toggle"
-                aria-expanded="false"
+                aria-expanded={if *open { "true" } else { "false" }}
                 aria-haspopup="true"
+                onclick={on_toggle}
             >
                 { props.toggle_text }
                 <span class="nav-dropdown-caret">{" ▼"}</span>
             </button>
-            <ul class="nav-dropdown-menu" role="menu">
+            <ul class={menu_class} role="menu">
                 { for props.children.iter() }
             </ul>
         </li>
@@ -154,7 +171,7 @@ pub struct NavDropdownItemProps {
     pub disabled: bool,
 
     /// Content rendered inside the item.
-    pub children: Children
+    pub children: Children,
 }
 
 /// A single item within a [`NavDropdown`] menu.
@@ -173,10 +190,8 @@ pub fn NavDropdownItem(props: &NavDropdownItemProps) -> Html {
     }
 
     html! {
-        <li {classes} role="menuitem">
-            <a href="#" onclick={move |e: MouseEvent| e.prevent_default()}>
-                { for props.children.iter() }
-            </a>
+        <li class={classes} role="menuitem">
+            { for props.children.iter() }
         </li>
     }
 }
@@ -190,7 +205,7 @@ pub fn NavDropdownItem(props: &NavDropdownItemProps) -> Html {
 pub struct NavDropdownDividerProps {
     /// Additional CSS classes applied to the divider.
     #[prop_or_default]
-    pub classes: Classes
+    pub classes: Classes,
 }
 
 /// Visual separator between items in a [`NavDropdown`] menu.
@@ -202,7 +217,7 @@ pub fn NavDropdownDivider(props: &NavDropdownDividerProps) -> Html {
     classes.push("nav-dropdown-divider");
 
     html! {
-        <li {classes} role="separator" />
+        <li class={classes} role="separator" />
     }
 }
 
@@ -213,10 +228,10 @@ mod tests {
     #[test]
     fn nav_dropdown_props_default() {
         let props = NavDropdownProps {
-            classes:     Classes::default(),
+            classes: Classes::default(),
             toggle_text: "Menu",
-            id:          None,
-            children:    Children::new(vec![])
+            id: None,
+            children: Children::new(vec![]),
         };
 
         assert_eq!(props.toggle_text, "Menu");
@@ -226,9 +241,9 @@ mod tests {
     #[test]
     fn nav_dropdown_item_default() {
         let props = NavDropdownItemProps {
-            classes:  Classes::default(),
+            classes: Classes::default(),
             disabled: false,
-            children: Children::new(vec![])
+            children: Children::new(vec![]),
         };
 
         assert!(!props.disabled);
@@ -237,9 +252,9 @@ mod tests {
     #[test]
     fn nav_dropdown_item_disabled() {
         let props = NavDropdownItemProps {
-            classes:  Classes::default(),
+            classes: Classes::default(),
             disabled: true,
-            children: Children::new(vec![])
+            children: Children::new(vec![]),
         };
 
         assert!(props.disabled);
@@ -248,7 +263,7 @@ mod tests {
     #[test]
     fn nav_dropdown_divider_props() {
         let props = NavDropdownDividerProps {
-            classes: Classes::default()
+            classes: Classes::default(),
         };
 
         assert!(props.classes.is_empty());

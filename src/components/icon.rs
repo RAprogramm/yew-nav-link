@@ -89,7 +89,7 @@ pub struct NavIconProps {
 
     /// Content rendered inside the icon when `name` is `None`.
     #[prop_or_default]
-    pub children: Children
+    pub children: Children,
 }
 
 /// Available size variants for [`NavIcon`].
@@ -101,7 +101,7 @@ pub enum NavIconSize {
     #[default]
     Medium,
     /// Large icon (`nav-icon-lg`).
-    Large
+    Large,
 }
 
 impl NavIconSize {
@@ -109,7 +109,7 @@ impl NavIconSize {
         match self {
             NavIconSize::Small => "nav-icon-sm",
             NavIconSize::Medium => "nav-icon-md",
-            NavIconSize::Large => "nav-icon-lg"
+            NavIconSize::Large => "nav-icon-lg",
         }
     }
 }
@@ -130,13 +130,13 @@ pub fn NavIcon(props: &NavIconProps) -> Html {
 
     if let Some(name) = props.name {
         html! {
-            <i {classes} aria-hidden="true">
+            <i class={classes} aria-hidden="true">
                 { name }
             </i>
         }
     } else {
         html! {
-            <i {classes} aria-hidden="true">
+            <i class={classes} aria-hidden="true">
                 { for props.children.iter() }
             </i>
         }
@@ -160,7 +160,7 @@ pub struct NavLinkWithIconProps {
     pub icon: NavIconSize,
 
     /// Content rendered inside the span.
-    pub children: Children
+    pub children: Children,
 }
 
 /// Wraps content alongside an icon within a navigation link.
@@ -187,10 +187,10 @@ mod tests {
     #[test]
     fn nav_icon_props_default() {
         let props = NavIconProps {
-            classes:  Classes::default(),
-            name:     None,
-            size:     NavIconSize::default(),
-            children: Children::new(vec![])
+            classes: Classes::default(),
+            name: None,
+            size: NavIconSize::default(),
+            children: Children::new(vec![]),
         };
 
         assert!(props.name.is_none());
@@ -200,10 +200,10 @@ mod tests {
     #[test]
     fn nav_icon_with_name() {
         let props = NavIconProps {
-            classes:  Classes::default(),
-            name:     Some("home"),
-            size:     NavIconSize::Small,
-            children: Children::new(vec![])
+            classes: Classes::default(),
+            name: Some("home"),
+            size: NavIconSize::Small,
+            children: Children::new(vec![]),
         };
 
         assert_eq!(props.name, Some("home"));

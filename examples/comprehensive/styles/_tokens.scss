@@ -20,8 +20,10 @@
     --yellow:        #fbbf24;
     --purple:        #a78bfa;
     --pink:          #f472b6;
+    --teal:          #2dd4bf;
+    --indigo:        #818cf8;
     --radius:        0.75rem;
-    --topbar-h:      3.5rem;
-    --sidebar-w:     16rem;
+    --topbar-h:      clamp(3rem, 5vh, 3.5rem);
+    --sidebar-w:     clamp(14rem, 20vw, 16rem);
     --transition:    0.2s cubic-bezier(.4,0,.2,1);
 }
