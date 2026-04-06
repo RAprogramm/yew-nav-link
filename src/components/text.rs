@@ -54,7 +54,7 @@ pub struct NavTextProps {
     pub classes: Classes,
 
     /// Static text content to display.
-    pub text: &'static str
+    pub text: &'static str,
 }
 
 /// Text label component for navigation items.
@@ -80,7 +80,7 @@ mod tests {
     fn nav_text_props() {
         let props = NavTextProps {
             classes: Classes::default(),
-            text:    "Hello"
+            text: "Hello",
         };
 
         assert_eq!(props.text, "Hello");
@@ -90,7 +90,7 @@ mod tests {
     fn nav_text_clone() {
         let props1 = NavTextProps {
             classes: Classes::from("custom"),
-            text:    "Text"
+            text: "Text",
         };
 
         let props2 = props1.clone();

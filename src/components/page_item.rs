@@ -72,7 +72,7 @@ pub struct PageItemProps {
 
     /// Content rendered inside the page item.
     #[prop_or_default]
-    pub children: Children
+    pub children: Children,
 }
 
 /// A single page button within a [`Pagination`](super::Pagination) component.
@@ -111,11 +111,11 @@ mod tests {
     #[test]
     fn page_item_props() {
         let props = PageItemProps {
-            classes:  Classes::default(),
-            page:     1,
-            active:   false,
+            classes: Classes::default(),
+            page: 1,
+            active: false,
             disabled: false,
-            children: Children::new(vec![])
+            children: Children::new(vec![]),
         };
 
         assert_eq!(props.page, 1);

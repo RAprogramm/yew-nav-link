@@ -59,7 +59,7 @@ pub struct PageLinkProps {
 
     /// Content rendered inside the page link.
     #[prop_or_default]
-    pub children: Children
+    pub children: Children,
 }
 
 /// Link or span element within a pagination page item.
@@ -96,9 +96,9 @@ mod tests {
     #[test]
     fn page_link_with_href() {
         let props = PageLinkProps {
-            classes:  Classes::default(),
-            href:     Some("/page/2"),
-            children: Children::new(vec![])
+            classes: Classes::default(),
+            href: Some("/page/2"),
+            children: Children::new(vec![]),
         };
 
         assert_eq!(props.href, Some("/page/2"));
@@ -107,9 +107,9 @@ mod tests {
     #[test]
     fn page_link_without_href() {
         let props = PageLinkProps {
-            classes:  Classes::default(),
-            href:     None,
-            children: Children::new(vec![])
+            classes: Classes::default(),
+            href: None,
+            children: Children::new(vec![]),
         };
 
         assert!(props.href.is_none());

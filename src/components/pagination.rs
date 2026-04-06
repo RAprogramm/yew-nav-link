@@ -92,19 +92,19 @@ pub struct PaginationProps {
 
     /// Callback invoked with the new page number when a page is selected.
     #[prop_or_default]
-    pub on_page_change: Option<Callback<u32>>
+    pub on_page_change: Option<Callback<u32>>,
 }
 
 impl Default for PaginationProps {
     fn default() -> Self {
         Self {
-            classes:         Classes::default(),
-            current_page:    1,
-            total_pages:     10,
-            siblings:        1,
+            classes: Classes::default(),
+            current_page: 1,
+            total_pages: 10,
+            siblings: 1,
             show_first_last: false,
-            show_prev_next:  true,
-            on_page_change:  None
+            show_prev_next: true,
+            on_page_change: None,
         }
     }
 }

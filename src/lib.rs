@@ -5,7 +5,7 @@
 //!
 //! [![Crates.io](https://img.shields.io/crates/v/yew-nav-link)](https://crates.io/crates/yew-nav-link)
 //! [![Documentation](https://docs.rs/yew-nav-link/badge.svg)](https://docs.rs/yew-nav-link)
-//! [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE-MIT)
+//! [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 //!
 //! ## Overview
 //!
@@ -152,9 +152,9 @@ pub use attrs::{NavItemAttrs, NavLinkAttrs, NavListAttrs};
 pub use components::{NavBadge, NavBadgeProps, NavHeader, NavHeaderProps, NavText, NavTextProps};
 pub use errors::{NavError, NavResult};
 pub use hooks::{
-    BreadcrumbItem, use_breadcrumbs, use_is_active, use_is_exact_active, use_is_partial_active,
-    use_route_info
+    use_breadcrumbs, use_is_active, use_is_exact_active, use_is_partial_active, use_route_info,
+    BreadcrumbItem,
 };
 pub use nav::{NavDivider, NavDividerProps, NavItem, NavItemProps, NavList, NavListProps};
-pub use nav_link::{Match, NavLink, NavLinkProps, nav_link};
+pub use nav_link::{nav_link, Match, NavLink, NavLinkProps};
 pub use utils::{is_absolute, join_paths, normalize_path};

@@ -36,7 +36,7 @@ pub enum NavError {
     /// A route string could not be parsed. Contains a diagnostic message.
     InvalidRoute(String),
     /// Navigation was cancelled before completion.
-    NavigationCancelled
+    NavigationCancelled,
 }
 
 impl NavError {

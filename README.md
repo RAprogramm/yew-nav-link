@@ -10,7 +10,7 @@ Navigation link component for [Yew](https://yew.rs) with automatic active state 
 [![docs.rs](https://img.shields.io/docsrs/yew-nav-link)](https://docs.rs/yew-nav-link)
 [![Downloads](https://img.shields.io/crates/d/yew-nav-link)](https://crates.io/crates/yew-nav-link)
 [![MSRV](https://img.shields.io/crates/msrv/yew-nav-link)](https://crates.io/crates/yew-nav-link)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE-MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![REUSE](https://api.reuse.software/badge/github.com/RAprogramm/yew-nav-link)](https://api.reuse.software/info/github.com/RAprogramm/yew-nav-link)
 [![Codecov](https://codecov.io/gh/RAprogramm/yew-nav-link/branch/main/graph/badge.svg)](https://codecov.io/gh/RAprogramm/yew-nav-link)
 [![Hits-of-Code](https://hitsofcode.com/github/RAprogramm/yew-nav-link?branch=main&label=HoC&exclude=Cargo.lock,.gitignore,LICENSE,LICENSES,.reuse,)](https://hitsofcode.com/github/RAprogramm/yew-nav-link/view?branch=main&exclude=Cargo.lock,.gitignore,LICENSE,LICENSES,.reuse,.claude)
@@ -282,6 +282,6 @@ The top section represents the entire project. Proceeding with folders and final
 
 ## License
 
-Licensed under the [MIT License](LICENSE-MIT).
+Licensed under the [MIT License](LICENSE).
 
 <div align="right"><a href="#top">^ top</a></div>

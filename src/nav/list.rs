@@ -82,7 +82,7 @@ pub struct NavListProps {
     pub aria_label: Option<&'static str>,
 
     /// Navigation items rendered inside the list.
-    pub children: Children
+    pub children: Children,
 }
 
 /// Semantic `<ul>` container for navigation items.
@@ -118,10 +118,10 @@ mod tests {
     #[test]
     fn nav_list_props_default() {
         let props = NavListProps {
-            classes:    Classes::default(),
-            id:         None,
+            classes: Classes::default(),
+            id: None,
             aria_label: None,
-            children:   Children::new(vec![])
+            children: Children::new(vec![]),
         };
 
         assert!(props.classes.is_empty());
@@ -132,10 +132,10 @@ mod tests {
     #[test]
     fn nav_list_props_with_values() {
         let props = NavListProps {
-            classes:    Classes::from("custom-class"),
-            id:         Some("nav-id"),
+            classes: Classes::from("custom-class"),
+            id: Some("nav-id"),
             aria_label: Some("navigation"),
-            children:   Children::new(vec![])
+            children: Children::new(vec![]),
         };
 
         assert!(props.classes.contains("custom-class"));
@@ -146,10 +146,10 @@ mod tests {
     #[test]
     fn nav_list_props_clone() {
         let props1 = NavListProps {
-            classes:    Classes::from("test"),
-            id:         Some("id"),
+            classes: Classes::from("test"),
+            id: Some("id"),
             aria_label: Some("label"),
-            children:   Children::new(vec![])
+            children: Children::new(vec![]),
         };
 
         let props2 = props1.clone();

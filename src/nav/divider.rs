@@ -66,7 +66,7 @@ pub struct NavDividerProps {
 
     /// Optional text label displayed in the center of the divider.
     #[prop_or_default]
-    pub text: Option<&'static str>
+    pub text: Option<&'static str>,
 }
 
 /// Semantic separator for dividing sections within a navigation list.
@@ -107,9 +107,9 @@ mod tests {
     #[test]
     fn nav_divider_props_default() {
         let props = NavDividerProps {
-            classes:  Classes::default(),
+            classes: Classes::default(),
             vertical: false,
-            text:     None
+            text: None,
         };
 
         assert!(!props.vertical);
@@ -119,9 +119,9 @@ mod tests {
     #[test]
     fn nav_divider_props_vertical() {
         let props = NavDividerProps {
-            classes:  Classes::default(),
+            classes: Classes::default(),
             vertical: true,
-            text:     None
+            text: None,
         };
 
         assert!(props.vertical);
@@ -130,9 +130,9 @@ mod tests {
     #[test]
     fn nav_divider_props_with_text() {
         let props = NavDividerProps {
-            classes:  Classes::default(),
+            classes: Classes::default(),
             vertical: false,
-            text:     Some("Or")
+            text: Some("Or"),
         };
 
         assert_eq!(props.text, Some("Or"));
@@ -141,9 +141,9 @@ mod tests {
     #[test]
     fn nav_divider_props_clone() {
         let props1 = NavDividerProps {
-            classes:  Classes::from("custom"),
+            classes: Classes::from("custom"),
             vertical: true,
-            text:     Some("Divider")
+            text: Some("Divider"),
         };
 
         let props2 = props1.clone();
