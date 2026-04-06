@@ -1,5 +1,5 @@
 # rust-prod-diff-checker configuration for yew-nav-link
-# Ignore commits from RAprogramm (author of the project)
+# Ignore commits from RAprogramm (project author)
 
 [classification]
 ignored_authors = ["RAprogramm"]
