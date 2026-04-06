@@ -200,16 +200,7 @@ pub struct BreadcrumbItem<R> {
 }
 
 fn is_path_prefix(target: &str, current: &str) -> bool {
-    let target_parts: Vec<&str> = target.split('/').filter(|s| !s.is_empty()).collect();
-    let current_parts: Vec<&str> = current.split('/').filter(|s| !s.is_empty()).collect();
-
-    for (t, c) in target_parts.iter().zip(current_parts.iter()) {
-        if t != c {
-            return false;
-        }
-    }
-
-    target_parts.len() <= current_parts.len()
+    crate::nav_link::is_path_prefix(target, current)
 }
 
 #[cfg(test)]

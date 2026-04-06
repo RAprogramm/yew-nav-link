@@ -280,7 +280,7 @@ pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(
 /// is_path_prefix("/", "/anything")      -> true
 /// ```
 #[inline]
-fn is_path_prefix(target: &str, current: &str) -> bool {
+pub(crate) fn is_path_prefix(target: &str, current: &str) -> bool {
     let mut target_iter = target.split('/').filter(|s| !s.is_empty());
     let mut current_iter = current.split('/').filter(|s| !s.is_empty());
 
