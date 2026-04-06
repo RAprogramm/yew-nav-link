@@ -1,33 +1,27 @@
 //! Macro implementations for yew-nav-link
 //!
-//! This module provides procedural macros for reducing boilerplate
-//! and improving compile-time safety.
+//! This module provides declarative macros for reducing boilerplate.
+//!
+//! **Note**: The `routable_ext!` and `nav_item!` macros are stubs pending
+//! full implementation. The `nav_link!` macro is functional.
 
 /// Generates a `validate_routes` method for a `Routable` enum.
 ///
-/// Checks at runtime that all route paths are well-formed.
+/// **Status**: Stub - not yet implemented.
 #[macro_export]
 macro_rules! routable_ext {
     ($name:ident) => {
-        impl $name {
-            pub fn validate_routes() -> Result<(), String> {
-                // Implementation would go here
-                Ok(())
-            }
-        }
+        compile_error!("routable_ext! macro is not yet implemented");
     };
 }
 
 /// Generates a `nav_path` method that returns the route's static path.
+///
+/// **Status**: Stub - not yet implemented.
 #[macro_export]
 macro_rules! nav_item {
     ($name:ident) => {
-        impl $name {
-            pub fn nav_path(&self) -> &'static str {
-                // Implementation would go here
-                ""
-            }
-        }
+        compile_error!("nav_item! macro is not yet implemented");
     };
 }
 

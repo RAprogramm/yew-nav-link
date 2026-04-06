@@ -31,6 +31,45 @@
 - remove separate macro crate manifests in favor of a single-crate feature flow
 - add navigation components, hooks and integration tests
 
+## [0.5.0] - 2026-02-15
+
+### Features
+
+- Add `macros` feature to expose `nav_link!` macro directly from `yew-nav-link`
+- Add navigation components and hooks
+
+### Dependencies
+
+- Update yew-router from 0.19.0 to 0.20.0
+
+## [0.6.0] - 2026-04-06
+
+### Features
+
+- Add comprehensive interactive demo showcasing all components
+- Add NavLink component with automatic active state detection
+- Add NavList, NavItem, NavDivider components
+- Add NavBadge, NavHeader, NavText components
+- Add NavDropdown, NavIcon, NavTabs, Pagination components
+- Add route hooks: use_route_info, use_is_active, use_is_exact_active, use_is_partial_active
+- Add breadcrumbs generation
+- Add path utilities: is_absolute, join_paths, normalize_path
+
+### Bug Fixes
+
+- Update yew to 0.23 for yew-router 0.20 compatibility
+
+### Documentation
+
+- Add comprehensive documentation with live demos
+- Add architecture diagrams and flow explanations
+
+### Maintenance
+
+- Remove broken E2E tests referencing deleted examples
+- Simplify examples to single comprehensive demo
+- Update MSRV to 1.85 for Rust 2024 edition
+
 ## [0.4.0] - 2025-12-17
 
 ### Documentation
@@ -113,4 +152,10 @@
 - ![RAprogramm](https://github.com/RAprogramm.png?size=20) nav_link function
 
 - ![RAprogramm](https://github.com/RAprogramm.png?size=20) docs shield
+
+[Unreleased]: https://github.com/RAprogramm/yew-nav-link/compare/v0.6.0...HEAD
+[0.5.0]: https://github.com/RAprogramm/yew-nav-link/releases/tag/v0.5.0
+[0.4.0]: https://github.com/RAprogramm/yew-nav-link/releases/tag/v0.4.0
+[0.3.0]: https://github.com/RAprogramm/yew-nav-link/releases/tag/v0.3.0
+[0.2.1]: https://github.com/RAprogramm/yew-nav-link/releases/tag/v0.2.1
 
