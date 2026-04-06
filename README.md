@@ -2,7 +2,7 @@
 
 # yew-nav-link
 
-Navigation link component for [Yew](https://yew.rs) with automatic active state detection.
+Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic active state detection, declarative macros, and a complete component system.
 
 <div align="center">
 
@@ -17,74 +17,80 @@ Navigation link component for [Yew](https://yew.rs) with automatic active state 
 
 </div>
 
+---
+
 ## Table of Contents
 
 - [Overview](#overview)
 - [Installation](#installation)
 - [Requirements](#requirements)
-- [Optional Macros](#optional-macros)
-- [Examples](#examples)
-- [Usage](#usage)
+- [Quick Start](#quick-start)
   - [Component Syntax](#component-syntax)
   - [Function Syntax](#function-syntax)
   - [Partial Matching](#partial-matching)
-- [CSS Classes](#css-classes)
-  - [Bootstrap Integration](#bootstrap-integration)
+  - [Macros](#macros)
+- [Components](#components)
+  - [Core Navigation](#core-navigation)
+  - [UI Components](#ui-components)
+  - [Hooks](#hooks)
+  - [Utilities](#utilities)
+- [CSS Integration](#css-integration)
+  - [Bootstrap 5](#bootstrap-5)
   - [Tailwind CSS](#tailwind-css)
+- [Architecture](#architecture)
+- [Examples](#examples)
 - [API Reference](#api-reference)
+- [Migration Guides](#migration-guides)
 - [Coverage](#coverage)
+- [Contributing](#contributing)
 - [License](#license)
+
+---
 
 ## Overview
 
-`yew-nav-link` provides a `NavLink` component that wraps Yew Router's `Link` with automatic active state management. When the target route matches the current URL, an `active` CSS class is applied automatically.
+`yew-nav-link` is a comprehensive navigation library for the Yew web framework. It provides:
+
+| Feature | Description |
+|---------|-------------|
+| **NavLink** | Drop-in replacement for Yew Router's `<Link>` with automatic `active` class detection |
+| **Component System** | 15+ ready-to-use UI components (tabs, dropdowns, pagination, badges, icons) |
+| **Hooks** | Reactive hooks for route state, active checking, and breadcrumbs |
+| **Macros** | Declarative macros for boilerplate-free navigation (`nav_link!`, `nav_list!`, `nav_tabs!`) |
+| **Utilities** | Path manipulation, URL encoding, keyboard navigation, and query string handling |
+
+The core `NavLink` component eliminates manual active state tracking. It compares the current route against the target on every render and applies the `active` CSS class automatically — zero configuration required.
+
+---
 
 ## Installation
 
 ```toml
 [dependencies]
-yew-nav-link = "0.6"
+yew-nav-link = "0.7"
 ```
+
+With macros:
+
+```toml
+[dependencies]
+yew-nav-link = { version = "0.7", features = ["macros"] }
+```
+
+---
 
 ## Requirements
 
 | Dependency | Version |
 |------------|---------|
-| yew | 0.23+ |
+| Rust | 1.85+ |
+| Edition | 2024 |
+| Yew | 0.23+ |
 | yew-router | 0.20+ |
 
-## Optional Macros
+---
 
-Macros are now provided directly by `yew-nav-link` through the `macros` feature:
-
-```toml
-[dependencies]
-yew-nav-link = { version = "0.6", features = ["macros"] }
-```
-
-Available macros include `nav_link!`, `routable_ext!`, and `nav_item!`.
-
-## Examples
-
-A comprehensive interactive demo is available in the [examples/comprehensive/](https://github.com/RAprogramm/yew-nav-link/tree/main/examples/comprehensive) directory. It showcases every component, hook, and pattern in the library with live demos, code snippets, and architecture diagrams.
-
-### Running the Demo
-
-```bash
-# Install prerequisites (once)
-rustup target add wasm32-unknown-unknown
-cargo install trunk
-
-# Run the comprehensive demo
-cd examples/comprehensive
-trunk serve
-```
-
-Open http://127.0.0.1:8080 in your browser.
-
-The demo includes documentation for all components (NavLink, NavList, NavTabs, Pagination, etc.) and showcases integration patterns for Bootstrap 5, Tailwind CSS, nested routes, and macros.
-
-## Usage
+## Quick Start
 
 ### Component Syntax
 
@@ -112,22 +118,14 @@ fn Navigation() -> Html {
 }
 ```
 
-### Function Syntax
+When the user visits `/about`, the second link automatically receives `class="nav-link active"`.
 
-For text-only links, use `nav_link` with explicit `Match` mode:
+### Function Syntax
 
 ```rust
 use yew::prelude::*;
 use yew_nav_link::{nav_link, Match};
 use yew_router::prelude::*;
-
-#[derive(Clone, PartialEq, Routable)]
-enum Route {
-    #[at("/")]
-    Home,
-    #[at("/docs")]
-    Docs,
-}
 
 #[component]
 fn Menu() -> Html {
@@ -142,42 +140,91 @@ fn Menu() -> Html {
 
 ### Partial Matching
 
-Use `partial` prop to keep parent links active on nested routes:
+Keep parent links highlighted on nested routes:
 
 ```rust
-use yew::prelude::*;
-use yew_nav_link::NavLink;
-use yew_router::prelude::*;
-
-#[derive(Clone, PartialEq, Routable)]
-enum Route {
-    #[at("/docs")]
-    Docs,
-    #[at("/docs/api")]
-    DocsApi,
-}
-
-#[component]
-fn Navigation() -> Html {
-    html! {
-        <nav>
-            // Active on /docs, /docs/api, /docs/*
-            <NavLink<Route> to={Route::Docs} partial=true>{ "Docs" }</NavLink<Route>>
-        </nav>
-    }
+html! {
+    <nav>
+        // Active on /docs, /docs/api, /docs/anything
+        <NavLink<Route> to={Route::Docs} partial=true>{ "Docs" }</NavLink<Route>>
+    </nav>
 }
 ```
 
-## CSS Classes
+Partial matching is segment-aware: `/docs` matches `/docs/api` but **not** `/documentation`.
 
-The component applies these classes to the rendered `<a>` element:
+### Macros
 
-| Class | When Applied |
-|-------|--------------|
-| `nav-link` | Always |
-| `active` | Route matches current URL |
+```rust
+use yew_nav_link::{nav_link, Match};
 
-### Bootstrap Integration
+html! {
+    <nav>
+        { nav_link!(Route::Home, "Home", Match::Exact) }
+        { nav_link!(Route::About, "About", Match::Exact) }
+    </nav>
+}
+```
+
+---
+
+## Components
+
+### Core Navigation
+
+| Component | Purpose |
+|-----------|---------|
+| [`NavLink<R>`](#navlinkr) | Navigation link with automatic active state |
+| [`NavList`] | Accessible navigation list container (`<ul>` with ARIA) |
+| [`NavItem`] | Navigation list item (`<li>`) |
+| [`NavDivider`] | Visual separator between navigation groups |
+
+### UI Components
+
+| Component | Purpose |
+|-----------|---------|
+| [`NavBadge`] | Badge/counter for navigation items |
+| [`NavHeader`] | Section header for navigation groups |
+| [`NavText`] | Plain text element within navigation |
+| [`NavIcon`] | Icon with configurable size |
+| [`NavLinkWithIcon`] | Link with integrated icon |
+| [`NavDropdown`] | Dropdown menu with items and dividers |
+| [`NavTabs`] | Tabbed navigation container |
+| [`NavTab`] | Individual tab with active state |
+| [`NavTabPanel`] | Content panel for tabs |
+| [`Pagination`] | Page navigation controls |
+| [`PageItem`] | Individual page indicator |
+| [`PageLink`] | Clickable page link |
+
+### Hooks
+
+| Hook | Returns | Description |
+|------|---------|-------------|
+| `use_route_info()` | `RouteInfo<R>` | Current route, path, and query parameters |
+| `use_is_active(route)` | `bool` | Whether the given route is currently active |
+| `use_is_exact_active(route)` | `bool` | Whether the route matches exactly |
+| `use_is_partial_active(route)` | `bool` | Whether the route is a prefix of the current path |
+| `use_breadcrumbs()` | `Vec<BreadcrumbItem>` | Auto-generated breadcrumb trail from current route |
+
+### Utilities
+
+| Function | Description |
+|----------|-------------|
+| `is_absolute(path)` | Check if a path starts with `/` |
+| `join_paths(a, b)` | Join two path segments safely |
+| `normalize_path(path)` | Remove duplicate slashes and trailing slashes |
+| `urlencoding_encode(s)` | Percent-encode a string for URLs |
+| `urlencoding_decode(s)` | Decode a percent-encoded string |
+| `handle_arrow_key(config, key)` | Keyboard navigation handler |
+| `handle_home_end(config, key)` | Home/End key handler for navigation |
+
+---
+
+## CSS Integration
+
+### Bootstrap 5
+
+Works out of the box — `nav-link` and `active` are native Bootstrap classes.
 
 ```html
 <ul class="nav nav-pills">
@@ -190,18 +237,56 @@ The component applies these classes to the rendered `<a>` element:
 
 ### Tailwind CSS
 
+Define your own `nav-link` and `active` styles:
+
 ```css
 .nav-link {
-    @apply px-4 py-2 text-gray-600 hover:text-gray-900;
+    @apply px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors;
 }
 .nav-link.active {
-    @apply text-blue-600 font-semibold;
+    @apply text-blue-600 font-semibold border-b-2 border-blue-600;
 }
 ```
 
+---
+
+## Architecture
+
+```
+yew-nav-link
+├── nav_link          # Core NavLink component + Match enum
+├── nav               # Primitives: NavList, NavItem, NavDivider
+├── components        # UI: Badge, Dropdown, Icon, Tabs, Pagination
+├── hooks             # Reactive: use_route_info, use_is_active, breadcrumbs
+├── utils             # Path, URL, keyboard navigation utilities
+├── attrs             # Type-safe attribute builders
+├── errors            # NavError, NavResult types
+└── macros            # Declarative: nav_link!, nav_list!, nav_tabs!
+```
+
+See the source code and inline documentation for detailed design documentation.
+
+---
+
+## Examples
+
+Run the comprehensive interactive demo:
+
+```bash
+rustup target add wasm32-unknown-unknown
+cargo install trunk
+
+cd examples/comprehensive
+trunk serve
+```
+
+Open http://127.0.0.1:8080 for live demos, code snippets, and architecture diagrams for every component.
+
+---
+
 ## API Reference
 
-### `NavLink<R>` Component
+### `NavLink<R>`
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
@@ -209,29 +294,52 @@ The component applies these classes to the rendered `<a>` element:
 | `children` | `Children` | required | Link content |
 | `partial` | `bool` | `false` | Enable prefix matching |
 
-### `Match` Enum
+### `Match`
 
-| Variant | Description |
-|---------|-------------|
-| `Match::Exact` | Active only on exact path match |
-| `Match::Partial` | Active when current path starts with target |
+| Variant | Behavior |
+|---------|----------|
+| `Exact` | Active only on exact path match |
+| `Partial` | Active when current path starts with target (segment-wise) |
 
 ### `nav_link<R>` Function
 
 ```rust
-fn nav_link<R: Routable>(to: R, children: &str, match_mode: Match) -> Html
+fn nav_link<R: Routable + PartialEq + Clone + 'static>(
+    to: R,
+    children: &str,
+    match_mode: Match,
+) -> Html
 ```
 
-Creates a `NavLink` with text content and specified match mode.
+### `BreadcrumbItem`
+
+```rust
+pub struct BreadcrumbItem {
+    pub label: String,
+    pub route: Option<String>,
+    pub is_current: bool,
+}
+```
+
+---
+
+## Migration Guides
+
+| From | To | Guide |
+|------|-----|-------|
+| 0.5.x | 0.6.x | See [CHANGELOG.md](CHANGELOG.md) |
+| 0.6.x | 0.7.x | See [CHANGELOG.md](CHANGELOG.md) |
+
+---
 
 <details>
 <summary><h2>Coverage</h2></summary>
 
-Code coverage is tracked via [Codecov](https://codecov.io/gh/RAprogramm/yew-nav-link). Target: **95%+** coverage.
+Target: **95%+** coverage, tracked via [Codecov](https://codecov.io/gh/RAprogramm/yew-nav-link).
 
 ### Sunburst
 
-The inner-most circle is the entire project, moving away from the center are folders then, finally, a single file. The size and color of each slice represents the number of statements and the coverage, respectively.
+The inner-most circle is the entire project, moving outward are folders then individual files. Size and color represent statement count and coverage.
 
 <p align="center">
   <a href="https://codecov.io/gh/RAprogramm/yew-nav-link">
@@ -241,7 +349,7 @@ The inner-most circle is the entire project, moving away from the center are fol
 
 ### Grid
 
-Each block represents a single file in the project. The size and color of each block represents the number of statements and the coverage, respectively.
+Each block represents a single file. Size and color represent statement count and coverage.
 
 <p align="center">
   <a href="https://codecov.io/gh/RAprogramm/yew-nav-link">
@@ -251,7 +359,7 @@ Each block represents a single file in the project. The size and color of each b
 
 ### Icicle
 
-The top section represents the entire project. Proceeding with folders and finally individual files. The size and color of each slice represents the number of statements and the coverage, respectively.
+Top section is the entire project, proceeding through folders to individual files.
 
 <p align="center">
   <a href="https://codecov.io/gh/RAprogramm/yew-nav-link">
@@ -260,6 +368,14 @@ The top section represents the entire project. Proceeding with folders and final
 </p>
 
 </details>
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow and code standards.
+
+---
 
 ## License
 

@@ -2,39 +2,42 @@
 
 ## Supported Versions
 
+Only the two most recent minor versions receive security updates.
+
 | Version | Supported          |
 |---------|--------------------|
+| 0.7.x   | :white_check_mark: |
 | 0.6.x   | :white_check_mark: |
-| 0.5.x   | :white_check_mark: |
-| 0.4.x   | :x:                |
-| < 0.4   | :x:                |
+| < 0.6   | :x:                |
 
 ## Reporting a Vulnerability
 
 **Do not open a public issue for security vulnerabilities.**
 
-Instead:
+Report vulnerabilities through one of the following channels:
 
-1. Email: andrey.rozanov.vl@gmail.com
-2. Or use [GitHub Security Advisories](https://github.com/RAprogramm/yew-nav-link/security/advisories/new)
+1. **Email**: andrey.rozanov.vl@gmail.com
+2. **GitHub Security Advisories**: [Create a private advisory](https://github.com/RAprogramm/yew-nav-link/security/advisories/new)
 
-Include:
+Include the following information:
 
 - Description of the vulnerability
 - Steps to reproduce
 - Potential impact
-- Suggested fix (if any)
+- Suggested fix (if available)
 
 ## Response Timeline
 
-- **Acknowledgment**: within 48 hours
-- **Initial assessment**: within 7 days
-- **Fix timeline**: depends on severity
+| Stage | Timeline |
+|-------|----------|
+| Acknowledgment | Within 48 hours |
+| Initial assessment | Within 7 days |
+| Fix deployment | Depends on severity |
 
 ## Disclosure
 
-We follow coordinated disclosure. We will work with you to understand and address the issue before any public disclosure.
+We follow coordinated disclosure. We will work with reporters to understand and address the issue before any public disclosure.
 
 ## Scope
 
-This policy applies to the `yew-nav-link` crate. For issues in dependencies, please report to the respective maintainers.
+This policy applies to the `yew-nav-link` crate. For vulnerabilities in dependencies, report them to the respective maintainers.
