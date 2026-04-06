@@ -87,7 +87,7 @@ pub struct NavTabProps {
     pub children: Children,
 
     /// Click handler invoked when the tab is selected.
-    pub onclick: Option<Callback<MouseEvent>>,
+    pub onclick: Option<Callback<MouseEvent>>
 }
 
 /// A single tab button within a [`NavTabs`](super::NavTabs) container.
@@ -142,13 +142,13 @@ mod tests {
     #[test]
     fn nav_tab_active() {
         let props = NavTabProps {
-            classes: Classes::default(),
-            active: true,
+            classes:  Classes::default(),
+            active:   true,
             disabled: false,
-            id: None,
+            id:       None,
             panel_id: None,
             children: Children::new(vec![]),
-            onclick: None,
+            onclick:  None
         };
 
         assert!(props.active);
@@ -158,13 +158,13 @@ mod tests {
     #[test]
     fn nav_tab_disabled() {
         let props = NavTabProps {
-            classes: Classes::default(),
-            active: false,
+            classes:  Classes::default(),
+            active:   false,
             disabled: true,
-            id: None,
+            id:       None,
             panel_id: None,
             children: Children::new(vec![]),
-            onclick: None,
+            onclick:  None
         };
 
         assert!(props.disabled);

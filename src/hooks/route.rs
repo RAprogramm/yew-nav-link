@@ -101,7 +101,7 @@ pub fn use_route_info<R: Routable + 'static>() -> Option<R> {
 #[hook]
 pub fn use_is_active<R>(route: R) -> bool
 where
-    R: Routable + Clone + PartialEq + 'static,
+    R: Routable + Clone + PartialEq + 'static
 {
     let current = use_route::<R>();
     current.as_ref() == Some(&route)
@@ -113,7 +113,7 @@ where
 #[hook]
 pub fn use_is_exact_active<R>(route: R) -> bool
 where
-    R: Routable + Clone + PartialEq + 'static,
+    R: Routable + Clone + PartialEq + 'static
 {
     let current = use_route::<R>();
     current.as_ref() == Some(&route)
@@ -126,7 +126,7 @@ where
 #[hook]
 pub fn use_is_partial_active<R>(route: R) -> bool
 where
-    R: Routable + Clone + PartialEq + 'static,
+    R: Routable + Clone + PartialEq + 'static
 {
     let current = use_route::<R>();
     match current.as_ref() {
@@ -135,7 +135,7 @@ where
             let current_path = current_route.to_path();
             is_path_prefix(&target_path, &current_path)
         }
-        None => false,
+        None => false
     }
 }
 
@@ -148,7 +148,7 @@ where
 #[hook]
 pub fn use_breadcrumbs<R>() -> Vec<BreadcrumbItem<R>>
 where
-    R: Routable + Clone + PartialEq + 'static,
+    R: Routable + Clone + PartialEq + 'static
 {
     let current = use_route::<R>();
     match current {
@@ -160,9 +160,9 @@ where
 
             // Root
             items.push(BreadcrumbItem {
-                route: route.clone(),
-                label: "/".to_string(),
-                is_active: segments.is_empty(),
+                route:     route.clone(),
+                label:     "/".to_string(),
+                is_active: segments.is_empty()
             });
 
             for (i, seg) in segments.iter().enumerate() {
@@ -170,15 +170,15 @@ where
                 built.push_str(seg);
                 let is_last = i == segments.len() - 1;
                 items.push(BreadcrumbItem {
-                    route: route.clone(),
-                    label: built.clone(),
-                    is_active: is_last,
+                    route:     route.clone(),
+                    label:     built.clone(),
+                    is_active: is_last
                 });
             }
 
             items
         }
-        None => vec![],
+        None => vec![]
     }
 }
 
@@ -192,11 +192,11 @@ where
 #[derive(Clone, Debug)]
 pub struct BreadcrumbItem<R> {
     /// The route this breadcrumb points to.
-    pub route: R,
+    pub route:     R,
     /// Human-readable label for the breadcrumb.
-    pub label: String,
+    pub label:     String,
     /// Whether this breadcrumb represents the currently active route.
-    pub is_active: bool,
+    pub is_active: bool
 }
 
 fn is_path_prefix(target: &str, current: &str) -> bool {
@@ -235,9 +235,9 @@ mod tests {
         #[derive(Clone, PartialEq)]
         struct TestRoute;
         let item = BreadcrumbItem {
-            route: TestRoute,
-            label: "/test".to_string(),
-            is_active: true,
+            route:     TestRoute,
+            label:     "/test".to_string(),
+            is_active: true
         };
         assert_eq!(item.label, "/test");
         assert!(item.is_active);

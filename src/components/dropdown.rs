@@ -102,7 +102,7 @@ pub struct NavDropdownProps {
 
     /// Content rendered inside the dropdown menu.
     #[prop_or_default]
-    pub children: Children,
+    pub children: Children
 }
 
 /// Collapsible dropdown menu for grouping navigation links.
@@ -171,7 +171,7 @@ pub struct NavDropdownItemProps {
     pub disabled: bool,
 
     /// Content rendered inside the item.
-    pub children: Children,
+    pub children: Children
 }
 
 /// A single item within a [`NavDropdown`] menu.
@@ -205,7 +205,7 @@ pub fn NavDropdownItem(props: &NavDropdownItemProps) -> Html {
 pub struct NavDropdownDividerProps {
     /// Additional CSS classes applied to the divider.
     #[prop_or_default]
-    pub classes: Classes,
+    pub classes: Classes
 }
 
 /// Visual separator between items in a [`NavDropdown`] menu.
@@ -228,10 +228,10 @@ mod tests {
     #[test]
     fn nav_dropdown_props_default() {
         let props = NavDropdownProps {
-            classes: Classes::default(),
+            classes:     Classes::default(),
             toggle_text: "Menu",
-            id: None,
-            children: Children::new(vec![]),
+            id:          None,
+            children:    Children::new(vec![])
         };
 
         assert_eq!(props.toggle_text, "Menu");
@@ -241,9 +241,9 @@ mod tests {
     #[test]
     fn nav_dropdown_item_default() {
         let props = NavDropdownItemProps {
-            classes: Classes::default(),
+            classes:  Classes::default(),
             disabled: false,
-            children: Children::new(vec![]),
+            children: Children::new(vec![])
         };
 
         assert!(!props.disabled);
@@ -252,9 +252,9 @@ mod tests {
     #[test]
     fn nav_dropdown_item_disabled() {
         let props = NavDropdownItemProps {
-            classes: Classes::default(),
+            classes:  Classes::default(),
             disabled: true,
-            children: Children::new(vec![]),
+            children: Children::new(vec![])
         };
 
         assert!(props.disabled);
@@ -263,7 +263,7 @@ mod tests {
     #[test]
     fn nav_dropdown_divider_props() {
         let props = NavDropdownDividerProps {
-            classes: Classes::default(),
+            classes: Classes::default()
         };
 
         assert!(props.classes.is_empty());

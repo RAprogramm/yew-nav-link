@@ -77,7 +77,7 @@ pub struct NavBadgeProps {
 
     /// Content rendered inside the badge.
     #[prop_or_default]
-    pub children: Children,
+    pub children: Children
 }
 
 /// Badge component for displaying status or count indicators on navigation
@@ -114,10 +114,10 @@ mod tests {
     #[test]
     fn nav_badge_props_default() {
         let props = NavBadgeProps {
-            classes: Classes::default(),
-            variant: "primary",
-            pill: false,
-            children: Children::new(vec![]),
+            classes:  Classes::default(),
+            variant:  "primary",
+            pill:     false,
+            children: Children::new(vec![])
         };
 
         assert!(!props.pill);
@@ -127,10 +127,10 @@ mod tests {
     #[test]
     fn nav_badge_clone() {
         let props1 = NavBadgeProps {
-            classes: Classes::from("test"),
-            variant: "success",
-            pill: true,
-            children: Children::new(vec![]),
+            classes:  Classes::from("test"),
+            variant:  "success",
+            pill:     true,
+            children: Children::new(vec![])
         };
 
         let props2 = props1.clone();

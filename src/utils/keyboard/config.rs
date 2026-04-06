@@ -4,17 +4,17 @@
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct KeyboardNavConfig {
     /// Whether navigation wraps around when reaching the first or last item.
-    pub wrap: bool,
+    pub wrap:     bool,
     /// Whether arrow keys map to vertical (`ArrowUp`/`ArrowDown`) movement.
-    pub vertical: bool,
+    pub vertical: bool
 }
 
 impl KeyboardNavConfig {
     /// Creates a new config with wrapping enabled and horizontal orientation.
     pub fn new() -> Self {
         Self {
-            wrap: true,
-            vertical: false,
+            wrap:     true,
+            vertical: false
         }
     }
 

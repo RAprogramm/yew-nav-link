@@ -32,15 +32,15 @@ use yew::prelude::*;
 #[derive(Clone, Debug, Default)]
 pub struct NavLinkAttrs {
     /// CSS classes applied to the link element.
-    pub class: Classes,
+    pub class:        Classes,
     /// Optional `id` attribute for the link element.
-    pub id: Option<&'static str>,
+    pub id:           Option<&'static str>,
     /// Optional `aria-current` attribute, typically `"page"` or `"step"`.
     pub aria_current: Option<&'static str>,
     /// Optional `data-toggle` attribute for framework integration.
-    pub data_toggle: Option<&'static str>,
+    pub data_toggle:  Option<&'static str>,
     /// Optional ARIA `role` attribute for the link element.
-    pub role: Option<&'static str>,
+    pub role:         Option<&'static str>
 }
 
 impl NavLinkAttrs {
@@ -89,13 +89,13 @@ impl NavLinkAttrs {
 #[derive(Clone, Debug, Default)]
 pub struct NavItemAttrs {
     /// CSS classes applied to the item element.
-    pub class: Classes,
+    pub class:    Classes,
     /// Optional `id` attribute for the item element.
-    pub id: Option<&'static str>,
+    pub id:       Option<&'static str>,
     /// Optional ARIA `role` attribute for the item element.
-    pub role: Option<&'static str>,
+    pub role:     Option<&'static str>,
     /// Whether the navigation item is disabled.
-    pub disabled: bool,
+    pub disabled: bool
 }
 
 impl NavItemAttrs {
@@ -136,11 +136,11 @@ impl NavItemAttrs {
 #[derive(Clone, Debug, Default)]
 pub struct NavListAttrs {
     /// CSS classes applied to the list element.
-    pub class: Classes,
+    pub class:      Classes,
     /// Optional `id` attribute for the list element.
-    pub id: Option<&'static str>,
+    pub id:         Option<&'static str>,
     /// Optional `aria-label` for screen reader accessibility.
-    pub aria_label: Option<&'static str>,
+    pub aria_label: Option<&'static str>
 }
 
 impl NavListAttrs {
