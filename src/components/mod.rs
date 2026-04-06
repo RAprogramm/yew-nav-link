@@ -17,7 +17,10 @@ mod tabs;
 mod text;
 
 pub use badge::{NavBadge, NavBadgeProps};
-pub use dropdown::{NavDropdown, NavDropdownDivider, NavDropdownItem, NavDropdownProps};
+pub use dropdown::{
+    NavDropdown, NavDropdownDivider, NavDropdownDividerProps, NavDropdownItem,
+    NavDropdownItemProps, NavDropdownProps
+};
 pub use header::{NavHeader, NavHeaderProps};
 pub use icon::{NavIcon, NavIconProps, NavIconSize, NavLinkWithIcon, NavLinkWithIconProps};
 pub use page_item::{PageItem, PageItemProps};

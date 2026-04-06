@@ -86,7 +86,7 @@ use yew::prelude::*;
 /// | `id` | `Option<&'static str>` | `None` | Element id |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 /// | `children` | `Children` | — | Menu content |
-#[derive(Properties, Clone, PartialEq, Debug)]
+#[derive(Properties, Clone, PartialEq, Debug, Default)]
 pub struct NavDropdownProps {
     /// Additional CSS classes applied to the dropdown container.
     #[prop_or_default]
@@ -160,7 +160,7 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
 /// | `disabled` | `bool` | `false` | Disable the item |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 /// | `children` | `Children` | — | Item content |
-#[derive(Properties, Clone, PartialEq, Debug)]
+#[derive(Properties, Clone, PartialEq, Debug, Default)]
 pub struct NavDropdownItemProps {
     /// Additional CSS classes applied to the item.
     #[prop_or_default]
@@ -201,7 +201,7 @@ pub fn NavDropdownItem(props: &NavDropdownItemProps) -> Html {
 /// | Prop | Type | Default | Description |
 /// |------|------|---------|-------------|
 /// | `classes` | `Classes` | — | Additional CSS classes |
-#[derive(Properties, Clone, PartialEq, Debug)]
+#[derive(Properties, Clone, PartialEq, Debug, Default)]
 pub struct NavDropdownDividerProps {
     /// Additional CSS classes applied to the divider.
     #[prop_or_default]
