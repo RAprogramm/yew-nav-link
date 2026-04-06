@@ -2,24 +2,19 @@
 
 ## Overview
 
-The `yew-nav-link` crate provides two categories of procedural macros:
+The `yew-nav-link` crate provides declarative macros (via the `macros` feature) to reduce boilerplate.
 
-1. **Derive Macros** - Extend Rust's derive system
-2. **Function-like Macros** - Reduce boilerplate in function calls
+## Available Macros
 
-## Derive Macros
+### nav_link!
 
-### RoutableExt
-
-Extends yew-router's `Routable` with additional functionality.
-
-#### Example
+A convenience wrapper around the `nav_link()` function for declarative usage.
 
 ```rust
-use yew_nav_link_macros::RoutableExt;
-use yew_router::prelude::Routable;
+use yew_nav_link::{nav_link, Match};
+use yew_router::prelude::*;
 
-#[derive(Routable, RoutableExt)]
+#[derive(Clone, PartialEq, Debug, Routable)]
 enum Route {
     #[at("/")]
     Home,
@@ -29,244 +24,48 @@ enum Route {
     Docs,
 }
 
-// Use the extended functionality
-let _ = Route::validate_routes();
-Route::debug_routes();
-```
-
-#### Features
-
-- Compile-time route validation
-- Debug span support for better error messages
-- Extended validation methods
-
-### NavItem
-
-Provides navigation item configuration with compile-time checks.
-
-#### Example
-
-```rust
-use yew_nav_link_macros::NavItem;
-use yew_router::prelude::Routable;
-
-#[derive(NavItem, Routable, Clone, PartialEq)]
-#[nav_item(root = "/")]
-enum Route {
-    #[at("/")]
-    Home,
-    #[at("/about")]
-    About,
-}
-
-// Get navigation path for a route
-let path = Route::Home.nav_path();
-```
-
-## Function-like Macros
-
-### nav_link
-
-Creates navigation links with compile-time route validation.
-
-#### Example
-
-```rust
-use yew_nav_link_macros::nav_link;
-use yew_router::prelude::*;
-
-#[derive(Routable, Clone, PartialEq)]
-enum Route {
-    #[at("/")]
-    Home,
-    #[at("/about")]
-    About,
-}
-
-// Compile-time validated navigation link
-nav_link!(Route::Home, "Home", Match::Exact)
-```
-
-## Syntax Reference
-
-### RoutableExt
-
-```rust
-#[derive(Routable, RoutableExt)]
-enum YourRoute {
-    #[at("/")]
-    Variant,
+// Usage in html!
+#[component]
+fn Navigation() -> Html {
+    html! {
+        <nav>
+            { nav_link!(Route::Home, "Home", Match::Exact) }
+            { nav_link!(Route::About, "About", Match::Exact) }
+            { nav_link!(Route::Docs, "Docs", Match::Partial) }
+        </nav>
+    }
 }
 ```
 
-### NavItem
+This is equivalent to:
 
 ```rust
-#[derive(NavItem, Routable)]
-#[nav_item(root = "/")]
-enum YourRoute {
-    #[at("/")]
-    Variant,
+html! {
+    <nav>
+        { nav_link(Route::Home, "Home", Match::Exact) }
+        { nav_link(Route::About, "About", Match::Exact) }
+        { nav_link(Route::Docs, "Docs", Match::Partial) }
+    </nav>
 }
 ```
 
-### nav_link
+## Stub Macros (Not Yet Implemented)
 
-```rust
-nav_link!(Route::Variant, "Label", Match::Mode)
-```
+The following macros are documented but not yet implemented:
 
-## Error Messages
+- `routable_ext!` - Would generate route validation methods
+- `nav_item!` - Would generate navigation path methods
 
-### Invalid Route Format
+Using these macros will produce a compile-time error indicating they are not yet implemented.
 
-```
-error: route must start with '/'
-  --> src/main.rs:10:5
-   |
-10 |     #[at("home")]
-   |     ^^^^^^^^^^^^^
-```
+## Procedural Macros (Requires Separate Crate)
 
-### Duplicate Routes
+The `src/macros/macros/` directory contains procedural macro implementations. These require a separate proc-macro crate with `crate-type = ["proc-macro"]` and are not currently compiled as part of the main library.
 
-```
-error: duplicate route: /about
-  --> src/main.rs:15:5
-   |
-15 |     #[at("/about")]
-   |     ^^^^^^^^^^^^^^^
-```
-
-### Missing Attribute
-
-```
-error: missing required attribute: #[at]
-  --> src/main.rs:8:10
-   |
-8  |     Home,
-   |          ^^^^^
-```
-
-## Best Practices
-
-### 1. Always Use routable_ext
-
-```rust
-// Good
-#[derive(Routable, RoutableExt)]
-
-// Bad
-#[derive(Routable)]
-```
-
-### 2. Validate Routes
-
-```rust
-// Good
-#[derive(NavItem, Routable)]
-#[nav_item(validate = true)]
-
-// Bad
-#[derive(NavItem, Routable)]
-```
-
-### 3. Use Function Macros for Simplified Syntax
-
-```rust
-// Good
-let link = nav_link!(Route::Home, "Home", Match::Exact);
-
-// Better for complex cases
-let link = NavLink::new()
-    .to(Route::Home)
-    .children("Home")
-    .build();
-```
-
-## Performance Considerations
-
-1. **Compile Time**: Macros add to compilation time but improve runtime
-2. **Code Size**: Generated code is optimized for size
-3. **Memory**: Compile-time validation reduces runtime checks
-
-## Troubleshooting
-
-### Macro Expansion Issues
-
-Use `cargo expand` to see the expanded code:
-
-```bash
-cargo install cargo-expand
-cargo expand
-```
-
-### Compilation Errors
-
-1. Check route format matches yew-router requirements
-2. Ensure all variants have `#[at]` attributes
-3. Verify route uniqueness
-
-## Examples
-
-See the `examples/comprehensive/` directory for a complete interactive demo with documentation for all macros and components.
-
-```bash
-cd examples/comprehensive
-trunk serve
-```
-
-## Migration Guide
-
-### From Manual Implementation
-
-```rust
-// Before
-let link = NavLink::new()
-    .to(Route::Home)
-    .children("Home")
-    .build();
-
-// After
-let link = nav_link!(Route::Home, "Home", Match::Exact);
-```
-
-### From Route Validation
-
-```rust
-// Before
-let valid = route.validate();
-
-// After
-Route::validate_routes();
-```
-
-## FAQs
-
-### Q: Do I need to use all macros?
-
-A: No, use what fits your needs. The core `NavLink` component works without macros.
-
-### Q: Do macros affect runtime performance?
-
-A: No, macros generate code at compile time with no runtime overhead.
-
-### Q: Can I customize the generated code?
-
-A: Yes, use attributes to customize behavior.
-
-## Future Enhancements
-
-- [ ] Route inheritance
-- [ ] Wildcard route support
-- [ ] Parameter validation
-- [ ] Link generation from URLs
-- [ ] Middleware validation
-
-## Support
-
-For issues and questions:
-
-- Check the documentation
-- Review the examples
-- Open an issue on GitHub
+Available proc-macros:
+- `nav_list!` - Generate navigation lists
+- `nav_links!` - Generate multiple links
+- `nav_menu!` - Generate sidebar menus
+- `nav_tabs!` - Generate tab navigation
+- `breadcrumbs!` - Generate breadcrumbs
+- `nav_pagination!` - Generate pagination controls

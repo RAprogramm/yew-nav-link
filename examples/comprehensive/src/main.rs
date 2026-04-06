@@ -17,9 +17,8 @@ mod routes;
 
 use routes::Route;
 
-/// Version string parsed from Cargo.toml at compile time.
-/// Kept in sync with home.rs parsing logic.
-const SIDEBAR_VERSION: &str = "0.6.0";
+/// Version string from crate metadata.
+const SIDEBAR_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[function_component]
 fn App() -> Html {
