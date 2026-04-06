@@ -149,7 +149,13 @@ pub mod nav_link;
 pub mod utils;
 
 pub use attrs::{NavItemAttrs, NavLinkAttrs, NavListAttrs};
-pub use components::{NavBadge, NavBadgeProps, NavHeader, NavHeaderProps, NavText, NavTextProps};
+pub use components::{
+    NavBadge, NavBadgeProps, NavDropdown, NavDropdownDivider, NavDropdownItem, NavDropdownProps,
+    NavHeader, NavHeaderProps, NavIcon, NavIconProps, NavIconSize, NavLinkWithIcon,
+    NavLinkWithIconProps, NavTab, NavTabPanel, NavTabPanelProps, NavTabProps, NavTabs,
+    NavTabsProps, NavText, NavTextProps, PageItem, PageItemProps, PageLink, PageLinkProps,
+    Pagination, PaginationProps,
+};
 pub use errors::{NavError, NavResult};
 pub use hooks::{
     use_breadcrumbs, use_is_active, use_is_exact_active, use_is_partial_active, use_route_info,
