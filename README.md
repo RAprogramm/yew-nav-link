@@ -13,8 +13,7 @@ Navigation link component for [Yew](https://yew.rs) with automatic active state 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![REUSE](https://api.reuse.software/badge/github.com/RAprogramm/yew-nav-link)](https://api.reuse.software/info/github.com/RAprogramm/yew-nav-link)
 [![Codecov](https://codecov.io/gh/RAprogramm/yew-nav-link/branch/main/graph/badge.svg)](https://codecov.io/gh/RAprogramm/yew-nav-link)
-[![Hits-of-Code](https://hitsofcode.com/github/RAprogramm/yew-nav-link?branch=main&label=HoC&exclude=Cargo.lock,.gitignore,LICENSE,LICENSES,.reuse,)](https://hitsofcode.com/github/RAprogramm/yew-nav-link/view?branch=main&exclude=Cargo.lock,.gitignore,LICENSE,LICENSES,.reuse,.claude)
-[![Hits-of-Code](https://hitsofcode.com/github/RAprogramm/yew-nav-link?branch=main&label=HoC%20(src)&exclude=Cargo.lock,Cargo.toml,.gitignore,LICENSE,LICENSES,.reuse,.github,.hooks,.config,.claude,examples,README.md,CONTRIBUTING.md,CODE_OF_CONDUCT.md,SECURITY.md,Makefile.toml,REUSE.toml,.rustfmt.toml,.rultor.yml)](https://hitsofcode.com/github/RAprogramm/yew-nav-link/view?branch=main&exclude=Cargo.lock,Cargo.toml,.gitignore,LICENSE,LICENSES,.reuse,.github,.hooks,.config,.claude,examples,README.md,CONTRIBUTING.md,CODE_OF_CONDUCT.md,SECURITY.md,Makefile.toml,REUSE.toml,.rustfmt.toml,.rultor.yml)
+[![Hits-of-Code](https://hitsofcode.com/github/RAprogramm/yew-nav-link?branch=main&label=HoC)](https://hitsofcode.com/github/RAprogramm/yew-nav-link/view?branch=main)
 
 </div>
 
@@ -40,8 +39,6 @@ Navigation link component for [Yew](https://yew.rs) with automatic active state 
 
 `yew-nav-link` provides a `NavLink` component that wraps Yew Router's `Link` with automatic active state management. When the target route matches the current URL, an `active` CSS class is applied automatically.
 
-<div align="right"><a href="#top">^ top</a></div>
-
 ## Installation
 
 ```toml
@@ -49,16 +46,12 @@ Navigation link component for [Yew](https://yew.rs) with automatic active state 
 yew-nav-link = "0.6"
 ```
 
-<div align="right"><a href="#top">^ top</a></div>
-
 ## Requirements
 
 | Dependency | Version |
 |------------|---------|
 | yew | 0.23+ |
 | yew-router | 0.20+ |
-
-<div align="right"><a href="#top">^ top</a></div>
 
 ## Optional Macros
 
@@ -70,8 +63,6 @@ yew-nav-link = { version = "0.6", features = ["macros"] }
 ```
 
 Available macros include `nav_link!`, `routable_ext!`, and `nav_item!`.
-
-<div align="right"><a href="#top">^ top</a></div>
 
 ## Examples
 
@@ -92,8 +83,6 @@ trunk serve
 Open http://127.0.0.1:8080 in your browser.
 
 The demo includes documentation for all components (NavLink, NavList, NavTabs, Pagination, etc.) and showcases integration patterns for Bootstrap 5, Tailwind CSS, nested routes, and macros.
-
-<div align="right"><a href="#top">^ top</a></div>
 
 ## Usage
 
@@ -179,8 +168,6 @@ fn Navigation() -> Html {
 }
 ```
 
-<div align="right"><a href="#top">^ top</a></div>
-
 ## CSS Classes
 
 The component applies these classes to the rendered `<a>` element:
@@ -212,8 +199,6 @@ The component applies these classes to the rendered `<a>` element:
 }
 ```
 
-<div align="right"><a href="#top">^ top</a></div>
-
 ## API Reference
 
 ### `NavLink<R>` Component
@@ -239,8 +224,6 @@ fn nav_link<R: Routable>(to: R, children: &str, match_mode: Match) -> Html
 
 Creates a `NavLink` with text content and specified match mode.
 
-<div align="right"><a href="#top">^ top</a></div>
-
 <details>
 <summary><h2>Coverage</h2></summary>
 
@@ -252,7 +235,7 @@ The inner-most circle is the entire project, moving away from the center are fol
 
 <p align="center">
   <a href="https://codecov.io/gh/RAprogramm/yew-nav-link">
-    <img src="https://codecov.io/gh/RAprogramm/yew-nav-link/graphs/sunburst.svg?token=E93AERE3UC" alt="Sunburst"/>
+    <img src="https://codecov.io/gh/RAprogramm/yew-nav-link/graphs/sunburst.svg" alt="Sunburst"/>
   </a>
 </p>
 
@@ -262,7 +245,7 @@ Each block represents a single file in the project. The size and color of each b
 
 <p align="center">
   <a href="https://codecov.io/gh/RAprogramm/yew-nav-link">
-    <img src="https://codecov.io/gh/RAprogramm/yew-nav-link/graphs/tree.svg?token=E93AERE3UC" alt="Grid"/>
+    <img src="https://codecov.io/gh/RAprogramm/yew-nav-link/graphs/tree.svg" alt="Grid"/>
   </a>
 </p>
 
@@ -272,16 +255,12 @@ The top section represents the entire project. Proceeding with folders and final
 
 <p align="center">
   <a href="https://codecov.io/gh/RAprogramm/yew-nav-link">
-    <img src="https://codecov.io/gh/RAprogramm/yew-nav-link/graphs/icicle.svg?token=E93AERE3UC" alt="Icicle"/>
+    <img src="https://codecov.io/gh/RAprogramm/yew-nav-link/graphs/icicle.svg" alt="Icicle"/>
   </a>
 </p>
-
-<div align="right"><a href="#top">^ top</a></div>
 
 </details>
 
 ## License
 
 Licensed under the [MIT License](LICENSE).
-
-<div align="right"><a href="#top">^ top</a></div>

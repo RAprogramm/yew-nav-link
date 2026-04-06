@@ -1,25 +1,25 @@
-# Не добавлять запятые, если элемент один
+# Do not add trailing comma when single element
 trailing_comma = "Never"
 
-# Скобки остаются на той же строке
+# Braces stay on the same line
 brace_style = "SameLineWhere"
 
-# Выравнивать поля структуры, если длина меньше указанного порога
+# Align struct fields if below threshold
 struct_field_align_threshold = 20
 
-# Форматировать комментарии внутри документации
+# Wrap and format comments in documentation
 wrap_comments = true
 format_code_in_doc_comments = true
 
-# Не складывать литералы структур в одну строку
+# Do not collapse struct literals to single line
 struct_lit_single_line = false
 
 max_width = 99
 
-# Группировка импортов
-imports_granularity = "Crate"      # Группировать импорты по крейтам
-group_imports = "StdExternalCrate" # Стандартные, внешние и локальные импорты в отдельных группах
-reorder_imports = true             # Сортировать импорты внутри групп
+# Import grouping
+imports_granularity = "Crate"
+group_imports = "StdExternalCrate"
+reorder_imports = true
 
-# Включить поддержку нестабильных функций (только для nightly)
+# Enable unstable features (nightly only)
 unstable_features = true
