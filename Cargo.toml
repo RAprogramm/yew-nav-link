@@ -10,7 +10,16 @@ readme = "README.md"
 homepage = "https://github.com/RAprogramm/yew-nav-link"
 repository = "https://github.com/RAprogramm/yew-nav-link"
 license = "MIT"
-keywords = ["yew", "router", "navigation", "wasm", "frontend", "component", "spa", "web"]
+keywords = [
+  "yew",
+  "router",
+  "navigation",
+  "wasm",
+  "frontend",
+  "component",
+  "spa",
+  "web",
+]
 categories = ["gui", "wasm", "web-programming"]
 exclude = ["examples/**"]
 
@@ -26,7 +35,7 @@ yew = { version = "0.23", features = ["csr"] }
 yew-router = "0.20"
 
 [dev-dependencies]
-criterion = "0.7.0"
+criterion = "0.8"
 wasm-bindgen-test = "0.3"
 
 [[bench]]
