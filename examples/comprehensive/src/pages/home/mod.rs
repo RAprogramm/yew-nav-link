@@ -15,8 +15,8 @@ const BASH_CODE: &str = r#"# Install prerequisites (once)
 rustup target add wasm32-unknown-unknown
 cargo install trunk
 
-# Run any example
-cd examples/basic
+# Run the comprehensive demo
+cd examples/comprehensive
 trunk serve
 
 # Open http://127.0.0.1:8080 in your browser"#;
