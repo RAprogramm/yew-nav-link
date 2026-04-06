@@ -75,28 +75,23 @@ Available macros include `nav_link!`, `routable_ext!`, and `nav_item!`.
 
 ## Examples
 
-Full working examples are available in the [examples/](https://github.com/RAprogramm/yew-nav-link/tree/main/examples) directory:
+A comprehensive interactive demo is available in the [examples/comprehensive/](https://github.com/RAprogramm/yew-nav-link/tree/main/examples/comprehensive) directory. It showcases every component, hook, and pattern in the library with live demos, code snippets, and architecture diagrams.
 
-| Example | Description |
-|---------|-------------|
-| [basic](https://github.com/RAprogramm/yew-nav-link/tree/main/examples/basic) | Simple navigation with Home, About, Contact pages |
-| [bootstrap](https://github.com/RAprogramm/yew-nav-link/tree/main/examples/bootstrap) | Integration with Bootstrap 5 navbar |
-| [tailwind](https://github.com/RAprogramm/yew-nav-link/tree/main/examples/tailwind) | Sidebar navigation styled with Tailwind CSS |
-| [nested-routes](https://github.com/RAprogramm/yew-nav-link/tree/main/examples/nested-routes) | Multi-level navigation with partial matching |
-
-### Running Examples
+### Running the Demo
 
 ```bash
 # Install prerequisites (once)
 rustup target add wasm32-unknown-unknown
 cargo install trunk
 
-# Run example
-cd examples/basic
+# Run the comprehensive demo
+cd examples/comprehensive
 trunk serve
 ```
 
 Open http://127.0.0.1:8080 in your browser.
+
+The demo includes documentation for all components (NavLink, NavList, NavTabs, Pagination, etc.) and showcases integration patterns for Bootstrap 5, Tailwind CSS, nested routes, and macros.
 
 <div align="right"><a href="#top">^ top</a></div>
 

@@ -1,40 +1,49 @@
 # Examples
 
-## Quick Start
+## Comprehensive Demo
+
+A single comprehensive interactive demo showcases every component, hook, and pattern in the library.
 
 ```bash
 rustup target add wasm32-unknown-unknown
 cargo install trunk
 
-# No macros example (full syntax)
-cd no-macros
-trunk serve
-
-# With macros example (reduced syntax)
-cd with-macros
+cd comprehensive
 trunk serve
 ```
 
 Open http://127.0.0.1:8080
 
-## Examples
+## What's Included
 
-| Example | Description |
-|---------|-------------|
-| [no-macros](./no-macros) | **Full syntax** - No procedural macros, explicit HTML structure |
-| [with-macros](./with-macros) | **Macros version** - Uses procedural macros for reduced code |
-| [basic](./basic) | Simple navigation with component and function syntax |
-| [bootstrap](./bootstrap) | Bootstrap 5 navbar integration |
-| [tailwind](./tailwind) | Sidebar with Tailwind CSS styling |
-| [nested-routes](./nested-routes) | Multi-level navigation |
+The comprehensive demo includes documentation and live examples for:
 
-Each example has its own README with details.
+### Components
+- **NavLink** — Core navigation link with automatic active state
+- **NavList & NavItem** — Accessible navigation list container
+- **NavDivider** — Visual separator for navigation groups
+- **Badge / Header / Text** — Navigation metadata components
+- **NavDropdown** — Dropdown menu component
+- **NavIcon** — Icon integration
+- **NavTabs / NavTab** — Tabbed navigation
+- **Pagination** — Page navigation controls
 
-## Code Comparison
+### Hooks & Utilities
+- **Route Hooks** — use_route_info, use_is_active, use_is_exact_active, use_is_partial_active
+- **Breadcrumbs** — Breadcrumb trail generation
+- **Path Utilities** — Path manipulation helpers
 
-| Approach | Lines for 3 Links | Macros |
-|----------|------------------|--------|
-| **no-macros** | ~12 lines | 0 |
-| **with-macros** | ~3 lines | `nav_list!` |
+### Macros
+- **nav_list!** — Generate navigation lists
+- **nav_links!** — Generate multiple links
+- **nav_menu!** — Generate sidebar menus
+- **nav_tabs!** — Generate tab navigation
+- **breadcrumbs!** — Generate breadcrumbs
+- **nav_pagination!** — Generate pagination controls
 
-The macros version reduces code by ~75%!
+### Integration Patterns
+- **Basic** — Simple 3-page app tutorial
+- **Bootstrap 5** — Navbar, pills, tabs, vertical sidebar
+- **Tailwind CSS** — Dashboard sidebar with @apply
+- **Nested Routes** — Multi-level routing with partial matching
+- **With Macros** — Declarative navigation with compile-time code generation

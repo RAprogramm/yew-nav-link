@@ -209,11 +209,12 @@ cargo expand
 
 ## Examples
 
-See the `examples/` directory for complete working examples:
+See the `examples/comprehensive/` directory for a complete interactive demo with documentation for all macros and components.
 
-- `examples/basic/` - Simple navigation
-- `examples/bootstrap/` - Bootstrap integration
-- `examples/tailwind/` - Tailwind CSS integration
+```bash
+cd examples/comprehensive
+trunk serve
+```
 
 ## Migration Guide
 
