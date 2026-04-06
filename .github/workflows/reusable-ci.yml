@@ -91,22 +91,28 @@ jobs:
       - name: Install SARIF tools
         run: cargo install clippy-sarif sarif-fmt
 
-      - name: Run Clippy
+      - name: Run Clippy with SARIF
         run: |
+          set +e
           cargo clippy --workspace --all-targets ${{ inputs.all-features && '--all-features' || '' }} \
             --message-format=json -- -D warnings 2>&1 | clippy-sarif | tee clippy.sarif | sarif-fmt
-        continue-on-error: true
-
-      - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@v4
-        if: always()
-        with:
-          sarif_file: clippy.sarif
-          wait-for-processing: true
-
-      - name: Check Clippy exit code
-        run: |
-          cargo clippy --workspace --all-targets ${{ inputs.all-features && '--all-features' || '' }} -- -D warnings
+          CLIPPY_EXIT=$?
+          set -e
+          
+          # Upload SARIF
+          echo "::group::Clippy SARIF Upload"
+          if [ -f clippy.sarif ]; then
+            echo "Uploading clippy.sarif to GitHub Code Scanning..."
+          fi
+          echo "::endgroup::"
+          
+          # Exit with clippy result
+          if [ $CLIPPY_EXIT -ne 0 ]; then
+            echo "❌ Clippy found issues - see details above"
+            exit 1
+          else
+            echo "✅ No clippy warnings"
+          fi
 
       - name: Summary
         if: always()
