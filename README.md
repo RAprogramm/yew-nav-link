@@ -156,14 +156,33 @@ Partial matching is segment-aware: `/docs` matches `/docs/api` but **not** `/doc
 ### Macros
 
 ```rust
-use yew_nav_link::{nav_link, Match};
+use yew_nav_link::{nav_link, nav_links, nav_list, nav_tabs, breadcrumbs, Match};
 
 html! {
     <nav>
         { nav_link!(Route::Home, "Home", Match::Exact) }
-        { nav_link!(Route::About, "About", Match::Exact) }
+        { nav_links![
+            (Route::Home, "Home", Match::Exact),
+            (Route::About, "About", Match::Exact),
+        ] }
     </nav>
 }
+
+{ nav_list![
+    (Route::Home, "Home", Match::Exact),
+    (Route::About, "About", Match::Exact),
+] }
+
+{ nav_tabs![
+    (Route::Tab1, "Tab 1"),
+    (Route::Tab2, "Tab 2"),
+] }
+
+{ breadcrumbs![
+    (Route::Home, "Home"),
+    (Route::Docs, "Docs"),
+    (Route::DocsApi, "API"),
+] }
 ```
 
 ---
