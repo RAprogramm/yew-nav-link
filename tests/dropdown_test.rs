@@ -1,10 +1,7 @@
 #![cfg(test)]
 
 use yew::prelude::*;
-use yew_nav_link::components::{
-    NavDropdown, NavDropdownDivider, NavDropdownDividerProps, NavDropdownItem,
-    NavDropdownItemProps, NavDropdownProps
-};
+use yew_nav_link::components::{NavDropdownDividerProps, NavDropdownItemProps, NavDropdownProps};
 
 #[test]
 fn nav_dropdown_props_default_values() {

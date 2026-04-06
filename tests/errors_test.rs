@@ -74,7 +74,11 @@ fn test_nav_error_partial_eq() {
 #[test]
 fn test_nav_result_ok() {
     let result: NavResult<i32> = Ok(42);
-    assert_eq!(result.unwrap(), 42);
+    let value = match result {
+        Ok(v) => v,
+        Err(_) => panic!("Expected Ok")
+    };
+    assert_eq!(value, 42);
 }
 
 #[test]
@@ -86,6 +90,9 @@ fn test_nav_result_err() {
 #[test]
 fn test_nav_result_into() {
     let result: NavResult<i32> = Err(NavError::invalid_route("error"));
-    let err = result.unwrap_err();
-    assert!(matches!(err, NavError::InvalidRoute(_)));
+    if let Some(err) = result.err() {
+        assert!(matches!(err, NavError::InvalidRoute(_)));
+    } else {
+        panic!("Expected error");
+    }
 }

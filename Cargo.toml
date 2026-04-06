@@ -26,7 +26,12 @@ yew = { version = "0.23", features = ["csr"] }
 yew-router = "0.20"
 
 [dev-dependencies]
+criterion = "0.7.0"
 wasm-bindgen-test = "0.3"
+
+[[bench]]
+name = "path"
+harness = false
 
 [lib]
 crate-type = ["rlib"]

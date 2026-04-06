@@ -1,9 +1,7 @@
 #![cfg(test)]
 
 mod hooks_route_test {
-    use yew::prelude::*;
     use yew_nav_link::hooks::BreadcrumbItem;
-    use yew_router::prelude::*;
 
     #[test]
     fn breadcrumb_item_new() {

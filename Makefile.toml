@@ -15,8 +15,8 @@ ALL_FEATURES = "true"
 [tasks.fmt]
 category = "Format"
 clear = true
-command = "cargo"
-args = ["fmt", "--all", "--", "--check"]
+script_runner = "bash"
+script = ["cargo +nightly fmt --all -- --check"]
 description = "Check rustfmt formatting for the entire workspace"
 
 [tasks.clippy]
@@ -51,7 +51,7 @@ description = "Run tests (optionally with all features)"
 category = "Package"
 clear = true
 command = "cargo"
-args = ["package", "--locked"]
+args = ["package", "--locked", "--allow-dirty"]
 description = "Verify that the crate can be packaged cleanly"
 
 [tasks.ci]

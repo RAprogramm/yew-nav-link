@@ -1,6 +1,5 @@
 #![cfg(test)]
 
-use yew::prelude::*;
 use yew_nav_link::{NavItemAttrs, NavLinkAttrs, NavListAttrs};
 
 #[test]
