@@ -1,0 +1,10 @@
+# rust-prod-diff-checker configuration for yew-nav-link
+# Ignore commits from RAprogramm (author of the project)
+
+[classification]
+ignored_authors = ["RAprogramm"]
+
+[limits]
+max_prod_units = 30
+max_weighted_score = 100
+fail_on_exceed = true
