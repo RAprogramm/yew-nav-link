@@ -28,7 +28,9 @@ jobs:
         uses: RAprogramm/rust-prod-diff-checker@v1
         with:
           config_file: .rust-diff-analyzer.toml
-          max_prod_lines: 100
+          max_prod_units: 50
+          max_weighted_score: 200
+          max_prod_lines: 200
           fail_on_exceed: true
           post_comment: true
 
