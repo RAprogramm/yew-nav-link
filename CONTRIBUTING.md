@@ -56,4 +56,4 @@ cargo test
 
 ## Full guidelines
 
-See [RustManifest](https://github.com/RAprogramm/RustManifest)
+For additional guidelines, see the project documentation and code standards in this file.

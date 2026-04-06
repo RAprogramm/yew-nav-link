@@ -190,12 +190,12 @@ description = "Install git pre-commit hook from .hooks/"
 script_runner = "bash"
 script = [
   'set -euo pipefail',
-  'if [ ! -f .hooks/pre-commit ]; then echo "❌ .hooks/pre-commit не найден!"; exit 1; fi',
-  'echo "🔗 Linking .hooks/pre-commit to .git/hooks/pre-commit..."',
+  'if [ ! -f .hooks/pre-commit ]; then echo "Error: .hooks/pre-commit not found"; exit 1; fi',
+  'echo "Linking .hooks/pre-commit to .git/hooks/pre-commit..."',
   'mkdir -p .git/hooks',
   'ln -sf ../../.hooks/pre-commit .git/hooks/pre-commit',
   'chmod +x .hooks/pre-commit',
-  'echo "✅ pre-commit hook установлен."',
+  'echo "Done: pre-commit hook installed."',
 ]
 
 # ------- Pretty Help -------
