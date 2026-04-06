@@ -34,6 +34,6 @@ body:
     id: version
     attributes:
       label: Version
-      placeholder: "0.3.0"
+      placeholder: "0.6.0"
     validations:
       required: true
