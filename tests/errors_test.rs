@@ -25,7 +25,7 @@ fn test_route_not_found_factory() {
     let err = NavError::route_not_found();
     match err {
         NavError::RouteNotFound => {}
-        _ => panic!("Expected RouteNotFound"),
+        _ => panic!("Expected RouteNotFound")
     }
 }
 
@@ -34,7 +34,7 @@ fn test_invalid_route_factory() {
     let err = NavError::invalid_route("test error message");
     match err {
         NavError::InvalidRoute(msg) => assert_eq!(msg, "test error message"),
-        _ => panic!("Expected InvalidRoute"),
+        _ => panic!("Expected InvalidRoute")
     }
 }
 
@@ -43,7 +43,7 @@ fn test_navigation_cancelled_factory() {
     let err = NavError::navigation_cancelled();
     match err {
         NavError::NavigationCancelled => {}
-        _ => panic!("Expected NavigationCancelled"),
+        _ => panic!("Expected NavigationCancelled")
     }
 }
 
