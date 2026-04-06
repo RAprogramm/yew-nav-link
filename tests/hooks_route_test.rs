@@ -10,9 +10,9 @@ mod hooks_route_test {
         #[derive(Clone, PartialEq)]
         struct TestRoute;
         let item = BreadcrumbItem {
-            route: TestRoute,
-            label: "/test".to_string(),
-            is_active: true,
+            route:     TestRoute,
+            label:     "/test".to_string(),
+            is_active: true
         };
         assert_eq!(item.label, "/test");
         assert!(item.is_active);
@@ -21,9 +21,9 @@ mod hooks_route_test {
     #[test]
     fn breadcrumb_item_clone() {
         let item1 = BreadcrumbItem {
-            route: "route1",
-            label: "label1".to_string(),
-            is_active: false,
+            route:     "route1",
+            label:     "label1".to_string(),
+            is_active: false
         };
         let item2 = item1.clone();
         assert_eq!(item1.label, item2.label);
@@ -32,9 +32,9 @@ mod hooks_route_test {
     #[test]
     fn breadcrumb_item_debug() {
         let item = BreadcrumbItem {
-            route: "route",
-            label: "test".to_string(),
-            is_active: true,
+            route:     "route",
+            label:     "test".to_string(),
+            is_active: true
         };
         let debug_str = format!("{:?}", item);
         assert!(debug_str.contains("BreadcrumbItem"));
@@ -43,9 +43,9 @@ mod hooks_route_test {
     #[test]
     fn breadcrumb_item_inactive() {
         let item = BreadcrumbItem {
-            route: "route",
-            label: "label".to_string(),
-            is_active: false,
+            route:     "route",
+            label:     "label".to_string(),
+            is_active: false
         };
         assert!(!item.is_active);
     }
@@ -53,9 +53,9 @@ mod hooks_route_test {
     #[test]
     fn breadcrumb_item_nested_path() {
         let item = BreadcrumbItem {
-            route: "route",
-            label: "/docs/api/v1".to_string(),
-            is_active: true,
+            route:     "route",
+            label:     "/docs/api/v1".to_string(),
+            is_active: true
         };
         assert!(item.label.contains("docs"));
         assert!(item.label.contains("api"));
@@ -64,9 +64,9 @@ mod hooks_route_test {
     #[test]
     fn breadcrumb_item_root_path() {
         let item = BreadcrumbItem {
-            route: "route",
-            label: "/".to_string(),
-            is_active: true,
+            route:     "route",
+            label:     "/".to_string(),
+            is_active: true
         };
         assert_eq!(item.label, "/");
     }
