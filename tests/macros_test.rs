@@ -1,9 +1,11 @@
 //! Integration tests for yew-nav-link macros
 
+#![cfg(feature = "macros")]
+
 use yew::prelude::*;
 use yew_nav_link::{
-    Match, breadcrumbs, nav_item, nav_link, nav_links, nav_list, nav_menu, nav_pagination,
-    nav_tabs
+    breadcrumbs, nav_item, nav_link, nav_links, nav_list, nav_menu, nav_pagination, nav_tabs,
+    Match,
 };
 use yew_router::prelude::Routable;
 
@@ -18,7 +20,7 @@ enum TestRoute {
     #[at("/docs/api")]
     DocsApi,
     #[at("/contact")]
-    Contact
+    Contact,
 }
 
 #[derive(Clone, PartialEq, Routable)]
@@ -32,7 +34,7 @@ enum ItemRoute {
     #[at("/docs/api")]
     DocsApi,
     #[at("/contact")]
-    Contact
+    Contact,
 }
 
 #[test]

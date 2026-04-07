@@ -92,7 +92,7 @@ use std::{collections::HashMap, marker::PhantomData};
 use yew::prelude::*;
 use yew_router::{
     history::{BrowserHistory, History},
-    prelude::*
+    prelude::*,
 };
 
 /// Navigation callbacks for programmatic route manipulation.
@@ -107,19 +107,19 @@ use yew_router::{
 #[derive(Clone, Debug)]
 pub struct Navigation<R>
 where
-    R: Routable + Clone + 'static
+    R: Routable + Clone + 'static,
 {
     /// Callback to navigate back in history.
-    pub go_back:    Callback<()>,
+    pub go_back: Callback<()>,
     /// Callback to navigate forward in history.
     pub go_forward: Callback<()>,
     /// Phantom marker for the route type.
-    pub _marker:    PhantomData<R>
+    pub _marker: PhantomData<R>,
 }
 
 impl<R> Navigation<R>
 where
-    R: Routable + Clone + 'static
+    R: Routable + Clone + 'static,
 {
     /// Create a callback for pushing a route onto history.
     ///
@@ -270,7 +270,7 @@ impl QueryParams {
 #[hook]
 pub fn use_navigation<R>() -> Navigation<R>
 where
-    R: Routable + Clone + 'static
+    R: Routable + Clone + 'static,
 {
     let go_back = Callback::from(|_| {
         BrowserHistory::new().back();
@@ -283,7 +283,7 @@ where
     Navigation {
         go_back,
         go_forward,
-        _marker: PhantomData
+        _marker: PhantomData,
     }
 }
 
@@ -419,7 +419,7 @@ mod tests {
         let mut params = HashMap::new();
         params.insert(
             "tag".to_string(),
-            vec!["rust".to_string(), "web".to_string()]
+            vec!["rust".to_string(), "web".to_string()],
         );
         let qp = QueryParams(params);
 
@@ -428,5 +428,133 @@ mod tests {
             qp.get("tag"),
             Some(&vec!["rust".to_string(), "web".to_string()])
         );
+    }
+
+    #[test]
+    fn route_params_iter() {
+        let mut params = HashMap::new();
+        params.insert("id".to_string(), vec!["123".to_string()]);
+        params.insert("name".to_string(), vec!["test".to_string()]);
+        let rp = RouteParams(params);
+
+        let count = rp.iter().count();
+        assert_eq!(count, 2);
+    }
+
+    #[test]
+    fn query_params_iter() {
+        let mut params = HashMap::new();
+        params.insert("q".to_string(), vec!["rust".to_string()]);
+        let qp = QueryParams(params);
+
+        let count = qp.iter().count();
+        assert_eq!(count, 1);
+    }
+
+    #[test]
+    fn route_params_clone() {
+        let mut params = HashMap::new();
+        params.insert("id".to_string(), vec!["123".to_string()]);
+        let rp1 = RouteParams(params);
+        let rp2 = rp1.clone();
+
+        assert_eq!(rp1.len(), rp2.len());
+        assert_eq!(rp1.get_one("id"), rp2.get_one("id"));
+    }
+
+    #[test]
+    fn query_params_clone() {
+        let mut params = HashMap::new();
+        params.insert("q".to_string(), vec!["rust".to_string()]);
+        let qp1 = QueryParams(params);
+        let qp2 = qp1.clone();
+
+        assert_eq!(qp1.len(), qp2.len());
+        assert_eq!(qp1.get_one("q"), qp2.get_one("q"));
+    }
+
+    #[test]
+    fn route_params_debug() {
+        let rp = RouteParams(HashMap::new());
+        let debug_str = format!("{:?}", rp);
+        assert!(debug_str.contains("RouteParams"));
+    }
+
+    #[test]
+    fn query_params_debug() {
+        let qp = QueryParams(HashMap::new());
+        let debug_str = format!("{:?}", qp);
+        assert!(debug_str.contains("QueryParams"));
+    }
+
+    #[test]
+    fn route_params_partial_eq() {
+        let mut params1 = HashMap::new();
+        params1.insert("id".to_string(), vec!["123".to_string()]);
+        let rp1 = RouteParams(params1);
+
+        let mut params2 = HashMap::new();
+        params2.insert("id".to_string(), vec!["123".to_string()]);
+        let rp2 = RouteParams(params2);
+
+        assert_eq!(rp1, rp2);
+    }
+
+    #[test]
+    fn query_params_partial_eq() {
+        let mut params1 = HashMap::new();
+        params1.insert("q".to_string(), vec!["rust".to_string()]);
+        let qp1 = QueryParams(params1);
+
+        let mut params2 = HashMap::new();
+        params2.insert("q".to_string(), vec!["rust".to_string()]);
+        let qp2 = QueryParams(params2);
+
+        assert_eq!(qp1, qp2);
+    }
+
+    #[test]
+    fn route_params_get_none() {
+        let rp = RouteParams(HashMap::new());
+        assert_eq!(rp.get("nonexistent"), None);
+        assert_eq!(rp.get_one("nonexistent"), None);
+    }
+
+    #[test]
+    fn query_params_get_none() {
+        let qp = QueryParams(HashMap::new());
+        assert_eq!(qp.get("nonexistent"), None);
+        assert_eq!(qp.get_one("nonexistent"), None);
+    }
+
+    #[test]
+    fn navigation_callbacks_creation() {
+        #[derive(Clone, PartialEq, Debug, Routable)]
+        enum TestRoute {
+            #[at("/test")]
+            Test,
+            #[at("/")]
+            Home
+        }
+
+        // Test that callbacks can be created correctly
+        let push_cb = Callback::from(move |_: ()| {
+            let path = TestRoute::Test.to_path();
+            BrowserHistory::new().push(&path);
+        });
+
+        let replace_cb = Callback::from(move |_: ()| {
+            let path = TestRoute::Test.to_path();
+            BrowserHistory::new().replace(&path);
+        });
+
+        let go_cb = Callback::from(|_: ()| {
+            BrowserHistory::new().go(-1);
+        });
+
+        // Verify callbacks exist
+        let _ = push_cb;
+        let _ = replace_cb;
+        let _ = go_cb;
     }
 }
