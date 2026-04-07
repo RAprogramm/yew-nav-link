@@ -319,4 +319,3 @@ jobs:
           echo "## Security Audit" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "✅ No known vulnerabilities" >> $GITHUB_STEP_SUMMARY
-          fi

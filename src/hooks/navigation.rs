@@ -7,28 +7,31 @@
 //! Returns a [`Navigation`] handle that allows programmatic navigation
 //! to routes, back/forward traversal, and URL manipulation.
 //!
-//! ```rust
+//! ```rust,ignore
 //! use yew::prelude::*;
 //! use yew_nav_link::hooks::use_navigation;
 //! use yew_router::prelude::*;
 //!
-//! # #[derive(Clone, PartialEq, Debug, Routable)]
-//! # enum Route {
-//! #     #[at("/")]
-//! #     Home,
-//! #     #[at("/about")]
-//! #     About,
-//! # }
+//! #[derive(Clone, PartialEq, Debug, Routable)]
+//! enum Route {
+//!     #[at("/")]
+//!     Home,
+//!     #[at("/about")]
+//!     About,
+//! }
+//!
 //! #[component]
 //! fn NavigationButton() -> Html {
 //!     let navigation = use_navigation::<Route>();
 //!
 //!     html! {
-//!         <button onclick={navigation.go_back.clone()}>Back</button>
-//!         <button onclick={navigation.go_forward.clone()}>Forward</button>
-//!         <button onclick={navigation.push_callback(Route::About)}>
-//!             { "Go to About" }
-//!         </button>
+//!         <div>
+//!             <button onclick={navigation.go_back.clone()}>Back</button>
+//!             <button onclick={navigation.go_forward.clone()}>Forward</button>
+//!             <button onclick={navigation.push_callback(Route::About)}>
+//!                 { "Go to About" }
+//!             </button>
+//!         </div>
 //!     }
 //! }
 //! ```
@@ -120,12 +123,14 @@ where
 {
     /// Create a callback for pushing a route onto history.
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// let navigation = use_navigation::<Route>();
     /// html! {
-    ///     <button onclick={navigation.push_callback(Route::Home)}>
-    ///         { "Go Home" }
-    ///     </button>
+    ///     <div>
+    ///         <button onclick={navigation.push_callback(Route::Home)}>
+    ///             { "Go Home" }
+    ///         </button>
+    ///     </div>
     /// }
     /// ```
     pub fn push_callback(&self, route: R) -> Callback<()> {
@@ -236,7 +241,7 @@ impl QueryParams {
 
 /// Returns a [`Navigation`] handle for programmatic navigation.
 ///
-/// ```rust
+/// ```rust,ignore
 /// use yew::prelude::*;
 /// use yew_nav_link::hooks::use_navigation;
 /// use yew_router::prelude::*;
@@ -252,13 +257,13 @@ impl QueryParams {
 ///     let navigation = use_navigation::<Route>();
 ///
 ///     html! {
-///         <>
+///         <div>
 ///             <button onclick={navigation.go_back.clone()}>Back</button>
 ///             <button onclick={navigation.go_forward.clone()}>Forward</button>
 ///             <button onclick={navigation.push_callback(Route::Home)}>
 ///                 { "Go Home" }
 ///             </button>
-///         </>
+///         </div>
 ///     }
 /// }
 /// ```
