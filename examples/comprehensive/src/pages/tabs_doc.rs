@@ -4,33 +4,52 @@ use yew_nav_link::components::{NavTab, NavTabPanel, NavTabs};
 
 const SRC: &str = include_str!("../../../../src/components/tabs.rs");
 
-const CODE_TABS: &str = "\
+const CODE_TABS: &str = r#"
 use yew_nav_link::components::{NavTabs, NavTab, NavTabPanel};
+use yew::prelude::*;
 
 #[component]
 fn App() -> Html {
+    let tab1 = use_state(|| true);
+    let tab2 = use_state(|| false);
+
+    let on_1 = {
+        let (t1, t2) = (tab1.clone(), tab2.clone());
+        Callback::from(move |_: MouseEvent| {
+            t1.set(true);
+            t2.set(false);
+        })
+    };
+    let on_2 = {
+        let (t1, t2) = (tab1.clone(), tab2.clone());
+        Callback::from(move |_: MouseEvent| {
+            t1.set(false);
+            t2.set(true);
+        })
+    };
+
     html! {
         <>
-            <NavTabs id=\"my-tabs\">
-                <NavTab active=true id=\"t1\" panel_id=\"p1\" onclick={None}>
-                    { \"Overview\" }
+            <NavTabs id="my-tabs">
+                <NavTab active={*tab1} id="t1" panel_id="p1" onclick={Some(on_1)}>
+                    { "Overview" }
                 </NavTab>
-                <NavTab active=false id=\"t2\" panel_id=\"p2\" onclick={None}>
-                    { \"Details\" }
+                <NavTab active={*tab2} id="t2" panel_id="p2" onclick={Some(on_2)}>
+                    { "Details" }
                 </NavTab>
                 <NavTab active=false disabled=true onclick={None}>
-                    { \"Disabled\" }
+                    { "Disabled" }
                 </NavTab>
             </NavTabs>
-            <NavTabPanel id=\"p1\" labelled_by=\"t1\" hidden={false}>
-                <p>{ \"Panel 1 content\" }</p>
+            <NavTabPanel id="p1" labelled_by="t1" hidden={!*tab1}>
+                <p>{ "Panel 1 content" }</p>
             </NavTabPanel>
-            <NavTabPanel id=\"p2\" labelled_by=\"t2\" hidden={true}>
-                <p>{ \"Panel 2 content\" }</p>
+            <NavTabPanel id="p2" labelled_by="t2" hidden={!*tab2}>
+                <p>{ "Panel 2 content" }</p>
             </NavTabPanel>
         </>
     }
-}";
+}"#;
 
 #[function_component]
 pub fn TabsDoc() -> Html {

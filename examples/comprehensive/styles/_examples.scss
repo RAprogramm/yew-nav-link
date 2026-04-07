@@ -73,9 +73,13 @@
         }
     }
 
-    &.disabled a {
+    &.disabled {
         opacity: 0.4;
         cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    &.disabled a {
         pointer-events: none;
     }
 }

@@ -185,9 +185,14 @@
         &:hover { background: var(--accent-dim); text-decoration: none; }
     }
 
+    &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
     &.disabled a {
         color: var(--text-muted);
-        opacity: 0.5;
         pointer-events: none;
     }
 }

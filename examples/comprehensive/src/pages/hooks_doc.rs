@@ -17,20 +17,20 @@ fn CurrentPage() -> Html {
     html! { <p>{ format!(\"Route: {:?}\", route) }</p> }
 }";
 
-const CODE_IS_ACTIVE: &str = "\
+const CODE_IS_ACTIVE: &str = r#"
 use yew_nav_link::hooks::use_is_active;
 
 # #[derive(Clone, PartialEq, Debug, Routable)]
-# enum Route { #[at(\"/\")] Home }
+# enum Route { #[at("/")] Home }
 #[component]
 fn Nav() -> Html {
     let active = use_is_active(Route::Home);
     html! {
-        <span class={if active { \"highlighted\" } else { \"\" }}>
-            { \"Home\" }
+        <span style={if active { "color: var(--green)" } else { "color: var(--red)" }}>
+            { "Home" }
         </span>
     }
-}";
+}"#;
 
 const CODE_PARTIAL: &str = "\
 use yew_nav_link::hooks::use_is_partial_active;
