@@ -9,11 +9,13 @@ use yew_router::prelude::*;
 
 mod code_utils;
 mod demo_popup;
+mod doc_metadata;
 mod doc_page;
 mod doc_parser;
 mod file_tree;
 mod pages;
 mod routes;
+mod templates;
 
 use routes::Route;
 
