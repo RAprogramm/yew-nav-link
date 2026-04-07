@@ -295,3 +295,239 @@
         color: var(--text-muted);
     }
 }
+
+// Custom CSS Features Demo
+.demo-nav-custom .custom-link {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--bg-elevated);
+    border: 2px solid var(--border);
+    border-radius: 0.5rem;
+    color: var(--text);
+    margin-right: 0.5rem;
+    transition: all var(--transition);
+
+    &:hover {
+        border-color: var(--accent);
+        background: var(--accent-dim);
+    }
+
+    &.custom-active {
+        background: var(--green);
+        border-color: var(--green);
+        color: white;
+    }
+}
+
+.demo-tailwind-nav {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.comparison-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.comparison-item {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 1rem;
+
+    h5 {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+    }
+
+    nav {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 0.75rem;
+    }
+
+    .comparison-code {
+        font-family: var(--font-mono);
+        font-size: 0.6875rem;
+        color: var(--text-dim);
+        background: var(--bg);
+        padding: 0.375rem 0.625rem;
+        border-radius: 0.25rem;
+        margin: 0.25rem 0;
+    }
+}
+
+// Navigation Hooks Demo
+.navigation-demo {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 1rem;
+
+    .demo-info {
+        margin-bottom: 1rem;
+
+        h5 {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.8125rem;
+            color: var(--accent);
+        }
+    }
+
+    .demo-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+
+        button, .demo-btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.8125rem;
+            transition: all var(--transition);
+            text-decoration: none;
+            display: inline-block;
+
+            &:hover {
+                border-color: var(--accent);
+                background: var(--accent-dim);
+            }
+        }
+    }
+}
+
+// Route Params Demo
+.route-params-demo {
+    code {
+        display: block;
+        background: var(--bg);
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.375rem;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        margin: 0.5rem 0;
+        border-left: 3px solid var(--accent);
+    }
+}
+
+// Query Params Demo
+.query-params-display {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+
+    h6 {
+        width: 100%;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
+}
+
+.query-param-pill {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 0.375rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+
+    strong {
+        color: var(--accent);
+        margin-right: 0.25rem;
+    }
+}
+
+.demo-query-links {
+    .query-link {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: var(--accent);
+        color: white;
+        border-radius: 0.375rem;
+        font-size: 0.8125rem;
+
+        &:hover {
+            filter: brightness(0.9);
+        }
+    }
+}
+
+// Breadcrumb Comparison
+.breadcrumb-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    .comparison-column {
+        background: var(--bg-elevated);
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        padding: 1rem;
+
+        h6 {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    }
+}
+
+// Use Cases List
+.use-cases-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+        line-height: 1.6;
+
+        &:last-child {
+            border-bottom: none;
+        }
+
+        strong {
+            color: var(--accent);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+    }
+}
+
+// Pill links for comparison
+.pill-link {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--yellow);
+    color: var(--bg);
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+
+    &.pill-active {
+        background: var(--red);
+        box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3);
+    }
+}

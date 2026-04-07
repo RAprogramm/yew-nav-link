@@ -1,35 +1,36 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
 ## [Unreleased]
 
-### Bug Fixes
+## [0.8.0] - 2026-04-07
 
-- ![RAprogramm](https://github.com/RAprogramm.png?size=20) **deps:** update yew to 0.23 for yew-router 0.20 compatibility
+### Added
 
+- **Custom CSS Classes for NavLink**: Added `class` and `active_class` props to `NavLink` component, allowing customization of the default `nav-link` and `active` CSS classes
+- **Navigation Hooks**: Added three new hooks for programmatic navigation:
+  - `use_navigation<R>()` — Returns `Navigation<R>` for push, replace, back, forward navigation
+  - `use_route_params()` — Returns `RouteParams` for accessing URL route parameters (`/users/:id`)
+  - `use_query_params()` — Returns `QueryParams` for accessing URL query string parameters
+- **Custom Breadcrumb Provider**: Added `BreadcrumbLabelProvider` trait allowing custom breadcrumb label generation for routes
+- **Documentation Pages**: Added comprehensive documentation pages for all new features in the interactive demo
 
-### CI
+### Changed
 
-- ![dependabot](https://github.com/dependabot.png?size=20) **deps:** bump actions/upload-artifact from 4 to 6 in the actions group ([#15](https://github.com/RAprogramm/yew-nav-link/issues/15))
+- Updated interactive demo with new feature showcase pages
+- Enhanced sidebar navigation with "New in v0.8" section
 
-- ![dependabot](https://github.com/dependabot.png?size=20) **deps:** bump actions/upload-artifact from 6 to 7 in the actions group ([#18](https://github.com/RAprogramm/yew-nav-link/issues/18))
+### Fixed
 
+- None
 
-### Dependencies
+### Security
 
-- ![dependabot](https://github.com/dependabot.png?size=20) **cargo:** bump wasm-bindgen-test in the yew-ecosystem group ([#16](https://github.com/RAprogramm/yew-nav-link/issues/16))
-
-- ![dependabot](https://github.com/dependabot.png?size=20) **cargo:** bump wasm-bindgen-test in the yew-ecosystem group ([#17](https://github.com/RAprogramm/yew-nav-link/issues/17))
-
-- ![dependabot](https://github.com/dependabot.png?size=20) **cargo:** bump the yew-ecosystem group with 2 updates ([#19](https://github.com/RAprogramm/yew-nav-link/issues/19))
-
-- ![dependabot](https://github.com/dependabot.png?size=20) **cargo:** bump yew-router from 0.19.0 to 0.20.0 ([#20](https://github.com/RAprogramm/yew-nav-link/issues/20))
-
-
-### Features
-
-- add `macros` feature to expose `nav_link!`, `routable_ext!`, and `nav_item!` directly from `yew-nav-link`
-- remove separate macro crate manifests in favor of a single-crate feature flow
-- add navigation components, hooks and integration tests
+- None
 
 ## [0.5.0] - 2026-02-15
 
@@ -153,7 +154,10 @@
 
 - ![RAprogramm](https://github.com/RAprogramm.png?size=20) docs shield
 
-[Unreleased]: https://github.com/RAprogramm/yew-nav-link/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/RAprogramm/yew-nav-link/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/RAprogramm/yew-nav-link/compare/v0.7.0...v0.8.0
+[0.7.0]: https://github.com/RAprogramm/yew-nav-link/releases/tag/v0.7.0
+[0.6.0]: https://github.com/RAprogramm/yew-nav-link/releases/tag/v0.6.0
 [0.5.0]: https://github.com/RAprogramm/yew-nav-link/releases/tag/v0.5.0
 [0.4.0]: https://github.com/RAprogramm/yew-nav-link/releases/tag/v0.4.0
 [0.3.0]: https://github.com/RAprogramm/yew-nav-link/releases/tag/v0.3.0

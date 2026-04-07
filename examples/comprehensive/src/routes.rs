@@ -40,6 +40,12 @@ pub enum Route {
     NestedRoutesExample,
     #[at("/examples/with-macros")]
     WithMacrosExample,
+    #[at("/features/custom-css")]
+    CustomCssFeatures,
+    #[at("/features/navigation-hooks")]
+    NavigationHooks,
+    #[at("/features/custom-breadcrumbs")]
+    CustomBreadcrumbs,
     #[not_found]
     #[at("/404")]
     NotFound,

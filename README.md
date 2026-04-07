@@ -55,9 +55,10 @@ Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic acti
 |---------|-------------|
 | **NavLink** | Drop-in replacement for Yew Router's `<Link>` with automatic `active` class detection |
 | **Component System** | 15+ ready-to-use UI components (tabs, dropdowns, pagination, badges, icons) |
-| **Hooks** | Reactive hooks for route state, active checking, and breadcrumbs |
+| **Hooks** | Reactive hooks for route state, active checking, breadcrumbs, and programmatic navigation |
 | **Macros** | Declarative macros for boilerplate-free navigation (`nav_link!`, `nav_list!`, `nav_tabs!`) |
 | **Utilities** | Path manipulation, URL encoding, keyboard navigation, and query string handling |
+| **Customization** | Custom CSS classes, programmatic navigation, and extensible breadcrumb providers |
 
 The core `NavLink` component eliminates manual active state tracking. It compares the current route against the target on every render and applies the `active` CSS class automatically — zero configuration required.
 
@@ -67,14 +68,14 @@ The core `NavLink` component eliminates manual active state tracking. It compare
 
 ```toml
 [dependencies]
-yew-nav-link = "0.7"
+yew-nav-link = "0.8"
 ```
 
 With macros:
 
 ```toml
 [dependencies]
-yew-nav-link = { version = "0.7", features = ["macros"] }
+yew-nav-link = { version = "0.8", features = ["macros"] }
 ```
 
 ---
@@ -185,7 +186,84 @@ html! {
 ] }
 ```
 
----
+### Custom CSS Classes
+
+Customize the default `nav-link` and `active` classes:
+
+```rust
+html! {
+    <nav>
+        // Custom base class
+        <NavLink<Route> to={Route::Home} class="menu-item">{ "Home" }</NavLink<Route>>
+        
+        // Custom active class
+        <NavLink<Route> to={Route::About} active_class="is-selected">{ "About" }</NavLink<Route>>
+        
+        // Both custom
+        <NavLink<Route> to={Route::Contact} class="sidebar-link" active_class="highlighted">{ "Contact" }</NavLink<Route>>
+    </nav>
+}
+```
+
+### Programmatic Navigation
+
+```rust
+use yew_nav_link::hooks::use_navigation;
+
+#[component]
+fn MyComponent() -> Html {
+    let navigation = use_navigation::<Route>();
+    
+    html! {
+        <button onclick={navigation.on_click(|| navigation.push(Route::About))}>
+            Go to About
+        </button>
+        
+        <button onclick={navigation.on_click(|| navigation.replace(Route::Home))}>
+            Replace with Home
+        </button>
+        
+        <button onclick={navigation.on_click(|| navigation.back())}>
+            Back
+        </button>
+    }
+}
+```
+
+### Custom Breadcrumb Providers
+
+```rust
+use yew_nav_link::hooks::{use_breadcrumbs, BreadcrumbLabelProvider};
+
+#[derive(Clone)]
+struct MyBreadcrumbProvider;
+
+impl BreadcrumbLabelProvider<Route> for MyBreadcrumbProvider {
+    fn get_label(&self, route: &Route) -> String {
+        match route {
+            Route::Home => "Homepage".to_string(),
+            Route::About => "About Us".to_string(),
+            Route::User { id } => format!("User #{}", id),
+            _ => route.to_string(),
+        }
+    }
+}
+
+#[component]
+fn MyComponent() -> Html {
+    let breadcrumbs = use_breadcrumbs::<Route, MyBreadcrumbProvider>(MyBreadcrumbProvider);
+    
+    html! {
+        <nav aria-label="Breadcrumb">
+            { for breadcrumbs.into_iter().map(|item| {
+                html! {
+                    <span>{ item.label }</span>
+                }
+            }) }
+        </nav>
+    }
+}
+```
 
 ## Components
 
@@ -224,6 +302,9 @@ html! {
 | `use_is_exact_active(route)` | `bool` | Whether the route matches exactly |
 | `use_is_partial_active(route)` | `bool` | Whether the route is a prefix of the current path |
 | `use_breadcrumbs()` | `Vec<BreadcrumbItem>` | Auto-generated breadcrumb trail from current route |
+| `use_navigation<R>()` | `Navigation<R>` | Programmatic navigation (push, replace, go back/forward) |
+| `use_route_params()` | `RouteParams` | URL route parameters (`/users/:id`) |
+| `use_query_params()` | `QueryParams` | URL query string parameters |
 
 ### Utilities
 
@@ -312,6 +393,8 @@ Open http://127.0.0.1:8080 for live demos, code snippets, and architecture diagr
 | `to` | `R: Routable` | required | Target route |
 | `children` | `Children` | required | Link content |
 | `partial` | `bool` | `false` | Enable prefix matching |
+| `class` | `&str` | `"nav-link"` | Custom CSS class (replaces default) |
+| `active_class` | `&str` | `"active"` | Custom active state class |
 
 ### `Match`
 
