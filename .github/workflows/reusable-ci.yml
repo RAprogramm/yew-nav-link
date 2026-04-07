@@ -288,6 +288,7 @@ jobs:
             echo "📥 Crate available in artifacts" >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ Package failed" >> $GITHUB_STEP_SUMMARY
+          fi
 
   audit:
     name: Security Audit
