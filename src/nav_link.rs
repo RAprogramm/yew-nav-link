@@ -1,80 +1,106 @@
-//! Navigation link component with automatic active state detection.
+//! # NavLink
 //!
-//! This module provides the [`NavLink`] component and [`nav_link`] helper
-//! function for building navigation menus in Yew applications. The component
-//! automatically detects when its target route matches the current URL and
-//! applies an `active` CSS class accordingly.
+//! Drop-in replacement for Yew Router's `<Link>` that automatically adds an
+//! `active` CSS class when the current URL matches the target route. This
+//! means you never have to manually track which page the user is on —
+//! `NavLink` does it for you.
 //!
-//! # Features
-//!
-//! - **Automatic Active State**: Compares the target route against the current
-//!   route and applies the `active` class when they match.
-//! - **Type-Safe Routing**: Leverages Yew Router's [`Routable`] trait for
-//!   compile-time route validation.
-//! - **Flexible Children**: Accepts any valid Yew children, including text,
-//!   HTML elements, or other components.
-//! - **CSS Integration**: Renders with `nav-link` base class, compatible with
-//!   Bootstrap and similar CSS frameworks.
-//!
-//! # CSS Classes
-//!
-//! | Class | Condition |
-//! |-------|-----------|
-//! | `nav-link` | Always applied |
-//! | `active` | Applied when the target route matches the current route |
-//!
-//! # Match Modes
-//!
-//! NavLink supports two matching modes via the `partial` prop:
-//!
-//! - **Exact** (default): Link is active only when paths match exactly
-//! - **Partial**: Link is active when current path starts with target path
+//! # Quick Start
 //!
 //! ```rust
 //! use yew::prelude::*;
 //! use yew_nav_link::NavLink;
 //! use yew_router::prelude::*;
 //!
-//! #[derive(Clone, PartialEq, Routable)]
-//! enum Route {
-//!     #[at("/docs")]
-//!     Docs,
-//!     #[at("/docs/api")]
-//!     DocsApi
-//! }
-//!
+//! # #[derive(Clone, PartialEq, Routable)]
+//! # enum Route {
+//! #     #[at("/")]
+//! #     Home,
+//! #     #[at("/about")]
+//! #     About,
+//! # }
 //! #[component]
-//! fn Navigation() -> Html {
+//! fn Nav() -> Html {
 //!     html! {
 //!         <nav>
-//!             // Exact: active only on /docs
-//!             <NavLink<Route> to={Route::Docs}>{ "Docs" }</NavLink<Route>>
-//!             // Partial: active on /docs, /docs/api, /docs/*
-//!             <NavLink<Route> to={Route::Docs} partial=true>{ "Docs" }</NavLink<Route>>
+//!             <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+//!             <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
 //!         </nav>
 //!     }
 //! }
 //! ```
 //!
+//! When the user visits `/about`, the second link automatically gets
+//! `class="nav-link active"`. All other links get `class="nav-link"`.
+//!
+//! # CSS Classes
+//!
+//! | Class | When Applied |
+//! |-------|--------------|
+//! | `nav-link` | Always |
+//! | `active` | When the target route matches the current URL |
+//!
+//! This works out of the box with Bootstrap (`nav-link active`), Tailwind
+//! (use `class:` bindings), or any CSS framework.
+//!
+//! # Exact vs Partial Matching
+//!
+//! By default (`partial=false`), NavLink uses **exact** matching: the link
+//! is active only when the URL matches the route path exactly.
+//!
+//! With `partial=true`, NavLink uses **prefix** matching: the link stays
+//! active on any nested route. This is useful for sidebar navigation where
+//! a parent section should highlight even when the user is on a sub-page.
+//!
+//! ```rust
+//! use yew::prelude::*;
+//! use yew_nav_link::NavLink;
+//! use yew_router::prelude::*;
+//!
+//! # #[derive(Clone, PartialEq, Routable)]
+//! # enum Route {
+//! #     #[at("/docs")]
+//! #     Docs,
+//! #     #[at("/docs/api")]
+//! #     DocsApi,
+//! # }
+//! #[component]
+//! fn Nav() -> Html {
+//!     html! {
+//!         <nav>
+//!             // Exact: active ONLY on /docs
+//!             <NavLink<Route> to={Route::Docs}>{ "Docs (exact)" }</NavLink<Route>>
+//!
+//!             // Partial: active on /docs, /docs/api, /docs/anything
+//!             <NavLink<Route> to={Route::Docs} partial=true>
+//!                 { "Docs (partial)" }
+//!             </NavLink<Route>>
+//!         </nav>
+//!     }
+//! }
+//! ```
+//!
+//! Partial matching compares path segments, so `/docs` won't accidentally
+//! match `/documentation`.
+//!
 //! # Function Syntax
 //!
-//! For text-only links, use [`nav_link`] with explicit [`Match`] mode:
+//! If you prefer a function call instead of JSX, use `nav_link()`:
 //!
 //! ```rust
 //! use yew::prelude::*;
 //! use yew_nav_link::{Match, nav_link};
 //! use yew_router::prelude::*;
 //!
-//! #[derive(Clone, PartialEq, Debug, Routable)]
-//! enum Route {
-//!     #[at("/")]
-//!     Home,
-//!     #[at("/docs")]
-//!     Docs
-//! }
-//!
+//! # #[derive(Clone, PartialEq, Debug, Routable)]
+//! # enum Route {
+//! #     #[at("/")]
+//! #     Home,
+//! #     #[at("/docs")]
+//! #     Docs,
+//! # }
 //! #[component]
-//! fn Navigation() -> Html {
+//! fn Menu() -> Html {
 //!     html! {
 //!         <ul class="nav">
 //!             <li>{ nav_link(Route::Home, "Home", Match::Exact) }</li>
@@ -83,6 +109,34 @@
 //!     }
 //! }
 //! ```
+//!
+//! # Props
+//!
+//! | Prop | Type | Default | Description |
+//! |------|------|---------|-------------|
+//! | `to` | `R` | — | Target route (required) |
+//! | `children` | `Children` | — | Link content (required) |
+//! | `partial` | `bool` | `false` | Enable prefix matching |
+//!
+//! # How It Works
+//!
+//! On every render, NavLink calls `use_route::<R>()` to get the current route,
+//! then compares it with the `to` prop using Yew Router's `Routable::eq()`.
+//! If they match (exactly or by prefix), the `active` class is added.
+//!
+//! Partial matching compares path segments: `/docs` matches `/docs/api` and
+//! `/docs/api/v1`, but NOT `/documentation`. This prevents false positives
+//! on similar-looking paths.
+//!
+//! # Memory & Performance
+//!
+//! NavLink is lightweight — it only clones the route `R` once per render and
+//! does a single `==` comparison (or one `starts_with` for partial). No heap
+//! allocations beyond what Yew Router's `use_route()` already does.
+//!
+//! If you have many links (100+), each one independently calls `use_route()`.
+//! Yew batches these into a single subscription, so there's no extra cost
+//! per link beyond the comparison itself.
 
 use std::marker::PhantomData;
 
@@ -114,6 +168,14 @@ pub struct NavLinkProps<R: Routable + PartialEq + Clone + 'static> {
     /// When `true`, the link is active if current path starts with target path.
     #[prop_or(false)]
     pub partial: bool,
+
+    /// Base CSS class applied to the link.
+    #[prop_or("nav-link")]
+    pub class: &'static str,
+
+    /// CSS class applied when the link is active.
+    #[prop_or("active")]
+    pub active_class: &'static str,
 
     #[prop_or_default]
     pub(crate) _marker: PhantomData<R>,
@@ -163,7 +225,7 @@ pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R
     });
 
     html! {
-        <Link<R> to={props.to.clone()} classes={classes!(build_class(is_active))}>
+        <Link<R> to={props.to.clone()} classes={classes!(build_class(is_active, props.class, props.active_class))}>
             { for props.children.iter() }
         </Link<R>>
     }
@@ -226,7 +288,7 @@ pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(
 /// is_path_prefix("/", "/anything")      -> true
 /// ```
 #[inline]
-fn is_path_prefix(target: &str, current: &str) -> bool {
+pub(crate) fn is_path_prefix(target: &str, current: &str) -> bool {
     let mut target_iter = target.split('/').filter(|s| !s.is_empty());
     let mut current_iter = current.split('/').filter(|s| !s.is_empty());
 
@@ -241,11 +303,11 @@ fn is_path_prefix(target: &str, current: &str) -> bool {
 }
 
 #[inline]
-fn build_class(is_active: bool) -> &'static str {
+fn build_class(is_active: bool, base_class: &str, active_class: &str) -> String {
     if is_active {
-        "nav-link active"
+        format!("{} {}", base_class, active_class)
     } else {
-        "nav-link"
+        base_class.to_string()
     }
 }
 
@@ -294,12 +356,24 @@ mod tests {
     // build_class tests
     #[test]
     fn build_class_active() {
-        assert_eq!(build_class(true), "nav-link active");
+        assert_eq!(build_class(true, "nav-link", "active"), "nav-link active");
     }
 
     #[test]
     fn build_class_inactive() {
-        assert_eq!(build_class(false), "nav-link");
+        assert_eq!(build_class(false, "nav-link", "active"), "nav-link");
+    }
+
+    #[test]
+    fn build_class_custom_classes() {
+        assert_eq!(
+            build_class(true, "custom-link", "is-active"),
+            "custom-link is-active"
+        );
+        assert_eq!(
+            build_class(false, "custom-link", "is-active"),
+            "custom-link"
+        );
     }
 
     // NavLinkProps tests
@@ -309,12 +383,16 @@ mod tests {
             to: TestRoute::Home,
             children: Default::default(),
             partial: false,
+            class: "nav-link",
+            active_class: "active",
             _marker: PhantomData,
         };
         let props2: NavLinkProps<TestRoute> = NavLinkProps {
             to: TestRoute::Home,
             children: Default::default(),
             partial: false,
+            class: "nav-link",
+            active_class: "active",
             _marker: PhantomData,
         };
         assert_eq!(props1, props2);
@@ -326,12 +404,16 @@ mod tests {
             to: TestRoute::Home,
             children: Default::default(),
             partial: false,
+            class: "nav-link",
+            active_class: "active",
             _marker: PhantomData,
         };
         let props2: NavLinkProps<TestRoute> = NavLinkProps {
             to: TestRoute::About,
             children: Default::default(),
             partial: false,
+            class: "nav-link",
+            active_class: "active",
             _marker: PhantomData,
         };
         assert_ne!(props1, props2);
@@ -343,12 +425,16 @@ mod tests {
             to: TestRoute::Home,
             children: Default::default(),
             partial: false,
+            class: "nav-link",
+            active_class: "active",
             _marker: PhantomData,
         };
         let props2: NavLinkProps<TestRoute> = NavLinkProps {
             to: TestRoute::Home,
             children: Default::default(),
             partial: true,
+            class: "nav-link",
+            active_class: "active",
             _marker: PhantomData,
         };
         assert_ne!(props1, props2);
@@ -360,6 +446,8 @@ mod tests {
             to: TestRoute::Home,
             children: Default::default(),
             partial: false,
+            class: "nav-link",
+            active_class: "active",
             _marker: PhantomData,
         };
         let debug = format!("{:?}", props);

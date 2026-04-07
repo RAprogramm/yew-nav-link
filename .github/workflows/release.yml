@@ -51,3 +51,7 @@ jobs:
           echo "| Version | ${{ steps.cargo.outputs.version }} |" >> $GITHUB_STEP_SUMMARY
           echo "| MSRV | ${{ steps.cargo.outputs.msrv }} |" >> $GITHUB_STEP_SUMMARY
           echo "| License | ${{ steps.cargo.outputs.license }} |" >> $GITHUB_STEP_SUMMARY
+
+  deploy-pages:
+    needs: publish
+    uses: ./.github/workflows/pages.yml

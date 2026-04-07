@@ -43,16 +43,6 @@ coverage:
         if_no_uploads: error
         if_not_found: success
 
-  ignore:
-    - "tests/**/*"
-    - "benches/**/*"
-    - "examples/**/*"
-    - "**/tests.rs"
-    - "**/test_*.rs"
-    - "**/*_test.rs"
-    - ".github/**/*"
-    - "target/**/*"
-
 comment:
   layout: "condensed_header, condensed_files, condensed_footer"
   behavior: default
@@ -64,10 +54,3 @@ comment:
 
 github_checks:
   annotations: true
-
-ignore:
-  - "*.md"
-  - "LICENSE*"
-  - ".gitignore"
-  - ".rustfmt.toml"
-  - "Makefile.toml"

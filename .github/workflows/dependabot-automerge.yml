@@ -2,7 +2,7 @@ name: Dependabot Auto-Merge
 
 on:
   pull_request_target:
-    types: [opened]
+    types: [opened, synchronize]
 
 permissions:
   contents: write
@@ -13,6 +13,37 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.user.login == 'dependabot[bot]'
     steps:
+      - name: Wait for CI to pass
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const prNumber = context.event.pull_request.number;
+            
+            // Wait up to 5 minutes for CI to complete
+            for (let i = 0; i < 30; i++) {
+              const { data: checks } = await github.rest.checks.listForRef({
+                owner,
+                repo,
+                ref: context.event.pull_request.head.sha,
+                status: 'completed'
+              });
+              
+              const conclusion = checks.check_runs?.[0]?.conclusion;
+              if (conclusion === 'success') {
+                console.log('CI passed, proceeding with merge');
+                break;
+              } else if (conclusion === 'failure' || conclusion === 'cancelled') {
+                console.log('CI failed or cancelled, not merging');
+                core.setFailed('CI checks did not pass');
+                return;
+              }
+              
+              console.log('Waiting for CI...');
+              await new Promise(r => setTimeout(r, 10000));
+            }
+
       - name: Fetch Dependabot metadata
         id: metadata
         uses: dependabot/fetch-metadata@v2

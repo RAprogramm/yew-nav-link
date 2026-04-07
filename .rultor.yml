@@ -2,7 +2,7 @@ architect:
   - RAprogramm
 
 docker:
-  image: rust:1.91
+  image: rust:1.85
 
 merge:
   script: |
