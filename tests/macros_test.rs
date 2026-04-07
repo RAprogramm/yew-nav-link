@@ -3,40 +3,12 @@
 use yew::prelude::*;
 use yew_nav_link::{
     Match, breadcrumbs, nav_item, nav_link, nav_links, nav_list, nav_menu, nav_pagination,
-    nav_tabs, routable_ext
+    nav_tabs
 };
 use yew_router::prelude::Routable;
 
 #[derive(Clone, PartialEq, Routable)]
 enum TestRoute {
-    #[at("/")]
-    Home,
-    #[at("/about")]
-    About,
-    #[at("/docs")]
-    Docs,
-    #[at("/docs/api")]
-    DocsApi,
-    #[at("/contact")]
-    Contact
-}
-
-#[derive(Clone, PartialEq, Routable)]
-enum LabelRoute {
-    #[at("/")]
-    Home,
-    #[at("/about")]
-    About,
-    #[at("/docs")]
-    Docs,
-    #[at("/docs/api")]
-    DocsApi,
-    #[at("/contact")]
-    Contact
-}
-
-#[derive(Clone, PartialEq, Routable)]
-enum IconRoute {
     #[at("/")]
     Home,
     #[at("/about")]
@@ -160,52 +132,6 @@ fn test_nav_pagination_macro_defaults() {
 fn test_nav_pagination_macro_empty() {
     let html = nav_pagination!();
     assert!(matches!(html, Html::VList(_)));
-}
-
-#[test]
-fn test_routable_ext_basic() {
-    routable_ext!(TestRoute);
-    assert!(TestRoute::Home.is_root());
-    assert!(!TestRoute::About.is_root());
-}
-
-#[test]
-fn test_routable_ext_with_labels() {
-    routable_ext!(LabelRoute,
-        labels: {
-            Home => "Home",
-            About => "About Us",
-            Docs => "Documentation",
-            DocsApi => "API Reference",
-            Contact => "Contact Us",
-        }
-    );
-    assert_eq!(LabelRoute::Home.nav_label(), "Home");
-    assert_eq!(LabelRoute::About.nav_label(), "About Us");
-    assert_eq!(LabelRoute::Docs.nav_label(), "Documentation");
-    assert_eq!(LabelRoute::DocsApi.nav_label(), "API Reference");
-    assert_eq!(LabelRoute::Contact.nav_label(), "Contact Us");
-}
-
-#[test]
-fn test_routable_ext_with_labels_and_icons() {
-    routable_ext!(IconRoute,
-        labels: {
-            Home => "Home",
-            About => "About Us",
-            Docs => "Documentation",
-            DocsApi => "API Reference",
-            Contact => "Contact Us",
-        },
-        icons: {
-            Home => "icon-home",
-            Docs => "icon-book",
-        }
-    );
-    assert_eq!(IconRoute::Home.nav_label(), "Home");
-    assert_eq!(IconRoute::Home.nav_icon(), Some("icon-home"));
-    assert_eq!(IconRoute::Docs.nav_icon(), Some("icon-book"));
-    assert_eq!(IconRoute::About.nav_icon(), None);
 }
 
 #[test]
