@@ -52,7 +52,7 @@
 //!
 //! ```rust
 //! use yew::prelude::*;
-//! use yew_nav_link::{nav_link, Match};
+//! use yew_nav_link::{Match, nav_link};
 //! use yew_router::prelude::*;
 //!
 //! # #[derive(Clone, PartialEq, Debug, Routable)]
@@ -158,10 +158,10 @@ pub use components::{
 };
 pub use errors::{NavError, NavResult};
 pub use hooks::{
-    use_breadcrumbs, use_is_active, use_is_exact_active, use_is_partial_active, use_navigation,
-    use_query_params, use_route_info, use_route_params, BreadcrumbItem, Navigation, QueryParams,
-    RouteParams
+    BreadcrumbItem, Navigation, QueryParams, RouteParams, use_breadcrumbs, use_is_active,
+    use_is_exact_active, use_is_partial_active, use_navigation, use_query_params, use_route_info,
+    use_route_params
 };
 pub use nav::{NavDivider, NavDividerProps, NavItem, NavItemProps, NavList, NavListProps};
-pub use nav_link::{nav_link, Match, NavLink, NavLinkProps};
+pub use nav_link::{Match, NavLink, NavLinkProps, nav_link};
 pub use utils::{is_absolute, join_paths, normalize_path};

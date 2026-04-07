@@ -22,7 +22,7 @@
 //! #[component]
 //! fn NavigationButton() -> Html {
 //!     let navigation = use_navigation::<Route>();
-//!     
+//!
 //!     html! {
 //!         <button onclick={navigation.go_back.clone()}>Back</button>
 //!         <button onclick={navigation.go_forward.clone()}>Forward</button>
@@ -52,7 +52,7 @@
 //! fn UserProfile() -> Html {
 //!     let params = use_route_params();
 //!     let user_id = params.get("id").and_then(|v| v.first());
-//!     
+//!
 //!     html! {
 //!         <h1>{ format!("User: {:?}", user_id) }</h1>
 //!     }
@@ -83,14 +83,14 @@
 //!         <h1>{ format!("Search: {:?}", q) }</h1>
 //!     }
 //! }
-//!
 
-use std::collections::HashMap;
-use std::marker::PhantomData;
+use std::{collections::HashMap, marker::PhantomData};
 
 use yew::prelude::*;
-use yew_router::history::{BrowserHistory, History};
-use yew_router::prelude::*;
+use yew_router::{
+    history::{BrowserHistory, History},
+    prelude::*
+};
 
 /// Navigation callbacks for programmatic route manipulation.
 ///
@@ -104,19 +104,19 @@ use yew_router::prelude::*;
 #[derive(Clone, Debug)]
 pub struct Navigation<R>
 where
-    R: Routable + Clone + 'static,
+    R: Routable + Clone + 'static
 {
     /// Callback to navigate back in history.
-    pub go_back: Callback<()>,
+    pub go_back:    Callback<()>,
     /// Callback to navigate forward in history.
     pub go_forward: Callback<()>,
     /// Phantom marker for the route type.
-    pub _marker: PhantomData<R>,
+    pub _marker:    PhantomData<R>
 }
 
 impl<R> Navigation<R>
 where
-    R: Routable + Clone + 'static,
+    R: Routable + Clone + 'static
 {
     /// Create a callback for pushing a route onto history.
     ///
@@ -153,7 +153,8 @@ where
 
 /// Route parameters extracted from the current URL.
 ///
-/// Maps parameter names to their values (Vec since params can appear multiple times).
+/// Maps parameter names to their values (Vec since params can appear multiple
+/// times).
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct RouteParams(HashMap<String, Vec<String>>);
 
@@ -243,13 +244,13 @@ impl QueryParams {
 /// #[derive(Clone, PartialEq, Debug, Routable)]
 /// enum Route {
 ///     #[at("/")]
-///     Home,
+///     Home
 /// }
 ///
 /// #[component]
 /// fn MyComponent() -> Html {
 ///     let navigation = use_navigation::<Route>();
-///     
+///
 ///     html! {
 ///         <>
 ///             <button onclick={navigation.go_back.clone()}>Back</button>
@@ -264,7 +265,7 @@ impl QueryParams {
 #[hook]
 pub fn use_navigation<R>() -> Navigation<R>
 where
-    R: Routable + Clone + 'static,
+    R: Routable + Clone + 'static
 {
     let go_back = Callback::from(|_| {
         BrowserHistory::new().back();
@@ -277,7 +278,7 @@ where
     Navigation {
         go_back,
         go_forward,
-        _marker: PhantomData,
+        _marker: PhantomData
     }
 }
 
@@ -293,14 +294,14 @@ where
 /// #[derive(Clone, PartialEq, Debug, Routable)]
 /// enum Route {
 ///     #[at("/users/:id")]
-///     User { id: String },
+///     User { id: String }
 /// }
 ///
 /// #[component]
 /// fn UserProfile() -> Html {
 ///     let params = use_route_params();
 ///     let user_id = params.get_one("id");
-///     
+///
 ///     html! {
 ///         <h1>{ format!("User ID: {:?}", user_id) }</h1>
 ///     }
@@ -337,14 +338,14 @@ pub fn use_route_params() -> RouteParams {
 /// #[derive(Clone, PartialEq, Debug, Routable)]
 /// enum Route {
 ///     #[at("/search")]
-///     Search,
+///     Search
 /// }
 ///
 /// #[component]
 /// fn SearchResults() -> Html {
 ///     let query = use_query_params();
 ///     let search_term = query.get_one("q");
-///     
+///
 ///     html! {
 ///         <h1>{ format!("Search: {:?}", search_term) }</h1>
 ///     }
@@ -413,7 +414,7 @@ mod tests {
         let mut params = HashMap::new();
         params.insert(
             "tag".to_string(),
-            vec!["rust".to_string(), "web".to_string()],
+            vec!["rust".to_string(), "web".to_string()]
         );
         let qp = QueryParams(params);
 
