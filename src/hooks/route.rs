@@ -47,7 +47,7 @@
 //! fn Nav() -> Html {
 //!     let active = use_is_active(Route::Home);
 //!     html! {
-//!         <span class={if active { "highlighted" } else { "" }}>
+//!         <span style={if active { "color: var(--green)" } else { "color: var(--red)" }}>
 //!             { "Home" }
 //!         </span>
 //!     }

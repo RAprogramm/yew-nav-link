@@ -52,7 +52,7 @@
 //!
 //! ```rust
 //! use yew::prelude::*;
-//! use yew_nav_link::{Match, nav_link};
+//! use yew_nav_link::{nav_link, Match};
 //! use yew_router::prelude::*;
 //!
 //! # #[derive(Clone, PartialEq, Debug, Routable)]
@@ -107,7 +107,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! yew-nav-link = { version = "0.6", features = ["macros"] }
+//! yew-nav-link = { version = "0.8", features = ["macros"] }
 //! ```
 //!
 //! ## CSS Classes
@@ -154,13 +154,13 @@ pub use components::{
     NavHeader, NavHeaderProps, NavIcon, NavIconProps, NavIconSize, NavLinkWithIcon,
     NavLinkWithIconProps, NavTab, NavTabPanel, NavTabPanelProps, NavTabProps, NavTabs,
     NavTabsProps, NavText, NavTextProps, PageItem, PageItemProps, PageLink, PageLinkProps,
-    Pagination, PaginationProps,
+    Pagination, PaginationProps
 };
 pub use errors::{NavError, NavResult};
 pub use hooks::{
     use_breadcrumbs, use_is_active, use_is_exact_active, use_is_partial_active, use_navigation,
     use_query_params, use_route_info, use_route_params, BreadcrumbItem, Navigation, QueryParams,
-    RouteParams,
+    RouteParams
 };
 pub use nav::{NavDivider, NavDividerProps, NavItem, NavItemProps, NavList, NavListProps};
 pub use nav_link::{nav_link, Match, NavLink, NavLinkProps};
