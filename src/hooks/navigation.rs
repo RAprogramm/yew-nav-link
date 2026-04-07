@@ -92,7 +92,7 @@ use std::{collections::HashMap, marker::PhantomData};
 use yew::prelude::*;
 use yew_router::{
     history::{BrowserHistory, History},
-    prelude::*,
+    prelude::*
 };
 
 /// Navigation callbacks for programmatic route manipulation.
@@ -107,19 +107,19 @@ use yew_router::{
 #[derive(Clone, Debug)]
 pub struct Navigation<R>
 where
-    R: Routable + Clone + 'static,
+    R: Routable + Clone + 'static
 {
     /// Callback to navigate back in history.
-    pub go_back: Callback<()>,
+    pub go_back:    Callback<()>,
     /// Callback to navigate forward in history.
     pub go_forward: Callback<()>,
     /// Phantom marker for the route type.
-    pub _marker: PhantomData<R>,
+    pub _marker:    PhantomData<R>
 }
 
 impl<R> Navigation<R>
 where
-    R: Routable + Clone + 'static,
+    R: Routable + Clone + 'static
 {
     /// Create a callback for pushing a route onto history.
     ///
@@ -270,7 +270,7 @@ impl QueryParams {
 #[hook]
 pub fn use_navigation<R>() -> Navigation<R>
 where
-    R: Routable + Clone + 'static,
+    R: Routable + Clone + 'static
 {
     let go_back = Callback::from(|_| {
         BrowserHistory::new().back();
@@ -283,7 +283,7 @@ where
     Navigation {
         go_back,
         go_forward,
-        _marker: PhantomData,
+        _marker: PhantomData
     }
 }
 
@@ -419,7 +419,7 @@ mod tests {
         let mut params = HashMap::new();
         params.insert(
             "tag".to_string(),
-            vec!["rust".to_string(), "web".to_string()],
+            vec!["rust".to_string(), "web".to_string()]
         );
         let qp = QueryParams(params);
 
