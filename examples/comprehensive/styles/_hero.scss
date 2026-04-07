@@ -237,6 +237,16 @@
 
 // ── Codecov ────────────────────────────────────────────────────
 
+// ── Hero deployment ───────────────────────────────────────────
+
+.hero-deployment {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.25rem;
+}
+
+// ── Codecov ────────────────────────────────────────────────────
+
 .codecov-link {
     color: var(--accent);
     text-decoration: none;

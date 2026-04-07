@@ -1,4 +1,5 @@
 use super::metadata::CrateMeta;
+use crate::templates::DeploymentBadge;
 use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]
@@ -46,6 +47,9 @@ pub fn Hero(props: &HeroProps) -> Html {
                     <span class="tag-label">{ "crate-type" }</span>
                     <span class="tag-value">{ "cdylib + rlib" }</span>
                 </div>
+            </div>
+            <div class="hero-deployment">
+                <DeploymentBadge repo="RAprogramm/yew-nav-link" branch="main" />
             </div>
             <div class="hero-links">
                 <div class="tag tag-github">
