@@ -1,0 +1,116 @@
+use std::marker::PhantomData;
+
+use yew::prelude::*;
+use yew_router::{
+    history::{BrowserHistory, History},
+    prelude::*,
+};
+
+/// Navigation callbacks for programmatic route manipulation.
+///
+/// Provides pre-built callbacks for:
+/// - Pushing new routes onto history
+/// - Replacing current route
+/// - Navigating back/forward
+///
+/// This struct is created by [`use_navigation`] and contains all the
+/// callbacks needed for navigation without storing state.
+#[derive(Clone, Debug)]
+pub struct Navigation<R>
+where
+    R: Routable + Clone + 'static,
+{
+    /// Callback to navigate back in history.
+    pub go_back: Callback<()>,
+    /// Callback to navigate forward in history.
+    pub go_forward: Callback<()>,
+    /// Phantom marker for the route type.
+    pub _marker: PhantomData<R>,
+}
+
+impl<R> Navigation<R>
+where
+    R: Routable + Clone + 'static,
+{
+    /// Create a callback for pushing a route onto history.
+    ///
+    /// ```rust,ignore
+    /// let navigation = use_navigation::<Route>();
+    /// html! {
+    ///     <div>
+    ///         <button onclick={navigation.push_callback(Route::Home)}>
+    ///             { "Go Home" }
+    ///         </button>
+    ///     </div>
+    /// }
+    /// ```
+    pub fn push_callback(&self, route: R) -> Callback<()> {
+        Callback::from(move |_| {
+            let path = route.to_path();
+            BrowserHistory::new().push(&path);
+        })
+    }
+
+    /// Create a callback for replacing the current route.
+    pub fn replace_callback(&self, route: R) -> Callback<()> {
+        Callback::from(move |_| {
+            let path = route.to_path();
+            BrowserHistory::new().replace(&path);
+        })
+    }
+
+    /// Create a callback for navigating with a delta.
+    pub fn go_callback(&self, delta: isize) -> Callback<()> {
+        Callback::from(move |_| {
+            BrowserHistory::new().go(delta);
+        })
+    }
+}
+
+/// Returns a [`Navigation`] handle for programmatic navigation.
+///
+/// ```rust,ignore
+/// use yew::prelude::*;
+/// use yew_nav_link::hooks::use_navigation;
+/// use yew_router::prelude::*;
+///
+/// #[derive(Clone, PartialEq, Debug, Routable)]
+/// enum Route {
+///     #[at("/")]
+///     Home
+/// }
+///
+/// #[component]
+/// fn MyComponent() -> Html {
+///     let navigation = use_navigation::<Route>();
+///
+///     html! {
+///         <div>
+///             <button onclick={navigation.go_back.clone()}>Back</button>
+///             <button onclick={navigation.go_forward.clone()}>Forward</button>
+///             <button onclick={navigation.push_callback(Route::Home)}>
+///                 { "Go Home" }
+///             </button>
+///         </div>
+///     }
+/// }
+/// ```
+#[hook]
+pub fn use_navigation<R>() -> Navigation<R>
+where
+    R: Routable + Clone + 'static,
+{
+    let go_back = Callback::from(|_| {
+        BrowserHistory::new().back();
+    });
+
+    let go_forward = Callback::from(|_| {
+        BrowserHistory::new().forward();
+    });
+
+    Navigation {
+        go_back,
+        go_forward,
+        _marker: PhantomData,
+    }
+}
