@@ -36,6 +36,11 @@ pub fn handle_arrow_key(
 
     let direction = direction?;
 
+    // Handle empty list
+    if total_items == 0 {
+        return None;
+    }
+
     let next = match direction {
         KeyboardDirection::Forward => current_index + 1,
         KeyboardDirection::Backward => current_index.saturating_sub(1)

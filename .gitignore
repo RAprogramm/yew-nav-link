@@ -3,3 +3,4 @@
 examples/*/target
 examples/*/dist
 examples/*/Cargo.lock
+coverage-report/html

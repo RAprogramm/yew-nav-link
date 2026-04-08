@@ -150,7 +150,7 @@ pub enum Match {
     #[default]
     Exact,
     /// Link is active when current path starts with target path (segment-wise).
-    Partial,
+    Partial
 }
 
 /// Properties for the [`NavLink`] component.
@@ -178,7 +178,7 @@ pub struct NavLinkProps<R: Routable + PartialEq + Clone + 'static> {
     pub active_class: &'static str,
 
     #[prop_or_default]
-    pub(crate) _marker: PhantomData<R>,
+    pub(crate) _marker: PhantomData<R>
 }
 
 /// Navigation link with automatic active state detection.
@@ -267,7 +267,7 @@ pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R
 pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(
     to: R,
     children: &str,
-    match_mode: Match,
+    match_mode: Match
 ) -> Html {
     let partial = match_mode == Match::Partial;
     html! {
@@ -297,7 +297,7 @@ pub(crate) fn is_path_prefix(target: &str, current: &str) -> bool {
             (Some(t), Some(c)) if t == c => continue,
             (Some(_), Some(_)) => return false,
             (Some(_), None) => return false,
-            (None, _) => return true,
+            (None, _) => return true
         }
     }
 }
@@ -324,7 +324,7 @@ mod tests {
         #[at("/docs")]
         Docs,
         #[at("/docs/api")]
-        DocsApi,
+        DocsApi
     }
 
     // Match enum tests
@@ -380,20 +380,20 @@ mod tests {
     #[test]
     fn props_equality_same() {
         let props1: NavLinkProps<TestRoute> = NavLinkProps {
-            to: TestRoute::Home,
-            children: Default::default(),
-            partial: false,
-            class: "nav-link",
+            to:           TestRoute::Home,
+            children:     Default::default(),
+            partial:      false,
+            class:        "nav-link",
             active_class: "active",
-            _marker: PhantomData,
+            _marker:      PhantomData
         };
         let props2: NavLinkProps<TestRoute> = NavLinkProps {
-            to: TestRoute::Home,
-            children: Default::default(),
-            partial: false,
-            class: "nav-link",
+            to:           TestRoute::Home,
+            children:     Default::default(),
+            partial:      false,
+            class:        "nav-link",
             active_class: "active",
-            _marker: PhantomData,
+            _marker:      PhantomData
         };
         assert_eq!(props1, props2);
     }
@@ -401,20 +401,20 @@ mod tests {
     #[test]
     fn props_equality_different_route() {
         let props1: NavLinkProps<TestRoute> = NavLinkProps {
-            to: TestRoute::Home,
-            children: Default::default(),
-            partial: false,
-            class: "nav-link",
+            to:           TestRoute::Home,
+            children:     Default::default(),
+            partial:      false,
+            class:        "nav-link",
             active_class: "active",
-            _marker: PhantomData,
+            _marker:      PhantomData
         };
         let props2: NavLinkProps<TestRoute> = NavLinkProps {
-            to: TestRoute::About,
-            children: Default::default(),
-            partial: false,
-            class: "nav-link",
+            to:           TestRoute::About,
+            children:     Default::default(),
+            partial:      false,
+            class:        "nav-link",
             active_class: "active",
-            _marker: PhantomData,
+            _marker:      PhantomData
         };
         assert_ne!(props1, props2);
     }
@@ -422,20 +422,20 @@ mod tests {
     #[test]
     fn props_equality_different_partial() {
         let props1: NavLinkProps<TestRoute> = NavLinkProps {
-            to: TestRoute::Home,
-            children: Default::default(),
-            partial: false,
-            class: "nav-link",
+            to:           TestRoute::Home,
+            children:     Default::default(),
+            partial:      false,
+            class:        "nav-link",
             active_class: "active",
-            _marker: PhantomData,
+            _marker:      PhantomData
         };
         let props2: NavLinkProps<TestRoute> = NavLinkProps {
-            to: TestRoute::Home,
-            children: Default::default(),
-            partial: true,
-            class: "nav-link",
+            to:           TestRoute::Home,
+            children:     Default::default(),
+            partial:      true,
+            class:        "nav-link",
             active_class: "active",
-            _marker: PhantomData,
+            _marker:      PhantomData
         };
         assert_ne!(props1, props2);
     }
@@ -443,12 +443,12 @@ mod tests {
     #[test]
     fn props_debug() {
         let props: NavLinkProps<TestRoute> = NavLinkProps {
-            to: TestRoute::Home,
-            children: Default::default(),
-            partial: false,
-            class: "nav-link",
+            to:           TestRoute::Home,
+            children:     Default::default(),
+            partial:      false,
+            class:        "nav-link",
             active_class: "active",
-            _marker: PhantomData,
+            _marker:      PhantomData
         };
         let debug = format!("{:?}", props);
         assert!(debug.contains("NavLinkProps"));
