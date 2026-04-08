@@ -4,7 +4,7 @@ use yew::prelude::*;
 use yew_nav_link::hooks::use_query_params;
 use yew_router::prelude::*;
 
-const NAVIGATION_HOOKS_SRC: &str = include_str!("../../../../src/hooks/navigation.rs");
+const NAVIGATION_HOOKS_SRC: &str = include_str!("../../../../src/hooks/navigation/navigation.rs");
 
 const CODE_NAVIGATION: &str = r#"
 use yew_nav_link::hooks::use_navigation;

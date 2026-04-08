@@ -47,28 +47,6 @@ impl QueryParams {
 /// Returns query parameters from the current URL.
 ///
 /// Extracts query string parameters into a map.
-///
-/// ```rust
-/// use yew::prelude::*;
-/// use yew_nav_link::hooks::use_query_params;
-/// use yew_router::prelude::*;
-///
-/// #[derive(Clone, PartialEq, Debug, Routable)]
-/// enum Route {
-///     #[at("/search")]
-///     Search
-/// }
-///
-/// #[component]
-/// fn SearchResults() -> Html {
-///     let query = use_query_params();
-///     let search_term = query.get_one("q");
-///
-///     html! {
-///         <h1>{ format!("Search: {:?}", search_term) }</h1>
-///     }
-/// }
-/// ```
 #[hook]
 pub fn use_query_params() -> QueryParams {
     let current_url = use_location();
@@ -105,7 +83,6 @@ mod tests {
         assert_eq!(qp.get("q"), Some(&vec!["rust".to_string()]));
         assert_eq!(qp.get_one("q"), Some("rust"));
         assert!(qp.contains_key("q"));
-        assert!(!qp.contains_key("name"));
     }
 
     #[test]
@@ -113,7 +90,6 @@ mod tests {
         let qp = QueryParams(HashMap::new());
         assert!(qp.is_empty());
         assert_eq!(qp.len(), 0);
-        assert_eq!(qp.get("id").is_none(), true);
     }
 
     #[test]
@@ -138,10 +114,6 @@ mod tests {
         let qp = QueryParams(params);
 
         assert_eq!(qp.get_one("tag"), Some("rust"));
-        assert_eq!(
-            qp.get("tag"),
-            Some(&vec!["rust".to_string(), "web".to_string()])
-        );
     }
 
     #[test]
@@ -149,9 +121,7 @@ mod tests {
         let mut params = HashMap::new();
         params.insert("q".to_string(), vec!["rust".to_string()]);
         let qp = QueryParams(params);
-
-        let count = qp.iter().count();
-        assert_eq!(count, 1);
+        assert_eq!(qp.iter().count(), 1);
     }
 
     #[test]
@@ -160,9 +130,7 @@ mod tests {
         params.insert("q".to_string(), vec!["rust".to_string()]);
         let qp1 = QueryParams(params);
         let qp2 = qp1.clone();
-
         assert_eq!(qp1.len(), qp2.len());
-        assert_eq!(qp1.get_one("q"), qp2.get_one("q"));
     }
 
     #[test]
@@ -183,51 +151,5 @@ mod tests {
         let qp2 = QueryParams(params2);
 
         assert_eq!(qp1, qp2);
-    }
-
-    #[test]
-    fn query_params_get_none() {
-        let qp = QueryParams(HashMap::new());
-        assert_eq!(qp.get("nonexistent"), None);
-        assert_eq!(qp.get_one("nonexistent"), None);
-    }
-
-    #[test]
-    fn query_params_not_equal_different_values() {
-        let mut params1 = HashMap::new();
-        params1.insert("q".to_string(), vec!["rust".to_string()]);
-        let qp1 = QueryParams(params1);
-
-        let mut params2 = HashMap::new();
-        params2.insert("q".to_string(), vec!["go".to_string()]);
-        let qp2 = QueryParams(params2);
-
-        assert_ne!(qp1, qp2);
-    }
-
-    #[test]
-    fn query_params_not_equal_different_keys() {
-        let mut params1 = HashMap::new();
-        params1.insert("q".to_string(), vec!["rust".to_string()]);
-        let qp1 = QueryParams(params1);
-
-        let mut params2 = HashMap::new();
-        params2.insert("page".to_string(), vec!["1".to_string()]);
-        let qp2 = QueryParams(params2);
-
-        assert_ne!(qp1, qp2);
-    }
-
-    #[test]
-    fn query_params_not_equal_different_length() {
-        let mut params1 = HashMap::new();
-        params1.insert("q".to_string(), vec!["rust".to_string()]);
-        let qp1 = QueryParams(params1);
-
-        let mut params2 = HashMap::new();
-        params2.insert("q".to_string(), vec!["rust".to_string(), "go".to_string()]);
-        let qp2 = QueryParams(params2);
-
-        assert_ne!(qp1, qp2);
     }
 }

@@ -1,4 +1,4 @@
-use std::marker::PhantomData;
+use std::{collections::HashMap, marker::PhantomData};
 
 use yew::prelude::*;
 use yew_router::{
@@ -33,17 +33,6 @@ where
     R: Routable + Clone + 'static,
 {
     /// Create a callback for pushing a route onto history.
-    ///
-    /// ```rust,ignore
-    /// let navigation = use_navigation::<Route>();
-    /// html! {
-    ///     <div>
-    ///         <button onclick={navigation.push_callback(Route::Home)}>
-    ///             { "Go Home" }
-    ///         </button>
-    ///     </div>
-    /// }
-    /// ```
     pub fn push_callback(&self, route: R) -> Callback<()> {
         Callback::from(move |_| {
             let path = route.to_path();
@@ -112,5 +101,68 @@ where
         go_back,
         go_forward,
         _marker: PhantomData,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::marker::PhantomData;
+
+    #[test]
+    fn navigation_struct_creation() {
+        #[derive(Clone, PartialEq, Debug, Routable)]
+        enum TestRoute {
+            #[at("/test")]
+            Test,
+            #[at("/")]
+            Home,
+        }
+
+        let nav = Navigation::<TestRoute> {
+            go_back: Callback::from(|_| {}),
+            go_forward: Callback::from(|_| {}),
+            _marker: PhantomData,
+        };
+
+        let _ = nav.go_back;
+        let _ = nav.go_forward;
+    }
+
+    #[test]
+    fn navigation_clone() {
+        #[derive(Clone, PartialEq, Debug, Routable)]
+        enum TestRoute {
+            #[at("/test")]
+            Test,
+        }
+
+        let nav1 = Navigation::<TestRoute> {
+            go_back: Callback::from(|_| {}),
+            go_forward: Callback::from(|_| {}),
+            _marker: PhantomData,
+        };
+
+        let nav2 = nav1.clone();
+        let _ = nav2.go_back;
+        let _ = nav2.go_forward;
+    }
+
+    #[test]
+    fn navigation_debug() {
+        #[derive(Clone, PartialEq, Debug, Routable)]
+        enum TestRoute {
+            #[at("/test")]
+            Test,
+        }
+
+        let nav = Navigation::<TestRoute> {
+            go_back: Callback::from(|_| {}),
+            go_forward: Callback::from(|_| {}),
+            _marker: PhantomData,
+        };
+
+        let debug_str = format!("{:?}", nav);
+        assert!(debug_str.contains("Navigation"));
     }
 }
