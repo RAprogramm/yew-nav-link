@@ -52,7 +52,7 @@
 //!
 //! ```rust
 //! use yew::prelude::*;
-//! use yew_nav_link::{Match, nav_link};
+//! use yew_nav_link::{nav_link, Match};
 //! use yew_router::prelude::*;
 //!
 //! # #[derive(Clone, PartialEq, Debug, Routable)]
@@ -125,7 +125,7 @@
 //! - yew-router 0.20+
 
 #[cfg(feature = "macros")]
-mod lib_macros;
+mod macros;
 
 /// HTML attribute builders for navigation components.
 pub mod attrs;
@@ -158,10 +158,10 @@ pub use components::{
 };
 pub use errors::{NavError, NavResult};
 pub use hooks::{
-    BreadcrumbItem, Navigation, QueryParams, RouteParams, use_breadcrumbs, use_is_active,
-    use_is_exact_active, use_is_partial_active, use_navigation, use_query_params, use_route_info,
-    use_route_params
+    use_breadcrumbs, use_is_active, use_is_exact_active, use_is_partial_active, use_navigation,
+    use_query_params, use_route_info, use_route_params, BreadcrumbItem, Navigation, QueryParams,
+    RouteParams
 };
 pub use nav::{NavDivider, NavDividerProps, NavItem, NavItemProps, NavList, NavListProps};
-pub use nav_link::{Match, NavLink, NavLinkProps, nav_link};
+pub use nav_link::{nav_link, Match, NavLink, NavLinkProps};
 pub use utils::{is_absolute, join_paths, normalize_path};
