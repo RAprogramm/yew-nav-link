@@ -5,8 +5,9 @@ use yew_nav_link::utils::{KeyboardDirection, KeyboardNavConfig};
 #[test]
 fn keyboard_direction_clone() {
     let forward = KeyboardDirection::Forward;
-    let cloned = forward.clone();
-    assert_eq!(forward, cloned);
+    // KeyboardDirection implements Copy, so it's automatically copied
+    let copied = forward;
+    assert_eq!(forward, copied);
 }
 
 #[test]
