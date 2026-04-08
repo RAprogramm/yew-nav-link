@@ -557,4 +557,265 @@ mod tests {
         let _ = replace_cb;
         let _ = go_cb;
     }
+
+    #[test]
+    fn navigation_struct_creation() {
+        #[derive(Clone, PartialEq, Debug, Routable)]
+        enum TestRoute {
+            #[at("/test")]
+            Test,
+            #[at("/")]
+            Home
+        }
+
+        let nav = Navigation::<TestRoute> {
+            go_back:    Callback::from(|_| {}),
+            go_forward: Callback::from(|_| {}),
+            _marker:    PhantomData
+        };
+
+        // Verify navigation callbacks exist
+        let _ = nav.go_back;
+        let _ = nav.go_forward;
+    }
+
+    #[test]
+    fn navigation_push_callback() {
+        #[derive(Clone, PartialEq, Debug, Routable)]
+        enum TestRoute {
+            #[at("/test")]
+            Test,
+            #[at("/")]
+            Home
+        }
+
+        let nav = Navigation::<TestRoute> {
+            go_back:    Callback::from(|_| {}),
+            go_forward: Callback::from(|_| {}),
+            _marker:    PhantomData
+        };
+
+        let push_cb = nav.push_callback(TestRoute::Home);
+        let _ = push_cb;
+
+        let push_cb2 = nav.push_callback(TestRoute::Test);
+        let _ = push_cb2;
+    }
+
+    #[test]
+    fn navigation_replace_callback() {
+        #[derive(Clone, PartialEq, Debug, Routable)]
+        enum TestRoute {
+            #[at("/test")]
+            Test,
+            #[at("/")]
+            Home
+        }
+
+        let nav = Navigation::<TestRoute> {
+            go_back:    Callback::from(|_| {}),
+            go_forward: Callback::from(|_| {}),
+            _marker:    PhantomData
+        };
+
+        let replace_cb = nav.replace_callback(TestRoute::Home);
+        let _ = replace_cb;
+
+        let replace_cb2 = nav.replace_callback(TestRoute::Test);
+        let _ = replace_cb2;
+    }
+
+    #[test]
+    fn navigation_go_callback() {
+        #[derive(Clone, PartialEq, Debug, Routable)]
+        enum TestRoute {
+            #[at("/test")]
+            Test,
+            #[at("/")]
+            Home
+        }
+
+        let nav = Navigation::<TestRoute> {
+            go_back:    Callback::from(|_| {}),
+            go_forward: Callback::from(|_| {}),
+            _marker:    PhantomData
+        };
+
+        let go_back_cb = nav.go_callback(-1);
+        let _ = go_back_cb;
+
+        let go_forward_cb = nav.go_callback(1);
+        let _ = go_forward_cb;
+
+        let go_custom_cb = nav.go_callback(2);
+        let _ = go_custom_cb;
+    }
+
+    #[test]
+    fn navigation_clone() {
+        #[derive(Clone, PartialEq, Debug, Routable)]
+        enum TestRoute {
+            #[at("/test")]
+            Test,
+            #[at("/")]
+            Home
+        }
+
+        let nav1 = Navigation::<TestRoute> {
+            go_back:    Callback::from(|_| {}),
+            go_forward: Callback::from(|_| {}),
+            _marker:    PhantomData
+        };
+
+        let nav2 = nav1.clone();
+        let _ = nav2.go_back;
+        let _ = nav2.go_forward;
+    }
+
+    #[test]
+    fn navigation_debug() {
+        #[derive(Clone, PartialEq, Debug, Routable)]
+        enum TestRoute {
+            #[at("/test")]
+            Test,
+            #[at("/")]
+            Home
+        }
+
+        let nav = Navigation::<TestRoute> {
+            go_back:    Callback::from(|_| {}),
+            go_forward: Callback::from(|_| {}),
+            _marker:    PhantomData
+        };
+
+        let debug_str = format!("{:?}", nav);
+        assert!(debug_str.contains("Navigation"));
+    }
+
+    #[test]
+    fn route_params_default() {
+        let rp = RouteParams::default();
+        assert!(rp.is_empty());
+        assert_eq!(rp.len(), 0);
+        assert_eq!(rp.get("test"), None);
+    }
+
+    #[test]
+    fn query_params_default() {
+        let qp = QueryParams::default();
+        assert!(qp.is_empty());
+        assert_eq!(qp.len(), 0);
+        assert_eq!(qp.get("test"), None);
+    }
+
+    #[test]
+    fn route_params_multiple_values() {
+        let mut params = HashMap::new();
+        params.insert(
+            "tag".to_string(),
+            vec!["rust".to_string(), "web".to_string(), "yew".to_string()]
+        );
+        let rp = RouteParams(params);
+
+        assert_eq!(rp.get_one("tag"), Some("rust"));
+        assert_eq!(
+            rp.get("tag"),
+            Some(&vec![
+                "rust".to_string(),
+                "web".to_string(),
+                "yew".to_string()
+            ])
+        );
+        assert_eq!(rp.len(), 1);
+    }
+
+    #[test]
+    fn route_params_contains_key_false() {
+        let rp = RouteParams(HashMap::new());
+        assert!(!rp.contains_key("nonexistent"));
+    }
+
+    #[test]
+    fn query_params_contains_key_false() {
+        let qp = QueryParams(HashMap::new());
+        assert!(!qp.contains_key("nonexistent"));
+    }
+
+    #[test]
+    fn route_params_not_equal_different_values() {
+        let mut params1 = HashMap::new();
+        params1.insert("id".to_string(), vec!["123".to_string()]);
+        let rp1 = RouteParams(params1);
+
+        let mut params2 = HashMap::new();
+        params2.insert("id".to_string(), vec!["456".to_string()]);
+        let rp2 = RouteParams(params2);
+
+        assert_ne!(rp1, rp2);
+    }
+
+    #[test]
+    fn query_params_not_equal_different_values() {
+        let mut params1 = HashMap::new();
+        params1.insert("q".to_string(), vec!["rust".to_string()]);
+        let qp1 = QueryParams(params1);
+
+        let mut params2 = HashMap::new();
+        params2.insert("q".to_string(), vec!["go".to_string()]);
+        let qp2 = QueryParams(params2);
+
+        assert_ne!(qp1, qp2);
+    }
+
+    #[test]
+    fn route_params_not_equal_different_keys() {
+        let mut params1 = HashMap::new();
+        params1.insert("id".to_string(), vec!["123".to_string()]);
+        let rp1 = RouteParams(params1);
+
+        let mut params2 = HashMap::new();
+        params2.insert("name".to_string(), vec!["test".to_string()]);
+        let rp2 = RouteParams(params2);
+
+        assert_ne!(rp1, rp2);
+    }
+
+    #[test]
+    fn query_params_not_equal_different_keys() {
+        let mut params1 = HashMap::new();
+        params1.insert("q".to_string(), vec!["rust".to_string()]);
+        let qp1 = QueryParams(params1);
+
+        let mut params2 = HashMap::new();
+        params2.insert("page".to_string(), vec!["1".to_string()]);
+        let qp2 = QueryParams(params2);
+
+        assert_ne!(qp1, qp2);
+    }
+
+    #[test]
+    fn route_params_not_equal_different_length() {
+        let mut params1 = HashMap::new();
+        params1.insert("id".to_string(), vec!["123".to_string()]);
+        let rp1 = RouteParams(params1);
+
+        let mut params2 = HashMap::new();
+        params2.insert("id".to_string(), vec!["123".to_string(), "456".to_string()]);
+        let rp2 = RouteParams(params2);
+
+        assert_ne!(rp1, rp2);
+    }
+
+    #[test]
+    fn query_params_not_equal_different_length() {
+        let mut params1 = HashMap::new();
+        params1.insert("q".to_string(), vec!["rust".to_string()]);
+        let qp1 = QueryParams(params1);
+
+        let mut params2 = HashMap::new();
+        params2.insert("q".to_string(), vec!["rust".to_string(), "go".to_string()]);
+        let qp2 = QueryParams(params2);
+
+        assert_ne!(qp1, qp2);
+    }
 }

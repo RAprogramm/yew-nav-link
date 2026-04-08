@@ -274,4 +274,116 @@ mod tests {
         assert_eq!(item.label, "/test");
         assert!(item.is_active);
     }
+
+    #[test]
+    fn breadcrumb_item_not_active() {
+        #[derive(Clone, PartialEq)]
+        struct TestRoute;
+        let item = BreadcrumbItem {
+            route:     TestRoute,
+            label:     "/test".to_string(),
+            is_active: false
+        };
+        assert_eq!(item.label, "/test");
+        assert!(!item.is_active);
+    }
+
+    #[test]
+    fn breadcrumb_item_clone() {
+        #[derive(Clone, PartialEq, Debug)]
+        struct TestRoute;
+        let item1 = BreadcrumbItem {
+            route:     TestRoute,
+            label:     "/test".to_string(),
+            is_active: true
+        };
+        let item2 = item1.clone();
+        assert_eq!(item1.label, item2.label);
+        assert_eq!(item1.is_active, item2.is_active);
+    }
+
+    #[test]
+    fn breadcrumb_item_debug() {
+        #[derive(Clone, PartialEq, Debug)]
+        struct TestRoute;
+        let item = BreadcrumbItem {
+            route:     TestRoute,
+            label:     "/test".to_string(),
+            is_active: true
+        };
+        let debug_str = format!("{:?}", item);
+        assert!(debug_str.contains("BreadcrumbItem"));
+    }
+
+    #[test]
+    fn breadcrumb_label_provider_context_creation() {
+        struct TestProvider;
+        impl BreadcrumbLabelProvider for TestProvider {
+            fn label_for_path(&self, path: &str) -> String {
+                path.to_string()
+            }
+        }
+        let ctx = BreadcrumbLabelProviderContext(Rc::new(TestProvider));
+        let _ = ctx;
+    }
+
+    #[test]
+    fn breadcrumb_label_provider_context_clone() {
+        struct TestProvider;
+        impl BreadcrumbLabelProvider for TestProvider {
+            fn label_for_path(&self, path: &str) -> String {
+                path.to_string()
+            }
+        }
+        let ctx1 = BreadcrumbLabelProviderContext(Rc::new(TestProvider));
+        let ctx2 = ctx1.clone();
+        let _ = ctx2;
+    }
+
+    #[test]
+    fn breadcrumb_label_provider_context_partial_eq() {
+        struct TestProvider;
+        impl BreadcrumbLabelProvider for TestProvider {
+            fn label_for_path(&self, path: &str) -> String {
+                path.to_string()
+            }
+        }
+        let ctx1 = BreadcrumbLabelProviderContext(Rc::new(TestProvider));
+        let ctx2 = BreadcrumbLabelProviderContext(Rc::new(TestProvider));
+        assert!(ctx1 == ctx2);
+    }
+
+    #[test]
+    fn breadcrumb_label_provider_trait() {
+        struct TestProvider;
+        impl BreadcrumbLabelProvider for TestProvider {
+            fn label_for_path(&self, path: &str) -> String {
+                format!("Custom: {}", path)
+            }
+        }
+        let provider = TestProvider;
+        assert_eq!(provider.label_for_path("/test"), "Custom: /test");
+        assert_eq!(provider.label_for_path("/"), "Custom: /");
+    }
+
+    #[test]
+    fn is_path_prefix_edge_cases() {
+        assert!(is_path_prefix("/", "/"));
+        assert!(is_path_prefix("/test", "/test"));
+        assert!(!is_path_prefix("/test", "/testing"));
+        assert!(!is_path_prefix("/test", "/test2"));
+        assert!(!is_path_prefix("/testing", "/test"));
+    }
+
+    #[test]
+    fn is_path_prefix_with_trailing_slash() {
+        assert!(is_path_prefix("/docs", "/docs/"));
+        assert!(is_path_prefix("/docs/", "/docs/api"));
+    }
+
+    #[test]
+    fn is_path_prefix_empty_strings() {
+        assert!(is_path_prefix("", "/test"));
+        assert!(!is_path_prefix("/test", ""));
+    }
 }
