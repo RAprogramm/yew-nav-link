@@ -1,4 +1,5 @@
-//! Creates multiple navigation links at once from an array of route configurations
+//! Creates multiple navigation links at once from an array of route
+//! configurations
 //!
 //! # Example
 //!
@@ -31,15 +32,15 @@
 //! }
 //! ```
 
-use proc_macro::TokenStream;
+use proc_macro2::{Span, TokenStream};
 use quote::{quote, quote_spanned};
-use syn::{parse::Parse, parse_macro_input, Span, Token};
+use syn::{parse::Parse, parse_macro_input, Token};
 
 /// Represents a single navigation link configuration
 struct NavLinkConfig {
-    route: syn::ExprPath,
-    label: syn::LitStr,
-    match_mode: syn::ExprPath,
+    route:      syn::ExprPath,
+    label:      syn::LitStr,
+    match_mode: syn::ExprPath
 }
 
 impl Parse for NavLinkConfig {
@@ -53,14 +54,14 @@ impl Parse for NavLinkConfig {
         Ok(NavLinkConfig {
             route,
             label,
-            match_mode,
+            match_mode
         })
     }
 }
 
 /// Parses thenav_links! macro arguments
 struct NavLinksArgs {
-    entries: Vec<NavLinkConfig>,
+    entries: Vec<NavLinkConfig>
 }
 
 impl Parse for NavLinksArgs {
@@ -77,7 +78,9 @@ impl Parse for NavLinksArgs {
             }
         }
 
-        Ok(NavLinksArgs { entries })
+        Ok(NavLinksArgs {
+            entries
+        })
     }
 }
 

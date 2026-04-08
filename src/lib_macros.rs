@@ -9,17 +9,6 @@
 //! [dependencies]
 //! yew-nav-link = { version = "0.7", features = ["macros"] }
 //! ```
-//! Core macros for yew-nav-link
-//!
-//! This module provides production-ready procedural macros for reducing
-//! boilerplate and improving developer experience.
-
-pub mod breadcrumbs;
-pub mod link;
-pub mod list;
-pub mod menu;
-pub mod pagination;
-pub mod tabs;
 
 /// Convenience wrapper around [`nav_link`](yew_nav_link::nav_link) for
 /// declarative macro usage.
@@ -28,7 +17,7 @@ pub mod tabs;
 ///
 /// ```rust
 /// use yew::prelude::*;
-/// use yew_nav_link::{nav_link, Match};
+/// use yew_nav_link::{Match, nav_link};
 /// use yew_router::prelude::*;
 ///
 /// #[derive(Clone, PartialEq, Routable)]
@@ -64,7 +53,7 @@ macro_rules! nav_link {
 ///
 /// ```rust
 /// use yew::prelude::*;
-/// use yew_nav_link::{nav_links, Match};
+/// use yew_nav_link::{Match, nav_links};
 /// use yew_router::prelude::*;
 ///
 /// #[derive(Clone, PartialEq, Routable)]
@@ -111,7 +100,7 @@ macro_rules! nav_links {
 ///
 /// ```rust
 /// use yew::prelude::*;
-/// use yew_nav_link::{nav_list, Match};
+/// use yew_nav_link::{Match, nav_list};
 /// use yew_router::prelude::*;
 ///
 /// #[derive(Clone, PartialEq, Routable)]
@@ -262,7 +251,7 @@ macro_rules! breadcrumbs {
 ///
 /// ```rust
 /// use yew::prelude::*;
-/// use yew_nav_link::{nav_menu, Match};
+/// use yew_nav_link::{Match, nav_menu};
 /// use yew_router::prelude::*;
 ///
 /// #[derive(Clone, PartialEq, Routable)]

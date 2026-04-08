@@ -38,8 +38,9 @@
 //! ```
 
 use proc_macro::TokenStream;
+use proc_macro2::Span;
 use quote::{quote, quote_spanned};
-use syn::{parse_macro_input, parse::Parse, parse_quote, Span, Token};
+use syn::{parse_macro_input, parse::Parse, parse_quote, Token};
 
 struct BreadcrumbEntry {
     route: syn::ExprPath,

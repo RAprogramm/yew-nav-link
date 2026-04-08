@@ -28,11 +28,12 @@ all-features = true
 
 [features]
 default = []
-macros = []
+macros = ["yew-nav-link-macros"]
 
 [dependencies]
 yew = { version = "0.23", features = ["csr"] }
 yew-router = "0.20"
+yew-nav-link-macros = { path = "macros", optional = true }
 
 [dev-dependencies]
 criterion = "0.8"
