@@ -143,7 +143,7 @@ pub mod hooks;
 pub mod nav;
 
 /// [`NavLink`] component and [`Match`] strategy for active state detection.
-pub mod nav_link;
+pub mod active_link;
 
 /// Path, URL, query string, and keyboard navigation utilities.
 pub mod utils;
@@ -163,5 +163,5 @@ pub use hooks::{
     RouteParams
 };
 pub use nav::{NavDivider, NavDividerProps, NavItem, NavItemProps, NavList, NavListProps};
-pub use nav_link::{nav_link, Match, NavLink, NavLinkProps};
+pub use active_link::{nav_link, Match, NavLink, NavLinkProps};
 pub use utils::{is_absolute, join_paths, normalize_path};
