@@ -1,6 +1,3 @@
-use yew::prelude::*;
-use yew_router::prelude::*;
-
 /// Path matching strategy for NavLink active state detection.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum Match {
@@ -8,7 +5,7 @@ pub enum Match {
     #[default]
     Exact,
     /// Link is active when current path starts with target path (segment-wise).
-    Partial,
+    Partial
 }
 
 #[cfg(test)]

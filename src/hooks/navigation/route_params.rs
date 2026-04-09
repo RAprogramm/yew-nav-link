@@ -5,7 +5,8 @@ use yew_router::prelude::*;
 
 /// Route parameters extracted from the current URL.
 ///
-/// Maps parameter names to their values (Vec since params can appear multiple times).
+/// Maps parameter names to their values (Vec since params can appear multiple
+/// times).
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct RouteParams(HashMap<String, Vec<String>>);
 
@@ -50,15 +51,16 @@ impl RouteParams {
 #[hook]
 pub fn use_route_params() -> RouteParams {
     let current_url = use_location();
-    let path = current_url.as_ref().map(|l| l.path()).unwrap_or("");
+    let _path = current_url.as_ref().map(|l| l.path()).unwrap_or("");
     let params = HashMap::new();
     RouteParams(params)
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::collections::HashMap;
+
+    use super::*;
 
     #[test]
     fn route_params_get() {

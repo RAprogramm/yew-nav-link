@@ -1,7 +1,5 @@
 //! Pagination macro
 
-use yew::prelude::*;
-
 /// Generates a pagination control component
 #[macro_export]
 macro_rules! nav_pagination {

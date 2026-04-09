@@ -1,6 +1,6 @@
 [package]
 name = "yew-nav-link-macros"
-version = "0.8.0"
+version = "0.1.0"
 edition = "2024"
 rust-version = "1.94"
 description = "Procedural macros for yew-nav-link"

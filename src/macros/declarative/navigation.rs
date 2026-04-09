@@ -1,8 +1,5 @@
 //! Navigation macros - nav_tabs, breadcrumbs, nav_menu
 
-use yew::prelude::*;
-use yew_router::prelude::*;
-
 /// Generates a tabbed navigation interface
 #[macro_export]
 macro_rules! nav_tabs {

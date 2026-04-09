@@ -5,7 +5,7 @@ use yew_router::prelude::*;
 #[hook]
 pub fn use_is_active<R>(route: R) -> bool
 where
-    R: Routable + Clone + PartialEq + 'static,
+    R: Routable + Clone + PartialEq + 'static
 {
     let current = use_route::<R>();
     current.as_ref() == Some(&route)
@@ -17,7 +17,7 @@ where
 #[hook]
 pub fn use_is_exact_active<R>(route: R) -> bool
 where
-    R: Routable + Clone + PartialEq + 'static,
+    R: Routable + Clone + PartialEq + 'static
 {
     let current = use_route::<R>();
     current.as_ref() == Some(&route)
@@ -25,11 +25,12 @@ where
 
 /// Returns `true` when the current URL starts with the given route's path.
 ///
-/// Matches segment-wise, so `/docs` matches `/docs/api` but not `/documentation`.
+/// Matches segment-wise, so `/docs` matches `/docs/api` but not
+/// `/documentation`.
 #[hook]
 pub fn use_is_partial_active<R>(route: R) -> bool
 where
-    R: Routable + Clone + PartialEq + 'static,
+    R: Routable + Clone + PartialEq + 'static
 {
     let current = use_route::<R>();
     match current.as_ref() {
@@ -38,7 +39,7 @@ where
             let current_path = current_route.to_path();
             crate::active_link::is_path_prefix(&target_path, &current_path)
         }
-        None => false,
+        None => false
     }
 }
 
@@ -51,7 +52,7 @@ mod tests {
         #[at("/")]
         Home,
         #[at("/docs")]
-        Docs,
+        Docs
     }
 
     #[test]

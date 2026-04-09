@@ -9,7 +9,7 @@ pub fn is_path_prefix(target: &str, current: &str) -> bool {
             (Some(t), Some(c)) if t == c => continue,
             (Some(_), Some(_)) => return false,
             (Some(_), None) => return false,
-            (None, _) => return true,
+            (None, _) => return true
         }
     }
 }

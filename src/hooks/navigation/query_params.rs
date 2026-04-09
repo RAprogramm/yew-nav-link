@@ -71,8 +71,9 @@ pub fn use_query_params() -> QueryParams {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::collections::HashMap;
+
+    use super::*;
 
     #[test]
     fn query_params_get() {
@@ -109,7 +110,7 @@ mod tests {
         let mut params = HashMap::new();
         params.insert(
             "tag".to_string(),
-            vec!["rust".to_string(), "web".to_string()],
+            vec!["rust".to_string(), "web".to_string()]
         );
         let qp = QueryParams(params);
 

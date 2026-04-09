@@ -1,7 +1,5 @@
 //! Routable extension macros
 
-use yew_router::prelude::*;
-
 /// Extends a `Routable` enum with navigation helper methods
 #[macro_export]
 macro_rules! routable_ext {

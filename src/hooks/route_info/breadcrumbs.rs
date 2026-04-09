@@ -23,18 +23,19 @@ impl PartialEq for BreadcrumbLabelProviderContext {
 #[derive(Clone, Debug)]
 pub struct BreadcrumbItem<R> {
     /// The route this breadcrumb points to.
-    pub route: R,
+    pub route:     R,
     /// Human-readable label for the breadcrumb.
-    pub label: String,
+    pub label:     String,
     /// Whether this breadcrumb represents the currently active route.
-    pub is_active: bool,
+    pub is_active: bool
 }
 
-/// Returns a list of [`BreadcrumbItem`]s representing the current navigation path.
+/// Returns a list of [`BreadcrumbItem`]s representing the current navigation
+/// path.
 #[hook]
 pub fn use_breadcrumbs<R>() -> Vec<BreadcrumbItem<R>>
 where
-    R: Routable + Clone + PartialEq + 'static,
+    R: Routable + Clone + PartialEq + 'static
 {
     let current = use_route::<R>();
     let provider = use_context::<BreadcrumbLabelProviderContext>();
@@ -52,15 +53,15 @@ where
                 .map(|p| p.0.label_for_path("/"))
                 .unwrap_or_else(|| "/".to_string());
             items.push(BreadcrumbItem {
-                route: route.clone(),
-                label: root_label,
-                is_active: segments.is_empty(),
+                route:     route.clone(),
+                label:     root_label,
+                is_active: segments.is_empty()
             });
 
             // Segments
             let is_last = segments.len();
             for (i, segment) in segments.iter().enumerate() {
-                built.push_str("/");
+                built.push('/');
                 built.push_str(segment);
                 let is_last = i + 1 == is_last;
                 let label = provider
@@ -70,12 +71,12 @@ where
                 items.push(BreadcrumbItem {
                     route: route.clone(),
                     label,
-                    is_active: is_last,
+                    is_active: is_last
                 });
             }
 
             items
         }
-        None => vec![],
+        None => vec![]
     }
 }

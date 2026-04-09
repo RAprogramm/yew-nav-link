@@ -1,9 +1,11 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use super::mode::Match;
-use super::props::NavLinkProps;
-use super::utils::{build_class, is_path_prefix};
+use super::{
+    mode::Match,
+    props::NavLinkProps,
+    utils::{build_class, is_path_prefix}
+};
 
 /// Navigation link with automatic active state detection.
 #[component]
@@ -28,7 +30,7 @@ pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R
 pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(
     to: R,
     children: &str,
-    match_mode: Match,
+    match_mode: Match
 ) -> Html {
     let partial = match_mode == Match::Partial;
     html! {
@@ -43,7 +45,7 @@ mod tests {
     #[derive(Clone, PartialEq, Debug, Routable)]
     enum TestRoute {
         #[at("/")]
-        Home,
+        Home
     }
 
     #[test]

@@ -25,7 +25,7 @@ pub struct NavLinkProps<R: Routable + PartialEq + Clone + 'static> {
     pub active_class: &'static str,
 
     #[prop_or_default]
-    pub(crate) _marker: PhantomData<R>,
+    pub(crate) _marker: PhantomData<R>
 }
 
 #[cfg(test)]
@@ -35,18 +35,18 @@ mod tests {
     #[derive(Clone, PartialEq, Debug, Routable)]
     enum TestRoute {
         #[at("/")]
-        Home,
+        Home
     }
 
     #[test]
     fn props_equality() {
         let props1: NavLinkProps<TestRoute> = NavLinkProps {
-            to: TestRoute::Home,
-            children: Default::default(),
-            partial: false,
-            class: "nav-link",
+            to:           TestRoute::Home,
+            children:     Default::default(),
+            partial:      false,
+            class:        "nav-link",
             active_class: "active",
-            _marker: PhantomData,
+            _marker:      PhantomData
         };
         let props2 = props1.clone();
         assert_eq!(props1, props2);

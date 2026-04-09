@@ -1,9 +1,9 @@
-use std::{collections::HashMap, marker::PhantomData};
+use std::marker::PhantomData;
 
 use yew::prelude::*;
 use yew_router::{
     history::{BrowserHistory, History},
-    prelude::*,
+    prelude::*
 };
 
 /// Navigation callbacks for programmatic route manipulation.
@@ -18,19 +18,19 @@ use yew_router::{
 #[derive(Clone, Debug)]
 pub struct Navigation<R>
 where
-    R: Routable + Clone + 'static,
+    R: Routable + Clone + 'static
 {
     /// Callback to navigate back in history.
-    pub go_back: Callback<()>,
+    pub go_back:    Callback<()>,
     /// Callback to navigate forward in history.
     pub go_forward: Callback<()>,
     /// Phantom marker for the route type.
-    pub _marker: PhantomData<R>,
+    pub _marker:    PhantomData<R>
 }
 
 impl<R> Navigation<R>
 where
-    R: Routable + Clone + 'static,
+    R: Routable + Clone + 'static
 {
     /// Create a callback for pushing a route onto history.
     pub fn push_callback(&self, route: R) -> Callback<()> {
@@ -87,7 +87,7 @@ where
 #[hook]
 pub fn use_navigation<R>() -> Navigation<R>
 where
-    R: Routable + Clone + 'static,
+    R: Routable + Clone + 'static
 {
     let go_back = Callback::from(|_| {
         BrowserHistory::new().back();
@@ -100,14 +100,15 @@ where
     Navigation {
         go_back,
         go_forward,
-        _marker: PhantomData,
+        _marker: PhantomData
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::marker::PhantomData;
+
+    use super::*;
 
     #[test]
     fn navigation_struct_creation() {
@@ -116,13 +117,13 @@ mod tests {
             #[at("/test")]
             Test,
             #[at("/")]
-            Home,
+            Home
         }
 
         let nav = Navigation::<TestRoute> {
-            go_back: Callback::from(|_| {}),
+            go_back:    Callback::from(|_| {}),
             go_forward: Callback::from(|_| {}),
-            _marker: PhantomData,
+            _marker:    PhantomData
         };
 
         let _ = nav.go_back;
@@ -134,13 +135,13 @@ mod tests {
         #[derive(Clone, PartialEq, Debug, Routable)]
         enum TestRoute {
             #[at("/test")]
-            Test,
+            Test
         }
 
         let nav1 = Navigation::<TestRoute> {
-            go_back: Callback::from(|_| {}),
+            go_back:    Callback::from(|_| {}),
             go_forward: Callback::from(|_| {}),
-            _marker: PhantomData,
+            _marker:    PhantomData
         };
 
         let nav2 = nav1.clone();
@@ -153,13 +154,13 @@ mod tests {
         #[derive(Clone, PartialEq, Debug, Routable)]
         enum TestRoute {
             #[at("/test")]
-            Test,
+            Test
         }
 
         let nav = Navigation::<TestRoute> {
-            go_back: Callback::from(|_| {}),
+            go_back:    Callback::from(|_| {}),
             go_forward: Callback::from(|_| {}),
-            _marker: PhantomData,
+            _marker:    PhantomData
         };
 
         let debug_str = format!("{:?}", nav);
