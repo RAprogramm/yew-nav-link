@@ -4,6 +4,7 @@
 ///
 /// Also converts `+` to a space. Returns `None` only if the input is malformed
 /// in a way that prevents decoding (currently always returns `Some`).
+#[must_use]
 pub fn urlencoding_decode(input: &str) -> Option<String> {
     let mut result = String::with_capacity(input.len());
     let mut chars = input.chars().peekable();
@@ -36,6 +37,7 @@ pub fn urlencoding_decode(input: &str) -> Option<String> {
 ///
 /// Unreserved characters (`a-z`, `A-Z`, `0-9`, `-`, `_`, `.`, `~`) are
 /// passed through unchanged. Spaces are encoded as `+`.
+#[must_use]
 pub fn urlencoding_encode(input: &str) -> String {
     let mut result = String::with_capacity(input.len() * 3);
 

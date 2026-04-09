@@ -24,6 +24,7 @@ impl UrlParts {
     ///
     /// Supports both absolute URLs (`scheme://host/path`) and
     /// path-only strings (`/path?query#fragment`).
+    #[must_use]
     pub fn parse(url: &str) -> Self {
         let mut parts = Self::default();
 
@@ -68,6 +69,7 @@ impl UrlParts {
     }
 
     /// Returns the query string parsed into [`QueryParams`], if present.
+    #[must_use]
     pub fn query_params(&self) -> Option<QueryParams> {
         self.query.as_ref().map(|q| QueryParams::parse(q))
     }

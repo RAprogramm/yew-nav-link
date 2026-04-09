@@ -16,11 +16,13 @@ pub struct QueryParams {
 
 impl QueryParams {
     /// Creates an empty [`QueryParams`].
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Parses a query string (with or without a leading `?`) into parameters.
+    #[must_use]
     pub fn parse(query: &str) -> Self {
         let query = query.trim_start_matches('?');
         let mut params = HashMap::new();
@@ -46,11 +48,13 @@ impl QueryParams {
     }
 
     /// Returns the value for the given key, if present.
+    #[must_use]
     pub fn get(&self, key: &str) -> Option<&str> {
         self.params.get(key).map(|s| s.as_str())
     }
 
     /// Returns `true` if the given key exists in the parameters.
+    #[must_use]
     pub fn has(&self, key: &str) -> bool {
         self.params.contains_key(key)
     }
@@ -68,6 +72,7 @@ impl QueryParams {
     /// Serializes the parameters to a query string starting with `?`.
     ///
     /// Returns an empty string if there are no parameters.
+    #[must_use]
     pub fn to_query_string(&self) -> String {
         if self.params.is_empty() {
             return String::new();
@@ -83,11 +88,13 @@ impl QueryParams {
     }
 
     /// Returns the number of parameters.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.params.len()
     }
 
     /// Returns `true` if there are no parameters.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.params.is_empty()
     }
@@ -100,6 +107,11 @@ impl QueryParams {
     /// Returns an iterator over parameter values.
     pub fn values(&self) -> impl Iterator<Item = &str> {
         self.params.values().map(|s| s.as_str())
+    }
+
+    /// Returns an iterator over all parameter key-value pairs.
+    pub fn iter(&self) -> impl Iterator<Item = (&str, &str)> {
+        self.params.iter().map(|(k, v)| (k.as_str(), v.as_str()))
     }
 }
 

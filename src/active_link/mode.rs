@@ -1,11 +1,21 @@
 /// Path matching strategy for NavLink active state detection.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[must_use]
 pub enum Match {
     /// Link is active only when paths match exactly.
     #[default]
     Exact,
     /// Link is active when current path starts with target path (segment-wise).
     Partial
+}
+
+impl std::fmt::Display for Match {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Match::Exact => write!(f, "exact"),
+            Match::Partial => write!(f, "partial")
+        }
+    }
 }
 
 #[cfg(test)]

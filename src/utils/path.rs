@@ -25,6 +25,7 @@
 /// slashes.
 ///
 /// Preserves the root `/` path.
+#[must_use]
 pub fn normalize_path(path: &str) -> String {
     let mut result = String::with_capacity(path.len());
     let mut prev_was_slash = false;
@@ -41,7 +42,7 @@ pub fn normalize_path(path: &str) -> String {
         }
     }
 
-    if result.ends_with('/') && result.len() > 1 {
+    if result.len() > 1 && result.ends_with('/') {
         result.pop();
     }
 
@@ -49,6 +50,7 @@ pub fn normalize_path(path: &str) -> String {
 }
 
 /// Returns `true` if the path starts with `/` (i.e. is absolute).
+#[must_use]
 pub fn is_absolute(path: &str) -> bool {
     path.starts_with('/')
 }
@@ -57,6 +59,7 @@ pub fn is_absolute(path: &str) -> bool {
 ///
 /// If `path` is absolute, it is returned (normalized) directly.
 /// Otherwise the two paths are concatenated and normalized.
+#[must_use]
 pub fn join_paths(base: &str, path: &str) -> String {
     if path.starts_with('/') {
         normalize_path(path)

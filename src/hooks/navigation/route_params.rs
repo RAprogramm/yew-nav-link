@@ -12,11 +12,13 @@ pub struct RouteParams(HashMap<String, Vec<String>>);
 
 impl RouteParams {
     /// Get all values for a parameter name.
+    #[must_use]
     pub fn get(&self, key: &str) -> Option<&Vec<String>> {
         self.0.get(key)
     }
 
     /// Get the first value for a parameter name.
+    #[must_use]
     pub fn get_one(&self, key: &str) -> Option<&str> {
         self.0
             .get(key)
@@ -25,21 +27,25 @@ impl RouteParams {
     }
 
     /// Check if a parameter exists.
+    #[must_use]
     pub fn contains_key(&self, key: &str) -> bool {
         self.0.contains_key(key)
     }
 
     /// Iterate over all parameters.
+    #[must_use]
     pub fn iter(&self) -> std::collections::hash_map::Iter<'_, String, Vec<String>> {
         self.0.iter()
     }
 
     /// Get the number of parameters.
+    #[must_use]
     pub fn len(&self) -> usize {
         self.0.len()
     }
 
     /// Check if there are no parameters.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.0.is_empty()
     }

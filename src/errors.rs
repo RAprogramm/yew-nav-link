@@ -30,6 +30,7 @@
 /// Returned by navigation hooks and helper functions when something
 /// goes wrong while resolving or activating a route.
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[must_use]
 pub enum NavError {
     /// The target route does not match any registered route.
     RouteNotFound,
@@ -38,6 +39,18 @@ pub enum NavError {
     /// Navigation was cancelled before completion.
     NavigationCancelled
 }
+
+impl std::fmt::Display for NavError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            NavError::RouteNotFound => write!(f, "route not found"),
+            NavError::InvalidRoute(msg) => write!(f, "invalid route: {}", msg),
+            NavError::NavigationCancelled => write!(f, "navigation cancelled")
+        }
+    }
+}
+
+impl std::error::Error for NavError {}
 
 impl NavError {
     /// Creates a [`NavError::RouteNotFound`] error.

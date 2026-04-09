@@ -45,17 +45,20 @@ pub struct NavLinkAttrs {
 
 impl NavLinkAttrs {
     /// Creates a new [`NavLinkAttrs`] with default values.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Appends a CSS class to the link element.
+    #[must_use]
     pub fn with_class(mut self, class: impl Into<Classes>) -> Self {
         self.class.push(class);
         self
     }
 
     /// Sets the `id` attribute on the link element.
+    #[must_use]
     pub fn with_id(mut self, id: &'static str) -> Self {
         self.id = Some(id);
         self
@@ -64,18 +67,21 @@ impl NavLinkAttrs {
     /// Sets the `aria-current` attribute on the link element.
     ///
     /// Common values: `"page"`, `"step"`, `"location"`.
+    #[must_use]
     pub fn with_aria_current(mut self, value: &'static str) -> Self {
         self.aria_current = Some(value);
         self
     }
 
     /// Sets the `data-toggle` attribute on the link element.
+    #[must_use]
     pub fn with_data_toggle(mut self, value: &'static str) -> Self {
         self.data_toggle = Some(value);
         self
     }
 
     /// Sets the ARIA `role` attribute on the link element.
+    #[must_use]
     pub fn with_role(mut self, value: &'static str) -> Self {
         self.role = Some(value);
         self
@@ -100,29 +106,34 @@ pub struct NavItemAttrs {
 
 impl NavItemAttrs {
     /// Creates a new [`NavItemAttrs`] with default values.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Appends a CSS class to the item element.
+    #[must_use]
     pub fn with_class(mut self, class: impl Into<Classes>) -> Self {
         self.class.push(class);
         self
     }
 
     /// Sets the `id` attribute on the item element.
+    #[must_use]
     pub fn with_id(mut self, id: &'static str) -> Self {
         self.id = Some(id);
         self
     }
 
     /// Sets the ARIA `role` attribute on the item element.
+    #[must_use]
     pub fn with_role(mut self, value: &'static str) -> Self {
         self.role = Some(value);
         self
     }
 
     /// Marks the navigation item as disabled.
+    #[must_use]
     pub fn disabled(mut self) -> Self {
         self.disabled = true;
         self
@@ -145,23 +156,27 @@ pub struct NavListAttrs {
 
 impl NavListAttrs {
     /// Creates a new [`NavListAttrs`] with default values.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Appends a CSS class to the list element.
+    #[must_use]
     pub fn with_class(mut self, class: impl Into<Classes>) -> Self {
         self.class.push(class);
         self
     }
 
     /// Sets the `id` attribute on the list element.
+    #[must_use]
     pub fn with_id(mut self, id: &'static str) -> Self {
         self.id = Some(id);
         self
     }
 
     /// Sets the `aria-label` attribute on the list element.
+    #[must_use]
     pub fn with_aria_label(mut self, label: &'static str) -> Self {
         self.aria_label = Some(label);
         self

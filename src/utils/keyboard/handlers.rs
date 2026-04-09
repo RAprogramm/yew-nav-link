@@ -14,6 +14,7 @@ use super::{config::KeyboardNavConfig, direction::KeyboardDirection};
 /// * `current_index` - The currently focused item index.
 /// * `total_items` - Total number of navigable items.
 /// * `config` - Navigation configuration (wrap, vertical).
+#[must_use]
 pub fn handle_arrow_key(
     key: &str,
     current_index: usize,
@@ -61,6 +62,7 @@ pub fn handle_arrow_key(
 /// presses.
 ///
 /// Returns `None` for any other key.
+#[must_use]
 pub fn handle_home_end(key: &str, _current_index: usize, total_items: usize) -> Option<usize> {
     match key {
         "Home" => Some(0),
@@ -70,11 +72,13 @@ pub fn handle_home_end(key: &str, _current_index: usize, total_items: usize) -> 
 }
 
 /// Returns `true` if the key activates a focused element (`Enter`, space).
+#[must_use]
 pub fn is_activation_key(key: &str) -> bool {
     matches!(key, "Enter" | " " | "Space")
 }
 
 /// Returns `true` if the key is a navigation key (arrows, Home, End, Tab).
+#[must_use]
 pub fn is_navigation_key(key: &str) -> bool {
     matches!(
         key,

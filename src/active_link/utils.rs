@@ -1,5 +1,6 @@
 /// Checks if `target` path is a segment-wise prefix of `current` path.
 #[inline]
+#[must_use]
 pub fn is_path_prefix(target: &str, current: &str) -> bool {
     let mut target_iter = target.split('/').filter(|s| !s.is_empty());
     let mut current_iter = current.split('/').filter(|s| !s.is_empty());
@@ -15,6 +16,7 @@ pub fn is_path_prefix(target: &str, current: &str) -> bool {
 }
 
 #[inline]
+#[must_use]
 pub fn build_class(is_active: bool, base_class: &str, active_class: &str) -> String {
     if is_active {
         format!("{} {}", base_class, active_class)
