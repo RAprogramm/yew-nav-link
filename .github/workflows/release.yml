@@ -49,6 +49,8 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       name: ${{ steps.version.outputs.name }}
+      msrv: ${{ steps.version.outputs.msrv }}
+      license: ${{ steps.version.outputs.license }}
     
     steps:
       - name: Checkout repository

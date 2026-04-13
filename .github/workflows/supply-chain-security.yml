@@ -71,7 +71,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      dependencies: write
     
     steps:
       - name: Checkout repository

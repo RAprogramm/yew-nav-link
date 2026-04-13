@@ -39,6 +39,9 @@ jobs:
   bump-version:
     name: 🔄 Bump Version
     runs-on: ubuntu-latest
+    outputs:
+      new-version: ${{ steps.new-version.outputs.new-version }}
+      current-version: ${{ steps.current-version.outputs.current-version }}
     
     steps:
       - name: Checkout repository
@@ -192,9 +195,7 @@ jobs:
             ---
             
             *Automated by Version Bump workflow*
-          labels:
-            - chore
-            - dependencies
+          labels: "chore, dependencies"
           draft: false
 
   notify:

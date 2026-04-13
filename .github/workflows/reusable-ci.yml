@@ -8,11 +8,11 @@ on:
   pull_request:
     branches: ["main", "develop"]
     types: [opened, synchronize, reopened, labeled]
+  workflow_call:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
-  fast-finish: true
 
 env:
   CARGO_TERM_COLOR: always
@@ -35,7 +35,7 @@ jobs:
     outputs:
       size: ${{ steps.pr-size.outputs.size }}
       weighted-score: ${{ steps.pr-size.outputs.weighted-score }}
-      result: ${{ steps.pr-size.result }}
+      result: ${{ steps.pr-size.outputs.result }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -79,12 +79,13 @@ jobs:
       - name: Auto-fix formatting (if allowed)
         if: failure() && contains(github.event.pull_request.labels.*.name, 'auto-format')
         run: |
+          TARGET_BRANCH="${{ github.head_ref }}"
           cargo +nightly fmt --all
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
           git commit -m "chore: auto-format code [skip ci]" || true
-          git push origin HEAD:${{ github.head_ref }}
+          git push origin HEAD:"$TARGET_BRANCH"
 
   clippy:
     name: 🦀 Clippy
@@ -389,16 +390,13 @@ jobs:
           
           echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
-          
-          for job in fmt clippy test-matrix coverage package audit quality; do
-            status="${{ needs.$job.result }}"
-            emoji="⏳"
-            if [ "$status" = "success" ]; then emoji="✅"; fi
-            if [ "$status" = "failure" ]; then emoji="❌"; fi
-            if [ "$status" = "skipped" ]; then emoji="⏭️"; fi
-            if [ "$status" = "cancelled" ]; then emoji="⛔"; fi
-            echo "|$job | $emoji $status |" >> $GITHUB_STEP_SUMMARY
-          done
+          echo "| fmt | ${{ needs.fmt.result == 'success' && '✅ success' || needs.fmt.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| clippy | ${{ needs.clippy.result == 'success' && '✅ success' || needs.clippy.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| test-matrix | ${{ needs.test-matrix.result == 'success' && '✅ success' || needs.test-matrix.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| coverage | ${{ needs.coverage.result == 'success' && '✅ success' || needs.coverage.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| package | ${{ needs.package.result == 'success' && '✅ success' || needs.package.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| audit | ${{ needs.audit.result == 'success' && '✅ success' || needs.audit.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| quality | ${{ needs.quality.result == 'success' && '✅ success' || needs.quality.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
           
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## Links" >> $GITHUB_STEP_SUMMARY
