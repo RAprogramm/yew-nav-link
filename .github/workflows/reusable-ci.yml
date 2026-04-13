@@ -216,7 +216,7 @@ jobs:
         if: matrix.mode == 'wasm'
         run: |
           cargo test --target wasm32-unknown-unknown --workspace
-          cargo wasm-bindgen-test-runner --target wasm32-unknown-unknown --workspace
+          wasm-bindgen-test-runner target/wasm32-unknown-unknown/debug/deps/*.wasm
 
       - name: Run doc tests
         if: matrix.os == 'ubuntu-latest' && matrix.rust == 'stable'
