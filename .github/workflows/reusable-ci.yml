@@ -74,7 +74,12 @@ jobs:
           components: rustfmt
 
       - name: Check formatting
-        run: cargo fmt --all -- --check
+        run: |
+          cargo +nightly fmt --all -- --check
+          if [ $? -ne 0 ]; then
+            echo "Run 'cargo fmt' locally and commit the changes"
+            exit 1
+          fi
 
       - name: Auto-fix formatting (if allowed)
         if: failure() && contains(github.event.pull_request.labels.*.name, 'auto-format')
