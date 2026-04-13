@@ -19,6 +19,7 @@ env:
   RUST_BACKTRACE: 1
   RUSTFLAGS: -D warnings
   CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   # =====================================================
@@ -116,8 +117,10 @@ jobs:
             --message-format=json \
             -- -D warnings \
             -- -W clippy::pedantic \
-            -- -W clippy::nursery \
-            2>&1 | clippy-sarif --stdout --no-fail | tee clippy.sarif | sarif-fmt
+            -- -W clippy::nursery 2>&1 \
+            | clippy-sarif --stdout --no-fail \
+            | tee clippy.sarif \
+            | sarif-fmt
           CLIPPY_EXIT=$?
           set -e
           
@@ -127,7 +130,7 @@ jobs:
 
       - name: Upload SARIF
         if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: clippy.sarif
           category: clippy
@@ -333,7 +336,7 @@ jobs:
           cargo audit --deny warnings --deny unmaintained --deny yanked || echo "Audit completed with warnings"
 
       - name: Check for outdated dependencies
-        uses: orhun/rio@v8
+        uses: orhun/rio@v0
         with:
           args: --format markdown --depth 1
 
