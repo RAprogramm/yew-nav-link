@@ -63,35 +63,8 @@ jobs:
   # QUALITY GATES - Run in parallel after PR analysis
   # =====================================================
   
-  fmt:
-    name: 📝 Format
-    runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
-    steps:
-      - uses: actions/checkout@v6
-      - uses: dtolnay/rust-toolchain@nightly
-        with:
-          components: rustfmt
-
-      - name: Check formatting
-        run: |
-          cargo +nightly fmt --all -- --check
-          if [ $? -ne 0 ]; then
-            echo "Run 'cargo fmt' locally and commit the changes"
-            exit 1
-          fi
-
-      - name: Auto-fix formatting (if allowed)
-        if: failure() && contains(github.event.pull_request.labels.*.name, 'auto-format')
-        run: |
-          TARGET_BRANCH="${{ github.head_ref }}"
-          cargo +nightly fmt --all
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          git commit -m "chore: auto-format code [skip ci]" || true
-          git push origin HEAD:"$TARGET_BRANCH"
-
+  # Note: Format check is handled by pre-commit locally
+  
   clippy:
     name: 🦀 Clippy
     runs-on: ubuntu-latest
@@ -385,7 +358,7 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     needs:
-      [fmt, clippy, test-matrix, coverage, package, audit, quality]
+      [clippy, test-matrix, coverage, package, audit, quality]
     steps:
       - name: Generate CI Summary
         run: |
@@ -396,7 +369,6 @@ jobs:
           
           echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| fmt | ${{ needs.fmt.result == 'success' && '✅ success' || needs.fmt.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| clippy | ${{ needs.clippy.result == 'success' && '✅ success' || needs.clippy.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| test-matrix | ${{ needs.test-matrix.result == 'success' && '✅ success' || needs.test-matrix.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| coverage | ${{ needs.coverage.result == 'success' && '✅ success' || needs.coverage.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
