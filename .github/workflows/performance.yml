@@ -34,8 +34,15 @@ jobs:
 
       - name: Run benchmarks
         run: |
-          cargo bench --bench path -- --save-baseline baseline
-          cargo bench --bench path --baseline baseline
+          # Check if baseline exists
+          if [ -d "criterion/baseline" ]; then
+            echo "Running benchmarks with baseline comparison..."
+            cargo bench --bench path --baseline criterion/baseline
+          else
+            echo "Creating initial baseline..."
+            cargo bench --bench path -- --save-baseline baseline
+            mv criterion/baseline criterion/baseline-initial
+          fi
 
       - name: Upload benchmark results
         uses: actions/upload-artifact@v7
@@ -74,7 +81,7 @@ jobs:
         with:
           name: Rust Benchmarks
           tool: "cargo"
-          output-file-path: benchmarks/criterion/perf/report.json
+          output-file-path: criterion/path/report.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: true
           benchmark-data-dir-path: .benchmarks/data
