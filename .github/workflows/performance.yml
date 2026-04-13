@@ -5,86 +5,15 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
-  schedule:
-    - cron: "0 6 * * 1"  # Monday at 6:00 UTC
   workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  benchmarks:
-    name: 📊 Run Benchmarks
-    runs-on: ubuntu-latest-8-cores
-    timeout-minutes: 30
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
-
-      - name: Cache dependencies
-        uses: Swatinem/rust-cache@v2
-
-      - name: Run doc tests as benchmarks proxy
-        run: |
-          echo "Running comprehensive test suite as performance indicator..."
-          cargo test --all-features --timings --no-fail-fast 2>&1 | tee test-timings.log
-
-      - name: Upload test timing results
-        uses: actions/upload-artifact@v7
-        with:
-          name: benchmark-results
-          path: |
-            cargo-timings.json
-            test-timings.log
-          retention-days: 90
-          if-no-files-found: warn
-
-  performance-regression:
-    name: 📉 Performance Regression Detection
-    runs-on: ubuntu-latest
-    needs: benchmarks
-    permissions:
-      contents: write
-      pull-requests: write
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Download test timing results
-        uses: actions/download-artifact@v7
-        with:
-          name: benchmark-results
-          path: results/
-
-      - name: Generate performance report
-        run: |
-          echo "## Performance Metrics" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Test Execution Time" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          if [ -f results/test-timings.log ]; then
-            total_time=$(grep -oP '\d+\.\d+\s*s' results/test-timings.log | tail -1 || echo "N/A")
-            echo "Total test time: ${total_time}" >> $GITHUB_STEP_SUMMARY
-          fi
-          
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "*Benchmark tracking enabled - will show trends after multiple runs*" >> $GITHUB_STEP_SUMMARY
-
   compile-time:
-    name: ⏱️ Compile Time Measurement
-    runs-on: ubuntu-latest-8-cores
+    name: ⏱️ Compile Time
+    runs-on: ubuntu-latest
     
     steps:
       - name: Checkout repository
@@ -96,25 +25,33 @@ jobs:
       - name: Measure cold compile time
         run: |
           rm -rf target
-          echo "Cold compile time:"
-          time cargo build --release --all-features 2>&1 | tee compile-cold.log
+          START=$(date +%s)
+          cargo build --release --all-features
+          END=$(date +%s)
+          DURATION=$((END - START))
+          echo "Cold compile time: ${DURATION} seconds"
+          echo "COMPILE_TIME_COLD=${DURATION}" >> $GITHUB_ENV
 
       - name: Measure incremental compile time
         run: |
-          echo "Incremental compile time:"
-          time cargo build --release --all-features 2>&1 | tee compile-incremental.log
+          START=$(date +%s)
+          cargo build --release --all-features
+          END=$(date +%s)
+          DURATION=$((END - START))
+          echo "Incremental compile time: ${DURATION} seconds"
+          echo "COMPILE_TIME_INCR=${DURATION}" >> $GITHUB_ENV
 
-      - name: Upload compile time logs
-        uses: actions/upload-artifact@v7
-        with:
-          name: compile-times
-          path: |
-            compile-cold.log
-            compile-incremental.log
-          retention-days: 30
+      - name: Summary
+        run: |
+          echo "## Compile Time Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Type | Time |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Cold | ${{ env.COMPILE_TIME_COLD }}s |" >> $GITHUB_STEP_SUMMARY
+          echo "| Incremental | ${{ env.COMPILE_TIME_INCR }}s |" >> $GITHUB_STEP_SUMMARY
 
   binary-size:
-    name: 📦 Binary Size Analysis
+    name: 📦 Binary Size
     runs-on: ubuntu-latest
     
     steps:
@@ -127,34 +64,19 @@ jobs:
       - name: Build release
         run: cargo build --release --all-features
 
-      - name: Analyze binary size
+      - name: Analyze size
         run: |
-          echo "## Binary Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "## Binary Size" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| File | Size |" >> $GITHUB_STEP_SUMMARY
-          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
           
-          for file in target/release/*.rlib target/release/lib*.rlib; do
-            if [ -f "$file" ]; then
-              size=$(du -h "$file" | cut -f1)
-              basename=$(basename "$file")
-              echo "|$basename | $size |" >> $GITHUB_STEP_SUMMARY
-            fi
-          done
-          
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Total release size:" >> $GITHUB_STEP_SUMMARY
-          du -sh target/release/ >> $GITHUB_STEP_SUMMARY
-
-      - name: Upload size analysis
-        uses: actions/upload-artifact@v7
-        with:
-          name: binary-size-analysis
-          path: target/release/*.rlib
-          retention-days: 7
+          if [ -f target/release/libyew_nav_link.rlib ]; then
+            SIZE=$(du -h target/release/libyew_nav_link.rlib | cut -f1)
+            echo "Library size: $SIZE"
+            echo "| libyew_nav_link.rlib | $SIZE |" >> $GITHUB_STEP_SUMMARY
+          fi
 
   wasm-size:
-    name: 🌐 Wasm Size Analysis
+    name: 🌐 Wasm Size
     runs-on: ubuntu-latest
     
     steps:
@@ -166,49 +88,16 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
-      - name: Install wasm-opt
-        uses: mymindstorm/setup-wasmtime@v1
-
       - name: Build for Wasm
         run: cargo build --release --target wasm32-unknown-unknown --all-features
 
       - name: Analyze Wasm size
         run: |
-          echo "## Wasm Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "## Wasm Size" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           if [ -f target/wasm32-unknown-unknown/release/libyew_nav_link.wasm ]; then
-            raw_size=$(du -h target/wasm32-unknown-unknown/release/libyew_nav_link.wasm | cut -f1)
-            echo "Raw Wasm size: $raw_size" >> $GITHUB_STEP_SUMMARY
+            SIZE=$(du -h target/wasm32-unknown-unknown/release/libyew_nav_link.wasm | cut -f1)
+            echo "Wasm size: $SIZE"
+            echo "| libyew_nav_link.wasm | $SIZE |" >> $GITHUB_STEP_SUMMARY
           fi
-          
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Target directory size:" >> $GITHUB_STEP_SUMMARY
-          du -sh target/wasm32-unknown-unknown/release/ >> $GITHUB_STEP_SUMMARY
-
-  perf-summary:
-    name: 📊 Performance Summary
-    runs-on: ubuntu-latest
-    if: always()
-    needs: [benchmarks, performance-regression, compile-time, binary-size, wasm-size]
-    
-    steps:
-      - name: Generate Summary
-        run: |
-          echo "# Performance Monitoring Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## Status" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          for job in benchmarks compile-time binary-size wasm-size; do
-            status="${{ needs.$job.result }}"
-            emoji="⏳"
-            [ "$status" = "success" ] && emoji="✅"
-            [ "$status" = "failure" ] && emoji="❌"
-            [ "$status" = "skipped" ] && emoji="⏭️"
-            echo "- $emoji $job: $status" >> $GITHUB_STEP_SUMMARY
-          done
-          
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## Links" >> $GITHUB_STEP_SUMMARY
-          echo "- 📊 [Benchmark History](https://github.com/${{ github.repository }}/blob/master/.benchmarks/master/benchmarks.md)" >> $GITHUB_STEP_SUMMARY

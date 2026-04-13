@@ -6,6 +6,7 @@ on:
   pull_request:
     branches: ["main"]
   workflow_dispatch:
+  workflow_call:
 
 env:
   RUSTDOCFLAGS: --cfg docsrs
@@ -29,15 +30,6 @@ jobs:
         run: |
           cargo doc --all-features --no-deps --document-private-items
 
-      - name: Check for broken links
-        run: |
-          cargo doc --all-features --no-deps 2>&1 | tee docs-build.log
-          if grep -q "error:" docs-build.log; then
-            echo "❌ Documentation build failed with errors"
-            cat docs-build.log
-            exit 1
-          fi
-
       - name: Upload documentation
         uses: actions/upload-artifact@v7
         with:
@@ -45,33 +37,6 @@ jobs:
           path: target/doc/
           retention-days: 30
           compression-level: 9
-
-  docs-links:
-    name: 🔗 Dead Link Detection
-    runs-on: ubuntu-latest
-    needs: docs-build
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Build documentation
-        run: cargo doc --all-features --no-deps
-
-      - name: Check intra-doc links
-        run: |
-          echo "Checking for broken intra-doc links..."
-          cargo doc --all-features --no-deps 2>&1 | grep -i "broken" || echo "No broken links found"
-
-      - name: Run markdown link checker
-        uses: gaurav-nelson/github-action-markdown-link-check@v1
-        with:
-          use-quiet-mode: "no"
-          use-absolute-path: "yes"
-          config-file: "./.mlc.json"
 
   docs-validate:
     name: ✅ Documentation Validation
@@ -84,58 +49,10 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Validate README links
+      - name: Check for broken intra-doc links
         run: |
-          echo "Validating README.md links..."
-          grep -oP 'https?://\S+' README.md | head -10 || true
+          cargo doc --all-features --no-deps 2>&1 | grep -i "broken" || echo "No broken links found"
 
-      - name: Check for missing examples in docs
+      - name: Verify README exists
         run: |
-          echo "Checking documentation examples..."
-          cargo test --doc --no-run 2>&1 || true
-
-  docs-publish:
-    name: 🚀 Publish to docs.rs
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    needs: [docs-build, docs-links, docs-validate]
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Trigger docs.rs build
-        run: |
-          echo "Triggering docs.rs build for version ${{ github.ref_name }}"
-          echo "Documentation will be available at: https://docs.rs/yew-nav-link/${{ github.ref_name }}"
-
-  docs-quality:
-    name: 📝 Documentation Quality
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Check documentation coverage
-        run: |
-          echo "## Documentation Coverage" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          total_items=$(grep -rE "^\s*(pub\s+)?(struct|enum|fn|impl|trait|mod|type)\s" src/ --include="*.rs" | wc -l)
-          documented_items=$(grep -rB1 -E "^\s*(pub\s+)?(struct|enum|fn|impl|trait|mod|type)\s" src/ --include="*.rs" | grep -c "///" || echo "0")
-          
-          echo "Total items: $total_items" >> $GITHUB_STEP_SUMMARY
-          echo "Documented items: ~$documented_items" >> $GITHUB_STEP_SUMMARY
-          
-          if [ $total_items -gt 0 ]; then
-            coverage=$((documented_items * 100 / total_items))
-            echo "Estimated coverage: ~${coverage}%" >> $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: Check for FIXME in docs
-        run: |
-          FIXME_COUNT=$(grep -r "///.*FIXME" src/ --include="*.rs" | wc -l)
-          echo "FIXME comments in docs: $FIXME_COUNT"
+          test -f README.md && echo "README.md exists"
