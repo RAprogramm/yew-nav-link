@@ -1,0 +1,23 @@
+# Code Owners for yew-nav-link
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Project Maintainers
+*	@RAprogramm
+
+# Source Code
+/src/	@RAprogramm
+/macros/src/	@RAprogramm
+
+# Tests
+/tests/	@RAprogramm
+
+# Workflows
+/.github/workflows/	@RAprogramm
+
+# Documentation
+README.md	@RAprogramm
+CHANGELOG.md	@RAprogramm
+
+# Configuration Files
+Cargo.toml	@RAprogramm
+Cargo.lock	@RAprogramm

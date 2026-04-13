@@ -1,0 +1,52 @@
+[graph]
+all-features = true
+
+[advisories]
+ignore = [
+  # Add known false positives here
+  # "RUSTSEC-XXXX-XXXX",
+]
+yanked = "warn"
+unmaintained = "warn"
+
+[licenses]
+confidence-threshold = 0.8
+allow = [
+  "MIT",
+  "Apache-2.0",
+  "BSD-3-Clause",
+  "ISC",
+  "CC0-1.0",
+  "Unicode-DFS-2016",
+]
+
+[[licenses.exceptions]]
+allow = ["OpenSSL"]
+name = "openssl"
+
+[[licenses.exceptions]]
+allow = ["OpenSSL"]
+name = "openssl-sys"
+
+[bans]
+multiple-versions = "warn"
+wildcards = "warn"
+highlight = "all"
+
+skip = [
+  # Skip workspace members from bans check
+  { name = "yew-nav-link-macros", reason = "Internal workspace crate" },
+]
+
+skip-tree = [
+  { name = "criterion", depth = 2, reason = "Benchmarking dependency" },
+]
+
+[sources]
+unknown-registry = "warn"
+unknown-git = "warn"
+allow-registry = ["https://crates.io-index"]
+allow-git = [
+  "https://github.com/yewstack/yew",
+  "https://github.com/yewstack/yew-router",
+]

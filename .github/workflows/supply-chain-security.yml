@@ -1,0 +1,169 @@
+name: Supply Chain Security
+
+on:
+  push:
+    branches: ["main"]
+    tags:
+      - "v*"
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+  packages: read
+
+jobs:
+  build-and-attest:
+    name: 🔐 Build & Attest (SLSA L3)
+    runs-on: ubuntu-latest-8-cores
+    environment: production
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          save-if: false
+
+      - name: Build release binary
+        run: |
+          cargo build --release --locked --all-features
+          echo "Built artifacts:"
+          ls -la target/release/*.rlib 2>/dev/null || ls -la target/release/ | head -20
+
+      - name: Calculate artifact hash
+        id: hash
+        run: |
+          HASH=$(find target/release -name "*.rlib" -o -name "yew_nav_link-*" | sort | sha256sum | cut -d' ' -f1)
+          echo "artifact-hash=$HASH" >> $GITHUB_OUTPUT
+          echo "Hash: $HASH"
+
+      - name: Generate Build Provenance
+        uses: actions/attest-build-provenance@v2
+        id: provenance
+        with:
+          subject-name: "crates.io/yew-nav-link"
+          subject-digest: "${{ steps.hash.outputs.artifact-hash }}"
+          push-to-registry: true
+          timeout-minutes: 10
+
+      - name: Display Provenance
+        run: |
+          echo "Provenance generated successfully!"
+          echo "Subject Name: ${{ steps.provenance.outputs.subject-name }}"
+          echo "Subject Digest: ${{ steps.provenance.outputs.subject-digest }}"
+
+      - name: Verify Provenance
+        uses: actions/verify-provenance@v1
+        with:
+          subject-name: "crates.io/yew-nav-link"
+          subject-digest: "${{ steps.hash.outputs.artifact-hash }}"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  sbom-generation:
+    name: 📋 SBOM Generation
+    runs-on: ubuntu-latest
+    needs: build-and-attest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Generate SBOM with cargo-vet
+        run: |
+          cargo install cargo-vet --locked || true
+          cargo vet --help || echo "cargo-vet not available, using alternative"
+
+      - name: Generate CycloneDX SBOM
+        uses: CycloneDX/gh-generate-sbom@v4
+        with:
+          mode: source
+          path: .
+          output-file: sbom.json
+          output-format: json
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v7
+        with:
+          name: sbom
+          path: sbom.json
+          retention-days: 90
+
+  dependency-graph:
+    name: 📊 Dependency Graph Update
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      dependencies: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Update dependency graph
+        uses: actions/dependency-submission@v4
+        with:
+          file: Cargo.lock
+          tool: cargo
+
+  security-scanning:
+    name: 🔍 Security Scanning
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Run CodeQL Analysis
+        uses: github/codeql-action/init@v3
+        with:
+          languages: rust
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:rust"
+
+      - name: Run cargo-audit
+        uses: rustsec/audit-check@v2.0.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  secrets-scanning:
+    name: 🔐 Secrets Scanning
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+      - name: TruffleHog secrets detection
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --only-verified

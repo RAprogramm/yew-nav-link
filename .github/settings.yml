@@ -1,0 +1,130 @@
+# Repository Settings
+# https://github.com/marketplace/actions/repository-settings
+
+repository:
+  name: yew-nav-link
+  description: Navigation link component for Yew with automatic active state detection
+  homepage: https://yew-nav-link.ra.dev
+  topics: yew, router, navigation, wasm, frontend, component, spa, web, rust
+  default_branch: main
+  allow_squash_merge: true
+  allow_merge_commit: false
+  allow_rebase_merge: true
+  delete_branch_on_merge: true
+  squash_merge_commit_title: "PR_TITLE"
+  squash_merge_commit_message: "PR_BODY"
+  is_template: false
+  has_issues: true
+  has_projects: true
+  has_wiki: false
+  has_discussions: true
+  allow_update_branch: true
+  use_forking: true
+
+# Branch Protection Rules
+branches:
+  - name: main
+    protection:
+      required_status_checks:
+        strict: true
+        contexts:
+          - "CI Pipeline"
+          - "Security Scanning"
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true
+        require_code_owner_reviews: true
+        restriction_type: users
+        users:
+          - RAprogramm
+      enforce_admins: false
+      restrictions: null
+      required_linear_history: true
+      allow_force_pushes: false
+      allow_deletions: false
+  - name: develop
+    protection:
+      required_status_checks:
+        strict: true
+        contexts:
+          - "CI Pipeline"
+      required_pull_request_reviews:
+        required_approving_review_count: 0
+        dismiss_stale_reviews: false
+        require_code_owner_reviews: false
+      enforce_admins: false
+      required_linear_history: true
+      allow_force_pushes: false
+      allow_deletions: false
+
+# Labels
+labels:
+  - name: "bug"
+    color: "d73a4a"
+    description: "Something isn't working"
+  - name: "enhancement"
+    color: "a2eeef"
+    description: "New feature or request"
+  - name: "documentation"
+    color: "0075ca"
+    description: "Improvements to documentation"
+  - name: "chore"
+    color: "cfd3d7"
+    description: "Maintenance tasks"
+  - name: "dependencies"
+    color: "0366d6"
+    description: "Pull requests that update a dependency file"
+  - name: "rust"
+    color: "dea584"
+    description: "Related to Rust"
+  - name: "ci"
+    color: "3fb6d8"
+    description: "Continuous Integration"
+  - name: "security"
+    color: "d93f0b"
+    description: "Security-related issues"
+  - name: "performance"
+    color: "fbca04"
+    description: "Performance improvements"
+  - name: "good first issue"
+    color: "7057ff"
+    description: "Good for newcomers"
+  - name: "help wanted"
+    color: "008672"
+    description: "Extra attention is needed"
+  - name: "priority: high"
+    color: "b60205"
+    description: "High priority"
+  - name: "priority: low"
+    color: "cfd3d7"
+    description: "Low priority"
+  - name: "type: breaking"
+    color: "ff0000"
+    description: "Breaking change"
+  - name: "type: feature"
+    color: "1d76db"
+    description: "New feature"
+  - name: "type: bugfix"
+    color: "ff4b19"
+    description: "Bug fix"
+
+# Autolink References
+autolink_references:
+  - key_prefix: "#"
+    url_template: "https://github.com/RAprogramm/yew-nav-link/issues/<num>"
+  - key_prefix: "v"
+    url_template: "https://github.com/RAprogramm/yew-nav-link/releases/tag/v<num>"
+
+# Custom Properties
+custom_properties:
+  - name: "Component"
+    description: "Component affected"
+    data_type: "single_select"
+    options:
+      - core
+      - macros
+      - docs
+      - ci/cd
+  - name: "Version"
+    description: "Version introduced"
+    data_type: "text"

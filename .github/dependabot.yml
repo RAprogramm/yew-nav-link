@@ -1,6 +1,10 @@
 version: 2
 
 updates:
+  # =====================================================
+  # CARGO DEPENDENCIES
+  # =====================================================
+  
   - package-ecosystem: cargo
     directory: /
     schedule:
@@ -10,11 +14,16 @@ updates:
       timezone: Europe/Moscow
     commit-message:
       prefix: "deps(cargo)"
+      include: "scope"
     labels:
       - dependencies
       - rust
-      - automerge
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
+    pull-request-branch-name:
+      separator: /-
+    rebase-strategy: auto
+    
+    # Version update groups
     groups:
       yew-ecosystem:
         patterns:
@@ -26,15 +35,47 @@ updates:
         update-types:
           - minor
           - patch
-      rust-minor:
+      router-ecosystem:
+        patterns:
+          - "yew-router*"
         update-types:
           - minor
           - patch
+      criterion:
+        patterns:
+          - "criterion"
+          - "criterion-plot"
+          - "tinytemplate"
+        update-types:
+          - minor
+          - patch
+      rust-minor:
+        patterns:
+          - "*"
         exclude-patterns:
           - "yew*"
           - "gloo*"
           - "wasm-bindgen*"
+          - "web-sys"
+          - "js-sys"
+          - "yew-router*"
+          - "criterion*"
+          - "tinytemplate"
+        update-types:
+          - minor
+          - patch
+    
+    # Allow direct updates for major versions
+    ignore:
+      - dependency-name: "yew"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "yew-router"
+        update-types: ["version-update:semver-major"]
 
+  # =====================================================
+  # GitHub ACTIONS
+  # =====================================================
+  
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -44,12 +85,50 @@ updates:
       timezone: Europe/Moscow
     commit-message:
       prefix: "ci(deps)"
+      include: "scope"
     labels:
       - dependencies
       - ci
-      - automerge
-    open-pull-requests-limit: 3
+      - github-actions
+    open-pull-requests-limit: 5
+    pull-request-branch-name:
+      separator: /-
+    rebase-strategy: auto
+    
     groups:
       actions:
         patterns:
           - "*"
+        exclude-patterns:
+          - "actions/checkout"
+          - "actions/upload-artifact"
+        update-types:
+          - minor
+          - patch
+      checkout:
+        patterns:
+          - "actions/checkout"
+        update-types:
+          - minor
+          - patch
+
+  # =====================================================
+  # DEPENDENCY REVIEW PROTECTION
+  # =====================================================
+  
+  # This section configures how Dependabot interacts with PRs
+  
+  # Auto-close PRs when dependencies are updated manually
+  # Dependabot will automatically close PRs when it detects
+  # that the dependency has been updated manually
+
+# =====================================================
+# SECURITY SETTINGS
+# =====================================================
+
+# Dependabot security updates
+security_updates_enabled: true
+
+# Alert on vulnerable dependencies
+vulnerability-alerts:
+  enabled: true

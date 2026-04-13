@@ -1,0 +1,216 @@
+name: Performance Monitoring
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  schedule:
+    - cron: "0 6 * * 1"  # Monday at 6:00 UTC
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  benchmarks:
+    name: 📊 Run Benchmarks
+    runs-on: ubuntu-latest-8-cores
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run benchmarks
+        run: |
+          cargo bench --bench path -- --save-baseline baseline
+          cargo bench --bench path --baseline baseline
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v7
+        with:
+          name: benchmark-results
+          path: |
+            criterion/
+            criterion/perf/
+          retention-days: 90
+
+  performance-regression:
+    name: 📉 Performance Regression Detection
+    runs-on: ubuntu-latest-8-cores
+    needs: benchmarks
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Download benchmark results
+        uses: actions/download-artifact@v7
+        with:
+          name: benchmark-results
+          path: benchmarks/
+
+      - name: Analyze performance regression
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Rust Benchmarks
+          tool: "cargo"
+          output-file-path: benchmarks/criterion/perf/report.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+          benchmark-data-dir-path: .benchmarks/data
+          alert-threshold: "105%"  # 5% regression triggers warning
+          fail-on-alert: false
+          comment-on-alert: true
+          alert-comment-cc-users: "@RAprogramm"
+          pages-commit-message: "Benchmark results for ${{ github.sha }}"
+
+  compile-time:
+    name: ⏱️ Compile Time Measurement
+    runs-on: ubuntu-latest-8-cores
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Measure cold compile time
+        run: |
+          rm -rf target
+          echo "Cold compile time:"
+          time cargo build --release --all-features 2>&1 | tee compile-cold.log
+
+      - name: Measure incremental compile time
+        run: |
+          echo "Incremental compile time:"
+          time cargo build --release --all-features 2>&1 | tee compile-incremental.log
+
+      - name: Upload compile time logs
+        uses: actions/upload-artifact@v7
+        with:
+          name: compile-times
+          path: |
+            compile-cold.log
+            compile-incremental.log
+          retention-days: 30
+
+  binary-size:
+    name: 📦 Binary Size Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build release
+        run: cargo build --release --all-features
+
+      - name: Analyze binary size
+        run: |
+          echo "## Binary Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| File | Size |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|------|" >> $GITHUB_STEP_SUMMARY
+          
+          for file in target/release/*.rlib target/release/lib*.rlib; do
+            if [ -f "$file" ]; then
+              size=$(du -h "$file" | cut -f1)
+              basename=$(basename "$file")
+              echo "|$basename | $size |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Total release size:" >> $GITHUB_STEP_SUMMARY
+          du -sh target/release/ >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload size analysis
+        uses: actions/upload-artifact@v7
+        with:
+          name: binary-size-analysis
+          path: target/release/*.rlib
+          retention-days: 7
+
+  wasm-size:
+    name: 🌐 Wasm Size Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install wasm-opt
+        uses: mymindstorm/setup-wasmtime@v1
+
+      - name: Build for Wasm
+        run: cargo build --release --target wasm32-unknown-unknown --all-features
+
+      - name: Analyze Wasm size
+        run: |
+          echo "## Wasm Size Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f target/wasm32-unknown-unknown/release/libyew_nav_link.wasm ]; then
+            raw_size=$(du -h target/wasm32-unknown-unknown/release/libyew_nav_link.wasm | cut -f1)
+            echo "Raw Wasm size: $raw_size" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Target directory size:" >> $GITHUB_STEP_SUMMARY
+          du -sh target/wasm32-unknown-unknown/release/ >> $GITHUB_STEP_SUMMARY
+
+  perf-summary:
+    name: 📊 Performance Summary
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [benchmarks, performance-regression, compile-time, binary-size, wasm-size]
+    
+    steps:
+      - name: Generate Summary
+        run: |
+          echo "# Performance Monitoring Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          for job in benchmarks compile-time binary-size wasm-size; do
+            status="${{ needs.$job.result }}"
+            emoji="⏳"
+            [ "$status" = "success" ] && emoji="✅"
+            [ "$status" = "failure" ] && emoji="❌"
+            [ "$status" = "skipped" ] && emoji="⏭️"
+            echo "- $emoji $job: $status" >> $GITHUB_STEP_SUMMARY
+          done
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Links" >> $GITHUB_STEP_SUMMARY
+          echo "- 📊 [Benchmark History](https://github.com/${{ github.repository }}/blob/master/.benchmarks/master/benchmarks.md)" >> $GITHUB_STEP_SUMMARY

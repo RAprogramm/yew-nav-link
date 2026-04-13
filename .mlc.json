@@ -1,0 +1,16 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "http://localhost"
+    },
+    {
+      "pattern": "https://docs.rs/yew-nav-link/.*"
+    }
+  ],
+  "timeout": "10000",
+  "retryOn429": true,
+  "retryCount": 3,
+  "fallbackRetryDelay": "30000",
+  "aliveStatusCodes": [200, 206],
+  "ignoreHttpsErrors": false
+}

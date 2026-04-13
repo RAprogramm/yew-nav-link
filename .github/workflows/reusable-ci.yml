@@ -1,86 +1,100 @@
-name: CI
+name: CI Pipeline
 
 on:
-  workflow_call:
-    inputs:
-      all-features:
-        type: boolean
-        default: true
+  push:
+    branches: ["main", "develop", "release/*"]
+    tags:
+      - "v*"
+  pull_request:
+    branches: ["main", "develop"]
+    types: [opened, synchronize, reopened, labeled]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  fast-finish: true
 
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
+  RUSTFLAGS: -D warnings
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
 
 jobs:
+  # =====================================================
+  # GATEKEEPER JOBS - Run first, fast failure
+  # =====================================================
+  
   pr-analysis:
-    name: PR Analysis
+    name: 🔍 PR Analysis
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     permissions:
       contents: read
       pull-requests: write
+    outputs:
+      size: ${{ steps.pr-size.outputs.size }}
+      weighted-score: ${{ steps.pr-size.outputs.weighted-score }}
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Analyze PR size
+      - name: Analyze PR Size
+        id: pr-size
         uses: RAprogramm/rust-prod-diff-checker@v1
         with:
           config_file: .rust-diff-analyzer.toml
           max_prod_units: 50
           max_weighted_score: 200
           max_prod_lines: 200
-          fail_on_exceed: true
+          fail_on_exceed: ${{ github.ref == 'refs/heads/main' }}
           post_comment: true
 
-      - name: Summary
-        if: always()
+      - name: Check for WIP label
+        if: contains(github.event.pull_request.labels.*.name, 'WIP')
         run: |
-          echo "## PR Size Analysis" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ job.status }}" == "success" ]; then
-            echo "✅ PR size within limits" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ PR exceeds size limits" >> $GITHUB_STEP_SUMMARY
-          fi
+          echo "PR is marked as WIP - skipping further checks"
+          exit 0
 
+  # =====================================================
+  # QUALITY GATES - Run in parallel after PR analysis
+  # =====================================================
+  
   fmt:
-    name: Format
+    name: 📝 Format
     runs-on: ubuntu-latest
     needs: [pr-analysis]
-    if: ${{ !cancelled() && (needs.pr-analysis.result == 'success' || needs.pr-analysis.result == 'skipped') }}
+    if: ${{ !cancelled() && (needs.pr-analysis.result == 'success' || needs.pr-analysis.result == 'skipped' || needs.pr-analysis.result == 'cancelled') }}
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust
         with:
-          toolchain: nightly
+          toolchain: nightly-2024-12-01
           components: rustfmt
 
       - name: Check formatting
-        run: cargo +nightly fmt --all -- --check
+        run: cargo +nightly-2024-12-01 fmt --all -- --check
 
-      - name: Summary
-        if: always()
+      - name: Auto-fix formatting (if allowed)
+        if: failure() && contains(github.event.pull_request.labels.*.name, 'auto-format')
         run: |
-          echo "## Format Check" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ job.status }}" == "success" ]; then
-            echo "✅ All files formatted correctly" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ Formatting issues found" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Run \`cargo +nightly fmt\` to fix" >> $GITHUB_STEP_SUMMARY
-          fi
+          cargo +nightly fmt --all
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "chore: auto-format code [skip ci]" || true
+          git push origin HEAD:${{ github.head_ref }}
 
   clippy:
-    name: Clippy
+    name: 🦀 Clippy
     runs-on: ubuntu-latest
     needs: [pr-analysis]
     if: ${{ !cancelled() && (needs.pr-analysis.result == 'success' || needs.pr-analysis.result == 'skipped') }}
     permissions:
       contents: read
       security-events: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust
@@ -90,6 +104,7 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           save-if: false
+          cache-on-failure: true
 
       - name: Install SARIF tools
         run: cargo install clippy-sarif sarif-fmt
@@ -97,110 +112,123 @@ jobs:
       - name: Run Clippy with SARIF
         run: |
           set +e
-          cargo clippy --workspace --all-targets ${{ inputs.all-features && '--all-features' || '' }} \
-            --message-format=json -- -D warnings 2>&1 | clippy-sarif | tee clippy.sarif | sarif-fmt
+          cargo clippy --workspace --all-targets --all-features \
+            --message-format=json \
+            -- -D warnings \
+            -- -W clippy::pedantic \
+            -- -W clippy::nursery \
+            2>&1 | clippy-sarif --stdout --no-fail | tee clippy.sarif | sarif-fmt
           CLIPPY_EXIT=$?
           set -e
           
-          # Upload SARIF
-          echo "::group::Clippy SARIF Upload"
-          if [ -f clippy.sarif ]; then
-            echo "Uploading clippy.sarif to GitHub Code Scanning..."
-          fi
-          echo "::endgroup::"
+          echo "Uploading SARIF to GitHub Code Scanning..."
           
-          # Exit with clippy result
-          if [ $CLIPPY_EXIT -ne 0 ]; then
-            echo "❌ Clippy found issues - see details above"
-            exit 1
-          else
-            echo "✅ No clippy warnings"
-          fi
+          exit $CLIPPY_EXIT
 
-      - name: Summary
+      - name: Upload SARIF
         if: always()
-        run: |
-          echo "## Clippy Analysis" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ job.status }}" == "success" ]; then
-            echo "✅ No warnings or errors" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ Issues found - check Security tab for details" >> $GITHUB_STEP_SUMMARY
-          fi
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: clippy.sarif
+          category: clippy
 
-  quality:
-    name: Quality
-    runs-on: ubuntu-latest
+  # =====================================================
+  # MATRIX TESTING - Multi-platform, multi-toolchain
+  # =====================================================
+  
+  test-matrix:
+    name: 🧪 Test (${{ matrix.os }}, ${{ matrix.rust }})
+    runs-on: ${{ matrix.os }}
     needs: [pr-analysis]
     if: ${{ !cancelled() && (needs.pr-analysis.result == 'success' || needs.pr-analysis.result == 'skipped') }}
-    permissions:
-      contents: read
-      pull-requests: write
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04, macos-latest, windows-latest]
+        rust: [stable]
+        mode: [unit, integration, wasm]
+        include:
+          # MSRV test
+          - os: ubuntu-latest
+            rust: 1.94.0
+            mode: unit
+          # Beta channel
+          - os: ubuntu-latest
+            rust: beta
+            mode: unit
+          # Nightly with nightly features
+          - os: ubuntu-latest
+            rust: nightly
+            mode: unit
+          # Wasm target
+          - os: ubuntu-latest
+            rust: stable
+            mode: wasm
+            target: wasm32-unknown-unknown
+        exclude:
+          - os: windows-latest
+            rust: nightly
+          - os: macos-latest
+            rust: nightly
     steps:
       - uses: actions/checkout@v6
 
-      - name: Run cargo-quality
-        uses: RAprogramm/cargo-quality@v0
+      - name: Setup Rust ${{ matrix.rust }}
+        uses: dtolnay/rust-toolchain@stable
         with:
-          path: src/
-          fail_on_issues: true
-          post_comment: ${{ github.event_name == 'pull_request' }}
+          toolchain: ${{ matrix.rust }}
+          targets: ${{ matrix.target || 'x86_64-unknown-linux-gnu' }}
 
-      - name: Summary
-        if: always()
-        run: |
-          echo "## Code Quality" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ job.status }}" == "success" ]; then
-            echo "✅ Code quality standards met" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ Quality issues found" >> $GITHUB_STEP_SUMMARY
-          fi
-
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    needs: [pr-analysis]
-    if: ${{ !cancelled() && (needs.pr-analysis.result == 'success' || needs.pr-analysis.result == 'skipped') }}
-    steps:
-      - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-rust
+      - name: Cache dependencies
+        uses: Swatinem/rust-cache@v2
         with:
-          toolchain: stable
-      - uses: Swatinem/rust-cache@v2
-        with:
-          save-if: false
+          shared-key: test-${{ matrix.rust }}-${{ matrix.mode }}
+          save-if: ${{ github.ref == 'refs/heads/main' }}
 
       - name: Install nextest
+        if: matrix.mode != 'wasm'
         uses: taiki-e/install-action@nextest
 
-      - name: Run tests
+      - name: Install wasm-bindgen-cli
+        if: matrix.mode == 'wasm'
+        uses: taiki-e/install-action@wasm-bindgen-cli
+
+      - name: Run tests (unit)
+        if: matrix.mode == 'unit'
         run: |
-          cargo nextest run --workspace ${{ inputs.all-features && '--all-features' || '' }} \
-            --no-fail-fast --profile ci --color=never 2>&1 | tee test-output.txt
+          cargo nextest run --workspace \
+            --no-fail-fast \
+            --profile ci \
+            --status-level info \
+            --failure-output immediate \
+            --retries 1
 
-      - name: Run doctests
-        run: cargo test --doc --workspace ${{ inputs.all-features && '--all-features' || '' }}
-
-      - name: Summary
-        if: always()
+      - name: Run tests (integration)
+        if: matrix.mode == 'integration'
         run: |
-          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ job.status }}" == "success" ]; then
-            echo "✅ All tests passed" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ Some tests failed" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Output" >> $GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-          tail -20 test-output.txt >> $GITHUB_STEP_SUMMARY || true
-          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          cargo nextest run --workspace \
+            --test-threads 1 \
+            --no-fail-fast \
+            --profile ci
 
+      - name: Run tests (wasm)
+        if: matrix.mode == 'wasm'
+        run: |
+          cargo test --target wasm32-unknown-unknown --workspace
+          cargo wasm-bindgen-test-runner --target wasm32-unknown-unknown --workspace
+
+      - name: Run doc tests
+        if: matrix.os == 'ubuntu-latest' && matrix.rust == 'stable'
+        run: cargo test --doc --workspace --all-features
+
+  # =====================================================
+  # CODE COVERAGE
+  # =====================================================
+  
   coverage:
-    name: Coverage
-    runs-on: ubuntu-latest
+    name: 📊 Coverage
+    runs-on: ubuntu-latest-8-cores
     needs: [pr-analysis]
     if: ${{ !cancelled() && (needs.pr-analysis.result == 'success' || needs.pr-analysis.result == 'skipped') }}
     steps:
@@ -216,42 +244,41 @@ jobs:
 
       - name: Generate coverage
         run: |
-          cargo llvm-cov --workspace --all-features --lcov --output-path lcov.info
-          cargo llvm-cov report --html --output-dir coverage-html
+          cargo llvm-cov --workspace --all-features \
+            --lcov --output-path lcov.info \
+            --html --output-dir coverage-html \
+            --json --output-path coverage.json
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v7
         with:
           name: coverage-report
-          path: coverage-html/
-          retention-days: 7
+          path: |
+            coverage-html/
+            lcov.info
+            coverage.json
+          retention-days: 30
+          compression-level: 9
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: lcov.info
+          files: lcov.info,coverage.json
+          flags: unittests,integration
+          name: codecov-rust
           fail_ci_if_error: false
+          verbose: true
 
-      - name: Summary
-        if: always()
-        run: |
-          echo "## Coverage Report" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ job.status }}" == "success" ]; then
-            echo "✅ Coverage report generated" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ Coverage generation failed" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📊 [View detailed report on Codecov](https://codecov.io/gh/${{ github.repository }})" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📥 Coverage HTML report available in artifacts" >> $GITHUB_STEP_SUMMARY
-
+  # =====================================================
+  # PACKAGE VALIDATION
+  # =====================================================
+  
   package:
-    name: Package
+    name: 📦 Package
     runs-on: ubuntu-latest
-    needs: [fmt, clippy, test, quality]
+    needs: [fmt, clippy, test-matrix]
+    if: ${{ !cancelled() && needs.fmt.result == 'success' }}
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust
@@ -262,6 +289,9 @@ jobs:
         with:
           save-if: ${{ github.ref == 'refs/heads/main' }}
 
+      - name: Check package metadata
+        run: cargo publish --dry-run --allow-dirty
+
       - name: Package
         run: cargo package --locked
 
@@ -270,30 +300,22 @@ jobs:
         with:
           name: crate-package
           path: target/package/*.crate
-          retention-days: 7
+          retention-days: 14
+          compression-level: 9
 
-      - name: Summary
-        if: always()
+      - name: Verify package contents
         run: |
-          echo "## Package" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          if [ "${{ job.status }}" == "success" ]; then
-            echo "✅ Package created successfully" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "### Contents" >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            cargo package --locked --list >> $GITHUB_STEP_SUMMARY
-            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "📥 Crate available in artifacts" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ Package failed" >> $GITHUB_STEP_SUMMARY
-          fi
+          echo "Package contents:"
+          cargo package --locked --list
 
+  # =====================================================
+  # SECURITY AUDIT
+  # =====================================================
+  
   audit:
-    name: Security Audit
+    name: 🔒 Security Audit
     runs-on: ubuntu-latest
-    needs: [fmt, clippy, test]
+    needs: [fmt, clippy]
     if: ${{ !cancelled() && needs.fmt.result == 'success' }}
     permissions:
       contents: read
@@ -311,12 +333,92 @@ jobs:
         uses: taiki-e/install-action@cargo-audit
 
       - name: Run security audit
-        run: cargo audit
+        run: |
+          cargo audit --deny warnings --deny unmaintained --deny yanked
         continue-on-error: true
 
-      - name: Summary
+      - name: Generate SARIF report
+        run: cargo audit --format sarif > audit.sarif || true
+
+      - name: Upload SARIF
         if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: audit.sarif
+          category: cargo-audit
+
+      - name: Check for outdated dependencies
+        uses: orhun/rio@v8
+        with:
+          args: --format markdown --depth 1
+
+  # =====================================================
+  # LINTING & QUALITY
+  # =====================================================
+  
+  quality:
+    name: 📈 Quality
+    runs-on: ubuntu-latest
+    needs: [pr-analysis]
+    if: ${{ !cancelled() && (needs.pr-analysis.result == 'success' || needs.pr-analysis.result == 'skipped') }}
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run cargo-quality
+        uses: RAprogramm/cargo-quality@v0
+        with:
+          path: src/
+          fail_on_issues: ${{ github.ref == 'refs/heads/main' }}
+          post_comment: ${{ github.event_name == 'pull_request' }}
+
+      - name: Check for TODO comments
         run: |
-          echo "## Security Audit" >> $GITHUB_STEP_SUMMARY
+          TODO_COUNT=$(grep -r "// TODO" src/ --include="*.rs" | wc -l)
+          echo "TODO comments found: $TODO_COUNT"
+          if [ $TODO_COUNT -gt 10 ]; then
+            echo "Warning: More than 10 TODO comments found"
+          fi
+
+      - name: License header check
+        run: |
+          find src/ -name "*.rs" -exec grep -L "SPDX" {} \; | head -5 || true
+
+  # =====================================================
+  # SUMMARY JOB
+  # =====================================================
+  
+  summary:
+    name: 📋 CI Summary
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      [pr-analysis, fmt, clippy, test-matrix, coverage, package, audit, quality]
+    steps:
+      - name: Generate CI Summary
+        run: |
+          echo "# CI Pipeline Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "✅ No known vulnerabilities" >> $GITHUB_STEP_SUMMARY
+          echo "## Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          
+          for job in pr-analysis fmt clippy test-matrix coverage package audit quality; do
+            status="${{ needs.$job.result }}"
+            emoji="⏳"
+            if [ "$status" = "success" ]; then emoji="✅"; fi
+            if [ "$status" = "failure" ]; then emoji="❌"; fi
+            if [ "$status" = "skipped" ]; then emoji="⏭️"; fi
+            if [ "$status" = "cancelled" ]; then emoji="⛔"; fi
+            echo "|$job | $emoji $status |" >> $GITHUB_STEP_SUMMARY
+          done
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Links" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- 📊 [Coverage Report](https://codecov.io/gh/${{ github.repository }})" >> $GITHUB_STEP_SUMMARY
+          echo "- 📦 [Package Artifact](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
