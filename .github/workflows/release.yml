@@ -218,7 +218,7 @@ jobs:
           cat release-notes.md
 
       - name: Create/Update Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ needs.version-check.outputs.version }}
           name: "Release v${{ needs.version-check.outputs.version }}"
@@ -231,7 +231,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload crate artifact
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: v${{ needs.version-check.outputs.version }}
           files: target/package/*.crate

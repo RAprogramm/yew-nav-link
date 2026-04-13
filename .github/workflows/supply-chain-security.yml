@@ -36,7 +36,7 @@ jobs:
         run: cargo build --release --locked --all-features
 
       - name: Generate Build Provenance
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         with:
           subject-name: "crates.io/yew-nav-link"
