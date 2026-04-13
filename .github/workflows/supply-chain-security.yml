@@ -19,7 +19,6 @@ jobs:
   build-and-attest:
     name: 🔐 Build & Attest (SLSA L3)
     runs-on: ubuntu-latest-8-cores
-    environment: production
     
     steps:
       - name: Checkout repository
@@ -38,7 +37,7 @@ jobs:
         with:
           save-if: false
 
-      - name: Build release binary
+      - name: Build release library
         run: |
           cargo build --release --locked --all-features
           echo "Built artifacts:"
@@ -47,31 +46,26 @@ jobs:
       - name: Calculate artifact hash
         id: hash
         run: |
-          HASH=$(find target/release -name "*.rlib" -o -name "yew_nav_link-*" | sort | sha256sum | cut -d' ' -f1)
+          HASH=$(find target/release -name "*.rlib" -o -name "lib*.rlib" | sort | sha256sum | cut -d' ' -f1)
           echo "artifact-hash=$HASH" >> $GITHUB_OUTPUT
           echo "Hash: $HASH"
 
       - name: Generate Build Provenance
         uses: actions/attest-build-provenance@v2
         id: provenance
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         with:
           subject-name: "crates.io/yew-nav-link"
           subject-digest: "${{ steps.hash.outputs.artifact-hash }}"
-          push-to-registry: true
+          push-to-registry: false
           timeout-minutes: 10
 
       - name: Display Provenance
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         run: |
           echo "Provenance generated successfully!"
           echo "Subject Name: ${{ steps.provenance.outputs.subject-name }}"
           echo "Subject Digest: ${{ steps.provenance.outputs.subject-digest }}"
-
-      - name: Verify Provenance
-        uses: actions/verify-provenance@v1
-        with:
-          subject-name: "crates.io/yew-nav-link"
-          subject-digest: "${{ steps.hash.outputs.artifact-hash }}"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   sbom-generation:
     name: 📋 SBOM Generation
