@@ -1,9 +1,9 @@
 [package]
 name = "yew-nav-link"
-version = "0.8.0"
+version = "0.9.0"
 authors = ["RAprogramm <andrey.rozanov.vl@gmail.com>"]
 edition = "2024"
-rust-version = "1.94"
+rust-version = "1.92"
 description = "Navigation link component for Yew with automatic active state detection"
 documentation = "https://docs.rs/yew-nav-link"
 readme = "README.md"
@@ -28,12 +28,10 @@ all-features = true
 
 [features]
 default = []
-macros = ["yew-nav-link-macros"]
 
 [dependencies]
 yew = { version = "0.23", features = ["csr"] }
 yew-router = "0.20"
-yew-nav-link-macros = { path = "macros", optional = true }
 
 [dev-dependencies]
 criterion = "0.8"

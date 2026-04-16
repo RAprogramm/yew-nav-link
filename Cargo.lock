@@ -1385,22 +1385,12 @@ dependencies = [
 
 [[package]]
 name = "yew-nav-link"
-version = "0.8.0"
+version = "0.9.0"
 dependencies = [
  "criterion",
  "wasm-bindgen-test",
  "yew",
- "yew-nav-link-macros",
  "yew-router",
-]
-
-[[package]]
-name = "yew-nav-link-macros"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.117",
 ]
 
 [[package]]

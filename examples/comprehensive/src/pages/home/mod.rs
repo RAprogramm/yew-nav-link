@@ -136,10 +136,6 @@ pub fn Home() -> Html {
                         <div class="stat-value">{ stats.enums }</div>
                         <div class="stat-label">{ "Public Enums" }</div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-value">{ stats.macros }</div>
-                        <div class="stat-label">{ "Exported Macros" }</div>
-                    </div>
                 </div>
             </div>
 
@@ -177,10 +173,6 @@ pub fn Home() -> Html {
                     <strong>{ "Requirements: " }</strong>
                     { "yew 0.23+, yew-router 0.20+" }
                 </div>
-                <p style="margin-top: 1rem;">
-                    { "Optional macros feature:" }
-                </p>
-                <CopyCode code={"yew-nav-link = { version = \"0.6\", features = [\"macros\"] }".to_string()} language={"toml".to_string()} />
             </div>
 
             // ── Getting Started Examples ───────────────────
@@ -188,7 +180,6 @@ pub fn Home() -> Html {
                 <h2>{ "Getting Started" }</h2>
                 <div class="examples-grid">
                     <FeatureCard route={Route::BasicExample} title="Basic" desc="Simple 3-page app with component and function syntax." />
-                    <FeatureCard route={Route::WithMacrosExample} title="With Macros" desc="Reduce boilerplate by ~75% with declarative macros." />
                 </div>
             </div>
 
@@ -239,7 +230,7 @@ pub fn Home() -> Html {
                         <tr>
                             <td><code>{ "Compile Time" }</code></td>
                             <td>{ "Negligible" }</td>
-                            <td>{ "No procedural macros in core; declarative macros expand at compile time" }</td>
+                            <td>{ "Core components and hooks compile with standard Rust + Yew toolchains" }</td>
                         </tr>
                         <tr>
                             <td><code>{ "Memory" }</code></td>

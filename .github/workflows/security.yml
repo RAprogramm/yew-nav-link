@@ -30,8 +30,7 @@ jobs:
         uses: taiki-e/install-action@cargo-audit
 
       - name: Run cargo-audit
-        run: |
-          cargo audit || echo "No vulnerabilities found or audit failed"
+        run: cargo audit --deny warnings --deny unmaintained --deny yanked
 
   clippy:
     name: 🦀 Clippy
@@ -88,14 +87,5 @@ jobs:
       - name: Install cargo-deny
         uses: taiki-e/install-action@cargo-deny
 
-      - name: Check advisories
-        run: cargo deny check advisories
-
-      - name: Check licenses
-        run: cargo deny check licenses
-
-      - name: Check bans
-        run: cargo deny check bans
-
-      - name: Check sources
-        run: cargo deny check sources
+      - name: Run cargo-deny
+        run: cargo deny check
