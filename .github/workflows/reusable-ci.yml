@@ -203,27 +203,20 @@ jobs:
       - name: Generate coverage
         run: |
           cargo llvm-cov --workspace --all-features \
-            --lcov --output-path lcov.info \
-            --html --output-dir coverage-html
-          cargo llvm-cov --workspace --all-features \
-            --json --output-path coverage.json
+            --lcov --output-path lcov.info
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v7
         with:
           name: coverage-report
-          path: |
-            coverage-html/
-            lcov.info
-            coverage.json
+          path: lcov.info
           retention-days: 30
-          compression-level: 9
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: lcov.info,coverage.json
+          files: lcov.info
           flags: unittests,integration
           name: codecov-rust
           fail_ci_if_error: false
