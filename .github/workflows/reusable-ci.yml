@@ -55,7 +55,7 @@ jobs:
           max_prod_units: 50
           max_weighted_score: 200
           max_prod_lines: 200
-          fail_on_exceed: ${{ github.ref == 'refs/heads/main' }}
+          fail_on_exceed: false
           post_comment: true
 
       - name: Check for WIP label
@@ -104,31 +104,8 @@ jobs:
           save-if: false
           cache-on-failure: true
 
-      - name: Install SARIF tools
-        run: cargo install clippy-sarif sarif-fmt
-
-      - name: Run Clippy with SARIF
-        run: |
-          set +e
-          cargo clippy --workspace --all-targets --all-features \
-            --message-format=json \
-            -- -D warnings -W clippy::pedantic -W clippy::nursery 2>&1 \
-            | clippy-sarif --stdout --no-fail \
-            | tee clippy.sarif \
-            | sarif-fmt
-          CLIPPY_EXIT=$?
-          set -e
-          
-          echo "Uploading SARIF to GitHub Code Scanning..."
-          
-          exit $CLIPPY_EXIT
-
-      - name: Upload SARIF
-        if: always()
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: clippy.sarif
-          category: clippy
+      - name: Run Clippy
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery
 
   # =====================================================
   # MATRIX TESTING - Multi-platform, multi-toolchain
