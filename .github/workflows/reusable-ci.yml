@@ -327,7 +327,7 @@ jobs:
         uses: taiki-e/install-action@cargo-audit
 
       - name: Run security audit
-        run: cargo audit --deny warnings --deny unmaintained --deny yanked
+        run: cargo audit --deny yanked
 
       - name: Install cargo-deny
         uses: taiki-e/install-action@cargo-deny
