@@ -9,6 +9,11 @@ on:
     branches: ["main", "develop"]
     types: [opened, synchronize, reopened, labeled]
   workflow_call:
+    inputs:
+      all-features:
+        type: boolean
+        default: false
+        required: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.sha }}
