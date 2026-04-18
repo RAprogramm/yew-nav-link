@@ -67,7 +67,7 @@ jobs:
         uses: taiki-e/install-action@trunk
 
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "20"
           cache: "npm"
@@ -105,7 +105,7 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
       - name: Deployment Summary
         run: |
@@ -128,7 +128,7 @@ jobs:
     
     steps:
       - name: Download Pages artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: pages-artifact
           path: dist

@@ -169,7 +169,7 @@ jobs:
 
       - name: Create Pull Request
         if: github.event.inputs.create-pr == 'true'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore: bump version to ${{ steps.new-version.outputs.new-version }}"
