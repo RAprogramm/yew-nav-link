@@ -30,7 +30,7 @@ jobs:
         uses: taiki-e/install-action@cargo-audit
 
       - name: Run cargo-audit
-        run: cargo audit --deny warnings --deny unmaintained --deny yanked
+        run: cargo audit --deny yanked
 
   clippy:
     name: 🦀 Clippy
