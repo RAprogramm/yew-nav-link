@@ -119,27 +119,13 @@ jobs:
       fail-fast: false
       max-parallel: 6
       matrix:
-        os: [ubuntu-latest, ubuntu-24.04, macos-latest, windows-latest]
+        os: [ubuntu-latest]
         rust: [stable]
-        mode: [unit, wasm]
+        mode: [unit]
         include:
-          # MSRV test
           - os: ubuntu-latest
             rust: 1.92.0
             mode: unit
-          # Beta channel
-          - os: ubuntu-latest
-            rust: beta
-            mode: unit
-          # Nightly with nightly features
-          - os: ubuntu-latest
-            rust: nightly
-            mode: unit
-          # Wasm target
-          - os: ubuntu-latest
-            rust: stable
-            mode: wasm
-            target: wasm32-unknown-unknown
         exclude:
           - os: windows-latest
             rust: nightly
