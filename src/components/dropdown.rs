@@ -201,7 +201,7 @@ pub fn NavDropdownItem(props: &NavDropdownItemProps) -> Html {
 /// | Prop | Type | Default | Description |
 /// |------|------|---------|-------------|
 /// | `classes` | `Classes` | — | Additional CSS classes |
-#[derive(Properties, Clone, PartialEq, Debug, Default)]
+#[derive(Properties, Clone, PartialEq, Eq, Debug, Default)]
 pub struct NavDropdownDividerProps {
     /// Additional CSS classes applied to the divider.
     #[prop_or_default]

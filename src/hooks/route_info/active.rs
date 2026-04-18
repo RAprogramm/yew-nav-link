@@ -33,14 +33,11 @@ where
     R: Routable + Clone + PartialEq + 'static
 {
     let current = use_route::<R>();
-    match current.as_ref() {
-        Some(current_route) => {
-            let target_path = route.to_path();
-            let current_path = current_route.to_path();
-            crate::active_link::is_path_prefix(&target_path, &current_path)
-        }
-        None => false
-    }
+    current.as_ref().is_some_and(|current_route| {
+        let target_path = route.to_path();
+        let current_path = current_route.to_path();
+        crate::active_link::is_path_prefix(&target_path, &current_path)
+    })
 }
 
 #[cfg(test)]

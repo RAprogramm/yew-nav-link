@@ -54,7 +54,7 @@ use yew::prelude::*;
 /// | `text` | `Option<&'static str>` | `None` | Optional text label |
 /// | `vertical` | `bool` | `false` | Vertical divider style |
 /// | `classes` | `Classes` | — | Additional CSS classes |
-#[derive(Properties, Clone, PartialEq, Debug, Default)]
+#[derive(Properties, Clone, PartialEq, Eq, Debug, Default)]
 pub struct NavDividerProps {
     /// Additional CSS classes applied to the divider.
     #[prop_or_default]

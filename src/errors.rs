@@ -43,9 +43,9 @@ pub enum NavError {
 impl std::fmt::Display for NavError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            NavError::RouteNotFound => write!(f, "route not found"),
-            NavError::InvalidRoute(msg) => write!(f, "invalid route: {msg}"),
-            NavError::NavigationCancelled => write!(f, "navigation cancelled")
+            Self::RouteNotFound => write!(f, "route not found"),
+            Self::InvalidRoute(msg) => write!(f, "invalid route: {msg}"),
+            Self::NavigationCancelled => write!(f, "navigation cancelled")
         }
     }
 }
@@ -54,18 +54,18 @@ impl std::error::Error for NavError {}
 
 impl NavError {
     /// Creates a [`NavError::RouteNotFound`] error.
-    pub fn route_not_found() -> Self {
-        NavError::RouteNotFound
+    pub const fn route_not_found() -> Self {
+        Self::RouteNotFound
     }
 
     /// Creates a [`NavError::InvalidRoute`] error with the given message.
     pub fn invalid_route<S: Into<String>>(msg: S) -> Self {
-        NavError::InvalidRoute(msg.into())
+        Self::InvalidRoute(msg.into())
     }
 
     /// Creates a [`NavError::NavigationCancelled`] error.
-    pub fn navigation_cancelled() -> Self {
-        NavError::NavigationCancelled
+    pub const fn navigation_cancelled() -> Self {
+        Self::NavigationCancelled
     }
 }
 

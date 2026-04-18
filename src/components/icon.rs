@@ -105,11 +105,11 @@ pub enum NavIconSize {
 }
 
 impl NavIconSize {
-    fn as_class(self) -> &'static str {
+    const fn as_class(self) -> &'static str {
         match self {
-            NavIconSize::Small => "nav-icon-sm",
-            NavIconSize::Medium => "nav-icon-md",
-            NavIconSize::Large => "nav-icon-lg"
+            Self::Small => "nav-icon-sm",
+            Self::Medium => "nav-icon-md",
+            Self::Large => "nav-icon-lg"
         }
     }
 }

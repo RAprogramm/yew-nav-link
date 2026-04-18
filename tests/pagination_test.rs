@@ -58,7 +58,7 @@ mod pagination_test {
     #[test]
     fn pagination_props_debug() {
         let props = PaginationProps::default();
-        let debug_str = format!("{:?}", props);
+        let debug_str = format!("{props:?}");
         assert!(debug_str.contains("PaginationProps"));
     }
 

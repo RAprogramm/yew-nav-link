@@ -47,7 +47,7 @@ use yew::prelude::*;
 /// |------|------|---------|-------------|
 /// | `text` | `&'static str` | — | Static text content (required) |
 /// | `classes` | `Classes` | — | Additional CSS classes |
-#[derive(Properties, Clone, PartialEq, Debug)]
+#[derive(Properties, Clone, PartialEq, Eq, Debug)]
 pub struct NavTextProps {
     /// Additional CSS classes applied to the text element.
     #[prop_or_default]

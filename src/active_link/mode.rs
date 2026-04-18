@@ -12,8 +12,8 @@ pub enum Match {
 impl std::fmt::Display for Match {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Match::Exact => write!(f, "exact"),
-            Match::Partial => write!(f, "partial")
+            Self::Exact => write!(f, "exact"),
+            Self::Partial => write!(f, "partial")
         }
     }
 }

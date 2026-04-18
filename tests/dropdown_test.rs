@@ -101,7 +101,7 @@ fn nav_dropdown_debug() {
         id:          None,
         children:    Children::default()
     };
-    let debug_str = format!("{:?}", props);
+    let debug_str = format!("{props:?}");
     assert!(debug_str.contains("NavDropdownProps"));
 }
 
@@ -112,7 +112,7 @@ fn nav_dropdown_item_debug() {
         disabled: false,
         children: Children::default()
     };
-    let debug_str = format!("{:?}", props);
+    let debug_str = format!("{props:?}");
     assert!(debug_str.contains("NavDropdownItemProps"));
 }
 
@@ -121,6 +121,6 @@ fn nav_dropdown_divider_debug() {
     let props = NavDropdownDividerProps {
         classes: Classes::default()
     };
-    let debug_str = format!("{:?}", props);
+    let debug_str = format!("{props:?}");
     assert!(debug_str.contains("NavDropdownDividerProps"));
 }

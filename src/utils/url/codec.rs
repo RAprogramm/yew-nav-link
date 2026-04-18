@@ -9,7 +9,7 @@ use std::fmt::Write;
 #[must_use]
 pub fn urlencoding_decode(input: &str) -> Option<String> {
     let mut result = String::with_capacity(input.len());
-    let mut chars = input.chars().peekable();
+    let mut chars = input.chars();
 
     while let Some(c) = chars.next() {
         if c == '%' {

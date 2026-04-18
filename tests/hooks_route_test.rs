@@ -34,7 +34,7 @@ mod hooks_route_test {
             label:     "test".to_string(),
             is_active: true
         };
-        let debug_str = format!("{:?}", item);
+        let debug_str = format!("{item:?}");
         assert!(debug_str.contains("BreadcrumbItem"));
     }
 
