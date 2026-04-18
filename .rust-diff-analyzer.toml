@@ -2,7 +2,7 @@
 # Ignore commits from RAprogramm (project author)
 
 [classification]
-ignored_authors = ["RAprogramm"]
+ignored_authors = ["andrey.rozanov.vl@gmail.com"]
 
 [limits]
 max_prod_units = 30
