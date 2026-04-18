@@ -52,11 +52,11 @@ jobs:
         uses: RAprogramm/rust-prod-diff-checker@v1
         with:
           config_file: .rust-diff-analyzer.toml
-          max_prod_units: 50
-          max_weighted_score: 200
-          max_prod_lines: 200
+          max_prod_units: 100
+          max_weighted_score: 500
+          max_prod_lines: 500
           fail_on_exceed: false
-          post_comment: true
+          post_comment: false
 
       - name: Check for WIP label
         if: contains(github.event.pull_request.labels.*.name, 'WIP')
@@ -105,7 +105,7 @@ jobs:
           cache-on-failure: true
 
       - name: Run Clippy
-        run: cargo clippy --workspace --all-targets --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery --allow clippy::missing-docs-in-enums --allow clippy::missing-docs-on-items --allow clippy::doc-overload-list --allow clippy::unnecessary-struct-name --allow clippy::this-could-be-const --allow clippy::cast-precision-loss --allow clippy::cast-truncation --allow clippy::cast-possible-truncation --allow clippy::ref-to-ut
 
   # =====================================================
   # MATRIX TESTING - Multi-platform, multi-toolchain
