@@ -124,7 +124,7 @@ jobs:
         mode: [unit]
         include:
           - os: ubuntu-latest
-            rust: 1.92.0
+            rust: 1.94.0
             mode: unit
         exclude:
           - os: windows-latest
