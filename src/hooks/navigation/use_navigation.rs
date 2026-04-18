@@ -34,7 +34,7 @@ where
 {
     /// Create a callback for pushing a route onto history.
     pub fn push_callback(&self, route: R) -> Callback<()> {
-        Callback::from(move |_| {
+        Callback::from(move |()| {
             let path = route.to_path();
             BrowserHistory::new().push(&path);
         })
@@ -42,15 +42,16 @@ where
 
     /// Create a callback for replacing the current route.
     pub fn replace_callback(&self, route: R) -> Callback<()> {
-        Callback::from(move |_| {
+        Callback::from(move |()| {
             let path = route.to_path();
             BrowserHistory::new().replace(&path);
         })
     }
 
+    #[must_use]
     /// Create a callback for navigating with a delta.
     pub fn go_callback(&self, delta: isize) -> Callback<()> {
-        Callback::from(move |_| {
+        Callback::from(move |()| {
             BrowserHistory::new().go(delta);
         })
     }
@@ -89,11 +90,11 @@ pub fn use_navigation<R>() -> Navigation<R>
 where
     R: Routable + Clone + 'static
 {
-    let go_back = Callback::from(|_| {
+    let go_back = Callback::from(|()| {
         BrowserHistory::new().back();
     });
 
-    let go_forward = Callback::from(|_| {
+    let go_forward = Callback::from(|()| {
         BrowserHistory::new().forward();
     });
 
@@ -121,8 +122,8 @@ mod tests {
         }
 
         let nav = Navigation::<TestRoute> {
-            go_back:    Callback::from(|_| {}),
-            go_forward: Callback::from(|_| {}),
+            go_back:    Callback::from(|()| {}),
+            go_forward: Callback::from(|()| {}),
             _marker:    PhantomData
         };
 
@@ -139,12 +140,12 @@ mod tests {
         }
 
         let nav1 = Navigation::<TestRoute> {
-            go_back:    Callback::from(|_| {}),
-            go_forward: Callback::from(|_| {}),
+            go_back:    Callback::from(|()| {}),
+            go_forward: Callback::from(|()| {}),
             _marker:    PhantomData
         };
 
-        let nav2 = nav1.clone();
+        let nav2 = nav1;
         let _ = nav2.go_back;
         let _ = nav2.go_forward;
     }

@@ -50,7 +50,7 @@ impl QueryParams {
     /// Returns the value for the given key, if present.
     #[must_use]
     pub fn get(&self, key: &str) -> Option<&str> {
-        self.params.get(key).map(|s| s.as_str())
+        self.params.get(key).map(String::as_str)
     }
 
     /// Returns `true` if the given key exists in the parameters.
@@ -101,12 +101,12 @@ impl QueryParams {
 
     /// Returns an iterator over parameter keys.
     pub fn keys(&self) -> impl Iterator<Item = &str> {
-        self.params.keys().map(|s| s.as_str())
+        self.params.keys().map(String::as_str)
     }
 
     /// Returns an iterator over parameter values.
     pub fn values(&self) -> impl Iterator<Item = &str> {
-        self.params.values().map(|s| s.as_str())
+        self.params.values().map(String::as_str)
     }
 
     /// Returns an iterator over all parameter key-value pairs.

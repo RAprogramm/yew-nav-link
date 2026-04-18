@@ -1,4 +1,4 @@
-//! # NavHeader
+//! # `NavHeader`
 //!
 //! Section header for labeling groups within a navigation list.
 //! Renders a `<li>` with `role="presentation"` and the `nav-header` class.

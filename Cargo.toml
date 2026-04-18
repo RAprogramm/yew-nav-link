@@ -43,3 +43,6 @@ harness = false
 
 [lib]
 crate-type = ["rlib"]
+
+[workspace.metadata.clippy]
+warn = ["clippy::pedantic", "clippy::nursery"]

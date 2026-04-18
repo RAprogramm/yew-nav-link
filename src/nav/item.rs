@@ -1,4 +1,4 @@
-//! # NavItem
+//! # `NavItem`
 //!
 //! Semantic list item wrapper for navigation links.
 //! Renders a `<li>` with `role="listitem"` and optional disabled state.

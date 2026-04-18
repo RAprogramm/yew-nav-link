@@ -1,4 +1,4 @@
-//! # Pagination Page Generation
+//! # `Pagination Page Generation`
 //!
 //! Internal logic for computing which page numbers to display in a
 //! [`Pagination`](super::Pagination) component. Returns a `Vec<u32>` where
@@ -57,7 +57,7 @@ pub fn generate_pages(current: u32, total: u32, siblings: u32) -> Vec<u32> {
 
     // Add middle pages
     for page in start..=end {
-        pages.push(page as u32);
+        pages.push(u32::try_from(page).expect("reason"));
     }
 
     // Add ellipsis before last if needed (end < total_pages - 2 means we need

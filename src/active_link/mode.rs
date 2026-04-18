@@ -1,4 +1,4 @@
-/// Path matching strategy for NavLink active state detection.
+/// Path matching strategy for `NavLink` active state detection.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 #[must_use]
 pub enum Match {

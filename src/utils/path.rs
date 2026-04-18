@@ -65,7 +65,7 @@ pub fn join_paths(base: &str, path: &str) -> String {
         normalize_path(path)
     } else {
         let base = base.trim_end_matches('/');
-        normalize_path(&format!("{}/{}", base, path))
+        normalize_path(&format!("{base}/{path}"))
     }
 }
 

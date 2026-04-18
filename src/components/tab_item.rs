@@ -1,4 +1,4 @@
-//! # NavTab
+//! # `NavTab`
 //!
 //! A single tab button within a [`NavTabs`](super::NavTabs) container.
 //! Renders a `<li>` with a `<button>` that has proper ARIA attributes

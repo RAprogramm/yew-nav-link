@@ -59,10 +59,10 @@ impl UrlParts {
         }
 
         if let Some((path, query)) = remaining.split_once('?') {
-            parts.path = format!("/{}", path);
+            parts.path = format!("/{path}");
             parts.query = Some(query.to_string());
         } else {
-            parts.path = format!("/{}", remaining);
+            parts.path = format!("/{remaining}");
         }
 
         parts

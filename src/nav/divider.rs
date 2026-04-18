@@ -1,4 +1,4 @@
-//! # NavDivider
+//! # `NavDivider`
 //!
 //! Semantic separator for dividing sections within a navigation list.
 //! Renders a `<li>` with `role="separator"` and an optional text label.

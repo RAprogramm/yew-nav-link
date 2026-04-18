@@ -2,24 +2,24 @@
 #[inline]
 #[must_use]
 pub fn is_path_prefix(target: &str, current: &str) -> bool {
-    let mut target_iter = target.split('/').filter(|s| !s.is_empty());
+    let target_iter = target.split('/').filter(|s| !s.is_empty());
     let mut current_iter = current.split('/').filter(|s| !s.is_empty());
 
-    loop {
-        match (target_iter.next(), current_iter.next()) {
-            (Some(t), Some(c)) if t == c => continue,
-            (Some(_), Some(_)) => return false,
-            (Some(_), None) => return false,
-            (None, _) => return true
+    for t in target_iter {
+        match current_iter.next() {
+            Some(c) if t == c => {}
+            _ => return false
         }
     }
+
+    true
 }
 
 #[inline]
 #[must_use]
 pub fn build_class(is_active: bool, base_class: &str, active_class: &str) -> String {
     if is_active {
-        format!("{} {}", base_class, active_class)
+        format!("{base_class} {active_class}")
     } else {
         base_class.to_string()
     }

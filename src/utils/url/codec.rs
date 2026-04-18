@@ -1,5 +1,7 @@
 //! URL encoding/decoding utilities.
 
+use std::fmt::Write;
+
 /// Decodes a percent-encoded string (e.g. `"%20"` becomes a space).
 ///
 /// Also converts `+` to a space. Returns `None` only if the input is malformed
@@ -49,7 +51,8 @@ pub fn urlencoding_encode(input: &str) -> String {
             ' ' => result.push('+'),
             _ => {
                 for byte in c.to_string().as_bytes() {
-                    result.push_str(&format!("%{:02X}", byte));
+                    // result.push_str(&format!("%{byte:02X}"));
+                    let _ = write!(result, "%{byte:02X}");
                 }
             }
         }

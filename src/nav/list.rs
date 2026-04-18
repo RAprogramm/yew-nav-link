@@ -1,4 +1,4 @@
-//! # NavList
+//! # `NavList`
 //!
 //! A `<ul>` wrapper for your navigation links. Renders with `role="list"`
 //! and an `aria-label` for screen readers. Use this as the outer container
@@ -47,14 +47,14 @@
 //!
 //! # How It Works
 //!
-//! NavList renders a `<ul>` with `role="list"`. You place `<NavLink>` or
+//! `NavList` renders a `<ul>` with `role="list"`. You place `<NavLink>` or
 //! `<NavItem>` children inside — each one renders as an `<li>` with
 //! `role="listitem"`. The `aria-label` is set automatically (defaults to
 //! `"navigation"`).
 //!
 //! # Memory & Performance
 //!
-//! NavList is a thin wrapper — no state, no subscriptions, no allocations
+//! `NavList` is a thin wrapper — no state, no subscriptions, no allocations
 //! beyond rendering the children. It's as cheap as a plain `<ul>` in HTML.
 
 use yew::prelude::*;

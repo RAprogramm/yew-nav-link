@@ -1,4 +1,4 @@
-//! # NavDropdown
+//! # `NavDropdown`
 //!
 //! Collapsible dropdown menu for grouping related navigation items.
 //! Renders a `<li>` with a toggle button and a nested `<ul>` menu.
@@ -53,7 +53,7 @@
 //!
 //! # Props
 //!
-//! **NavDropdown:**
+//! **`NavDropdown`:**
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
@@ -62,7 +62,7 @@
 //! | `classes` | `Classes` | — | Additional CSS classes |
 //! | `children` | `Children` | — | Menu content |
 //!
-//! **NavDropdownItem:**
+//! **`NavDropdownItem`:**
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
@@ -70,7 +70,7 @@
 //! | `classes` | `Classes` | — | Additional CSS classes |
 //! | `children` | `Children` | — | Item content |
 //!
-//! **NavDropdownDivider:**
+//! **`NavDropdownDivider`:**
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|

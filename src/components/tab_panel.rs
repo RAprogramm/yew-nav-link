@@ -1,4 +1,4 @@
-//! # NavTabPanel
+//! # `NavTabPanel`
 //!
 //! Content panel associated with a [`NavTab`](super::NavTab).
 //! Renders a `<div>` with `role="tabpanel"` and `aria-labelledby`.

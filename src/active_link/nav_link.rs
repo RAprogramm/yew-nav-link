@@ -26,7 +26,7 @@ pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R
     }
 }
 
-/// Creates a NavLink with the specified match mode.
+/// Creates a `NavLink` with the specified match mode.
 pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(
     to: R,
     children: &str,

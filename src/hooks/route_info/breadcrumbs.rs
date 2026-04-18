@@ -50,8 +50,7 @@ where
             // Root
             let root_label = provider
                 .as_ref()
-                .map(|p| p.0.label_for_path("/"))
-                .unwrap_or_else(|| "/".to_string());
+                .map_or_else(|| "/".to_string(), |p| p.0.label_for_path("/"));
             items.push(BreadcrumbItem {
                 route:     route.clone(),
                 label:     root_label,
@@ -66,8 +65,7 @@ where
                 let is_last = i + 1 == is_last;
                 let label = provider
                     .as_ref()
-                    .map(|p| p.0.label_for_path(&built))
-                    .unwrap_or_else(|| built.clone());
+                    .map_or_else(|| built.clone(), |p| p.0.label_for_path(&built));
                 items.push(BreadcrumbItem {
                     route: route.clone(),
                     label,

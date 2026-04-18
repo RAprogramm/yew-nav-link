@@ -44,7 +44,7 @@ impl std::fmt::Display for NavError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             NavError::RouteNotFound => write!(f, "route not found"),
-            NavError::InvalidRoute(msg) => write!(f, "invalid route: {}", msg),
+            NavError::InvalidRoute(msg) => write!(f, "invalid route: {msg}"),
             NavError::NavigationCancelled => write!(f, "navigation cancelled")
         }
     }

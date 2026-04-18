@@ -1,4 +1,4 @@
-//! # NavText
+//! # `NavText`
 //!
 //! Static text label component for navigation items.
 //! Renders a `<span>` with the `nav-text` class.
