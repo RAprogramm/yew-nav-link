@@ -174,7 +174,7 @@ jobs:
           cargo nextest run --workspace \
             --no-fail-fast \
             --profile ci \
-            --status-level info \
+            --status-level all \
             --failure-output immediate \
             --retries 1
 
