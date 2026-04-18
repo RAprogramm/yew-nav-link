@@ -204,7 +204,8 @@ jobs:
         run: |
           cargo llvm-cov --workspace --all-features \
             --lcov --output-path lcov.info \
-            --html --output-dir coverage-html \
+            --html --output-dir coverage-html
+          cargo llvm-cov --workspace --all-features \
             --json --output-path coverage.json
 
       - name: Upload coverage artifact
