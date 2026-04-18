@@ -105,7 +105,7 @@ jobs:
           cache-on-failure: true
 
       - name: Run Clippy
-        run: cargo clippy --workspace --all-targets --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery --allow clippy::missing-docs-in-enums --allow clippy::missing-docs-on-items --allow clippy::doc-overload-list --allow clippy::unnecessary-struct-name --allow clippy::this-could-be-const --allow clippy::cast-precision-loss --allow clippy::cast-truncation --allow clippy::cast-possible-truncation --allow clippy::ref-to-ut
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery 
 
   # =====================================================
   # MATRIX TESTING - Multi-platform, multi-toolchain
