@@ -1,10 +1,57 @@
 use std::marker::PhantomData;
 
 use yew::prelude::*;
-use yew_router::{
-    history::{BrowserHistory, History},
-    prelude::*
-};
+use yew_router::prelude::*;
+
+#[cfg(target_arch = "wasm32")]
+use yew_router::history::{BrowserHistory, History};
+
+#[cfg(target_arch = "wasm32")]
+fn history_push(path: &str) {
+    BrowserHistory::new().push(path);
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn history_push(_path: &str) {}
+
+#[cfg(target_arch = "wasm32")]
+fn history_replace(path: &str) {
+    BrowserHistory::new().replace(path);
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn history_replace(_path: &str) {}
+
+#[cfg(target_arch = "wasm32")]
+fn history_go(delta: isize) {
+    BrowserHistory::new().go(delta);
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn history_go(_delta: isize) {}
+
+#[cfg(target_arch = "wasm32")]
+fn history_back() {
+    BrowserHistory::new().back();
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn history_back() {}
+
+#[cfg(target_arch = "wasm32")]
+fn history_forward() {
+    BrowserHistory::new().forward();
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn history_forward() {}
+
+fn route_path<R>(route: &R) -> String
+where
+    R: Routable + Clone + 'static,
+{
+    route.to_path()
+}
 
 /// Navigation callbacks for programmatic route manipulation.
 ///
@@ -18,40 +65,40 @@ use yew_router::{
 #[derive(Clone, Debug)]
 pub struct Navigation<R>
 where
-    R: Routable + Clone + 'static
+    R: Routable + Clone + 'static,
 {
     /// Callback to navigate back in history.
-    pub go_back:    Callback<()>,
+    pub go_back: Callback<()>,
     /// Callback to navigate forward in history.
     pub go_forward: Callback<()>,
     /// Phantom marker for the route type.
-    pub _marker:    PhantomData<R>
+    pub _marker: PhantomData<R>,
 }
 
 impl<R> Navigation<R>
 where
-    R: Routable + Clone + 'static
+    R: Routable + Clone + 'static,
 {
     /// Create a callback for pushing a route onto history.
     pub fn push_callback(&self, route: R) -> Callback<()> {
         Callback::from(move |_| {
-            let path = route.to_path();
-            BrowserHistory::new().push(&path);
+            let path = route_path(&route);
+            history_push(&path);
         })
     }
 
     /// Create a callback for replacing the current route.
     pub fn replace_callback(&self, route: R) -> Callback<()> {
         Callback::from(move |_| {
-            let path = route.to_path();
-            BrowserHistory::new().replace(&path);
+            let path = route_path(&route);
+            history_replace(&path);
         })
     }
 
     /// Create a callback for navigating with a delta.
     pub fn go_callback(&self, delta: isize) -> Callback<()> {
         Callback::from(move |_| {
-            BrowserHistory::new().go(delta);
+            history_go(delta);
         })
     }
 }
@@ -87,20 +134,20 @@ where
 #[hook]
 pub fn use_navigation<R>() -> Navigation<R>
 where
-    R: Routable + Clone + 'static
+    R: Routable + Clone + 'static,
 {
     let go_back = Callback::from(|_| {
-        BrowserHistory::new().back();
+        history_back();
     });
 
     let go_forward = Callback::from(|_| {
-        BrowserHistory::new().forward();
+        history_forward();
     });
 
     Navigation {
         go_back,
         go_forward,
-        _marker: PhantomData
+        _marker: PhantomData,
     }
 }
 
@@ -117,13 +164,13 @@ mod tests {
             #[at("/test")]
             Test,
             #[at("/")]
-            Home
+            Home,
         }
 
         let nav = Navigation::<TestRoute> {
-            go_back:    Callback::from(|_| {}),
+            go_back: Callback::from(|_| {}),
             go_forward: Callback::from(|_| {}),
-            _marker:    PhantomData
+            _marker: PhantomData,
         };
 
         let _ = nav.go_back;
@@ -135,13 +182,13 @@ mod tests {
         #[derive(Clone, PartialEq, Debug, Routable)]
         enum TestRoute {
             #[at("/test")]
-            Test
+            Test,
         }
 
         let nav1 = Navigation::<TestRoute> {
-            go_back:    Callback::from(|_| {}),
+            go_back: Callback::from(|_| {}),
             go_forward: Callback::from(|_| {}),
-            _marker:    PhantomData
+            _marker: PhantomData,
         };
 
         let nav2 = nav1.clone();
@@ -154,16 +201,55 @@ mod tests {
         #[derive(Clone, PartialEq, Debug, Routable)]
         enum TestRoute {
             #[at("/test")]
-            Test
+            Test,
         }
 
         let nav = Navigation::<TestRoute> {
-            go_back:    Callback::from(|_| {}),
+            go_back: Callback::from(|_| {}),
             go_forward: Callback::from(|_| {}),
-            _marker:    PhantomData
+            _marker: PhantomData,
         };
 
         let debug_str = format!("{:?}", nav);
         assert!(debug_str.contains("Navigation"));
+    }
+
+    #[test]
+    fn route_path_uses_routable_path() {
+        #[derive(Clone, PartialEq, Debug, Routable)]
+        enum TestRoute {
+            #[at("/")]
+            Home,
+        }
+
+        assert_eq!(super::route_path(&TestRoute::Home), "/");
+    }
+
+    #[test]
+    fn navigation_callbacks_invoke_without_panics() {
+        #[derive(Clone, PartialEq, Debug, Routable)]
+        enum TestRoute {
+            #[at("/")]
+            Home,
+        }
+
+        let nav = Navigation::<TestRoute> {
+            go_back: Callback::from(|_| {}),
+            go_forward: Callback::from(|_| {}),
+            _marker: PhantomData,
+        };
+
+        nav.push_callback(TestRoute::Home).emit(());
+        nav.replace_callback(TestRoute::Home).emit(());
+        nav.go_callback(1).emit(());
+    }
+
+    #[test]
+    fn history_helpers_are_callable() {
+        super::history_back();
+        super::history_forward();
+        super::history_go(-1);
+        super::history_push("/");
+        super::history_replace("/");
     }
 }

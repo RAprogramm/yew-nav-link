@@ -63,7 +63,22 @@ jobs:
   # QUALITY GATES - Run in parallel after PR analysis
   # =====================================================
   
-  # Note: Format check is handled by pre-commit locally
+  fmt:
+    name: 🎨 Format
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-rust
+        with:
+          toolchain: nightly
+          components: rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: false
+
+      - name: Check formatting (nightly rustfmt)
+        run: cargo +nightly fmt --all -- --check
   
   clippy:
     name: 🦀 Clippy
@@ -92,9 +107,7 @@ jobs:
           set +e
           cargo clippy --workspace --all-targets --all-features \
             --message-format=json \
-            -- -D warnings \
-            -- -W clippy::pedantic \
-            -- -W clippy::nursery 2>&1 \
+            -- -D warnings -W clippy::pedantic -W clippy::nursery 2>&1 \
             | clippy-sarif --stdout --no-fail \
             | tee clippy.sarif \
             | sarif-fmt
@@ -130,7 +143,7 @@ jobs:
         include:
           # MSRV test
           - os: ubuntu-latest
-            rust: 1.94.0
+            rust: 1.92.0
             mode: unit
           # Beta channel
           - os: ubuntu-latest
@@ -309,12 +322,13 @@ jobs:
         uses: taiki-e/install-action@cargo-audit
 
       - name: Run security audit
-        run: |
-          cargo audit --deny warnings --deny unmaintained --deny yanked || echo "Audit completed with warnings"
+        run: cargo audit --deny warnings --deny unmaintained --deny yanked
 
-      - name: Check for outdated dependencies
-        run: |
-          echo "Outdated dependency check skipped - using cargo deny instead"
+      - name: Install cargo-deny
+        uses: taiki-e/install-action@cargo-deny
+
+      - name: Run cargo-deny
+        run: cargo deny check
 
   # =====================================================
   # LINTING & QUALITY
@@ -358,7 +372,7 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     needs:
-      [clippy, test-matrix, coverage, package, audit, quality]
+      [fmt, clippy, test-matrix, coverage, package, audit, quality]
     steps:
       - name: Generate CI Summary
         run: |
@@ -369,6 +383,7 @@ jobs:
           
           echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| fmt | ${{ needs.fmt.result == 'success' && '✅ success' || needs.fmt.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| clippy | ${{ needs.clippy.result == 'success' && '✅ success' || needs.clippy.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| test-matrix | ${{ needs.test-matrix.result == 'success' && '✅ success' || needs.test-matrix.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| coverage | ${{ needs.coverage.result == 'success' && '✅ success' || needs.coverage.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY

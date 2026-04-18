@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-04-18
+
+### Added
+
+- Expanded unit tests for route hooks, query/route parameter helpers, URL query utilities, `NavError`, and `Match` display behavior.
+- Added deterministic helper-level tests for breadcrumb building and navigation callback construction logic to increase coverage on previously uncovered paths.
+
+### Changed
+
+- Refactored hook modules to isolate pure helper logic, making behavior easier to validate with unit tests while preserving external APIs.
+
+## [0.9.0] - 2026-04-16
+
+### Removed
+
+- Removed all macro functionality from the main crate, including declarative macro modules, procedural macro integration, and macro-specific tests.
+- Removed the standalone `yew-nav-link-macros` crate from the repository and from dependency wiring.
+- Removed macro-focused demo pages and routes from the comprehensive example app.
+
+### Changed
+
+- Updated public docs/examples to reflect component and function APIs only (no macro feature).
+- Bumped crate version to `0.9.0` due the macro API removal.
+
+## [0.8.1] - 2026-04-16
+
+### Changed
+
+- Align crate `rust-version` to `1.92` in both main and macros crates to match the validated CI MSRV lane.
+- Harden CI linting by adding a dedicated nightly `rustfmt` check and fixing Clippy argument forwarding so pedantic and nursery lints are applied correctly.
+- Upgrade security gates to fail on real audit/deny findings instead of masking failures, and run `cargo deny check` as a single strict gate.
+
+### Security
+
+- Security workflows now fail when `cargo audit` or `cargo deny` detects issues, preventing false-green pipelines.
+
 ## [0.8.0] - 2026-04-07
 
 ### Added
@@ -162,4 +198,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.4.0]: https://github.com/RAprogramm/yew-nav-link/releases/tag/v0.4.0
 [0.3.0]: https://github.com/RAprogramm/yew-nav-link/releases/tag/v0.3.0
 [0.2.1]: https://github.com/RAprogramm/yew-nav-link/releases/tag/v0.2.1
-

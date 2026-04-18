@@ -6,14 +6,14 @@ pub enum Match {
     #[default]
     Exact,
     /// Link is active when current path starts with target path (segment-wise).
-    Partial
+    Partial,
 }
 
 impl std::fmt::Display for Match {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Match::Exact => write!(f, "exact"),
-            Match::Partial => write!(f, "partial")
+            Match::Partial => write!(f, "partial"),
         }
     }
 }
@@ -44,5 +44,11 @@ mod tests {
         let m = Match::Partial;
         let cloned = m;
         assert_eq!(m, cloned);
+    }
+
+    #[test]
+    fn match_display_values() {
+        assert_eq!(Match::Exact.to_string(), "exact");
+        assert_eq!(Match::Partial.to_string(), "partial");
     }
 }

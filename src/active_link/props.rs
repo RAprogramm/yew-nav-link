@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-/// Properties for the [`NavLink`] component.
+/// Properties for the [`crate::NavLink`] component.
 #[derive(Properties, Clone, PartialEq, Debug)]
 pub struct NavLinkProps<R: Routable + PartialEq + Clone + 'static> {
     /// Target route for navigation.

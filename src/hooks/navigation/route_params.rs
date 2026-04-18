@@ -10,6 +10,10 @@ use yew_router::prelude::*;
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct RouteParams(HashMap<String, Vec<String>>);
 
+fn build_route_params(_path: &str) -> RouteParams {
+    RouteParams(HashMap::new())
+}
+
 impl RouteParams {
     /// Get all values for a parameter name.
     #[must_use]
@@ -57,9 +61,8 @@ impl RouteParams {
 #[hook]
 pub fn use_route_params() -> RouteParams {
     let current_url = use_location();
-    let _path = current_url.as_ref().map(|l| l.path()).unwrap_or("");
-    let params = HashMap::new();
-    RouteParams(params)
+    let path = current_url.as_ref().map(|l| l.path()).unwrap_or("");
+    build_route_params(path)
 }
 
 #[cfg(test)]
@@ -123,5 +126,19 @@ mod tests {
         let rp2 = RouteParams(params2);
 
         assert_eq!(rp1, rp2);
+    }
+
+    #[test]
+    fn build_route_params_returns_empty_map() {
+        let params = super::build_route_params("/users/42");
+        assert!(params.is_empty());
+        assert_eq!(params.len(), 0);
+    }
+
+    #[test]
+    fn route_params_get_one_missing_key() {
+        let params = super::build_route_params("/");
+        assert_eq!(params.get_one("id"), None);
+        assert_eq!(params.get("id"), None);
     }
 }

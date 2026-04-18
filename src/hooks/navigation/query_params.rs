@@ -9,6 +9,24 @@ use yew_router::prelude::*;
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct QueryParams(HashMap<String, Vec<String>>);
 
+fn parse_query_string(query_string: &str) -> QueryParams {
+    let mut params = HashMap::new();
+
+    for pair in query_string.split('&') {
+        if pair.is_empty() {
+            continue;
+        }
+
+        let mut parts = pair.splitn(2, '=');
+        let key = parts.next().unwrap_or("").to_string();
+        let value = parts.next().unwrap_or("").to_string();
+
+        params.entry(key).or_insert_with(Vec::new).push(value);
+    }
+
+    QueryParams(params)
+}
+
 impl QueryParams {
     /// Get all values for a query parameter name.
     #[must_use]
@@ -57,22 +75,7 @@ impl QueryParams {
 pub fn use_query_params() -> QueryParams {
     let current_url = use_location();
     let query_string = current_url.as_ref().map(|l| l.query_str()).unwrap_or("");
-
-    let mut params = HashMap::new();
-
-    for pair in query_string.split('&') {
-        if pair.is_empty() {
-            continue;
-        }
-
-        let mut parts = pair.splitn(2, '=');
-        let key = parts.next().unwrap_or("").to_string();
-        let value = parts.next().unwrap_or("").to_string();
-
-        params.entry(key).or_insert_with(Vec::new).push(value);
-    }
-
-    QueryParams(params)
+    parse_query_string(query_string)
 }
 
 #[cfg(test)]
@@ -116,7 +119,7 @@ mod tests {
         let mut params = HashMap::new();
         params.insert(
             "tag".to_string(),
-            vec!["rust".to_string(), "web".to_string()]
+            vec!["rust".to_string(), "web".to_string()],
         );
         let qp = QueryParams(params);
 
@@ -158,5 +161,28 @@ mod tests {
         let qp2 = QueryParams(params2);
 
         assert_eq!(qp1, qp2);
+    }
+
+    #[test]
+    fn parse_query_string_skips_empty_pairs() {
+        let parsed = super::parse_query_string("&a=1&&b=2&");
+        assert_eq!(parsed.get_one("a"), Some("1"));
+        assert_eq!(parsed.get_one("b"), Some("2"));
+        assert_eq!(parsed.len(), 2);
+    }
+
+    #[test]
+    fn parse_query_string_keeps_empty_key_and_value() {
+        let parsed = super::parse_query_string("=x&key=&flag");
+        assert_eq!(parsed.get(""), Some(&vec!["x".to_string()]));
+        assert_eq!(parsed.get_one("key"), Some(""));
+        assert_eq!(parsed.get_one("flag"), Some(""));
+    }
+
+    #[test]
+    fn get_one_returns_none_for_missing_values() {
+        let parsed = super::parse_query_string("");
+        assert_eq!(parsed.get_one("missing"), None);
+        assert_eq!(parsed.get("missing"), None);
     }
 }

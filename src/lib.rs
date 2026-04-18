@@ -5,7 +5,7 @@
 //!
 //! [![Crates.io](https://img.shields.io/crates/v/yew-nav-link)](https://crates.io/crates/yew-nav-link)
 //! [![Documentation](https://docs.rs/yew-nav-link/badge.svg)](https://docs.rs/yew-nav-link)
-//! [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+//! [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/RAprogramm/yew-nav-link/blob/main/LICENSE)
 //!
 //! ## Overview
 //!
@@ -17,7 +17,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! yew-nav-link = "0.6"
+//! yew-nav-link = "0.9"
 //! ```
 //!
 //! ## Component Syntax
@@ -48,7 +48,7 @@
 //!
 //! ## Function Syntax
 //!
-//! For text-only links, use [`nav_link`] with explicit [`Match`] mode:
+//! For text-only links, use [`nav_link()`] with explicit [`Match`] mode:
 //!
 //! ```rust
 //! use yew::prelude::*;
@@ -100,16 +100,6 @@
 //! }
 //! ```
 //!
-//! ## Optional Macros
-//!
-//! Enable the `macros` feature to use helper declarative macros without adding
-//! a separate crate:
-//!
-//! ```toml
-//! [dependencies]
-//! yew-nav-link = { version = "0.8", features = ["macros"] }
-//! ```
-//!
 //! ## CSS Classes
 //!
 //! | Class | Condition |
@@ -123,9 +113,6 @@
 //!
 //! - Yew 0.23+
 //! - yew-router 0.20+
-
-#[cfg(feature = "macros")]
-mod macros;
 
 /// HTML attribute builders for navigation components.
 pub mod attrs;
@@ -155,13 +142,13 @@ pub use components::{
     NavHeader, NavHeaderProps, NavIcon, NavIconProps, NavIconSize, NavLinkWithIcon,
     NavLinkWithIconProps, NavTab, NavTabPanel, NavTabPanelProps, NavTabProps, NavTabs,
     NavTabsProps, NavText, NavTextProps, PageItem, PageItemProps, PageLink, PageLinkProps,
-    Pagination, PaginationProps
+    Pagination, PaginationProps,
 };
 pub use errors::{NavError, NavResult};
 pub use hooks::{
     BreadcrumbItem, Navigation, QueryParams, RouteParams, use_breadcrumbs, use_is_active,
     use_is_exact_active, use_is_partial_active, use_navigation, use_query_params, use_route_info,
-    use_route_params
+    use_route_params,
 };
 pub use nav::{NavDivider, NavDividerProps, NavItem, NavItemProps, NavList, NavListProps};
 pub use utils::{is_absolute, join_paths, normalize_path};

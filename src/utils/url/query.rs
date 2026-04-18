@@ -11,7 +11,7 @@ use super::codec::{urlencoding_decode, urlencoding_encode};
 /// percent-encoded on serialization.
 #[derive(Clone, Debug, Default)]
 pub struct QueryParams {
-    params: HashMap<String, String>
+    params: HashMap<String, String>,
 }
 
 impl QueryParams {
@@ -36,15 +36,13 @@ impl QueryParams {
                 if !key.is_empty() {
                     params.insert(
                         urlencoding_decode(key).unwrap_or_else(|| key.to_string()),
-                        value.unwrap_or_default()
+                        value.unwrap_or_default(),
                     );
                 }
             }
         }
 
-        Self {
-            params
-        }
+        Self { params }
     }
 
     /// Returns the value for the given key, if present.
@@ -174,5 +172,32 @@ mod tests {
         params.set("key", "value");
         params.remove("key");
         assert!(!params.has("key"));
+    }
+
+    #[test]
+    fn query_params_parse_with_question_prefix_and_empty_value() {
+        let params = QueryParams::parse("?flag&name=");
+        assert_eq!(params.get("flag"), Some(""));
+        assert_eq!(params.get("name"), Some(""));
+    }
+
+    #[test]
+    fn query_params_iterators_cover_keys_values_and_pairs() {
+        let params = QueryParams::parse("a=1&b=2");
+        let mut keys: Vec<&str> = params.keys().collect();
+        keys.sort_unstable();
+        assert_eq!(keys, vec!["a", "b"]);
+
+        let mut values: Vec<&str> = params.values().collect();
+        values.sort_unstable();
+        assert_eq!(values, vec!["1", "2"]);
+
+        let mut pairs: Vec<(&str, &str)> = params.iter().collect();
+        pairs.sort_unstable();
+        assert_eq!(pairs, vec![("a", "1"), ("b", "2")]);
+        assert_eq!(params.len(), 2);
+        assert!(!params.is_empty());
+        assert!(params.has("a"));
+        assert!(!params.has("missing"));
     }
 }

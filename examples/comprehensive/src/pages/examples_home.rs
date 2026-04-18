@@ -163,15 +163,6 @@ pub fn ExamplesHome() -> Html {
                         lines="124 LOC"
                         concepts={vec!["Component Syntax", "Function Syntax", "Auto Active", "Type-Safe Routing"]}
                     />
-                    <ExampleCard
-                        route={Route::WithMacrosExample}
-                        title="With Macros"
-                        desc="Enable the macros feature to reduce boilerplate by ~75%. Declarative macros generate navigation structures from simple route-label pairs."
-                        tag="macros"
-                        tag_color="purple"
-                        lines="~80 LOC"
-                        concepts={vec!["nav_list!", "nav_menu!", "nav_tabs!", "breadcrumbs!", "nav_pagination!"]}
-                    />
                 </div>
             </div>
 
@@ -246,7 +237,7 @@ pub fn ExamplesHome() -> Html {
                         <tr>
                             <td><code>{ "Compile Time" }</code></td>
                             <td>{ "Negligible" }</td>
-                            <td>{ "No procedural macros in core; declarative macros expand at compile time" }</td>
+                            <td>{ "No proc-macro dependency required for standard component usage" }</td>
                         </tr>
                         <tr>
                             <td><code>{ "Memory" }</code></td>

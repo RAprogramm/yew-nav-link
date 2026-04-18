@@ -2,7 +2,6 @@
 
 const SOURCES: &[&str] = &[
     include_str!("../../../../../src/lib.rs"),
-    include_str!("../../../../../src/lib_macros.rs"),
     include_str!("../../../../../src/nav_link.rs"),
     include_str!("../../../../../src/attrs.rs"),
     include_str!("../../../../../src/errors.rs"),
@@ -36,14 +35,12 @@ pub struct ApiStats {
     pub fns: usize,
     pub structs: usize,
     pub enums: usize,
-    pub macros: usize,
 }
 
 pub fn count_api_items() -> ApiStats {
     let mut fns = 0usize;
     let mut structs = 0usize;
     let mut enums = 0usize;
-    let mut macros = 0usize;
     for src in SOURCES {
         for line in src.lines() {
             let t = line.trim();
@@ -56,15 +53,7 @@ pub fn count_api_items() -> ApiStats {
             if t.starts_with("pub enum ") {
                 enums += 1;
             }
-            if t.starts_with("#[macro_export]") {
-                macros += 1;
-            }
         }
     }
-    ApiStats {
-        fns,
-        structs,
-        enums,
-        macros,
-    }
+    ApiStats { fns, structs, enums }
 }

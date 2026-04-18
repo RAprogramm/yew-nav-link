@@ -37,7 +37,7 @@ pub enum NavError {
     /// A route string could not be parsed. Contains a diagnostic message.
     InvalidRoute(String),
     /// Navigation was cancelled before completion.
-    NavigationCancelled
+    NavigationCancelled,
 }
 
 impl std::fmt::Display for NavError {
@@ -45,7 +45,7 @@ impl std::fmt::Display for NavError {
         match self {
             NavError::RouteNotFound => write!(f, "route not found"),
             NavError::InvalidRoute(msg) => write!(f, "invalid route: {}", msg),
-            NavError::NavigationCancelled => write!(f, "navigation cancelled")
+            NavError::NavigationCancelled => write!(f, "navigation cancelled"),
         }
     }
 }
@@ -71,3 +71,42 @@ impl NavError {
 
 /// A convenience alias for `Result<T, NavError>`.
 pub type NavResult<T> = Result<T, NavError>;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn display_messages_are_stable() {
+        assert_eq!(NavError::RouteNotFound.to_string(), "route not found");
+        assert_eq!(
+            NavError::InvalidRoute("bad".to_string()).to_string(),
+            "invalid route: bad"
+        );
+        assert_eq!(
+            NavError::NavigationCancelled.to_string(),
+            "navigation cancelled"
+        );
+    }
+
+    #[test]
+    fn constructor_helpers_build_expected_variants() {
+        assert_eq!(NavError::route_not_found(), NavError::RouteNotFound);
+        assert_eq!(
+            NavError::invalid_route("oops"),
+            NavError::InvalidRoute("oops".to_string())
+        );
+        assert_eq!(
+            NavError::navigation_cancelled(),
+            NavError::NavigationCancelled
+        );
+    }
+
+    #[test]
+    fn nav_result_alias_accepts_ok_and_error() {
+        let ok_value: NavResult<u8> = Ok(7);
+        let err_value: NavResult<u8> = Err(NavError::route_not_found());
+        assert_eq!(ok_value, Ok(7));
+        assert_eq!(err_value, Err(NavError::RouteNotFound));
+    }
+}
