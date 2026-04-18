@@ -42,7 +42,7 @@ mod tests {
     fn props_equality() {
         let props1: NavLinkProps<TestRoute> = NavLinkProps {
             to:           TestRoute::Home,
-            children:     Default::default(),
+            children:     Children::default(),
             partial:      false,
             class:        "nav-link",
             active_class: "active",

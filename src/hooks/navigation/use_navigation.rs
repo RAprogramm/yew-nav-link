@@ -158,12 +158,12 @@ mod tests {
         }
 
         let nav = Navigation::<TestRoute> {
-            go_back:    Callback::from(|_| {}),
-            go_forward: Callback::from(|_| {}),
+            go_back:    Callback::from(|()| {}),
+            go_forward: Callback::from(|()| {}),
             _marker:    PhantomData
         };
 
-        let debug_str = format!("{:?}", nav);
+        let debug_str = format!("{nav:?}");
         assert!(debug_str.contains("Navigation"));
     }
 }
