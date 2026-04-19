@@ -59,7 +59,7 @@ impl NavLinkAttrs {
 
     /// Sets the `id` attribute on the link element.
     #[must_use]
-    pub fn with_id(mut self, id: &'static str) -> Self {
+    pub const fn with_id(mut self, id: &'static str) -> Self {
         self.id = Some(id);
         self
     }
@@ -68,21 +68,21 @@ impl NavLinkAttrs {
     ///
     /// Common values: `"page"`, `"step"`, `"location"`.
     #[must_use]
-    pub fn with_aria_current(mut self, value: &'static str) -> Self {
+    pub const fn with_aria_current(mut self, value: &'static str) -> Self {
         self.aria_current = Some(value);
         self
     }
 
     /// Sets the `data-toggle` attribute on the link element.
     #[must_use]
-    pub fn with_data_toggle(mut self, value: &'static str) -> Self {
+    pub const fn with_data_toggle(mut self, value: &'static str) -> Self {
         self.data_toggle = Some(value);
         self
     }
 
     /// Sets the ARIA `role` attribute on the link element.
     #[must_use]
-    pub fn with_role(mut self, value: &'static str) -> Self {
+    pub const fn with_role(mut self, value: &'static str) -> Self {
         self.role = Some(value);
         self
     }
@@ -120,21 +120,21 @@ impl NavItemAttrs {
 
     /// Sets the `id` attribute on the item element.
     #[must_use]
-    pub fn with_id(mut self, id: &'static str) -> Self {
+    pub const fn with_id(mut self, id: &'static str) -> Self {
         self.id = Some(id);
         self
     }
 
     /// Sets the ARIA `role` attribute on the item element.
     #[must_use]
-    pub fn with_role(mut self, value: &'static str) -> Self {
+    pub const fn with_role(mut self, value: &'static str) -> Self {
         self.role = Some(value);
         self
     }
 
     /// Marks the navigation item as disabled.
     #[must_use]
-    pub fn disabled(mut self) -> Self {
+    pub const fn disabled(mut self) -> Self {
         self.disabled = true;
         self
     }
@@ -170,14 +170,14 @@ impl NavListAttrs {
 
     /// Sets the `id` attribute on the list element.
     #[must_use]
-    pub fn with_id(mut self, id: &'static str) -> Self {
+    pub const fn with_id(mut self, id: &'static str) -> Self {
         self.id = Some(id);
         self
     }
 
     /// Sets the `aria-label` attribute on the list element.
     #[must_use]
-    pub fn with_aria_label(mut self, label: &'static str) -> Self {
+    pub const fn with_aria_label(mut self, label: &'static str) -> Self {
         self.aria_label = Some(label);
         self
     }

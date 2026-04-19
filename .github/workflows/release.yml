@@ -171,7 +171,7 @@ jobs:
   release:
     name: 🚀 GitHub Release
     runs-on: ubuntu-latest
-    needs: [publish, changelog]
+    needs: [publish, changelog, version-check]
     permissions:
       contents: write
       discussions: write
@@ -246,7 +246,7 @@ jobs:
   notify:
     name: 🔔 Notifications
     runs-on: ubuntu-latest
-    needs: release
+    needs: [release, version-check]
     if: always()
     
     steps:
@@ -272,7 +272,7 @@ jobs:
 
   deploy-pages:
     name: 🌐 Deploy Demo
-    needs: release
+    needs: [release, version-check]
     if: always()
     uses: ./.github/workflows/pages.yml
     permissions:

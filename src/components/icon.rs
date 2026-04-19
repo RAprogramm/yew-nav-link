@@ -1,4 +1,4 @@
-//! # NavIcon
+//! # `NavIcon`
 //!
 //! Icon wrapper for embedding icons in navigation items.
 //! Renders an `<i>` element with `aria-hidden="true"` and a configurable size
@@ -46,7 +46,7 @@
 //!
 //! # Props
 //!
-//! **NavIcon:**
+//! **`NavIcon`:**
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
@@ -55,7 +55,7 @@
 //! | `classes` | `Classes` | — | Additional CSS classes |
 //! | `children` | `Children` | — | Content when `name` is `None` |
 //!
-//! **NavLinkWithIcon:**
+//! **`NavLinkWithIcon`:**
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
@@ -105,11 +105,11 @@ pub enum NavIconSize {
 }
 
 impl NavIconSize {
-    fn as_class(&self) -> &'static str {
+    const fn as_class(self) -> &'static str {
         match self {
-            NavIconSize::Small => "nav-icon-sm",
-            NavIconSize::Medium => "nav-icon-md",
-            NavIconSize::Large => "nav-icon-lg"
+            Self::Small => "nav-icon-sm",
+            Self::Medium => "nav-icon-md",
+            Self::Large => "nav-icon-lg"
         }
     }
 }

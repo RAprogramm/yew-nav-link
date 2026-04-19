@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, hash_map::Iter};
 
 use yew::prelude::*;
 use yew_router::prelude::*;
@@ -23,7 +23,7 @@ impl RouteParams {
         self.0
             .get(key)
             .and_then(|vals| vals.first())
-            .map(|s| s.as_str())
+            .map(String::as_str)
     }
 
     /// Check if a parameter exists.
@@ -51,13 +51,22 @@ impl RouteParams {
     }
 }
 
+impl<'a> IntoIterator for &'a RouteParams {
+    type Item = (&'a String, &'a Vec<String>);
+    type IntoIter = Iter<'a, String, Vec<String>>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.0.iter()
+    }
+}
+
 /// Returns route parameters from the current URL.
 ///
 /// Extracts parameters from routes like `/users/:id` into a map.
 #[hook]
 pub fn use_route_params() -> RouteParams {
     let current_url = use_location();
-    let _path = current_url.as_ref().map(|l| l.path()).unwrap_or("");
+    let _path = current_url.as_ref().map_or("", |l| l.path());
     let params = HashMap::new();
     RouteParams(params)
 }
@@ -108,7 +117,7 @@ mod tests {
     #[test]
     fn route_params_debug() {
         let rp = RouteParams(HashMap::new());
-        let debug_str = format!("{:?}", rp);
+        let debug_str = format!("{rp:?}");
         assert!(debug_str.contains("RouteParams"));
     }
 
@@ -123,5 +132,54 @@ mod tests {
         let rp2 = RouteParams(params2);
 
         assert_eq!(rp1, rp2);
+    }
+
+    #[test]
+    fn use_route_params_returns_route_params() {
+        let _ = use_route_params();
+    }
+
+    #[test]
+    fn route_params_get_none() {
+        let rp = RouteParams(HashMap::new());
+        assert_eq!(rp.get("nonexistent"), None);
+    }
+
+    #[test]
+    fn route_params_get_one_none() {
+        let rp = RouteParams(HashMap::new());
+        assert_eq!(rp.get_one("nonexistent"), None);
+    }
+
+    #[test]
+    fn route_params_contains_key_false() {
+        let rp = RouteParams(HashMap::new());
+        assert!(!rp.contains_key("nonexistent"));
+    }
+
+    #[test]
+    fn route_params_empty_string_key() {
+        let mut params = HashMap::new();
+        params.insert(String::new(), vec!["value".to_string()]);
+        let rp = RouteParams(params);
+        assert!(rp.contains_key(""));
+    }
+
+    #[test]
+    fn route_params_multiple_entries() {
+        let mut params = HashMap::new();
+        params.insert("a".to_string(), vec!["1".to_string()]);
+        params.insert("b".to_string(), vec!["2".to_string()]);
+        let rp = RouteParams(params);
+        assert_eq!(rp.len(), 2);
+    }
+
+    #[test]
+    fn route_params_into_iter() {
+        let mut params = HashMap::new();
+        params.insert("key".to_string(), vec!["value".to_string()]);
+        let rp = RouteParams(params);
+        let count = rp.into_iter().count();
+        assert_eq!(count, 1);
     }
 }

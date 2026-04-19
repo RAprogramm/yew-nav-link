@@ -3,17 +3,17 @@ use yew::prelude::*;
 #[derive(Clone, PartialEq)]
 pub enum FileTreeNode {
     Dir {
-        name: String,
-        children: Vec<FileTreeNode>,
+        name:     String,
+        children: Vec<FileTreeNode>
     },
     File {
-        name: String,
-    },
+        name: String
+    }
 }
 
 #[derive(Properties, PartialEq)]
 pub struct FileTreeProps {
-    pub nodes: Vec<FileTreeNode>,
+    pub nodes: Vec<FileTreeNode>
 }
 
 #[function_component]
@@ -27,12 +27,17 @@ pub fn FileTree(props: &FileTreeProps) -> Html {
 
 fn render_node(node: &FileTreeNode, depth: usize) -> Html {
     match node {
-        FileTreeNode::Dir { name, children } => {
+        FileTreeNode::Dir {
+            name,
+            children
+        } => {
             html! {
                 <DirNode depth={depth} name={name.clone()} children={children.clone()} />
             }
         }
-        FileTreeNode::File { name } => {
+        FileTreeNode::File {
+            name
+        } => {
             html! {
                 <FileNode depth={depth} name={name.clone()} />
             }
@@ -42,9 +47,9 @@ fn render_node(node: &FileTreeNode, depth: usize) -> Html {
 
 #[derive(Properties, PartialEq)]
 struct DirNodeProps {
-    depth: usize,
-    name: String,
-    children: Vec<FileTreeNode>,
+    depth:    usize,
+    name:     String,
+    children: Vec<FileTreeNode>
 }
 
 #[function_component]
@@ -54,7 +59,7 @@ fn DirNode(props: &DirNodeProps) -> Html {
 
     let toggle = {
         let is_open = is_open.clone();
-        Callback::from(move |_| is_open.set(!*is_open))
+        Callback::from(move |()| is_open.set(!*is_open))
     };
 
     html! {
@@ -87,7 +92,7 @@ fn DirNode(props: &DirNodeProps) -> Html {
 #[derive(Properties, PartialEq)]
 struct FileNodeProps {
     depth: usize,
-    name: String,
+    name:  String
 }
 
 fn file_icon(name: &str) -> Html {
@@ -122,7 +127,7 @@ fn file_icon(name: &str) -> Html {
             <svg class="file-tree-icon" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
                 <path d="M3.75 1.5a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h8.5a.25.25 0 0 0 .25-.25V4.664a.25.25 0 0 0-.073-.177l-4.5-4.5a.25.25 0 0 0-.177-.073H3.75ZM1 1.75C1 .784 1.784 0 2.75 0h5.5c.331 0 .649.132.884.367l4.5 4.5c.235.235.367.553.367.884V14.25c0 .966-.784 1.75-1.75 1.75h-8.5A1.75 1.75 0 0 1 1 14.25Z"/>
             </svg>
-        },
+        }
     }
 }
 

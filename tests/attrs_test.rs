@@ -61,14 +61,14 @@ fn test_nav_link_attrs_chained() {
 #[test]
 fn test_nav_link_attrs_clone() {
     let attrs1 = NavLinkAttrs::new().with_class("test");
-    let attrs2 = attrs1.clone();
+    let attrs2 = attrs1;
     assert!(attrs2.class.contains("test"));
 }
 
 #[test]
 fn test_nav_link_attrs_debug() {
     let attrs = NavLinkAttrs::new().with_class("test");
-    let debug_str = format!("{:?}", attrs);
+    let debug_str = format!("{attrs:?}");
     assert!(debug_str.contains("NavLinkAttrs"));
 }
 
@@ -122,14 +122,14 @@ fn test_nav_item_attrs_chained() {
 #[test]
 fn test_nav_item_attrs_clone() {
     let attrs1 = NavItemAttrs::new().with_class("clone-test");
-    let attrs2 = attrs1.clone();
+    let attrs2 = attrs1;
     assert!(attrs2.class.contains("clone-test"));
 }
 
 #[test]
 fn test_nav_item_attrs_debug() {
     let attrs = NavItemAttrs::new().with_class("test");
-    let debug_str = format!("{:?}", attrs);
+    let debug_str = format!("{attrs:?}");
     assert!(debug_str.contains("NavItemAttrs"));
 }
 
@@ -174,13 +174,13 @@ fn test_nav_list_attrs_chained() {
 #[test]
 fn test_nav_list_attrs_clone() {
     let attrs1 = NavListAttrs::new().with_class("clone");
-    let attrs2 = attrs1.clone();
+    let attrs2 = attrs1;
     assert!(attrs2.class.contains("clone"));
 }
 
 #[test]
 fn test_nav_list_attrs_debug() {
     let attrs = NavListAttrs::new().with_class("test");
-    let debug_str = format!("{:?}", attrs);
+    let debug_str = format!("{attrs:?}");
     assert!(debug_str.contains("NavListAttrs"));
 }

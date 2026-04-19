@@ -76,8 +76,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Update dependency graph
-        uses: actions/dependency-submission@v4
-        with:
-          file: Cargo.lock
-          tool: cargo
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Generate dependency list
+        run: |
+          cargo tree --format "{p}@{p}" > dependencies.txt
+          echo "Dependencies listed: $(wc -l < dependencies.txt)"

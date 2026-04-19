@@ -1,4 +1,4 @@
-//! # NavBadge
+//! # `NavBadge`
 //!
 //! Small colored label for showing counts, statuses, or labels inside
 //! navigation links. Renders a `<span>` you can place anywhere inside

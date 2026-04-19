@@ -12,7 +12,7 @@ pub struct KeyboardNavConfig {
 impl KeyboardNavConfig {
     /// Creates a new config with wrapping enabled and horizontal orientation.
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             wrap:     true,
             vertical: false
@@ -21,14 +21,14 @@ impl KeyboardNavConfig {
 
     /// Sets whether navigation wraps around at boundaries.
     #[must_use]
-    pub fn with_wrap(mut self, wrap: bool) -> Self {
+    pub const fn with_wrap(mut self, wrap: bool) -> Self {
         self.wrap = wrap;
         self
     }
 
     /// Sets whether navigation is vertical instead of horizontal.
     #[must_use]
-    pub fn with_vertical(mut self, vertical: bool) -> Self {
+    pub const fn with_vertical(mut self, vertical: bool) -> Self {
         self.vertical = vertical;
         self
     }

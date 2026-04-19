@@ -69,7 +69,6 @@ comprehensive/
         ├── bootstrap_example.rs
         ├── tailwind_example.rs
         ├── nested_routes_example.rs
-        ├── with_macros_example.rs
         ├── examples_home.rs
         └── ... (component docs)
 ```

@@ -26,8 +26,6 @@ pub enum Route {
     BreadcrumbsDoc,
     #[at("/utils")]
     UtilsDoc,
-    #[at("/macros")]
-    MacrosDoc,
     #[at("/examples")]
     ExamplesHome,
     #[at("/examples/basic")]
@@ -38,8 +36,6 @@ pub enum Route {
     TailwindExample,
     #[at("/examples/nested-routes")]
     NestedRoutesExample,
-    #[at("/examples/with-macros")]
-    WithMacrosExample,
     #[at("/features/custom-css")]
     CustomCssFeatures,
     #[at("/features/navigation-hooks")]

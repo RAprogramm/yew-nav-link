@@ -58,7 +58,7 @@ jobs:
       - name: Setup Rust nightly
         uses: dtolnay/rust-toolchain@nightly
         with:
-          components: rustfmt, clippy
+          components: rustfmt
 
       - name: Cache dependencies
         uses: Swatinem/rust-cache@v2
@@ -67,6 +67,6 @@ jobs:
         run: |
           cargo +nightly build --all-features --all-targets
 
-      - name: Run nightly clippy
+      - name: Run clippy
         run: |
-          cargo +nightly clippy --all-features --all-targets -- -D warnings
+          cargo clippy --all-features --all-targets -- -D warnings
