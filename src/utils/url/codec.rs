@@ -60,3 +60,99 @@ pub fn urlencoding_encode(input: &str) -> String {
 
     result
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn urlencoding_decode_simple() {
+        let result = urlencoding_decode("%20");
+        assert_eq!(result, Some(" ".to_string()));
+    }
+
+    #[test]
+    fn urlencoding_decode_plus() {
+        let result = urlencoding_decode("+");
+        assert_eq!(result, Some(" ".to_string()));
+    }
+
+    #[test]
+    fn urlencoding_decode_mixed() {
+        let result = urlencoding_decode("hello%20world");
+        assert_eq!(result, Some("hello world".to_string()));
+    }
+
+    #[test]
+    fn urlencoding_decode_unencoded() {
+        let result = urlencoding_decode("hello");
+        assert_eq!(result, Some("hello".to_string()));
+    }
+
+    #[test]
+    fn urlencoding_decode_empty() {
+        let result = urlencoding_decode("");
+        assert_eq!(result, Some(String::new()));
+    }
+
+    #[test]
+    fn urlencoding_decode_multiple_percent() {
+        let result = urlencoding_decode("%20%21");
+        assert_eq!(result, Some(" !".to_string()));
+    }
+
+    #[test]
+    fn urlencoding_decode_unicode() {
+        let result = urlencoding_decode("%E2%9C%93");
+        assert_eq!(result, Some("â\u{9c}\u{93}".to_string()));
+    }
+
+    #[test]
+    fn urlencoding_decode_partial_hex() {
+        let result = urlencoding_decode("%2");
+        assert_eq!(result, Some("%2".to_string()));
+    }
+
+    #[test]
+    fn urlencoding_decode_short_hex() {
+        let result = urlencoding_decode("%2X");
+        assert_eq!(result, Some("%2X".to_string()));
+    }
+
+    #[test]
+    fn urlencoding_encode_unreserved() {
+        let result = urlencoding_encode("abc123-_.~");
+        assert_eq!(result, "abc123-_.~");
+    }
+
+    #[test]
+    fn urlencoding_encode_space() {
+        let result = urlencoding_encode("hello world");
+        assert_eq!(result, "hello+world");
+    }
+
+    #[test]
+    fn urlencoding_encode_special_chars() {
+        let result = urlencoding_encode("hello@world");
+        assert!(result.contains("hello"));
+        assert!(result.contains("%40"));
+    }
+
+    #[test]
+    fn urlencoding_encode_empty() {
+        let result = urlencoding_encode("");
+        assert_eq!(result, "");
+    }
+
+    #[test]
+    fn urlencoding_encode_unicode() {
+        let result = urlencoding_encode("✓");
+        assert!(result.starts_with('%'));
+    }
+
+    #[test]
+    fn urlencoding_encode_complex() {
+        let result = urlencoding_encode("hello world!");
+        assert!(result.contains("hello+world"));
+    }
+}

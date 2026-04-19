@@ -45,4 +45,17 @@ mod tests {
         let cloned = m;
         assert_eq!(m, cloned);
     }
+
+    #[test]
+    fn match_display() {
+        assert_eq!(format!("{}", Match::Exact), "exact");
+        assert_eq!(format!("{}", Match::Partial), "partial");
+    }
+
+    #[test]
+    fn match_copy() {
+        let m = Match::Exact;
+        let copied = m;
+        assert_eq!(m, copied);
+    }
 }

@@ -59,4 +59,10 @@ mod tests {
         let html = nav_link(TestRoute::Home, "", Match::Exact);
         assert!(matches!(html, Html::VComp(_)));
     }
+
+    #[test]
+    fn nav_link_partial_match() {
+        let html = nav_link(TestRoute::Home, "Home", Match::Partial);
+        assert!(matches!(html, Html::VComp(_)));
+    }
 }

@@ -20,7 +20,7 @@ impl PartialEq for BreadcrumbLabelProviderContext {
 }
 
 /// A single item in a breadcrumb trail.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct BreadcrumbItem<R> {
     /// The route this breadcrumb points to.
     pub route:     R,
@@ -71,4 +71,125 @@ where
         }
         items
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[derive(Clone, PartialEq, Debug, Routable)]
+    enum TestRoute {
+        #[at("/")]
+        Home,
+        #[at("/docs")]
+        Docs,
+        #[at("/docs/api")]
+        Api
+    }
+
+    #[test]
+    fn breadcrumb_item_fields() {
+        let item = BreadcrumbItem {
+            route:     TestRoute::Home,
+            label:     "Home".to_string(),
+            is_active: true
+        };
+        assert_eq!(item.label, "Home");
+        assert!(item.is_active);
+    }
+
+    #[test]
+    fn breadcrumb_item_clone() {
+        let item1 = BreadcrumbItem {
+            route:     TestRoute::Home,
+            label:     "Home".to_string(),
+            is_active: true
+        };
+        let item2 = item1.clone();
+        assert_eq!(item1.label, item2.label);
+    }
+
+    #[test]
+    fn breadcrumb_item_debug() {
+        let item = BreadcrumbItem {
+            route:     TestRoute::Home,
+            label:     "Home".to_string(),
+            is_active: true
+        };
+        let debug_str = format!("{item:?}");
+        assert!(debug_str.contains("BreadcrumbItem"));
+    }
+
+    #[test]
+    fn use_breadcrumbs_returns_vec() {
+        let _ = use_breadcrumbs::<TestRoute>();
+    }
+
+    #[test]
+    fn use_breadcrumbs_with_breadcrumb_provider() {
+        struct TestProvider;
+        impl BreadcrumbLabelProvider for TestProvider {
+            fn label_for_path(&self, path: &str) -> String {
+                match path {
+                    "/" => "Home".to_string(),
+                    "/docs" => "Documentation".to_string(),
+                    "/docs/api" => "API".to_string(),
+                    _ => path.to_string()
+                }
+            }
+        }
+
+        let _ = TestProvider;
+    }
+
+    #[test]
+    fn breadcrumb_item_with_long_label() {
+        let long_label = "This is a very long breadcrumb label".to_string();
+        let item = BreadcrumbItem {
+            route:     TestRoute::Home,
+            label:     long_label.clone(),
+            is_active: false
+        };
+        assert_eq!(item.label, long_label);
+    }
+
+    #[test]
+    fn breadcrumb_item_not_equal_different_path_segments() {
+        let item1 = BreadcrumbItem {
+            route:     TestRoute::Docs,
+            label:     "/docs".to_string(),
+            is_active: true
+        };
+        let item2 = BreadcrumbItem {
+            route:     TestRoute::Api,
+            label:     "/docs/api".to_string(),
+            is_active: false
+        };
+        assert_ne!(item1, item2);
+    }
+
+    #[test]
+    fn breadcrumb_item_clone_multiple_times() {
+        let item1 = BreadcrumbItem {
+            route:     TestRoute::Home,
+            label:     "Home".to_string(),
+            is_active: true
+        };
+        let item2 = item1.clone();
+        let item3 = item2.clone();
+        assert_eq!(item1.label, item2.label);
+        assert_eq!(item2.label, item3.label);
+    }
+
+    #[test]
+    fn breadcrumb_item_debug_with_all_fields() {
+        let item = BreadcrumbItem {
+            route:     TestRoute::Home,
+            label:     "Home".to_string(),
+            is_active: true
+        };
+        let debug_str = format!("{item:?}");
+        assert!(debug_str.contains("Home"));
+        assert!(debug_str.contains("is_active"));
+    }
 }

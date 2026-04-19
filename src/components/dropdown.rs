@@ -268,4 +268,53 @@ mod tests {
 
         assert!(props.classes.is_empty());
     }
+
+    #[test]
+    fn nav_dropdown_with_custom_id() {
+        let props = NavDropdownProps {
+            classes:     Classes::default(),
+            toggle_text: "Menu",
+            id:          Some("my-dropdown"),
+            children:    Children::new(vec![])
+        };
+
+        assert_eq!(props.id, Some("my-dropdown"));
+    }
+
+    #[test]
+    fn nav_dropdown_item_with_classes() {
+        let mut classes = Classes::new();
+        classes.push("custom-item");
+        let props = NavDropdownItemProps {
+            classes,
+            disabled: false,
+            children: Children::new(vec![])
+        };
+
+        assert!(props.classes.contains("custom-item"));
+    }
+
+    #[test]
+    fn nav_dropdown_disabled_item() {
+        let props = NavDropdownItemProps {
+            classes:  Classes::default(),
+            disabled: true,
+            children: Children::new(vec![])
+        };
+
+        assert!(props.disabled);
+    }
+
+    #[test]
+    fn nav_dropdown_with_children() {
+        let children = Children::new(vec![html! { <div>{ "child" }</div> }]);
+        let props = NavDropdownProps {
+            classes: Classes::default(),
+            toggle_text: "Test",
+            id: None,
+            children
+        };
+
+        assert_eq!(props.children.len(), 1);
+    }
 }

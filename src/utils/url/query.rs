@@ -175,4 +175,84 @@ mod tests {
         params.remove("key");
         assert!(!params.has("key"));
     }
+
+    #[test]
+    fn query_params_keys() {
+        let params = QueryParams::parse("a=1&b=2");
+        assert_eq!(params.keys().count(), 2);
+    }
+
+    #[test]
+    fn query_params_values() {
+        let params = QueryParams::parse("a=1&b=2");
+        assert_eq!(params.values().count(), 2);
+    }
+
+    #[test]
+    fn query_params_default() {
+        let params = QueryParams::default();
+        assert!(params.is_empty());
+    }
+
+    #[test]
+    fn query_params_len() {
+        let params = QueryParams::parse("a=1&b=2");
+        assert_eq!(params.len(), 2);
+    }
+
+    #[test]
+    fn query_params_parse_with_leading_question_mark() {
+        let params = QueryParams::parse("?page=1&limit=10");
+        assert_eq!(params.get("page"), Some("1"));
+        assert_eq!(params.get("limit"), Some("10"));
+    }
+
+    #[test]
+    fn query_params_parse_key_without_value() {
+        let params = QueryParams::parse("key&other=value");
+        assert_eq!(params.get("key"), Some(""));
+        assert_eq!(params.get("other"), Some("value"));
+    }
+
+    #[test]
+    fn query_params_parse_special_chars() {
+        let params = QueryParams::parse("search=hello%20world");
+        assert_eq!(params.get("search"), Some("hello world"));
+    }
+
+    #[test]
+    fn query_params_set_update() {
+        let mut params = QueryParams::new();
+        params.set("key", "value1");
+        params.set("key", "value2");
+        assert_eq!(params.get("key"), Some("value2"));
+    }
+
+    #[test]
+    fn query_params_to_string_empty() {
+        let params = QueryParams::new();
+        assert_eq!(params.to_query_string(), "");
+    }
+
+    #[test]
+    fn query_params_has() {
+        let params = QueryParams::parse("key=value");
+        assert!(params.has("key"));
+        assert!(!params.has("nonexistent"));
+    }
+
+    #[test]
+    fn query_params_iter() {
+        let params = QueryParams::parse("a=1&b=2");
+        assert_eq!(params.iter().count(), 2);
+    }
+
+    #[test]
+    fn query_params_display() {
+        let mut params = QueryParams::new();
+        params.set("key", "value");
+        let display_str = params.to_string();
+        assert!(display_str.starts_with('?'));
+        assert!(display_str.contains("key=value"));
+    }
 }

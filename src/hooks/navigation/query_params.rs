@@ -168,4 +168,56 @@ mod tests {
 
         assert_eq!(qp1, qp2);
     }
+
+    #[test]
+    fn use_query_params_returns_query_params() {
+        let _ = use_query_params();
+    }
+
+    #[test]
+    fn query_params_get_none() {
+        let qp = QueryParams(HashMap::new());
+        assert_eq!(qp.get("nonexistent"), None);
+    }
+
+    #[test]
+    fn query_params_get_one_none() {
+        let qp = QueryParams(HashMap::new());
+        assert_eq!(qp.get_one("nonexistent"), None);
+    }
+
+    #[test]
+    fn query_params_contains_key_false() {
+        let mut params = HashMap::new();
+        params.insert("q".to_string(), vec!["rust".to_string()]);
+        let qp = QueryParams(params);
+        assert!(!qp.contains_key("nonexistent"));
+    }
+
+    #[test]
+    fn query_params_empty_string_key() {
+        let mut params = HashMap::new();
+        params.insert(String::new(), vec!["value".to_string()]);
+        let qp = QueryParams(params);
+        assert!(qp.contains_key(""));
+    }
+
+    #[test]
+    fn query_params_multiple_entries() {
+        let mut params = HashMap::new();
+        params.insert("a".to_string(), vec!["1".to_string()]);
+        params.insert("b".to_string(), vec!["2".to_string()]);
+        params.insert("c".to_string(), vec!["3".to_string()]);
+        let qp = QueryParams(params);
+        assert_eq!(qp.len(), 3);
+    }
+
+    #[test]
+    fn query_params_into_iter() {
+        let mut params = HashMap::new();
+        params.insert("key".to_string(), vec!["value".to_string()]);
+        let qp = QueryParams(params);
+        let count = qp.into_iter().count();
+        assert_eq!(count, 1);
+    }
 }

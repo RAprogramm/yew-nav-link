@@ -133,4 +133,53 @@ mod tests {
 
         assert_eq!(rp1, rp2);
     }
+
+    #[test]
+    fn use_route_params_returns_route_params() {
+        let _ = use_route_params();
+    }
+
+    #[test]
+    fn route_params_get_none() {
+        let rp = RouteParams(HashMap::new());
+        assert_eq!(rp.get("nonexistent"), None);
+    }
+
+    #[test]
+    fn route_params_get_one_none() {
+        let rp = RouteParams(HashMap::new());
+        assert_eq!(rp.get_one("nonexistent"), None);
+    }
+
+    #[test]
+    fn route_params_contains_key_false() {
+        let rp = RouteParams(HashMap::new());
+        assert!(!rp.contains_key("nonexistent"));
+    }
+
+    #[test]
+    fn route_params_empty_string_key() {
+        let mut params = HashMap::new();
+        params.insert(String::new(), vec!["value".to_string()]);
+        let rp = RouteParams(params);
+        assert!(rp.contains_key(""));
+    }
+
+    #[test]
+    fn route_params_multiple_entries() {
+        let mut params = HashMap::new();
+        params.insert("a".to_string(), vec!["1".to_string()]);
+        params.insert("b".to_string(), vec!["2".to_string()]);
+        let rp = RouteParams(params);
+        assert_eq!(rp.len(), 2);
+    }
+
+    #[test]
+    fn route_params_into_iter() {
+        let mut params = HashMap::new();
+        params.insert("key".to_string(), vec!["value".to_string()]);
+        let rp = RouteParams(params);
+        let count = rp.into_iter().count();
+        assert_eq!(count, 1);
+    }
 }
