@@ -1,6 +1,6 @@
 //! Documentation metadata for auto-generation.
 //!
-//! Centralized metadata about all library components, hooks, and macros.
+//! Centralized metadata about all library components and hooks.
 //! Used for generating consistent documentation pages and API references.
 
 use crate::routes::Route;
@@ -173,66 +173,6 @@ pub fn all_hooks() -> &'static [HookInfo] {
     )
 }
 
-// ── Macro Metadata ─────────────────────────────────────────────
-
-#[derive(Clone)]
-pub struct MacroInfo {
-    pub name: &'static str,
-    pub description: &'static str,
-    pub since: &'static str,
-    pub feature: Option<&'static str>,
-}
-
-impl MacroInfo {
-    pub fn new(name: &'static str, description: &'static str, since: &'static str) -> Self {
-        Self {
-            name,
-            description,
-            since,
-            feature: None,
-        }
-    }
-
-    pub fn with_feature(mut self, feature: &'static str) -> Self {
-        self.feature = Some(feature);
-        self
-    }
-}
-
-pub fn all_macros() -> &'static [MacroInfo] {
-    Box::leak(
-        vec![
-            MacroInfo::new(
-                "nav_link!",
-                "Function-like syntax for creating navigation links",
-                "0.1.0",
-            )
-            .with_feature("macros"),
-            MacroInfo::new(
-                "nav_list!",
-                "Declarative navigation list with items and dividers",
-                "0.1.0",
-            )
-            .with_feature("macros"),
-            MacroInfo::new(
-                "nav_dropdown!",
-                "Declarative dropdown menu with nested items",
-                "0.1.0",
-            )
-            .with_feature("macros"),
-            MacroInfo::new("nav_tabs!", "Declarative tab navigation", "0.1.0")
-                .with_feature("macros"),
-            MacroInfo::new(
-                "pagination!",
-                "Declarative pagination with ellipsis",
-                "0.1.0",
-            )
-            .with_feature("macros"),
-        ]
-        .into_boxed_slice(),
-    )
-}
-
 // ── Example Metadata ───────────────────────────────────────────
 
 #[derive(Clone)]
@@ -303,12 +243,6 @@ pub fn all_examples() -> &'static [ExampleInfo] {
                 Route::NestedRoutesExample,
                 ExampleCategory::Advanced,
             ),
-            ExampleInfo::new(
-                "With Macros",
-                "Reduce boilerplate by ~75% with declarative macros",
-                Route::WithMacrosExample,
-                ExampleCategory::Advanced,
-            ),
         ]
         .into_boxed_slice(),
     )
@@ -331,12 +265,6 @@ pub fn all_features() -> &'static [FeatureInfo] {
                 name: "default",
                 description: "Default feature set including core functionality",
                 default: true,
-                since: "0.1.0",
-            },
-            FeatureInfo {
-                name: "macros",
-                description: "Declarative macros for reduced boilerplate",
-                default: false,
                 since: "0.1.0",
             },
         ]

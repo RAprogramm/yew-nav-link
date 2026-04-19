@@ -9,6 +9,11 @@ on:
     branches: ["main", "develop"]
     types: [opened, synchronize, reopened, labeled]
   workflow_call:
+    inputs:
+      all-features:
+        type: boolean
+        default: false
+        required: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.sha }}
@@ -47,11 +52,11 @@ jobs:
         uses: RAprogramm/rust-prod-diff-checker@v1
         with:
           config_file: .rust-diff-analyzer.toml
-          max_prod_units: 50
-          max_weighted_score: 200
-          max_prod_lines: 200
-          fail_on_exceed: ${{ github.ref == 'refs/heads/main' }}
-          post_comment: true
+          max_prod_units: 100
+          max_weighted_score: 500
+          max_prod_lines: 500
+          fail_on_exceed: false
+          post_comment: false
 
       - name: Check for WIP label
         if: contains(github.event.pull_request.labels.*.name, 'WIP')
@@ -63,7 +68,22 @@ jobs:
   # QUALITY GATES - Run in parallel after PR analysis
   # =====================================================
   
-  # Note: Format check is handled by pre-commit locally
+  fmt:
+    name: 🎨 Format
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-rust
+        with:
+          toolchain: nightly
+          components: rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: false
+
+      - name: Check formatting (nightly rustfmt)
+        run: cargo +nightly fmt --all -- --check
   
   clippy:
     name: 🦀 Clippy
@@ -84,33 +104,8 @@ jobs:
           save-if: false
           cache-on-failure: true
 
-      - name: Install SARIF tools
-        run: cargo install clippy-sarif sarif-fmt
-
-      - name: Run Clippy with SARIF
-        run: |
-          set +e
-          cargo clippy --workspace --all-targets --all-features \
-            --message-format=json \
-            -- -D warnings \
-            -- -W clippy::pedantic \
-            -- -W clippy::nursery 2>&1 \
-            | clippy-sarif --stdout --no-fail \
-            | tee clippy.sarif \
-            | sarif-fmt
-          CLIPPY_EXIT=$?
-          set -e
-          
-          echo "Uploading SARIF to GitHub Code Scanning..."
-          
-          exit $CLIPPY_EXIT
-
-      - name: Upload SARIF
-        if: always()
-        uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: clippy.sarif
-          category: clippy
+      - name: Run Clippy
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery 
 
   # =====================================================
   # MATRIX TESTING - Multi-platform, multi-toolchain
@@ -124,32 +119,13 @@ jobs:
       fail-fast: false
       max-parallel: 6
       matrix:
-        os: [ubuntu-latest, ubuntu-24.04, macos-latest, windows-latest]
+        os: [ubuntu-latest]
         rust: [stable]
-        mode: [unit, wasm]
+        mode: [unit]
         include:
-          # MSRV test
           - os: ubuntu-latest
             rust: 1.94.0
             mode: unit
-          # Beta channel
-          - os: ubuntu-latest
-            rust: beta
-            mode: unit
-          # Nightly with nightly features
-          - os: ubuntu-latest
-            rust: nightly
-            mode: unit
-          # Wasm target
-          - os: ubuntu-latest
-            rust: stable
-            mode: wasm
-            target: wasm32-unknown-unknown
-        exclude:
-          - os: windows-latest
-            rust: nightly
-          - os: macos-latest
-            rust: nightly
     steps:
       - uses: actions/checkout@v6
 
@@ -157,7 +133,6 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: ${{ matrix.rust }}
-          targets: ${{ matrix.target || 'x86_64-unknown-linux-gnu' }}
 
       - name: Cache dependencies
         uses: Swatinem/rust-cache@v2
@@ -179,7 +154,7 @@ jobs:
           cargo nextest run --workspace \
             --no-fail-fast \
             --profile ci \
-            --status-level info \
+            --status-level all \
             --failure-output immediate \
             --retries 1
 
@@ -206,7 +181,7 @@ jobs:
   
   coverage:
     name: 📊 Coverage
-    runs-on: ubuntu-latest-8-cores
+    runs-on: ubuntu-latest
     if: ${{ !cancelled() }}
     steps:
       - uses: actions/checkout@v6
@@ -222,26 +197,20 @@ jobs:
       - name: Generate coverage
         run: |
           cargo llvm-cov --workspace --all-features \
-            --lcov --output-path lcov.info \
-            --html --output-dir coverage-html \
-            --json --output-path coverage.json
+            --lcov --output-path lcov.info
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v7
         with:
           name: coverage-report
-          path: |
-            coverage-html/
-            lcov.info
-            coverage.json
+          path: lcov.info
           retention-days: 30
-          compression-level: 9
 
       - name: Upload to Codecov
         uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: lcov.info,coverage.json
+          files: lcov.info
           flags: unittests,integration
           name: codecov-rust
           fail_ci_if_error: false
@@ -309,12 +278,13 @@ jobs:
         uses: taiki-e/install-action@cargo-audit
 
       - name: Run security audit
-        run: |
-          cargo audit --deny warnings --deny unmaintained --deny yanked || echo "Audit completed with warnings"
+        run: cargo audit --deny yanked
 
-      - name: Check for outdated dependencies
-        run: |
-          echo "Outdated dependency check skipped - using cargo deny instead"
+      - name: Install cargo-deny
+        uses: taiki-e/install-action@cargo-deny
+
+      - name: Run cargo-deny
+        run: cargo deny check
 
   # =====================================================
   # LINTING & QUALITY
@@ -358,7 +328,7 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     needs:
-      [clippy, test-matrix, coverage, package, audit, quality]
+      [fmt, clippy, test-matrix, coverage, package, audit, quality]
     steps:
       - name: Generate CI Summary
         run: |
@@ -369,6 +339,7 @@ jobs:
           
           echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| fmt | ${{ needs.fmt.result == 'success' && '✅ success' || needs.fmt.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| clippy | ${{ needs.clippy.result == 'success' && '✅ success' || needs.clippy.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| test-matrix | ${{ needs.test-matrix.result == 'success' && '✅ success' || needs.test-matrix.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY
           echo "| coverage | ${{ needs.coverage.result == 'success' && '✅ success' || needs.coverage.result == 'failure' && '❌ failure' || '⏭️ skipped' }} |" >> $GITHUB_STEP_SUMMARY

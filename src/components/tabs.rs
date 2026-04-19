@@ -1,4 +1,4 @@
-//! # NavTabs
+//! # `NavTabs`
 //!
 //! Tab navigation container that wraps [`NavTab`](super::NavTab) items.
 //! Renders a `<ul>` with `role="tablist"` and optional full-width layout.

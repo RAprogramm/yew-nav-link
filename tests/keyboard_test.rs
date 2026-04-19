@@ -19,7 +19,7 @@ fn keyboard_direction_backward() {
 #[test]
 fn keyboard_direction_debug() {
     let forward = KeyboardDirection::Forward;
-    let debug_str = format!("{:?}", forward);
+    let debug_str = format!("{forward:?}");
     assert!(debug_str.contains("Forward"));
 }
 
@@ -86,7 +86,7 @@ fn keyboard_nav_config_partial_eq() {
 #[test]
 fn keyboard_nav_config_debug() {
     let config = KeyboardNavConfig::new().with_wrap(false);
-    let debug_str = format!("{:?}", config);
+    let debug_str = format!("{config:?}");
     assert!(debug_str.contains("KeyboardNavConfig"));
 }
 

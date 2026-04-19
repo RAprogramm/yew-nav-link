@@ -1,4 +1,4 @@
-//! # PageItem
+//! # `PageItem`
 //!
 //! A single page button within a [`Pagination`](super::Pagination) component.
 //! Renders an `<li>` with the `page-item` class and active/disabled state.

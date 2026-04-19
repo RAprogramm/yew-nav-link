@@ -78,13 +78,11 @@ fn switch(route: Route) -> Html {
         Route::HooksDoc => html! { <pages::HooksDoc /> },
         Route::BreadcrumbsDoc => html! { <pages::BreadcrumbsDoc /> },
         Route::UtilsDoc => html! { <pages::UtilsDoc /> },
-        Route::MacrosDoc => html! { <pages::MacrosDoc /> },
         Route::ExamplesHome => html! { <pages::ExamplesHome /> },
         Route::BasicExample => html! { <pages::BasicExample /> },
         Route::BootstrapExample => html! { <pages::BootstrapExample /> },
         Route::TailwindExample => html! { <pages::TailwindExample /> },
         Route::NestedRoutesExample => html! { <pages::NestedRoutesExample /> },
-        Route::WithMacrosExample => html! { <pages::WithMacrosExample /> },
         Route::CustomCssFeatures => html! { <pages::CustomCssFeatures /> },
         Route::NavigationHooks => html! { <pages::NavigationHooks /> },
         Route::CustomBreadcrumbs => html! { <pages::CustomBreadcrumbs /> },
@@ -134,13 +132,6 @@ fn SidebarContent() -> Html {
             </div>
 
             <div class="sidebar-section">
-                <div class="sidebar-section-title">{ "Macros" }</div>
-                <nav>
-                    <NavLink<Route> to={Route::MacrosDoc}>{ "All Macros" }</NavLink<Route>>
-                </nav>
-            </div>
-
-            <div class="sidebar-section">
                 <div class="sidebar-section-title">{ "New in v0.8" }</div>
                 <nav>
                     <NavLink<Route> to={Route::CustomCssFeatures}>{ "Custom CSS Classes" }</NavLink<Route>>
@@ -157,7 +148,6 @@ fn SidebarContent() -> Html {
                     <NavLink<Route> to={Route::BootstrapExample}>{ "Bootstrap 5" }</NavLink<Route>>
                     <NavLink<Route> to={Route::TailwindExample}>{ "Tailwind CSS" }</NavLink<Route>>
                     <NavLink<Route> to={Route::NestedRoutesExample}>{ "Nested Routes" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::WithMacrosExample}>{ "With Macros" }</NavLink<Route>>
                 </nav>
             </div>
         </div>

@@ -1,4 +1,4 @@
-//! # Pagination Page Generation
+//! # `Pagination Page Generation`
 //!
 //! Internal logic for computing which page numbers to display in a
 //! [`Pagination`](super::Pagination) component. Returns a `Vec<u32>` where
@@ -57,7 +57,7 @@ pub fn generate_pages(current: u32, total: u32, siblings: u32) -> Vec<u32> {
 
     // Add middle pages
     for page in start..=end {
-        pages.push(page as u32);
+        pages.push(u32::try_from(page).expect("reason"));
     }
 
     // Add ellipsis before last if needed (end < total_pages - 2 means we need
@@ -117,18 +117,33 @@ mod tests {
         let pages = generate_pages(5, 10, 1);
         assert!(!pages.is_empty());
         assert!(pages.contains(&5));
+        // Check the exact expected value for middle page with 1 sibling
+        assert_eq!(pages, vec![1, 0, 4, 5, 6, 0, 10]);
     }
 
     #[test]
     fn generate_pages_with_ellipsis() {
         let pages = generate_pages(5, 10, 1);
         assert!(!pages.is_empty());
+        assert!(pages.contains(&0));
     }
 
     #[test]
     fn generate_pages_many_siblings() {
         let pages = generate_pages(5, 20, 3);
         assert!(!pages.is_empty());
+        // With 3 siblings around page 5, we expect: [1, 0, 2, 3, 4, 5, 6, 7, 8, 0, 20]
+        // Let's compute: start = 5-3=2, end=5+3=8 -> then we push 1, then since
+        // start=2>3? false -> no ellipsis after first? Wait, the condition for
+        // ellipsis after first is: if start > 3 -> then push ellipsis. 2>3 is false ->
+        // no ellipsis after first. Then we push pages from 2 to 8 ->
+        // 2,3,4,5,6,7,8. Then we check for ellipsis before last: if end <
+        // total_pages-2 -> 8 < 18 -> true -> push ellipsis. Then push last page
+        // 20. So we get: [1, 2,3,4,5,6,7,8,0,20] -> but note we always push 1
+        // at the beginning and then we push from start to end, so we have 1, then 2..8.
+        // Then we push ellipsis and 20.
+        // So the expected is [1,2,3,4,5,6,7,8,0,20]
+        assert_eq!(pages, vec![1, 2, 3, 4, 5, 6, 7, 8, 0, 20]);
     }
 
     #[test]
@@ -136,6 +151,8 @@ mod tests {
         let pages = generate_pages(2, 10, 1);
         assert!(pages.contains(&1));
         assert!(pages.contains(&2));
+        // Expected: [1,2,3,0,10]
+        assert_eq!(pages, vec![1, 2, 3, 0, 10]);
     }
 
     #[test]
@@ -143,6 +160,8 @@ mod tests {
         let pages = generate_pages(9, 10, 1);
         assert!(pages.contains(&9));
         assert!(pages.contains(&10));
+        // Expected: [1,0,8,9,10]
+        assert_eq!(pages, vec![1, 0, 8, 9, 10]);
     }
 
     #[test]
@@ -156,12 +175,58 @@ mod tests {
     fn generate_pages_current_equals_total() {
         let pages = generate_pages(10, 10, 2);
         assert!(pages.contains(&10));
+        // Expected: [1,0,8,9,10]? Let's compute:
+        // total=10, current=10, siblings=2
+        // start: current > (siblings+2) -> 10 > 4 -> true -> start = 10-2=8.
+        // end: current+siblings < total_pages-1 -> 10+2=12 < 9? false -> end=9.
+        // pages: 1, then start=8>3 -> true -> push ellipsis, then 8,9,10 (from start to
+        // end: 8,9,10), then end=9<8? false -> no ellipsis, then push total=10 ->
+        // [1,0,8,9,10,10] -> remove duplicates: [1,0,8,9,10]
+        assert_eq!(pages, vec![1, 0, 8, 9, 10]);
     }
 
     #[test]
     fn generate_pages_siblings_zero() {
         let pages = generate_pages(5, 10, 0);
-        // With 0 siblings, should still show first/last with ellipsis
-        assert!(!pages.is_empty());
+        // With 0 siblings, we expect: [1,0,5,0,10]
+        assert_eq!(pages, vec![1, 0, 5, 0, 10]);
+    }
+
+    #[test]
+    fn generate_pages_no_ellipsis_after_first() {
+        // When start <= 3, we should not add ellipsis after first
+        let pages = generate_pages(2, 10, 1);
+        assert_eq!(pages, vec![1, 2, 3, 0, 10]);
+    }
+
+    #[test]
+    fn generate_pages_no_ellipsis_before_last() {
+        // When end >= total_pages-2, we should not add ellipsis before last
+        let pages = generate_pages(9, 10, 1);
+        assert_eq!(pages, vec![1, 0, 8, 9, 10]);
+    }
+
+    #[test]
+    fn generate_pages_both_ellipsis() {
+        // When we need ellipsis both after first and before last
+        let pages = generate_pages(4, 10, 1);
+        // Expected: [1,3,4,5,0,10]
+        assert_eq!(pages, vec![1, 3, 4, 5, 0, 10]);
+    }
+
+    #[test]
+    fn generate_pages_no_ellipsis_when_total_small() {
+        // When total pages are small enough that we show all pages without ellipsis
+        let pages = generate_pages(2, 4, 1);
+        // Expected: [1,2,3,4]
+        assert_eq!(pages, vec![1, 2, 3, 4]);
+    }
+
+    #[test]
+    fn generate_pages_show_all_when_siblings_large() {
+        // When siblings are large enough to show all pages
+        let pages = generate_pages(3, 5, 10);
+        // Expected: [1,2,3,4,5]
+        assert_eq!(pages, vec![1, 2, 3, 4, 5]);
     }
 }

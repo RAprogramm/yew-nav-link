@@ -1,4 +1,4 @@
-//! # PageLink
+//! # `PageLink`
 //!
 //! Link or span element within a pagination page item.
 //! Renders an `<a>` when `href` is set, otherwise a `<span>`.

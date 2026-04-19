@@ -3,7 +3,7 @@ use std::marker::PhantomData;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-/// Properties for the [`NavLink`] component.
+/// Properties for the [`crate::NavLink`] component.
 #[derive(Properties, Clone, PartialEq, Debug)]
 pub struct NavLinkProps<R: Routable + PartialEq + Clone + 'static> {
     /// Target route for navigation.
@@ -42,7 +42,7 @@ mod tests {
     fn props_equality() {
         let props1: NavLinkProps<TestRoute> = NavLinkProps {
             to:           TestRoute::Home,
-            children:     Default::default(),
+            children:     Children::default(),
             partial:      false,
             class:        "nav-link",
             active_class: "active",

@@ -1,4 +1,4 @@
-/// Path matching strategy for NavLink active state detection.
+/// Path matching strategy for `NavLink` active state detection.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 #[must_use]
 pub enum Match {
@@ -12,8 +12,8 @@ pub enum Match {
 impl std::fmt::Display for Match {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Match::Exact => write!(f, "exact"),
-            Match::Partial => write!(f, "partial")
+            Self::Exact => write!(f, "exact"),
+            Self::Partial => write!(f, "partial")
         }
     }
 }
@@ -44,5 +44,18 @@ mod tests {
         let m = Match::Partial;
         let cloned = m;
         assert_eq!(m, cloned);
+    }
+
+    #[test]
+    fn match_display() {
+        assert_eq!(format!("{}", Match::Exact), "exact");
+        assert_eq!(format!("{}", Match::Partial), "partial");
+    }
+
+    #[test]
+    fn match_copy() {
+        let m = Match::Exact;
+        let copied = m;
+        assert_eq!(m, copied);
     }
 }

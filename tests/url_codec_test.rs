@@ -38,7 +38,7 @@ fn urlencoding_decode_invalid_percent() {
 
 #[test]
 fn urlencoding_decode_empty() {
-    assert_eq!(urlencoding_decode(""), Some("".to_string()));
+    assert_eq!(urlencoding_decode(""), Some(String::new()));
 }
 
 #[test]
@@ -70,7 +70,7 @@ fn urlencoding_encode_special() {
 
 #[test]
 fn urlencoding_encode_empty() {
-    assert_eq!(urlencoding_encode(""), "".to_string());
+    assert_eq!(urlencoding_encode(""), "");
 }
 
 #[test]

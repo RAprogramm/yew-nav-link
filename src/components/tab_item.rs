@@ -1,4 +1,4 @@
-//! # NavTab
+//! # `NavTab`
 //!
 //! A single tab button within a [`NavTabs`](super::NavTabs) container.
 //! Renders a `<li>` with a `<button>` that has proper ARIA attributes
@@ -169,5 +169,70 @@ mod tests {
 
         assert!(props.disabled);
         assert!(!props.active);
+    }
+
+    #[test]
+    fn nav_tab_with_id_and_panel_id() {
+        let props = NavTabProps {
+            classes:  Classes::default(),
+            active:   true,
+            disabled: false,
+            id:       Some("tab-1"),
+            panel_id: Some("panel-1"),
+            children: Children::new(vec![]),
+            onclick:  None
+        };
+
+        assert_eq!(props.id, Some("tab-1"));
+        assert_eq!(props.panel_id, Some("panel-1"));
+    }
+
+    #[test]
+    fn nav_tab_with_custom_classes() {
+        let mut classes = Classes::new();
+        classes.push("custom-tab");
+        let props = NavTabProps {
+            classes,
+            active: false,
+            disabled: false,
+            id: None,
+            panel_id: None,
+            children: Children::new(vec![]),
+            onclick: None
+        };
+
+        assert!(props.classes.contains("custom-tab"));
+    }
+
+    #[test]
+    fn nav_tab_with_callback() {
+        let callback = Callback::from(|_: MouseEvent| {});
+        let props = NavTabProps {
+            classes:  Classes::default(),
+            active:   false,
+            disabled: false,
+            id:       None,
+            panel_id: None,
+            children: Children::new(vec![]),
+            onclick:  Some(callback)
+        };
+
+        assert!(props.onclick.is_some());
+    }
+
+    #[test]
+    fn nav_tab_active_and_disabled() {
+        let props = NavTabProps {
+            classes:  Classes::default(),
+            active:   true,
+            disabled: true,
+            id:       None,
+            panel_id: None,
+            children: Children::new(vec![]),
+            onclick:  None
+        };
+
+        assert!(props.active);
+        assert!(props.disabled);
     }
 }

@@ -26,7 +26,7 @@ pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R
     }
 }
 
-/// Creates a NavLink with the specified match mode.
+/// Creates a `NavLink` with the specified match mode.
 pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(
     to: R,
     children: &str,
@@ -57,6 +57,12 @@ mod tests {
     #[test]
     fn nav_link_empty_text() {
         let html = nav_link(TestRoute::Home, "", Match::Exact);
+        assert!(matches!(html, Html::VComp(_)));
+    }
+
+    #[test]
+    fn nav_link_partial_match() {
+        let html = nav_link(TestRoute::Home, "Home", Match::Partial);
         assert!(matches!(html, Html::VComp(_)));
     }
 }

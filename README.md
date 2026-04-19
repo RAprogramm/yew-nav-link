@@ -2,7 +2,7 @@
 
 # yew-nav-link
 
-Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic active state detection, declarative macros, and a complete component system.
+Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic active state detection and a complete component system.
 
 <div align="center">
 
@@ -28,7 +28,6 @@ Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic acti
   - [Component Syntax](#component-syntax)
   - [Function Syntax](#function-syntax)
   - [Partial Matching](#partial-matching)
-  - [Macros](#macros)
 - [Components](#components)
   - [Core Navigation](#core-navigation)
   - [UI Components](#ui-components)
@@ -56,7 +55,6 @@ Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic acti
 | **NavLink** | Drop-in replacement for Yew Router's `<Link>` with automatic `active` class detection |
 | **Component System** | 15+ ready-to-use UI components (tabs, dropdowns, pagination, badges, icons) |
 | **Hooks** | Reactive hooks for route state, active checking, breadcrumbs, and programmatic navigation |
-| **Macros** | Declarative macros for boilerplate-free navigation (`nav_link!`, `nav_list!`, `nav_tabs!`) |
 | **Utilities** | Path manipulation, URL encoding, keyboard navigation, and query string handling |
 | **Customization** | Custom CSS classes, programmatic navigation, and extensible breadcrumb providers |
 
@@ -68,17 +66,8 @@ The core `NavLink` component eliminates manual active state tracking. It compare
 
 ```toml
 [dependencies]
-yew-nav-link = "0.8"
+yew-nav-link = "0.9"
 ```
-
-With macros:
-
-```toml
-[dependencies]
-yew-nav-link = { version = "0.8", features = ["macros"] }
-```
-
----
 
 ## Requirements
 
@@ -153,38 +142,6 @@ html! {
 ```
 
 Partial matching is segment-aware: `/docs` matches `/docs/api` but **not** `/documentation`.
-
-### Macros
-
-```rust
-use yew_nav_link::{nav_link, nav_links, nav_list, nav_tabs, breadcrumbs, Match};
-
-html! {
-    <nav>
-        { nav_link!(Route::Home, "Home", Match::Exact) }
-        { nav_links![
-            (Route::Home, "Home", Match::Exact),
-            (Route::About, "About", Match::Exact),
-        ] }
-    </nav>
-}
-
-{ nav_list![
-    (Route::Home, "Home", Match::Exact),
-    (Route::About, "About", Match::Exact),
-] }
-
-{ nav_tabs![
-    (Route::Tab1, "Tab 1"),
-    (Route::Tab2, "Tab 2"),
-] }
-
-{ breadcrumbs![
-    (Route::Home, "Home"),
-    (Route::Docs, "Docs"),
-    (Route::DocsApi, "API"),
-] }
-```
 
 ### Custom CSS Classes
 
@@ -354,14 +311,13 @@ Define your own `nav-link` and `active` styles:
 
 ```
 yew-nav-link
-├── nav_link          # Core NavLink component + Match enum
+├── active_link       # Core NavLink component + Match enum
 ├── nav               # Primitives: NavList, NavItem, NavDivider
 ├── components        # UI: Badge, Dropdown, Icon, Tabs, Pagination
-├── hooks             # Reactive: use_route_info, use_is_active, breadcrumbs
+├── hooks             # Reactive and programmatic route/navigation helpers
 ├── utils             # Path, URL, keyboard navigation utilities
 ├── attrs             # Type-safe attribute builders
-├── errors            # NavError, NavResult types
-└── macros            # Declarative: nav_link!, nav_list!, nav_tabs!
+└── errors            # NavError, NavResult types
 ```
 
 See the source code and inline documentation for detailed design documentation.

@@ -57,7 +57,7 @@ fn test_nav_error_clone() {
 #[test]
 fn test_nav_error_debug() {
     let err = NavError::RouteNotFound;
-    let debug_str = format!("{:?}", err);
+    let debug_str = format!("{err:?}");
     assert!(debug_str.contains("RouteNotFound"));
 }
 
@@ -74,11 +74,9 @@ fn test_nav_error_partial_eq() {
 #[test]
 fn test_nav_result_ok() {
     let result: NavResult<i32> = Ok(42);
-    let value = match result {
-        Ok(v) => v,
-        Err(_) => panic!("Expected Ok")
-    };
-    assert_eq!(value, 42);
+
+    assert!(result.is_ok());
+    assert_eq!(result.ok(), Some(42));
 }
 
 #[test]
