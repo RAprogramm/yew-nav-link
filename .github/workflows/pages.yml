@@ -85,7 +85,7 @@ jobs:
           ls -la dist/
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: examples/comprehensive/dist
           retention-days: 30
