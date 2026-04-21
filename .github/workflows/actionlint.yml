@@ -1,40 +1,33 @@
-name: Lint GitHub Actions workflows
+# SPDX-FileCopyrightText: 2026 RAprogramm <andrey.rozanov.vl@gmail.com>
+#
+# SPDX-License-Identifier: MIT
+
+name: Lint GitHub Actions Workflows
 
 on:
   push:
-    branches: ["main", "develop"]
+    branches: [main]
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/**/*.yml'
       - '.github/actions/**'
   pull_request:
-    branches: ["main", "develop"]
+    branches: [main]
     paths:
-      - '.github/workflows/**'
+      - '.github/workflows/**/*.yml'
       - '.github/actions/**'
 
 jobs:
   actionlint:
-    name: actionlint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout repository
+        uses: actions/checkout@v5
 
       - name: Download actionlint
-        id: get_actionlint
-        run: bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-        shell: bash
-
-      - name: Check workflow files
         run: |
-          set -euo pipefail
-          
-          for file in .github/workflows/*.yml; do
-            echo "Checking workflow: $file"
-            ${{ steps.get_actionlint.outputs.executable }} -color "$file"
-          done
-          
-          for file in .github/actions/*/action.yml; do
-            echo "Checking action: $file"
-            cat "$file" | ${{ steps.get_actionlint.outputs.executable }} -stdin-filename "$file"
-          done
-        shell: bash
+          curl -sSLo actionlint https://github.com/rhysd/actionlint/releases/download/v2.6.1/actionlint_2.6.1_linux_amd64
+          chmod +x actionlint
+
+      - name: Run actionlint on workflows
+        run: |
+          ./actionlint -color .github/workflows/*.yml

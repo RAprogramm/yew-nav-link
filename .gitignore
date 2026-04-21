@@ -1,3 +1,4 @@
 *.crate
 target
 examples/comprehensive/target
+examples/comprehensive/dist
