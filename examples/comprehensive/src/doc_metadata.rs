@@ -9,11 +9,11 @@ use crate::routes::Route;
 
 #[derive(Clone)]
 pub struct ComponentInfo {
-    pub name: &'static str,
+    pub name:        &'static str,
     pub description: &'static str,
-    pub route: Route,
-    pub since: &'static str,
-    pub features: &'static [&'static str],
+    pub route:       Route,
+    pub since:       &'static str,
+    pub features:    &'static [&'static str]
 }
 
 impl ComponentInfo {
@@ -21,14 +21,14 @@ impl ComponentInfo {
         name: &'static str,
         description: &'static str,
         route: Route,
-        since: &'static str,
+        since: &'static str
     ) -> Self {
         Self {
             name,
             description,
             route,
             since,
-            features: &[],
+            features: &[]
         }
     }
 
@@ -45,52 +45,52 @@ pub fn all_components() -> &'static [ComponentInfo] {
                 "NavLink",
                 "Auto-active navigation link with exact and partial matching",
                 Route::NavLinkDoc,
-                "0.1.0",
+                "0.1.0"
             ),
             ComponentInfo::new(
                 "NavList",
                 "Semantic unordered list wrapper for navigation with ARIA support",
                 Route::NavListDoc,
-                "0.1.0",
+                "0.1.0"
             ),
             ComponentInfo::new(
                 "NavDivider",
                 "Visual separator for navigation items with optional label",
                 Route::NavDividerDoc,
-                "0.1.0",
+                "0.1.0"
             ),
             ComponentInfo::new(
                 "Badge",
                 "Small badge indicator for counts or status",
                 Route::BadgeDoc,
-                "0.1.0",
+                "0.1.0"
             ),
             ComponentInfo::new(
                 "NavDropdown",
                 "Dropdown menu component for navigation",
                 Route::DropdownDoc,
-                "0.1.0",
+                "0.1.0"
             ),
             ComponentInfo::new(
                 "NavIcon",
                 "Icon wrapper with size variants for navigation items",
                 Route::IconDoc,
-                "0.1.0",
+                "0.1.0"
             ),
             ComponentInfo::new(
                 "NavTabs",
                 "Tab navigation component with ARIA support",
                 Route::TabsDoc,
-                "0.1.0",
+                "0.1.0"
             ),
             ComponentInfo::new(
                 "Pagination",
                 "Page navigation component with ellipsis support",
                 Route::PaginationDoc,
-                "0.1.0",
+                "0.1.0"
             ),
         ]
-        .into_boxed_slice(),
+        .into_boxed_slice()
     )
 }
 
@@ -98,11 +98,11 @@ pub fn all_components() -> &'static [ComponentInfo] {
 
 #[derive(Clone)]
 pub struct HookInfo {
-    pub name: &'static str,
+    pub name:        &'static str,
     pub description: &'static str,
-    pub route: Route,
-    pub since: &'static str,
-    pub return_type: &'static str,
+    pub route:       Route,
+    pub since:       &'static str,
+    pub return_type: &'static str
 }
 
 impl HookInfo {
@@ -111,14 +111,14 @@ impl HookInfo {
         description: &'static str,
         route: Route,
         since: &'static str,
-        return_type: &'static str,
+        return_type: &'static str
     ) -> Self {
         Self {
             name,
             description,
             route,
             since,
-            return_type,
+            return_type
         }
     }
 }
@@ -131,45 +131,45 @@ pub fn all_hooks() -> &'static [HookInfo] {
                 "Get current route information including path and params",
                 Route::HooksDoc,
                 "0.1.0",
-                "RouteInfo<R>",
+                "RouteInfo<R>"
             ),
             HookInfo::new(
                 "use_is_active",
                 "Check if current route matches a target route exactly",
                 Route::HooksDoc,
                 "0.1.0",
-                "bool",
+                "bool"
             ),
             HookInfo::new(
                 "use_is_partial_active",
                 "Check if current route starts with a target route",
                 Route::HooksDoc,
                 "0.1.0",
-                "bool",
+                "bool"
             ),
             HookInfo::new(
                 "use_navigation",
                 "Get navigation controller for programmatic routing",
                 Route::NavigationHooks,
                 "0.8.0",
-                "Navigation<R>",
+                "Navigation<R>"
             ),
             HookInfo::new(
                 "use_route_params",
                 "Extract route parameters from current route",
                 Route::NavigationHooks,
                 "0.8.0",
-                "RouteParams",
+                "RouteParams"
             ),
             HookInfo::new(
                 "use_query_params",
                 "Parse query string parameters from current URL",
                 Route::NavigationHooks,
                 "0.8.0",
-                "QueryParams",
+                "QueryParams"
             ),
         ]
-        .into_boxed_slice(),
+        .into_boxed_slice()
     )
 }
 
@@ -177,17 +177,17 @@ pub fn all_hooks() -> &'static [HookInfo] {
 
 #[derive(Clone)]
 pub struct ExampleInfo {
-    pub name: &'static str,
+    pub name:        &'static str,
     pub description: &'static str,
-    pub route: Route,
-    pub category: ExampleCategory,
+    pub route:       Route,
+    pub category:    ExampleCategory
 }
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum ExampleCategory {
     Basic,
     CssFramework,
-    Advanced,
+    Advanced
 }
 
 impl ExampleCategory {
@@ -195,7 +195,7 @@ impl ExampleCategory {
         match self {
             ExampleCategory::Basic => "Basic",
             ExampleCategory::CssFramework => "CSS Framework",
-            ExampleCategory::Advanced => "Advanced",
+            ExampleCategory::Advanced => "Advanced"
         }
     }
 }
@@ -205,13 +205,13 @@ impl ExampleInfo {
         name: &'static str,
         description: &'static str,
         route: Route,
-        category: ExampleCategory,
+        category: ExampleCategory
     ) -> Self {
         Self {
             name,
             description,
             route,
-            category,
+            category
         }
     }
 }
@@ -223,28 +223,28 @@ pub fn all_examples() -> &'static [ExampleInfo] {
                 "Basic",
                 "Simple 3-page app demonstrating component and function syntax",
                 Route::BasicExample,
-                ExampleCategory::Basic,
+                ExampleCategory::Basic
             ),
             ExampleInfo::new(
                 "Bootstrap 5",
                 "Zero-config compatibility with Bootstrap 5 classes",
                 Route::BootstrapExample,
-                ExampleCategory::CssFramework,
+                ExampleCategory::CssFramework
             ),
             ExampleInfo::new(
                 "Tailwind CSS",
                 "Dashboard sidebar with @apply directives",
                 Route::TailwindExample,
-                ExampleCategory::CssFramework,
+                ExampleCategory::CssFramework
             ),
             ExampleInfo::new(
                 "Nested Routes",
                 "Multi-level navigation with partial matching",
                 Route::NestedRoutesExample,
-                ExampleCategory::Advanced,
+                ExampleCategory::Advanced
             ),
         ]
-        .into_boxed_slice(),
+        .into_boxed_slice()
     )
 }
 
@@ -252,23 +252,21 @@ pub fn all_examples() -> &'static [ExampleInfo] {
 
 #[derive(Clone)]
 pub struct FeatureInfo {
-    pub name: &'static str,
+    pub name:        &'static str,
     pub description: &'static str,
-    pub default: bool,
-    pub since: &'static str,
+    pub default:     bool,
+    pub since:       &'static str
 }
 
 pub fn all_features() -> &'static [FeatureInfo] {
     Box::leak(
-        vec![
-            FeatureInfo {
-                name: "default",
-                description: "Default feature set including core functionality",
-                default: true,
-                since: "0.1.0",
-            },
-        ]
-        .into_boxed_slice(),
+        vec![FeatureInfo {
+            name:        "default",
+            description: "Default feature set including core functionality",
+            default:     true,
+            since:       "0.1.0"
+        }]
+        .into_boxed_slice()
     )
 }
 

@@ -28,8 +28,7 @@ jobs:
   
   build:
     name: 🏗️ Build Demo
-    runs-on: ubuntu-latest-8-cores
-    
+    runs-on: ubuntu-latest    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6

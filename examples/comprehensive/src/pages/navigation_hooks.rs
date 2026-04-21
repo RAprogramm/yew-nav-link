@@ -1,10 +1,14 @@
-use crate::doc_page::{DemoCard, DocPage, Tip};
-use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::hooks::use_query_params;
 use yew_router::prelude::*;
 
-const NAVIGATION_HOOKS_SRC: &str = include_str!("../../../../src/hooks/navigation/navigation.rs");
+use crate::{
+    doc_page::{DemoCard, DocPage, Tip},
+    routes::Route
+};
+
+const NAVIGATION_HOOKS_SRC: &str =
+    include_str!("../../../../src/hooks/navigation/use_navigation.rs");
 
 const CODE_NAVIGATION: &str = r#"
 use yew_nav_link::hooks::use_navigation;
@@ -56,7 +60,7 @@ fn NavigationDemo() -> Html {
 
     let current_route_name = match route.as_ref() {
         Some(r) => format!("{:?}", r),
-        None => "Unknown".to_string(),
+        None => "Unknown".to_string()
     };
 
     html! {

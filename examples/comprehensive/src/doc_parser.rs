@@ -1,22 +1,24 @@
 //! Parses `//!` doc comments from Rust source files at compile time
-//! and renders them as Yew HTML with tables, code blocks, and syntax highlighting.
+//! and renders them as Yew HTML with tables, code blocks, and syntax
+//! highlighting.
+
+use yew::prelude::*;
 
 use crate::code_utils::CopyCode;
-use yew::prelude::*;
 
 // ── Data types ─────────────────────────────────────────────────
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct DocSection {
     pub title: String,
-    pub lines: Vec<String>,
+    pub lines: Vec<String>
 }
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct DocBlock {
-    pub title: String,
+    pub title:    String,
     pub overview: Vec<String>,
-    pub sections: Vec<DocSection>,
+    pub sections: Vec<DocSection>
 }
 
 // ── Parser ─────────────────────────────────────────────────────
@@ -49,7 +51,7 @@ pub fn parse_doc_block(source: &str) -> DocBlock {
             in_code_block = !in_code_block;
             match &mut current_section {
                 Some(sec) => sec.lines.push(line.clone()),
-                None => overview.push(line.clone()),
+                None => overview.push(line.clone())
             }
             continue;
         }
@@ -66,7 +68,7 @@ pub fn parse_doc_block(source: &str) -> DocBlock {
                 }
                 current_section = Some(DocSection {
                     title: header.to_string(),
-                    lines: Vec::new(),
+                    lines: Vec::new()
                 });
                 continue;
             }
@@ -74,7 +76,7 @@ pub fn parse_doc_block(source: &str) -> DocBlock {
 
         match &mut current_section {
             Some(sec) => sec.lines.push(line.clone()),
-            None => overview.push(line.clone()),
+            None => overview.push(line.clone())
         }
     }
     if let Some(sec) = current_section {
@@ -84,7 +86,7 @@ pub fn parse_doc_block(source: &str) -> DocBlock {
     DocBlock {
         title,
         overview,
-        sections,
+        sections
     }
 }
 
@@ -92,7 +94,7 @@ pub fn parse_doc_block(source: &str) -> DocBlock {
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct DocRendererProps {
-    pub doc: DocBlock,
+    pub doc: DocBlock
 }
 
 #[function_component]
@@ -110,7 +112,7 @@ pub fn DocRenderer(props: &DocRendererProps) -> Html {
                     render_table_section(&sec.lines)
                 }
                 "Example" => render_code_section(&sec.lines),
-                _ => render_content(&sec.lines),
+                _ => render_content(&sec.lines)
             };
             html! {
                 <div class="card">
@@ -138,7 +140,7 @@ fn render_content(lines: &[String]) -> Html {
     #[derive(Debug)]
     enum Segment {
         Text(Vec<String>),
-        Code(Vec<String>, String),
+        Code(Vec<String>, String)
     }
 
     let mut segments: Vec<Segment> = Vec::new();
@@ -160,7 +162,7 @@ fn render_content(lines: &[String]) -> Html {
                 in_code = false;
                 segments.push(Segment::Code(
                     code_buf.drain(..).collect(),
-                    code_lang.clone(),
+                    code_lang.clone()
                 ));
                 code_lang.clear();
             }
@@ -220,7 +222,7 @@ fn is_numbered_item(line: &str) -> bool {
     let mut chars = trimmed.chars();
     let first = match chars.next() {
         Some(c) if c.is_ascii_digit() => c,
-        _ => return false,
+        _ => return false
     };
     let mut rest = &trimmed[first.len_utf8()..];
     while rest.starts_with(|c: char| c.is_ascii_digit()) {

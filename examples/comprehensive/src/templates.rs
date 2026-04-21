@@ -4,9 +4,9 @@
 //! consistent documentation pages across the comprehensive example.
 //! Designed for easy parsing and programmatic generation.
 
-use crate::code_utils::CopyCode;
-use crate::demo_popup::DemoBox;
 use yew::prelude::*;
+
+use crate::{code_utils::CopyCode, demo_popup::DemoBox};
 
 // ── Metadata Types for Auto-Generation ─────────────────────────
 
@@ -14,25 +14,25 @@ use yew::prelude::*;
 #[derive(Clone, Debug, PartialEq)]
 pub struct ComponentMeta {
     /// Component name (e.g., "NavLink", "NavList")
-    pub name: String,
+    pub name:        String,
     /// Short description for sidebar/cards
     pub description: String,
     /// Version introduced (e.g., "0.1.0", "0.8.0")
-    pub since: String,
+    pub since:       String,
     /// Feature flags required (if any)
-    pub features: Vec<String>,
+    pub features:    Vec<String>,
     /// Related components
-    pub related: Vec<String>,
+    pub related:     Vec<String>
 }
 
 impl ComponentMeta {
     pub fn new(name: &str, description: &str, since: &str) -> Self {
         Self {
-            name: name.to_string(),
+            name:        name.to_string(),
             description: description.to_string(),
-            since: since.to_string(),
-            features: Vec::new(),
-            related: Vec::new(),
+            since:       since.to_string(),
+            features:    Vec::new(),
+            related:     Vec::new()
         }
     }
 
@@ -50,19 +50,19 @@ impl ComponentMeta {
 /// Hook metadata for documentation.
 #[derive(Clone, Debug)]
 pub struct HookMeta {
-    pub name: String,
+    pub name:        String,
     pub description: String,
-    pub since: String,
-    pub return_type: String,
+    pub since:       String,
+    pub return_type: String
 }
 
 impl HookMeta {
     pub fn new(name: &str, description: &str, since: &str, return_type: &str) -> Self {
         Self {
-            name: name.to_string(),
+            name:        name.to_string(),
             description: description.to_string(),
-            since: since.to_string(),
-            return_type: return_type.to_string(),
+            since:       since.to_string(),
+            return_type: return_type.to_string()
         }
     }
 }
@@ -70,19 +70,19 @@ impl HookMeta {
 /// Code example metadata.
 #[derive(Clone, Debug)]
 pub struct ExampleMeta {
-    pub title: String,
+    pub title:       String,
     pub description: String,
-    pub code: String,
-    pub language: String,
+    pub code:        String,
+    pub language:    String
 }
 
 impl ExampleMeta {
     pub fn new(title: &str, description: &str, code: &str) -> Self {
         Self {
-            title: title.to_string(),
+            title:       title.to_string(),
             description: description.to_string(),
-            code: code.to_string(),
-            language: "rust".to_string(),
+            code:        code.to_string(),
+            language:    "rust".to_string()
         }
     }
 
@@ -97,22 +97,22 @@ impl ExampleMeta {
 #[derive(Properties, PartialEq, Clone)]
 pub struct DocPageProps {
     /// Source file content (from `include_str!()`).
-    pub source: String,
+    pub source:   String,
     /// Page title override (if empty, uses parsed title).
     #[prop_or_default]
-    pub title: String,
+    pub title:    String,
     /// Component metadata for display.
     #[prop_or_default]
-    pub meta: Option<ComponentMeta>,
+    pub meta:     Option<ComponentMeta>,
     /// Additional cards rendered after the parsed docs.
     #[prop_or_default]
-    pub children: Children,
+    pub children: Children
 }
 
 /// Documentation page that auto-parses `//!` doc comments.
 #[function_component]
 pub fn DocPage(props: &DocPageProps) -> Html {
-    use crate::doc_parser::{parse_doc_block, DocRenderer};
+    use crate::doc_parser::{DocRenderer, parse_doc_block};
 
     let doc = parse_doc_block(&props.source);
 
@@ -143,7 +143,7 @@ pub fn DocPage(props: &DocPageProps) -> Html {
 #[derive(Properties, PartialEq, Clone)]
 struct DocPageHeaderProps {
     title: String,
-    meta: ComponentMeta,
+    meta:  ComponentMeta
 }
 
 #[function_component]
@@ -184,19 +184,19 @@ fn DocPageHeader(props: &DocPageHeaderProps) -> Html {
 #[derive(Properties, PartialEq, Clone)]
 pub struct DemoCardProps {
     /// Section title.
-    pub title: String,
+    pub title:       String,
     /// Description shown above the code block.
     pub description: Html,
     /// Code string (rendered with syntax highlighting + copy button).
-    pub code: String,
+    pub code:        String,
     /// Code language for syntax highlighting.
     #[prop_or_default]
-    pub language: String,
+    pub language:    String,
     /// Explanation shown below the live demo.
     #[prop_or_default]
-    pub tip: Option<Html>,
+    pub tip:         Option<Html>,
     /// Live demo content.
-    pub children: Children,
+    pub children:    Children
 }
 
 /// Card with code block + live demo + description.
@@ -228,7 +228,7 @@ pub fn DemoCard(props: &DemoCardProps) -> Html {
 pub struct BadgeProps {
     pub children: Html,
     #[prop_or_default]
-    pub variant: String,
+    pub variant:  String
 }
 
 #[function_component]
@@ -249,7 +249,7 @@ pub fn Badge(props: &BadgeProps) -> Html {
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct TipProps {
-    pub children: Children,
+    pub children: Children
 }
 
 /// Returns a `<p>` with muted styling for tips/explanations.
@@ -268,7 +268,7 @@ pub fn Tip(props: &TipProps) -> Html {
 pub struct InfoBoxProps {
     pub children: Html,
     #[prop_or_default]
-    pub title: Option<String>,
+    pub title:    Option<String>
 }
 
 #[function_component]
@@ -291,9 +291,9 @@ pub fn InfoBox(props: &InfoBoxProps) -> Html {
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct ApiTableProps {
-    pub title: String,
+    pub title:   String,
     pub columns: Vec<String>,
-    pub rows: Vec<Vec<String>>,
+    pub rows:    Vec<Vec<String>>
 }
 
 #[function_component]
@@ -339,13 +339,13 @@ pub fn ApiTable(props: &ApiTableProps) -> Html {
 pub struct DeploymentBadgeProps {
     /// Repository owner/name (e.g., "yew-nav-link/yew-nav-link")
     #[prop_or_default]
-    pub repo: String,
+    pub repo:   String,
     /// Branch or tag for deployment
     #[prop_or_default]
     pub branch: String,
     /// Deployment status (for future use)
     #[prop_or_default]
-    pub status: DeploymentStatus,
+    pub status: DeploymentStatus
 }
 
 #[derive(Clone, PartialEq, Default)]
@@ -353,7 +353,7 @@ pub enum DeploymentStatus {
     #[default]
     Success,
     Building,
-    Failed,
+    Failed
 }
 
 impl DeploymentStatus {
@@ -361,7 +361,7 @@ impl DeploymentStatus {
         match self {
             DeploymentStatus::Success => "var(--green)",
             DeploymentStatus::Building => "var(--yellow)",
-            DeploymentStatus::Failed => "var(--red)",
+            DeploymentStatus::Failed => "var(--red)"
         }
     }
 
@@ -369,7 +369,7 @@ impl DeploymentStatus {
         match self {
             DeploymentStatus::Success => "Deployed",
             DeploymentStatus::Building => "Building...",
-            DeploymentStatus::Failed => "Failed",
+            DeploymentStatus::Failed => "Failed"
         }
     }
 }
@@ -405,7 +405,7 @@ pub fn DeploymentBadge(props: &DeploymentBadgeProps) -> Html {
 pub struct VersionBadgeProps {
     pub version: String,
     #[prop_or_default]
-    pub latest: bool,
+    pub latest:  bool
 }
 
 #[function_component]

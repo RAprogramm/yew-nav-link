@@ -1,11 +1,14 @@
-use crate::code_utils::{highlight_css, CopyCode};
-use crate::demo_popup::DemoBox;
-use crate::doc_page::{DemoCard, DocPage, Tip};
-use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::{
-    components::{NavDropdown, NavDropdownDivider, NavDropdownItem},
     NavItem, NavLink, NavList,
+    components::{NavDropdown, NavDropdownDivider, NavDropdownItem}
+};
+
+use crate::{
+    code_utils::{CopyCode, highlight_css},
+    demo_popup::DemoBox,
+    doc_page::{DemoCard, DocPage, Tip},
+    routes::Route
 };
 
 const SRC: &str = include_str!("../../../../src/components/dropdown.rs");
@@ -49,7 +52,7 @@ fn Nav() -> Html {
     }
 }"#;
 
-const CODE_HTML: &str = r##"<li class="nav-dropdown" role="presentation">
+const CODE_HTML: &str = r#"<li class="nav-dropdown" role="presentation">
   <button class="nav-dropdown-toggle" aria-expanded="false">
     Settings
     <span class="nav-dropdown-caret"> ▼</span>
@@ -63,9 +66,9 @@ const CODE_HTML: &str = r##"<li class="nav-dropdown" role="presentation">
       <span>Admin</span>
     </li>
   </ul>
-</li>"##;
+</li>"#;
 
-const CODE_CSS: &str = r##".custom-dropdown .nav-dropdown-toggle {
+const CODE_CSS: &str = r#".custom-dropdown .nav-dropdown-toggle {
     background: #1e293b;
     color: #e2e8f0;
     border: 1px solid #334155;
@@ -84,7 +87,7 @@ const CODE_CSS: &str = r##".custom-dropdown .nav-dropdown-toggle {
 .custom-dropdown .nav-dropdown-item a:hover {
     background: #1e293b;
     color: #f8fafc;
-}"##;
+}"#;
 
 const STATE_CODE: &str = r#"let open = use_state(|| false);
 

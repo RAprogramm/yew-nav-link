@@ -13,58 +13,147 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.sha }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+  RUSTFLAGS: -D warnings
+  CARGO_REGISTRIES_CRATES_IO_PROTOCOL: sparse
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
-  # =====================================================
-  # MAIN CI PIPELINE
-  # =====================================================
-  
   ci:
     name: 🔄 CI Pipeline
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       security-events: write
       pull-requests: write
-    uses: ./.github/workflows/reusable-ci.yml
-    with:
-      all-features: true
-    secrets: inherit
-
-  # =====================================================
-  # SUPPLY CHAIN SECURITY (ON MAIN)
-  # =====================================================
-  
-  supply-chain:
-    name: 📦 Supply Chain
-    if: github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/supply-chain-security.yml
-    permissions:
-      contents: read
       id-token: write
       attestations: write
       packages: read
-      security-events: write
-
-  # =====================================================
-  # DOCUMENTATION (ON MAIN)
-  # =====================================================
-  
-  docs:
-    name: 📖 Documentation
-    if: github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/docs.yml
-    permissions:
-      contents: read
-
-  # =====================================================
-  # PAGES DEPLOYMENT
-  # =====================================================
-  
-  pages:
-    name: 🌐 Pages
-    if: github.ref == 'refs/heads/main'
-    needs: [ci]
-    uses: ./.github/workflows/pages.yml
-    permissions:
-      contents: read
       pages: write
-      id-token: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: 🔧 Setup Rust
+        uses: ./.github/actions/setup-rust
+        with:
+          toolchain: stable
+          components: rustfmt, clippy, llvm-tools-preview
+
+      - name: 🔧 Setup Rust (nightly)
+        uses: ./.github/actions/setup-rust
+        with:
+          toolchain: nightly
+          components: rustfmt
+
+      - name: 💾 Cache dependencies
+        uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: 🔍 PR Analysis
+        if: github.event_name == 'pull_request'
+        uses: RAprogramm/rust-prod-diff-checker@v1
+        with:
+          config_file: .rust-diff-analyzer.toml
+          max_prod_units: 100
+          max_weighted_score: 500
+          max_prod_lines: 500
+          fail_on_exceed: false
+          post_comment: false
+
+      - name: 🎨 Format Check
+        run: cargo +nightly fmt --all -- --check
+
+      - name: 🦀 Clippy
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery
+
+      - name: 🧪 Install nextest
+        uses: taiki-e/install-action@nextest
+
+      - name: 🧪 Run Tests
+        run: |
+          cargo nextest run --workspace \
+            --no-fail-fast \
+            --profile ci \
+            --status-level all \
+            --failure-output immediate \
+            --retries 1
+
+      - name: 📄 Doc Tests
+        run: cargo test --doc --workspace --all-features
+
+      - name: 📊 Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+
+      - name: 📊 Generate Coverage
+        run: |
+          cargo llvm-cov --workspace --all-features \
+            --lcov --output-path lcov.info
+
+      - name: ☁️ Upload to Codecov
+        uses: codecov/codecov-action@v6
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: lcov.info
+          flags: unittests,integration
+          name: codecov-rust
+          fail_ci_if_error: false
+          verbose: true
+
+      - name: 📦 Check Lockfile
+        uses: ./.github/actions/check-lockfile
+
+      - name: 📦 Package Check
+        run: cargo publish --dry-run --allow-dirty
+
+      - name: 📦 Package
+        run: |
+          cargo package --locked
+          cargo package --locked --list
+
+      - name: 🔒 Install cargo-audit
+        uses: taiki-e/install-action@cargo-audit
+
+      - name: 🔒 Security Audit
+        run: cargo audit --deny yanked
+
+      - name: 🔒 Install cargo-deny
+        uses: taiki-e/install-action@cargo-deny
+
+      - name: 🔒 License Audit
+        run: cargo deny check
+
+      - name: 📈 Quality Check
+        uses: RAprogramm/cargo-quality@v0
+        with:
+          path: src/
+          fail_on_issues: ${{ github.ref == 'refs/heads/main' }}
+          post_comment: ${{ github.event_name == 'pull_request' }}
+
+      - name: 📋 TODO Check
+        run: |
+          TODO_COUNT=$(grep -r "// TODO" src/ --include="*.rs" | wc -l)
+          echo "TODO comments found: $TODO_COUNT"
+          if [ $TODO_COUNT -gt 10 ]; then
+            echo "Warning: More than 10 TODO comments found"
+          fi
+
+      - name: 📋 License Header Check
+        run: |
+          find src/ -name "*.rs" -exec grep -L "SPDX" {} \; | head -5 || true
+
+      - name: 📦 Supply Chain Security
+        if: github.ref == 'refs/heads/main'
+        uses: ./.github/workflows/supply-chain-security.yml
+
+      - name: 📖 Documentation
+        if: github.ref == 'refs/heads/main'
+        uses: ./.github/workflows/docs.yml
+
+      - name: 🌐 Pages Deploy
+        if: github.ref == 'refs/heads/main'
+        uses: ./.github/workflows/pages.yml

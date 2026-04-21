@@ -1,10 +1,11 @@
+use yew::prelude::*;
+
 use super::metadata::CrateMeta;
 use crate::templates::DeploymentBadge;
-use yew::prelude::*;
 
 #[derive(Properties, PartialEq)]
 pub struct HeroProps {
-    pub meta: CrateMeta,
+    pub meta: CrateMeta
 }
 
 #[function_component]

@@ -8,20 +8,20 @@ trunk serve
 
 # Open http://127.0.0.1:8080 in your browser"#;
 
-use crate::code_utils::CopyCode;
-use crate::routes::Route;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
+use crate::{code_utils::CopyCode, routes::Route};
+
 #[derive(Properties, PartialEq, Clone)]
 struct ExampleCardProps {
-    route: Route,
-    title: String,
-    desc: String,
-    tag: String,
+    route:     Route,
+    title:     String,
+    desc:      String,
+    tag:       String,
     tag_color: String,
-    lines: String,
-    concepts: Vec<&'static str>,
+    lines:     String,
+    concepts:  Vec<&'static str>
 }
 
 #[function_component]

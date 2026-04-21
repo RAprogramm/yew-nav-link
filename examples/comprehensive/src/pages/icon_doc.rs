@@ -1,9 +1,12 @@
-use crate::doc_page::{DemoCard, DocPage, Tip};
-use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::{
-    components::{NavIcon, NavIconSize, NavLinkWithIcon},
     NavItem, NavLink, NavList,
+    components::{NavIcon, NavIconSize, NavLinkWithIcon}
+};
+
+use crate::{
+    doc_page::{DemoCard, DocPage, Tip},
+    routes::Route
 };
 
 const SRC: &str = include_str!("../../../../src/components/icon.rs");

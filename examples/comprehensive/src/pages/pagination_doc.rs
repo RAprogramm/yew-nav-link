@@ -1,6 +1,7 @@
-use crate::doc_page::{DemoCard, DocPage, Tip};
 use yew::prelude::*;
 use yew_nav_link::components::{PageItem, PageLink, Pagination};
+
+use crate::doc_page::{DemoCard, DocPage, Tip};
 
 const SRC: &str = include_str!("../../../../src/components/pagination.rs");
 

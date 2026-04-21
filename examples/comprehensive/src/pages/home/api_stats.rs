@@ -2,7 +2,7 @@
 
 const SOURCES: &[&str] = &[
     include_str!("../../../../../src/lib.rs"),
-    include_str!("../../../../../src/nav_link.rs"),
+    include_str!("../../../../../src/active_link/nav_link.rs"),
     include_str!("../../../../../src/attrs.rs"),
     include_str!("../../../../../src/errors.rs"),
     include_str!("../../../../../src/components/mod.rs"),
@@ -21,20 +21,20 @@ const SOURCES: &[&str] = &[
     include_str!("../../../../../src/nav/divider.rs"),
     include_str!("../../../../../src/nav/item.rs"),
     include_str!("../../../../../src/nav/list.rs"),
-    include_str!("../../../../../src/hooks/route.rs"),
+    include_str!("../../../../../src/hooks/route_info/mod.rs"),
     include_str!("../../../../../src/utils/path.rs"),
     include_str!("../../../../../src/utils/keyboard/config.rs"),
     include_str!("../../../../../src/utils/keyboard/direction.rs"),
     include_str!("../../../../../src/utils/keyboard/handlers.rs"),
     include_str!("../../../../../src/utils/url/codec.rs"),
     include_str!("../../../../../src/utils/url/parts.rs"),
-    include_str!("../../../../../src/utils/url/query.rs"),
+    include_str!("../../../../../src/utils/url/query.rs")
 ];
 
 pub struct ApiStats {
-    pub fns: usize,
+    pub fns:     usize,
     pub structs: usize,
-    pub enums: usize,
+    pub enums:   usize
 }
 
 pub fn count_api_items() -> ApiStats {
@@ -55,5 +55,9 @@ pub fn count_api_items() -> ApiStats {
             }
         }
     }
-    ApiStats { fns, structs, enums }
+    ApiStats {
+        fns,
+        structs,
+        enums
+    }
 }
