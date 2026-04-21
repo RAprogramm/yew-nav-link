@@ -29,14 +29,45 @@ jobs:
   # =====================================================
   
   checks:
-    name: ✅ Pre-release Checks
-    uses: ./.github/workflows/reusable-ci.yml
-    with:
-      all-features: true
+    name: Pre-release Checks
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       security-events: write
       pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/setup-rust
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: false
+
+      - name: Check formatting
+        run: cargo +nightly fmt --all -- --check
+
+      - name: Run Clippy
+        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
+
+      - name: Install nextest
+        uses: taiki-e/install-action@nextest
+
+      - name: Run tests
+        run: cargo nextest run --workspace --no-fail-fast --profile ci
+
+      - name: Install cargo-audit
+        uses: taiki-e/install-action@cargo-audit
+
+      - name: Security audit
+        run: cargo audit --deny yanked --ignore RUSTSEC-2025-0141 --ignore RUSTSEC-2024-0370
+
+      - name: Install cargo-deny
+        uses: taiki-e/install-action@cargo-deny
+
+      - name: License audit
+        run: cargo deny check
 
   # =====================================================
   # VERSION VALIDATION
