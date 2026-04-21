@@ -3,6 +3,12 @@ name: Dependabot Auto-Merge & Auto-Approve
 on:
   pull_request_target:
     types: [opened, synchronize, ready_for_review]
+  schedule:
+    - cron: "0 0 * * 0"
+
+concurrency:
+  group: dependabot-${{ github.event.number }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -10,168 +16,25 @@ permissions:
   statuses: write
 
 jobs:
-  # =====================================================
-  # AUTO-APPROVE DEPENDABOT PRs
-  # =====================================================
-  
   auto-approve:
-    name: ✅ Auto-Approve
+    name: Auto-Approve
     runs-on: ubuntu-latest
     if: |
-      github.event.pull_request.user.login == 'dependabot[bot]' ||
-      github.event.pull_request.user.login == 'dependabot-preview[bot]'
-    
+      github.event_name != 'schedule' ||
+      (github.event_name == 'schedule' && github.event.pull_request.user.login == 'dependabot[bot]')
     steps:
       - name: Auto-approve PR
+        if: github.event_name == 'pull_request_target'
         uses: hmarr/auto-approve-action@v5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          review-message: |
-            Auto-approving Dependabot PR
-            
-            ## Verification
-            
-            - ✅ Submitted by Dependabot
-            - ✅ Passing all checks
-            - ✅ Meets merge criteria
+          review-message: "Auto-approving Dependabot PR"
 
-  # =====================================================
-  # WAIT FOR CI AND AUTO-MERGE
-  # =====================================================
-  
-  auto-merge:
-    name: 🔄 Auto-Merge
+  daily-check:
+    name: Daily Check
     runs-on: ubuntu-latest
-    needs: auto-approve
-    if: |
-      github.event.pull_request.user.login == 'dependabot[bot]' ||
-      github.event.pull_request.user.login == 'dependabot-preview[bot]'
-    
+    if: github.event_name == 'schedule'
     steps:
-      - name: Fetch Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Determine merge strategy
-        id: strategy
+      - name: Check open Dependabot PRs
         run: |
-          UPDATE_TYPE="${{ steps.metadata.outputs.update-type }}"
-          
-          case "$UPDATE_TYPE" in
-            "version-update:semver-patch")
-              echo "auto-merge=true" >> $GITHUB_OUTPUT
-              echo "merge-method=squash" >> $GITHUB_OUTPUT
-              echo "reason=Patch update - auto-merge enabled" >> $GITHUB_OUTPUT
-              ;;
-            "version-update:semver-minor")
-              echo "auto-merge=true" >> $GITHUB_OUTPUT
-              echo "merge-method=squash" >> $GITHUB_OUTPUT
-              echo "reason=Minor update - auto-merge enabled" >> $GITHUB_OUTPUT
-              ;;
-            "version-update:semver-major")
-              echo "auto-merge=false" >> $GITHUB_OUTPUT
-              echo "merge-method=" >> $GITHUB_OUTPUT
-              echo "reason=Major update - requires manual review" >> $GITHUB_OUTPUT
-              ;;
-            "version-update:semver-direct")
-              echo "auto-merge=false" >> $GITHUB_OUTPUT
-              echo "merge-method=" >> $GITHUB_OUTPUT
-              echo "reason=Direct version update - requires manual review" >> $GITHUB_OUTPUT
-              ;;
-            *)
-              echo "auto-merge=false" >> $GITHUB_OUTPUT
-              echo "merge-method=" >> $GITHUB_OUTPUT
-              echo "reason=Unknown update type - requires manual review" >> $GITHUB_OUTPUT
-              ;;
-          esac
-
-      - name: Wait for CI to complete
-        uses: lewagon/wait-on-check-action@v1.6.1
-        if: steps.strategy.outputs.auto-merge == 'true'
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          check-names: 'CI Pipeline'
-          wait-interval: 30
-          max-wait-timeout: 600
-          allowed-conclusions: 'success,skipped'
-          ignore-hanging-actions: true
-
-      - name: Enable auto-merge
-        if: steps.strategy.outputs.auto-merge == 'true'
-        uses: peter-evans/enable-issue-automerge@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          pull-request: ${{ github.event.pull_request.number }}
-          merge-method: ${{ steps.strategy.outputs.merge-method }}
-
-      - name: Add status for manual review
-        if: steps.strategy.outputs.auto-merge == 'false'
-        run: |
-          echo "⏸️  PR requires manual review"
-          echo "Reason: ${{ steps.strategy.outputs.reason }}"
-          echo "Update type: ${{ steps.metadata.outputs.update-type }}"
-
-      - name: Comment on PR
-        uses: peter-evans/create-or-update-comment@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            ## 🤖 Dependabot Update Status
-            
-            **Update Type:** ${{ steps.metadata.outputs.update-type }}
-            
-            **Status:** ${{ steps.strategy.outputs.auto-merge == 'true' && '✅ Auto-merge enabled' || '⏸️ Requires manual review' }}
-            
-            **Reason:** ${{ steps.strategy.outputs.reason }}
-            
-            ---
-            
-            *This comment is automatically updated by the CI system*
-
-  # =====================================================
-  # SECURITY UPDATES PRIORITY
-  # =====================================================
-  
-  security-priority:
-    name: 🛡️ Security Updates Priority
-    runs-on: ubuntu-latest
-    if: |
-      github.event.pull_request.user.login == 'dependabot[bot]' ||
-      github.event.pull_request.user.login == 'dependabot-preview[bot]'
-    
-    steps:
-      - name: Fetch Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@v3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Add priority label for security updates
-        if: steps.metadata.outputs.update-type == 'security-update'
-        uses: actions/github-script@v9
-        with:
-          script: |
-            github.rest.issues.addLabels({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              labels: ['security', 'priority: high']
-            })
-
-      - name: Comment on security updates
-        if: steps.metadata.outputs.update-type == 'security-update'
-        uses: peter-evans/create-or-update-comment@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            ## 🛡️ Security Update Detected
-            
-            This PR contains a **security update** and has been prioritized.
-            
-            **Affected Package:** ${{ steps.metadata.outputs.dependency-name }}
-            
-            Please review and merge as soon as possible.
+          gh pr list --repo ${{ github.repository }} --state open --search "author:app/dependabot" --limit 5
