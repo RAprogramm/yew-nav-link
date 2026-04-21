@@ -155,10 +155,43 @@ jobs:
   # PUBLISH TO CRATES.IO
   # =====================================================
   
+  verify-version:
+    name: 🏷️ Version Verification
+    runs-on: ubuntu-latest
+    needs: [checks, version-check]
+    outputs:
+      is-newer: ${{ steps.compare.outputs.is-newer }}
+      crates-version: ${{ steps.compare.outputs.crates-version }}
+      local-version: ${{ steps.compare.outputs.local-version }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Verify version against crates.io
+        id: compare
+        uses: ./.github/actions/verify-crate-version
+
+      - name: Show version comparison
+        run: |
+          echo "## Version Comparison"
+          echo ""
+          echo "| Source | Version |"
+          echo "|--------|---------|"
+          echo "| crates.io | ${{ steps.compare.outputs.crates-version }} |"
+          echo "| Local (Cargo.toml) | ${{ steps.compare.outputs.local-version }} |"
+          echo ""
+          if [ "${{ steps.compare.outputs.is-newer }}" = "true" ]; then
+            echo "✅ Local version is newer - safe to publish"
+          else
+            echo "::error::Version validation failed"
+            exit 1
+          fi
+
   publish:
     name: 📦 Publish to crates.io
     runs-on: ubuntu-latest
-    needs: [checks, version-check]
+    needs: [checks, version-check, verify-version]
     environment:
       name: crates.io
       url: https://crates.io/crates/yew-nav-link

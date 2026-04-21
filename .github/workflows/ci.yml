@@ -24,37 +24,6 @@ jobs:
   # STAGE 1: FORMAT (run first)
   # =====================================================
 
-  pr-analysis:
-    name: PR Analysis
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    permissions:
-      contents: read
-      pull-requests: write
-    outputs:
-      size: ${{ steps.pr-size.outputs.size }}
-      weighted-score: ${{ steps.pr-size.outputs.weighted-score }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Fetch base for comparison
-        run: |
-          git fetch origin ${{ github.base_ref }} --depth=100 || true
-          git fetch origin HEAD --depth=100 || true
-
-      - name: Analyze PR Size
-        id: pr-size
-        uses: RAprogramm/rust-prod-diff-checker@v1
-        with:
-          config_file: .rust-diff-analyzer.toml
-          max_prod_units: 100
-          max_weighted_score: 500
-          max_prod_lines: 500
-          fail_on_exceed: false
-          post_comment: false
-
   fmt:
     name: Format
     runs-on: ubuntu-latest
