@@ -1,12 +1,6 @@
 name: Supply Chain Security
 
 on:
-  push:
-    branches: ["main"]
-    tags:
-      - "v*"
-  pull_request:
-    branches: ["main"]
   workflow_dispatch:
   workflow_call:
 
