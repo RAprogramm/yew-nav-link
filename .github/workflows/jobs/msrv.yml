@@ -1,0 +1,23 @@
+name: MSRV
+
+on:
+  workflow_call:
+
+jobs:
+  msrv:
+    name: Extract MSRV
+    runs-on: ubuntu-latest
+    outputs:
+      msrv: ${{ steps.parse_msrv.outputs.msrv }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Parse MSRV from Cargo.toml
+        id: parse_msrv
+        run: |
+          MSRV=$(grep -E "rust-version\s*=\s*\"" Cargo.toml | sed 's/.*"\([^"]*\)".*/\1/')
+          echo "msrv=$MSRV" >> $GITHUB_OUTPUT
+          echo "_MSRV: $MSRV"
