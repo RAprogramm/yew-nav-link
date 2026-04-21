@@ -1,13 +1,7 @@
 name: CI Pipeline
 
 on:
-  push:
-    branches: ["main", "develop", "release/*"]
-    tags:
-      - "v*"
-  pull_request:
-    branches: ["main", "develop"]
-    types: [opened, synchronize, reopened, labeled]
+  workflow_dispatch:
   workflow_call:
     inputs:
       all-features:
