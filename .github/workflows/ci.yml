@@ -21,7 +21,7 @@ env:
 
 jobs:
   # =====================================================
-  # STAGE 1: FAST CHECKS (run in parallel)
+  # STAGE 1: FORMAT (run first)
   # =====================================================
 
   pr-analysis:
@@ -40,8 +40,8 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Fetch main for comparison
-        run: git fetch origin main:main || true
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.event.pull_request.base.ref }} || git fetch origin main || true
 
       - name: Analyze PR Size
         id: pr-size
@@ -70,9 +70,15 @@ jobs:
       - name: Check formatting
         run: cargo +nightly fmt --all -- --check
 
+  # =====================================================
+  # STAGE 2: CLIPPY (runs after fmt)
+  # =====================================================
+
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
+    needs: [fmt]
+    if: needs.fmt.result == 'success'
     permissions:
       contents: read
       security-events: write
@@ -91,14 +97,14 @@ jobs:
         run: cargo clippy --workspace --all-targets --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery
 
   # =====================================================
-  # STAGE 2: TEST & BUILD (after fmt, clippy pass)
+  # STAGE 3: TEST (runs after clippy)
   # =====================================================
 
   test:
     name: Test
     runs-on: ubuntu-latest
-    needs: [fmt, clippy]
-    if: ${{ !cancelled() }}
+    needs: [clippy]
+    if: needs.clippy.result == 'success'
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust
@@ -117,13 +123,14 @@ jobs:
         run: cargo test --doc --workspace --all-features
 
   # =====================================================
-  # STAGE 3: ANALYSIS (after test passes)
+  # STAGE 4: COVERAGE (runs after test)
   # =====================================================
 
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
     needs: [test]
+    if: needs.test.result == 'success'
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust
@@ -149,10 +156,15 @@ jobs:
           fail_ci_if_error: false
           verbose: true
 
+  # =====================================================
+  # STAGE 5: PACKAGE (runs after test)
+  # =====================================================
+
   package:
     name: Package
     runs-on: ubuntu-latest
     needs: [test]
+    if: needs.test.result == 'success'
     steps:
       - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-rust
@@ -172,10 +184,15 @@ jobs:
       - name: Verify package contents
         run: cargo package --locked --list
 
+  # =====================================================
+  # STAGE 6: AUDIT (runs after test)
+  # =====================================================
+
   audit:
     name: Security Audit
     runs-on: ubuntu-latest
     needs: [test]
+    if: needs.test.result == 'success'
     permissions:
       contents: read
       security-events: write
@@ -198,10 +215,15 @@ jobs:
       - name: Run license audit
         run: cargo deny check
 
+  # =====================================================
+  # STAGE 7: QUALITY (runs after test)
+  # =====================================================
+
   quality:
     name: Quality
     runs-on: ubuntu-latest
     needs: [test]
+    if: needs.test.result == 'success'
     permissions:
       contents: read
       pull-requests: write
@@ -221,7 +243,7 @@ jobs:
           echo "TODO comments found: $TODO_COUNT"
 
   # =====================================================
-  # STAGE 4: DEPLOY (main branch only)
+  # STAGE 8: DEPLOY (main branch only, runs after package)
   # =====================================================
 
   supply-chain:
@@ -255,13 +277,13 @@ jobs:
       id-token: write
 
   # =====================================================
-  # STAGE 5: SUMMARY
+  # STAGE 9: SUMMARY
   # =====================================================
 
   summary:
     name: CI Summary
     runs-on: ubuntu-latest
-    needs: [fmt, clippy, test, coverage, package, audit, quality]
+    needs: [pr-analysis, fmt, clippy, test, coverage, package, audit, quality]
     if: always()
     steps:
       - name: Generate CI Summary
@@ -280,3 +302,19 @@ jobs:
           echo "| package | ${{ needs.package.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| audit | ${{ needs.audit.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| quality | ${{ needs.quality.result }} |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Post failure comment
+        if: failure() && github.event_name == 'pull_request'
+        run: |
+          BODY="## CI Failed\n\nThe following jobs failed:"
+          if [ "${{ needs.fmt.result }}" == "failure" ]; then BODY="${BODY}\n- **Format**: Run \`cargo +nightly fmt --all\`"; fi
+          if [ "${{ needs.clippy.result }}" == "failure" ]; then BODY="${BODY}\n- **Clippy**: Fix warnings"; fi
+          if [ "${{ needs.test.result }}" == "failure" ]; then BODY="${BODY}\n- **Test**: Fix failing tests"; fi
+          if [ "${{ needs.coverage.result }}" == "failure" ]; then BODY="${BODY}\n- **Coverage**: Add tests"; fi
+          if [ "${{ needs.package.result }}" == "failure" ]; then BODY="${BODY}\n- **Package**: Fix metadata"; fi
+          if [ "${{ needs.audit.result }}" == "failure" ]; then BODY="${BODY}\n- **Security**: Update dependency"; fi
+          if [ "${{ needs.quality.result }}" == "failure" ]; then BODY="${BODY}\n- **Quality**: Fix issues"; fi
+          BODY="${BODY}\n\n*Auto-generated*"
+          echo -e "$BODY" | gh pr comment ${{ github.event.pull_request.number }} -F - --repo ${{ github.repository }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
