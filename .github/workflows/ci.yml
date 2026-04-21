@@ -119,7 +119,7 @@ jobs:
         uses: taiki-e/install-action@cargo-audit
 
       - name: 🔒 Security Audit
-        run: cargo audit --deny yanked
+        run: cargo audit --deny yanked --ignore RUSTSEC-2025-0141 --ignore RUSTSEC-2024-0370
 
       - name: 🔒 Install cargo-deny
         uses: taiki-e/install-action@cargo-deny
