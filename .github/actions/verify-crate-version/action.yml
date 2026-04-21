@@ -1,0 +1,79 @@
+name: Verify Crate Version
+description: Compare local version with crates.io
+author: yew-nav-link team
+
+outputs:
+  is-newer:
+    description: True if local version is newer than crates.io
+  crates-version:
+    description: Version published on crates.io
+  local-version:
+    description: Local version from Cargo.toml
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+
+    - name: Extract package info
+      id: meta
+      shell: bash
+      run: |
+        META=$(cargo metadata --no-deps --format-version=1)
+        NAME=$(echo "$META" | jq -r '.packages[0].name')
+        VERSION=$(echo "$META" | jq -r '.packages[0].version')
+        echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+        echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+    - name: Fetch crates.io version
+      id: crates-version
+      shell: bash
+      run: |
+        CRATES_INFO=$(curl -s "https://crates.io/api/v1/crates/${{ steps.meta.outputs.name }}")
+        PUBLISHED_VERSION=$(echo "$CRATES_INFO" | jq -r '.versions[0].num // empty')
+        echo "version=${PUBLISHED_VERSION}" >> "$GITHUB_OUTPUT"
+
+    - name: Compare versions
+      id: compare
+      shell: bash
+      run: |
+        LOCAL="${{ steps.meta.outputs.version }}"
+        CRATES="${{ steps.crates-version.outputs.version }}"
+        
+        if [ -z "$CRATES" ]; then
+          echo "::notice::No version on crates.io yet - publishing will create first release"
+          echo "is-newer=true" >> "$GITHUB_OUTPUT"
+          echo "crates-version=none" >> "$GITHUB_OUTPUT"
+        else
+          echo "Comparing versions: local=$LOCAL, crates.io=$CRATES"
+          
+          if [ "$LOCAL" = "$CRATES" ]; then
+            echo "::error::Version $LOCAL already exists on crates.io"
+            echo "is-newer=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          elif [ "$LOCAL" != "$CRATES" ]; then
+            IFS='.' read -ra LOCAL_PARTS <<< "$LOCAL"
+            IFS='.' read -ra CRATES_PARTS <<< "$CRATES"
+            
+            for i in {0..2}; do
+              L=${LOCAL_PARTS[$i]:-0}
+              C=${CRATES_PARTS[$i]:-0}
+              
+              if [ "$L" -gt "$C" ]; then
+                echo "::notice::Local version $LOCAL is newer than crates.io $CRATES"
+                echo "is-newer=true" >> "$GITHUB_OUTPUT"
+                break
+              elif [ "$L" -lt "$C" ]; then
+                echo "::error::Local version $LOCAL is older than crates.io $CRATES"
+                echo "is-newer=false" >> "$GITHUB_OUTPUT"
+                exit 1
+              fi
+            done
+            
+            echo "is-newer=false" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+        fi
+        
+        echo "local-version=${LOCAL}" >> "$GITHUB_OUTPUT"

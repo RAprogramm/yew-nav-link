@@ -44,5 +44,5 @@ pub enum Route {
     CustomBreadcrumbs,
     #[not_found]
     #[at("/404")]
-    NotFound,
+    NotFound
 }

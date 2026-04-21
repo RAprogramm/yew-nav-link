@@ -2,25 +2,27 @@
 //!
 //! Components for building consistent doc pages across the example app.
 
-use crate::demo_popup::DemoBox;
-use crate::doc_parser::{parse_doc_block, DocRenderer};
 use yew::prelude::*;
 
 /// Re-exported from `code_utils` for backwards compatibility.
 pub use crate::code_utils::CopyCode;
+use crate::{
+    demo_popup::DemoBox,
+    doc_parser::{DocRenderer, parse_doc_block}
+};
 
 // ── DocPage: auto-parses source + renders docs ──────────────────
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct DocPageProps {
     /// Source file content (from `include_str!()`).
-    pub source: String,
+    pub source:   String,
     /// Page title override (if empty, uses parsed title).
     #[prop_or_default]
-    pub title: String,
+    pub title:    String,
     /// Additional cards rendered after the parsed docs.
     #[prop_or_default]
-    pub children: Children,
+    pub children: Children
 }
 
 /// Documentation page that auto-parses `//!` doc comments and renders
@@ -43,16 +45,16 @@ pub fn DocPage(props: &DocPageProps) -> Html {
 #[derive(Properties, PartialEq, Clone)]
 pub struct DemoCardProps {
     /// Section title.
-    pub title: String,
+    pub title:       String,
     /// Description shown above the code block.
     pub description: Html,
     /// Code string (rendered with syntax highlighting + copy button).
-    pub code: String,
+    pub code:        String,
     /// Explanation shown below the live demo.
     #[prop_or_default]
-    pub tip: Html,
+    pub tip:         Html,
     /// Live demo content.
-    pub children: Children,
+    pub children:    Children
 }
 
 /// Card with code block + live demo + description.
@@ -86,5 +88,5 @@ pub fn Tip(props: &TipProps) -> Html {
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct TipProps {
-    pub children: Children,
+    pub children: Children
 }

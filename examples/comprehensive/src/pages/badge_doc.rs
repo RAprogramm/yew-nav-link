@@ -1,7 +1,10 @@
-use crate::doc_page::{DemoCard, DocPage, Tip};
-use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::{NavBadge, NavHeader, NavItem, NavLink, NavList, NavText};
+
+use crate::{
+    doc_page::{DemoCard, DocPage, Tip},
+    routes::Route
+};
 
 const SRC: &str = include_str!("../../../../src/components/badge.rs");
 

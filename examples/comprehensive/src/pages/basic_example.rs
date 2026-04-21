@@ -1,8 +1,11 @@
-use crate::code_utils::CopyCode;
-use crate::file_tree::{FileTree, FileTreeNode};
-use crate::routes::Route;
 use yew::prelude::*;
-use yew_nav_link::{nav_link, Match, NavLink};
+use yew_nav_link::{Match, NavLink, nav_link};
+
+use crate::{
+    code_utils::CopyCode,
+    file_tree::{FileTree, FileTreeNode},
+    routes::Route
+};
 
 const STEP_0_CARGO_TOML: &str = r#"[package]
 name = "my-yew-app"
@@ -279,32 +282,32 @@ fn main() {
 
 fn render_file_tree() -> Html {
     let nodes = vec![FileTreeNode::Dir {
-        name: "my-yew-app".to_string(),
+        name:     "my-yew-app".to_string(),
         children: vec![
             FileTreeNode::File {
-                name: "Cargo.toml".to_string(),
+                name: "Cargo.toml".to_string()
             },
             FileTreeNode::File {
-                name: "index.html".to_string(),
+                name: "index.html".to_string()
             },
             FileTreeNode::Dir {
-                name: "src".to_string(),
+                name:     "src".to_string(),
                 children: vec![
                     FileTreeNode::File {
-                        name: "main.rs".to_string(),
+                        name: "main.rs".to_string()
                     },
                     FileTreeNode::File {
-                        name: "routes.rs".to_string(),
+                        name: "routes.rs".to_string()
                     },
                     FileTreeNode::File {
-                        name: "navigation.rs".to_string(),
+                        name: "navigation.rs".to_string()
                     },
                     FileTreeNode::File {
-                        name: "pages.rs".to_string(),
+                        name: "pages.rs".to_string()
                     },
-                ],
+                ]
             },
-        ],
+        ]
     }];
     html! {
         <FileTree {nodes} />

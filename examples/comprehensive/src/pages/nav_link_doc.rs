@@ -1,9 +1,12 @@
-use crate::doc_page::{DemoCard, DocPage, Tip};
-use crate::routes::Route;
 use yew::prelude::*;
-use yew_nav_link::{nav_link, Match, NavLink};
+use yew_nav_link::{Match, NavLink, nav_link};
 
-const NAV_LINK_SRC: &str = include_str!("../../../../src/nav_link.rs");
+use crate::{
+    doc_page::{DemoCard, DocPage, Tip},
+    routes::Route
+};
+
+const NAV_LINK_SRC: &str = include_str!("../../../../src/active_link/nav_link.rs");
 
 const CODE_EXACT: &str = "\
 use yew_nav_link::NavLink;

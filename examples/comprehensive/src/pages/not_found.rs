@@ -1,6 +1,7 @@
-use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::NavLink;
+
+use crate::routes::Route;
 
 #[function_component]
 pub fn NotFound() -> Html {

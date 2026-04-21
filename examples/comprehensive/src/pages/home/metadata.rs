@@ -40,29 +40,29 @@ pub fn parse_dep_version<'a>(source: &'a str, dep: &str) -> &'a str {
 
 #[derive(Clone, PartialEq)]
 pub struct CrateMeta {
-    pub version: String,
-    pub license: String,
-    pub msrv: String,
-    pub desc: String,
-    pub edition: String,
-    pub yew_ver: String,
-    pub router_ver: String,
-    pub homepage: String,
-    pub repository: String,
-    pub documentation: String,
+    pub version:       String,
+    pub license:       String,
+    pub msrv:          String,
+    pub desc:          String,
+    pub edition:       String,
+    pub yew_ver:       String,
+    pub router_ver:    String,
+    pub homepage:      String,
+    pub repository:    String,
+    pub documentation: String
 }
 
 pub fn crate_meta() -> CrateMeta {
     CrateMeta {
-        version: parse_toml(CARGO_TOML, "version =").to_string(),
-        license: parse_toml(CARGO_TOML, "license =").to_string(),
-        msrv: parse_toml(CARGO_TOML, "rust-version =").to_string(),
-        desc: parse_toml(CARGO_TOML, "description =").to_string(),
-        edition: parse_toml(CARGO_TOML, "edition =").to_string(),
-        yew_ver: parse_dep_version(CARGO_TOML, "yew").to_string(),
-        router_ver: parse_dep_version(CARGO_TOML, "yew-router").to_string(),
-        homepage: parse_toml(CARGO_TOML, "homepage =").to_string(),
-        repository: parse_toml(CARGO_TOML, "repository =").to_string(),
-        documentation: parse_toml(CARGO_TOML, "documentation =").to_string(),
+        version:       parse_toml(CARGO_TOML, "version =").to_string(),
+        license:       parse_toml(CARGO_TOML, "license =").to_string(),
+        msrv:          parse_toml(CARGO_TOML, "rust-version =").to_string(),
+        desc:          parse_toml(CARGO_TOML, "description =").to_string(),
+        edition:       parse_toml(CARGO_TOML, "edition =").to_string(),
+        yew_ver:       parse_dep_version(CARGO_TOML, "yew").to_string(),
+        router_ver:    parse_dep_version(CARGO_TOML, "yew-router").to_string(),
+        homepage:      parse_toml(CARGO_TOML, "homepage =").to_string(),
+        repository:    parse_toml(CARGO_TOML, "repository =").to_string(),
+        documentation: parse_toml(CARGO_TOML, "documentation =").to_string()
     }
 }

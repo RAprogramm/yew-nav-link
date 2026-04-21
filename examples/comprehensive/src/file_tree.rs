@@ -55,12 +55,10 @@ struct DirNodeProps {
 #[function_component]
 fn DirNode(props: &DirNodeProps) -> Html {
     let is_open = use_state(|| true);
+    let is_open_for_toggle = is_open.clone();
     let indent = (props.depth as f64) * 1.25;
 
-    let toggle = {
-        let is_open = is_open.clone();
-        Callback::from(move |()| is_open.set(!*is_open))
-    };
+    let toggle = Callback::from(move |_: MouseEvent| is_open_for_toggle.set(!*is_open_for_toggle));
 
     html! {
         <div>

@@ -1,8 +1,7 @@
-use crate::code_utils::CopyCode;
-use crate::demo_popup::DemoBox;
-use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::NavLink;
+
+use crate::{code_utils::CopyCode, demo_popup::DemoBox, routes::Route};
 
 const CODE_SIDEBAR: &str = r#"use yew::prelude::*;
 use yew_nav_link::NavLink;

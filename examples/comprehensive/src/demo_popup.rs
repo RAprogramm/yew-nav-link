@@ -8,12 +8,12 @@ use yew::prelude::*;
 
 #[derive(Clone, PartialEq, Debug)]
 struct TooltipInfo {
-    text: String,
-    href: String,
-    classes: String,
+    text:      String,
+    href:      String,
+    classes:   String,
     is_active: bool,
-    x: i32,
-    y: i32,
+    x:         i32,
+    y:         i32
 }
 
 /// Wraps live demo content. Hover on links shows a tooltip with info.
@@ -27,7 +27,7 @@ pub fn DemoBox(props: &DemoBoxProps) -> Html {
         Callback::from(move |e: MouseEvent| {
             let target: HtmlElement = match e.target_dyn_into() {
                 Some(t) => t,
-                None => return,
+                None => return
             };
 
             if let Ok(Some(a)) = target.closest("a") {
@@ -45,7 +45,7 @@ pub fn DemoBox(props: &DemoBoxProps) -> Html {
                     classes,
                     is_active,
                     x,
-                    y,
+                    y
                 }));
             }
         })
@@ -61,12 +61,13 @@ pub fn DemoBox(props: &DemoBoxProps) -> Html {
     let on_click = Callback::from(|e: MouseEvent| {
         let target: HtmlElement = match e.target_dyn_into() {
             Some(t) => t,
-            None => return,
+            None => return
         };
         if let Some(a) = target.closest("a").ok().flatten() {
             // Only prevent navigation on <a> links, let other elements work normally
             e.prevent_default();
-            // Don't stop propagation — let clicks reach buttons and other interactive elements
+            // Don't stop propagation — let clicks reach buttons and other interactive
+            // elements
             let _ = a;
         }
     });
@@ -146,5 +147,5 @@ pub fn DemoBox(props: &DemoBoxProps) -> Html {
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct DemoBoxProps {
-    pub children: Children,
+    pub children: Children
 }

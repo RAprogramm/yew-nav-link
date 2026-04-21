@@ -1,6 +1,7 @@
-use crate::doc_page::{DemoCard, DocPage, Tip};
 use yew::prelude::*;
 use yew_nav_link::components::{NavTab, NavTabPanel, NavTabs};
+
+use crate::doc_page::{DemoCard, DocPage, Tip};
 
 const SRC: &str = include_str!("../../../../src/components/tabs.rs");
 

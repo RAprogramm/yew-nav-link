@@ -3,13 +3,13 @@ mod feature_card;
 mod hero;
 mod metadata;
 
-use crate::code_utils::CopyCode;
-use crate::routes::Route;
 use api_stats::count_api_items;
 use feature_card::FeatureCard;
 use hero::Hero;
 use metadata::crate_meta;
 use yew::prelude::*;
+
+use crate::{code_utils::CopyCode, routes::Route};
 
 const BASH_CODE: &str = r#"# Install prerequisites (once)
 rustup target add wasm32-unknown-unknown

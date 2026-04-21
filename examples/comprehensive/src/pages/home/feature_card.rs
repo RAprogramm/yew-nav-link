@@ -1,12 +1,13 @@
-use crate::routes::Route;
 use yew::prelude::*;
 use yew_router::prelude::*;
+
+use crate::routes::Route;
 
 #[derive(Properties, PartialEq, Clone)]
 pub struct FeatureCardProps {
     pub route: Route,
     pub title: String,
-    pub desc: String,
+    pub desc:  String
 }
 
 #[function_component]

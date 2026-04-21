@@ -36,8 +36,16 @@ fn App() -> Html {
         Callback::from(move |_: MouseEvent| menu_open.set(false))
     };
 
-    let sidebar_class = if *menu_open { "sidebar open" } else { "sidebar" };
-    let overlay_class = if *menu_open { "overlay visible" } else { "overlay" };
+    let sidebar_class = if *menu_open {
+        "sidebar open"
+    } else {
+        "sidebar"
+    };
+    let overlay_class = if *menu_open {
+        "overlay visible"
+    } else {
+        "overlay"
+    };
 
     html! {
         <BrowserRouter>
@@ -86,7 +94,7 @@ fn switch(route: Route) -> Html {
         Route::CustomCssFeatures => html! { <pages::CustomCssFeatures /> },
         Route::NavigationHooks => html! { <pages::NavigationHooks /> },
         Route::CustomBreadcrumbs => html! { <pages::CustomBreadcrumbs /> },
-        Route::NotFound => html! { <pages::NotFound /> },
+        Route::NotFound => html! { <pages::NotFound /> }
     }
 }
 

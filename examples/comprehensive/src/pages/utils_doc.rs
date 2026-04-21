@@ -1,5 +1,6 @@
-use crate::doc_page::DocPage;
 use yew::prelude::*;
+
+use crate::doc_page::DocPage;
 
 const SRC: &str = include_str!("../../../../src/utils/path.rs");
 

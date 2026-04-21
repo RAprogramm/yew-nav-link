@@ -1,10 +1,13 @@
-use crate::doc_page::{DemoCard, DocPage, Tip};
-use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::hooks::{use_breadcrumbs, use_is_active, use_is_partial_active, use_route_info};
 use yew_router::Routable;
 
-const SRC: &str = include_str!("../../../../src/hooks/route.rs");
+use crate::{
+    doc_page::{DemoCard, DocPage, Tip},
+    routes::Route
+};
+
+const SRC: &str = include_str!("../../../../src/hooks/route_info/mod.rs");
 
 const CODE_ROUTE_INFO: &str = "\
 use yew_nav_link::hooks::use_route_info;

@@ -1,9 +1,12 @@
-use crate::doc_page::{DemoCard, DocPage, Tip};
-use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::hooks::use_breadcrumbs;
 
-const BREADCRUMBS_SRC: &str = include_str!("../../../../src/hooks/route.rs");
+use crate::{
+    doc_page::{DemoCard, DocPage, Tip},
+    routes::Route
+};
+
+const BREADCRUMBS_SRC: &str = include_str!("../../../../src/hooks/route_info/mod.rs");
 
 const CODE_CUSTOM_PROVIDER: &str = r#"
 use yew_nav_link::hooks::BreadcrumbLabelProvider;

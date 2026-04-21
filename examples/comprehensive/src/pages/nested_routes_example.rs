@@ -1,10 +1,9 @@
-use crate::code_utils::CopyCode;
-use crate::demo_popup::DemoBox;
-use crate::routes::Route;
 use yew::prelude::*;
 use yew_nav_link::NavLink;
 
-const CODE_ROUTE_ENUM: &str = r##"use yew::prelude::*;
+use crate::{code_utils::CopyCode, demo_popup::DemoBox, routes::Route};
+
+const CODE_ROUTE_ENUM: &str = r#"use yew::prelude::*;
 use yew_nav_link::NavLink;
 use yew_router::prelude::*;
 
@@ -43,9 +42,9 @@ enum BlogRoute {
     Archive,
     #[at("/blog/categories")]
     Categories,
-}"##;
+}"#;
 
-const CODE_MAIN_NAV: &str = r##"#[component]
+const CODE_MAIN_NAV: &str = r#"#[component]
 fn MainNav() -> Html {
     html! {
         <nav class="main-nav">
@@ -57,9 +56,9 @@ fn MainNav() -> Html {
             </ul>
         </nav>
     }
-}"##;
+}"#;
 
-const CODE_SUB_NAV: &str = r##"#[component]
+const CODE_SUB_NAV: &str = r#"#[component]
 fn DocsSection() -> Html {
     html! {
         <>
@@ -76,18 +75,18 @@ fn DocsSection() -> Html {
             </div>
         </>
     }
-}"##;
+}"#;
 
-const CODE_SWITCH: &str = r##"fn switch_main(route: Route) -> Html {
+const CODE_SWITCH: &str = r#"fn switch_main(route: Route) -> Html {
     match route {
         Route::Home => html! { <HomePage /> },
         // Both DocsRoot and Docs route to the same section
         Route::DocsRoot | Route::Docs => html! { <DocsSection /> },
         Route::BlogRoot | Route::Blog => html! { <BlogSection /> },
     }
-}"##;
+}"#;
 
-const CODE_PARTIAL_DEEP: &str = r##"// Exact match (default): active ONLY when URL === target path
+const CODE_PARTIAL_DEEP: &str = r#"// Exact match (default): active ONLY when URL === target path
 <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
 // URL: "/"          → active
 // URL: "/docs"      → NOT active
@@ -98,7 +97,7 @@ const CODE_PARTIAL_DEEP: &str = r##"// Exact match (default): active ONLY when U
 // URL: "/docs/getting-started" → active
 // URL: "/docs/api/reference"   → active
 // URL: "/documentation"        → NOT active (different path segment)
-// URL: "/blog"                 → NOT active"##;
+// URL: "/blog"                 → NOT active"#;
 
 #[function_component]
 pub fn NestedRoutesExample() -> Html {
@@ -308,7 +307,7 @@ pub fn NestedRoutesExample() -> Html {
                     { "Understanding how NavLink determines active state is essential for debugging nested routing. Here is the step-by-step process:" }
                 </p>
                 <div class="code-block">
-                    <pre><code class="language-text">{ r##"1. NavLink<R> mounts with to={Route::DocsRoot} (partial=true)
+                    <pre><code class="language-text">{ r#"1. NavLink<R> mounts with to={Route::DocsRoot} (partial=true)
 2. Subscribes to route changes via use_route::<R>()
 3. On each route change:
    a. Gets current route from browser history
@@ -321,8 +320,8 @@ pub fn NestedRoutesExample() -> Html {
      AND (current_path.len() == target_path.len()
           OR current_path.chars().nth(target_path.len()) == Some('/'))
      → "/docs/api".starts_with("/docs") → true
-     → char at index 5 is '/' → true → ACTIVE
-5. Renders <a class="nav-link active" href="/docs">Documentation</a>"## }</code></pre>
+      → char at index 5 is '/' → true → ACTIVE
+ 5. Renders <a class="nav-link active" href="/docs">Documentation</a>"# }</code></pre>
                 </div>
                 <div class="info-box">
                     <strong>{ "Note:" }</strong>
