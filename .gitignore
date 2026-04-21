@@ -1,6 +1,3 @@
-/target
-**/target
-examples/*/target
-examples/*/dist
-examples/*/Cargo.lock
-coverage-report/html
+*.crate
+target
+examples/comprehensive/target

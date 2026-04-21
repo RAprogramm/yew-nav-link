@@ -1,16 +1,14 @@
 name: Verify Crate Version
 description: Compare local version with crates.io
+author: yew-nav-link team
 
 outputs:
   is-newer:
-    description: Whether local version is newer than crates.io
-    value: ${{ steps.compare.outputs.is-newer }}
+    description: True if local version is newer than crates.io
   crates-version:
-    description: Version on crates.io
-    value: ${{ steps.compare.outputs.crates-version }}
+    description: Version published on crates.io
   local-version:
     description: Local version from Cargo.toml
-    value: ${{ steps.compare.outputs.local-version }}
 
 runs:
   using: composite
@@ -55,8 +53,6 @@ runs:
             echo "is-newer=false" >> "$GITHUB_OUTPUT"
             exit 1
           elif [ "$LOCAL" != "$CRATES" ]; then
-            # Check if it's actually newer using cargo-util version comparison logic
-            # Split versions into components
             IFS='.' read -ra LOCAL_PARTS <<< "$LOCAL"
             IFS='.' read -ra CRATES_PARTS <<< "$CRATES"
             

@@ -1,45 +1,32 @@
 name: Cargo Info
 description: Extract package metadata from Cargo.toml
+author: yew-nav-link team
 
 outputs:
-  name:
-    description: Package name
-    value: ${{ steps.meta.outputs.name }}
   version:
     description: Package version
-    value: ${{ steps.meta.outputs.version }}
+  name:
+    description: Package name
   msrv:
-    description: Minimum supported Rust version
-    value: ${{ steps.meta.outputs.msrv }}
+    description: Minimum Rust version
   license:
-    description: Package license
-    value: ${{ steps.meta.outputs.license }}
+    description: License string
 
 runs:
   using: composite
   steps:
-    - id: meta
+    - uses: actions/checkout@v6
+
+    - name: Read Cargo.toml
+      id: version
       shell: bash
       run: |
-        set -euo pipefail
-        META=$(cargo metadata --no-deps --format-version=1)
-
-        NAME=$(echo "$META" | jq -r '.packages[0].name')
-        VERSION=$(echo "$META" | jq -r '.packages[0].version')
-        LICENSE=$(echo "$META" | jq -r '.packages[0].license // empty')
-        MSRV=$(echo "$META" | jq -r '.packages[0].rust_version // empty')
-
-        if [ -z "$MSRV" ]; then
-          echo "::error::rust-version is not set in Cargo.toml"
-          exit 1
-        fi
-
-        # Normalize MSRV to x.y.z format
-        if [[ "$MSRV" =~ ^[0-9]+\.[0-9]+$ ]]; then
-          MSRV="${MSRV}.0"
-        fi
-
-        echo "name=${NAME}" >> "$GITHUB_OUTPUT"
-        echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-        echo "msrv=${MSRV}" >> "$GITHUB_OUTPUT"
-        echo "license=${LICENSE}" >> "$GITHUB_OUTPUT"
+        version=$(grep '^version' Cargo.toml | head -n1 | cut -d'"' -f2)
+        name=$(grep '^name' Cargo.toml | head -n1 | cut -d'"' -f2)
+        msrv=$(grep '^rust-version' Cargo.toml | head -n1 | cut -d'"' -f2)
+        license=$(grep '^license' Cargo.toml | head -n1 | cut -d'"' -f2)
+        
+        echo "version=$version" >> $GITHUB_OUTPUT
+        echo "name=$name" >> $GITHUB_OUTPUT
+        echo "msrv=$msrv" >> $GITHUB_OUTPUT
+        echo "license=$license" >> $GITHUB_OUTPUT

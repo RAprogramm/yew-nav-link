@@ -1,10 +1,12 @@
 name: Setup Rust
-description: Install Rust toolchain with components
+description: Install and configure Rust toolchain
+author: yew-nav-link team
 
 inputs:
   toolchain:
     description: Rust toolchain version
     required: true
+    default: 'stable'
   components:
     description: Comma-separated list of components
     required: false

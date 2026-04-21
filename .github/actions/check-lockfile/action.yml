@@ -1,9 +1,12 @@
 name: Check Lockfile
 description: Verify Cargo.lock is committed
+author: yew-nav-link team
 
 runs:
   using: composite
   steps:
+    - uses: actions/checkout@v6
+
     - name: Verify lockfile is committed
       shell: bash
       run: |

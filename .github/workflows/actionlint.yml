@@ -1,0 +1,40 @@
+name: Lint GitHub Actions workflows
+
+on:
+  push:
+    branches: ["main", "develop"]
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+  pull_request:
+    branches: ["main", "develop"]
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/**'
+
+jobs:
+  actionlint:
+    name: actionlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Download actionlint
+        id: get_actionlint
+        run: bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+        shell: bash
+
+      - name: Check workflow files
+        run: |
+          set -euo pipefail
+          
+          for file in .github/workflows/*.yml; do
+            echo "Checking workflow: $file"
+            ${{ steps.get_actionlint.outputs.executable }} -color "$file"
+          done
+          
+          for file in .github/actions/*/action.yml; do
+            echo "Checking action: $file"
+            cat "$file" | ${{ steps.get_actionlint.outputs.executable }} -stdin-filename "$file"
+          done
+        shell: bash
