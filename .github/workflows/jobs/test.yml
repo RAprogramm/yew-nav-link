@@ -1,0 +1,60 @@
+name: Test
+
+on:
+  workflow_call:
+    inputs:
+      rust:
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+  attestations: write
+  issues: read
+  discussions: write
+
+env:
+  CARGO_INCREMENTAL: 0
+  RUSTFLAGS: -D warnings
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ inputs.rust }}
+
+      - name: Load cached target directory
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ inputs.rust }}-test
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Install cargo-hack
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-hack
+
+      - name: Install cargo-nextest
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-nextest
+
+      - name: Run tests with nextest
+        run: cargo hack nextest run --all-features --profile ci
+
+      - name: Run doctests
+        run: cargo test --all-features --doc
+
+      - name: Step summary
+        run: |
+          echo "✅ Test suite completed" >> $GITHUB_STEP_SUMMARY

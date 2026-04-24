@@ -1,0 +1,32 @@
+name: REUSE Compliance
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  reuse:
+    name: REUSE Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+
+      - name: Install cargo-reuse
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-reuse
+
+      - name: Run REUSE compliance check
+        run: cargo reuse lint
+
+      - name: Step summary
+        run: |
+          echo "✅ REUSE compliance check completed" >> $GITHUB_STEP_SUMMARY

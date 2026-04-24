@@ -1,0 +1,38 @@
+name: Benchmarks
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_INCREMENTAL: 0
+  RUSTFLAGS: -D warnings
+
+jobs:
+  benchmarks:
+    name: Benchmarks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+
+      - name: Load cached target directory
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: benchmarks
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Run benchmarks
+        run: cargo bench --no-run
+
+      - name: Step summary
+        run: |
+          echo "✅ Benchmarks completed" >> $GITHUB_STEP_SUMMARY

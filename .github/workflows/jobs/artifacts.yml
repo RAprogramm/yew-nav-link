@@ -1,0 +1,67 @@
+name: Artifacts
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+env:
+  CARGO_INCREMENTAL: 0
+  RUSTFLAGS: -D warnings
+
+jobs:
+  artifacts:
+    name: Security Artifacts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+
+      - name: Build release artifact
+        run: cargo build --release --all-features
+
+      - name: Install cargo-cyclonedx
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-cyclonedx
+
+      - name: Generate SBOM (CycloneDX)
+        run: |
+          cargocyclonedx --output sbom.cdx.json
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: target/release/yew-nav-link*
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
+        with:
+          cosign-version: latest
+
+      - name: Sign with Sigstore
+        run: |
+          cosign sign-blob --yes --output-signature sbom.cdx.json.sig sbom.cdx.json
+        env:
+          COSIGN_EXPERIMENTAL: true
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-artifacts
+          path: |
+            sbom.cdx.json
+            sbom.cdx.json.sig
+          retention-days: 7
+
+      - name: Step summary
+        run: |
+          echo "✅ Security artifacts generated" >> $GITHUB_STEP_SUMMARY

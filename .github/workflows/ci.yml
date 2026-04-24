@@ -40,29 +40,10 @@ env:
 
 jobs:
   msrv:
-    name: Extract MSRV
-    runs-on: ubuntu-latest
-    outputs:
-      msrv: ${{ steps.parse_msrv.outputs.msrv }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Parse MSRV from Cargo.toml
-        id: parse_msrv
-        run: |
-          MSRV=$(grep -E "rust-version\s*=\s*\"" Cargo.toml | sed 's/.*"\([^"]*\)".*/\1/')
-          echo "msrv=$MSRV" >> $GITHUB_OUTPUT
-          echo "_MSRV: $MSRV"
+    uses: ./.github/workflows/jobs/msrv.yml
 
   check:
-    name: Check
     needs: msrv
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
-    continue-on-error: ${{ matrix.rust == 'nightly' }}
     strategy:
       fail-fast: false
       matrix:
@@ -74,476 +55,55 @@ jobs:
           - ubuntu-latest
           - macos-latest
           - windows-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ matrix.rust }}
-          components: rustfmt, clippy
-
-      - name: Load cached target directory
-        uses: Swatinem/rust-cache@v2
-        with:
-          key: ${{ matrix.rust }}-${{ matrix.os }}-check
-          save-if: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Check with all features
-        run: cargo check --all-features
-
-      - name: Check with no default features
-        run: cargo check --no-default-features
-
-      - name: Clippy with all targets and all features
-        run: |
-          cargo clippy --all-targets --all-features -- --deny warnings
-
-      - name: Clippy with no default features
-        run: |
-          cargo clippy --no-default-features -- --deny warnings
-
-      - name: Step summary
-        if: matrix.rust == 'nightly'
-        run: |
-          echo "✅ Check job completed (nightly build, continued on error)" >> $GITHUB_STEP_SUMMARY
-
-      - name: Step summary
-        if: matrix.rust != 'nightly'
-        run: |
-          echo "✅ Check job completed successfully" >> $GITHUB_STEP_SUMMARY
+    uses: ./.github/workflows/jobs/check.yml
+    with:
+      rust: ${{ matrix.rust }}
+      os: ${{ matrix.os }}
 
   fmt:
-    name: Format
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-          components: rustfmt
-
-      - name: Load cached target directory
-        uses: Swatinem/rust-cache@v2
-        with:
-          key: fmt
-          save-if: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Check formatting
-        run: cargo fmt --check
-
-      - name: Step summary
-        run: |
-          echo "✅ Format check completed" >> $GITHUB_STEP_SUMMARY
+    uses: ./.github/workflows/jobs/fmt.yml
 
   docs:
-    name: Documentation
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-          components: rust-docs
-
-      - name: Load cached target directory
-        uses: Swatinem/rust-cache@v2
-        with:
-          key: docs
-          save-if: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Build documentation
-        run: |
-          RUSTDOCFLAGS="-D warnings" cargo doc --all-features
-
-      - name: Step summary
-        run: |
-          echo "✅ Documentation build completed" >> $GITHUB_STEP_SUMMARY
+    uses: ./.github/workflows/jobs/docs.yml
 
   no_std:
-    name: no-std
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-
-      - name: Load cached target directory
-        uses: Swatinem/rust-cache@v2
-        with:
-          key: no-std
-          save-if: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Install cargo-hack
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-hack
-
-      - name: Check with no features
-        run: |
-          rustup target add thumbv7m-none-eabi
-          cargo hack build --target thumbv7m-none-eabi --no-default-features
-
-      - name: Check with std feature
-        run: |
-          rustup target add thumbv7m-none-eabi
-          cargo hack build --target thumbv7m-none-eabi --no-default-features
-
-      - name: Step summary
-        run: |
-          echo "✅ no-std compatibility checks completed" >> $GITHUB_STEP_SUMMARY
+    uses: ./.github/workflows/jobs/no_std.yml
 
   security:
-    name: Security
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-
-      - name: Load cached target directory
-        uses: Swatinem/rust-cache@v2
-        with:
-          key: security
-          save-if: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Install cargo-deny
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-deny
-
-      - name: Run cargo-deny
-        run: cargo deny check
-
-      - name: Install cargo-audit
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-audit
-
-      - name: Run cargo-audit
-        run: cargo audit
-
-      - name: Step summary
-        run: |
-          echo "✅ Security audit completed" >> $GITHUB_STEP_SUMMARY
+    uses: ./.github/workflows/jobs/security.yml
 
   reuse:
-    name: REUSE Compliance
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-
-      - name: Install cargo-reuse
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-reuse
-
-      - name: Run REUSE compliance check
-        run: cargo reuse lint
-
-      - name: Step summary
-        run: |
-          echo "✅ REUSE compliance check completed" >> $GITHUB_STEP_SUMMARY
+    uses: ./.github/workflows/jobs/reuse.yml
 
   test:
-    name: Test
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    needs: [msrv]
+    needs: msrv
     if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.skip_tests == 'false' }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ needs.msrv.outputs.msrv }}
-
-      - name: Load cached target directory
-        uses: Swatinem/rust-cache@v2
-        with:
-          key: ${{ needs.msrv.outputs.msrv }}-test
-          save-if: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Install cargo-hack
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-hack
-
-      - name: Install cargo-nextest
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-nextest
-
-      - name: Run tests with nextest
-        run: cargo hack nextest run --all-features --profile ci
-
-      - name: Run doctests
-        run: cargo test --all-features --doc
-
-      - name: Step summary
-        run: |
-          echo "✅ Test suite completed" >> $GITHUB_STEP_SUMMARY
+    uses: ./.github/workflows/jobs/test.yml
+    with:
+      rust: ${{ needs.msrv.outputs.msrv }}
 
   coverage:
-    name: Coverage
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    needs: [msrv]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: nightly
-          components: llvm-tools
-
-      - name: Load cached target directory
-        uses: Swatinem/rust-cache@v2
-        with:
-          key: coverage
-          save-if: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Install cargo-hack
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-hack
-
-      - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-llvm-cov
-
-      - name: Generate code coverage
-        run: cargo hack llvm-cov nextest --all-features --profile ci --cobertura --output-path coverage.cobertura.xml
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          files: coverage.cobertura.xml
-          flags: tests
-          name: codecov-umbrella
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Step summary
-        run: |
-          echo "✅ Code coverage report generated" >> $GITHUB_STEP_SUMMARY
+    needs: msrv
+    uses: ./.github/workflows/jobs/coverage.yml
 
   benchmarks:
-    name: Benchmarks
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-
-      - name: Load cached target directory
-        uses: Swatinem/rust-cache@v2
-        with:
-          key: benchmarks
-          save-if: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Run benchmarks
-        run: cargo bench --no-run
-
-      - name: Step summary
-        run: |
-          echo "✅ Benchmarks completed" >> $GITHUB_STEP_SUMMARY
+    uses: ./.github/workflows/jobs/benchmarks.yml
 
   changelog:
-    name: Changelog
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-
-      - name: Install git-cliff
-        uses: taiki-e/install-action@v2
-        with:
-          tool: git-cliff
-
-      - name: Update CHANGELOG.md
-        id: changelog
-        run: |
-          if [ -n "$GITHUB_REF_NAME" ]; then
-            git-cliff --tag $GITHUB_REF_NAME --unreleased
-          else
-            git-cliff --unreleased
-          fi
-
-      - name: Retry changelog generation
-        if: ${{ failure() }}
-        run: |
-          git-cliff --unreleased
-
-      - name: Step summary
-        run: |
-          echo "✅ Changelog generation completed" >> $GITHUB_STEP_SUMMARY
+    uses: ./.github/workflows/jobs/changelog.yml
 
   release:
-    name: Release
-    runs-on: ubuntu-latest
     needs: [msrv, check, fmt, docs, no_std, security, reuse, changelog]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-
-      - name: Load cached target directory
-        uses: Swatinem/rust-cache@v2
-        with:
-          key: release
-          save-if: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Check version change
-        id: version_check
-        run: |
-          CURRENT_VERSION=$(grep -E "version\s*=\s*\"" Cargo.toml | head -1 | sed 's/.*"\([^"]*\)".*/\1/')
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          LATEST_VERSION=${LATEST_TAG#v}
-          
-          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-          echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
-          
-          if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
-            echo "version_changed=true" >> $GITHUB_OUTPUT
-            echo "Version has changed from $LATEST_VERSION to $CURRENT_VERSION"
-          else
-            echo "version_changed=false" >> $GITHUB_OUTPUT
-            echo "Version unchanged"
-          fi
-
-      - name: Build release artifact
-        run: cargo build --release --all-features
-
-      - name: Publish to crates.io
-        if: steps.version_check.outputs.version_changed == 'true'
-        run: |
-          cargo login ${{ secrets.CRATES_IO_TOKEN }}
-          cargo publish
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
-
-      - name: Create GitHub release
-        if: steps.version_check.outputs.version_changed == 'true'
-        uses: actions/create-release@v5
-        with:
-          tag_name: v${{ steps.version_check.outputs.current_version }}
-          name: v${{ steps.version_check.outputs.current_version }}
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Step summary
-        if: steps.version_check.outputs.version_changed == 'true'
-        run: |
-          echo "✅ Release completed" >> $GITHUB_STEP_SUMMARY
-
-      - name: Step summary
-        if: steps.version_check.outputs.version_changed != 'true'
-        run: |
-          echo "ℹ️  Skipping release (version unchanged)" >> $GITHUB_STEP_SUMMARY
+    uses: ./.github/workflows/jobs/release.yml
+    secrets:
+      CRATES_IO_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   artifacts:
-    name: Security Artifacts
-    runs-on: ubuntu-latest
-    needs: [release]
+    needs: release
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-
-      - name: Build release artifact
-        run: cargo build --release --all-features
-
-      - name: Install cargo-cyclonedx
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-cyclonedx
-
-      - name: Generate SBOM (CycloneDX)
-        run: |
-          cargocyclonedx --output sbom.cdx.json
-
-      - name: Attest build provenance
-        uses: actions/attest-build-provenance@v1
-        with:
-          subject-path: target/release/yew-nav-link*
-
-      - name: Install cosign
-        uses: sigstore/cosign-installer@v3
-        with:
-          cosign-version: latest
-
-      - name: Sign with Sigstore
-        run: |
-          cosign sign-blob --yes --output-signature sbom.cdx.json.sig sbom.cdx.json
-        env:
-          COSIGN_EXPERIMENTAL: true
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: security-artifacts
-          path: |
-            sbom.cdx.json
-            sbom.cdx.json.sig
-          retention-days: 7
-
-      - name: Step summary
-        run: |
-          echo "✅ Security artifacts generated" >> $GITHUB_STEP_SUMMARY
+    uses: ./.github/workflows/jobs/artifacts.yml
 
   ci-success:
     name: CI Success
@@ -569,7 +129,7 @@ jobs:
           echo "  Release: ${{ needs.release.result }}"
           echo "  Artifacts: ${{ needs.artifacts.result }}"
           
-          if [[ "${{ needs.msrv.result }}" != "success" || "${{ needs.check.result }}" != "success" || "${{ needs.fmt.result }}" != "success" || "${{ needs.docs.result }}" != "success" || "${{ needs.no_std.result }}" != "success" || "${{ needs.security.result }}" != "success" || "${{ needs.reuse.result }}" != "success" || "${{ needs.test.result }}" != "success" && "${{ needs.test.result }}" != "skipped" || "${{ needs.coverage.result }}" != "success" || "${{ needs.coverage.result }}" != "skipped" || "${{ needs.changelog.result }}" != "success" ]]; then
+          if [[ "${{ needs.msrv.result }}" != "success" || "${{ needs.check.result }}" != "success" || "${{ needs.fmt.result }}" != "success" || "${{ needs.docs.result }}" != "success" || "${{ needs.no_std.result }}" != "success" || "${{ needs.security.result }}" != "success" || "${{ needs.reuse.result }}" != "success" || ("${{ needs.test.result }}" != "success" && "${{ needs.test.result }}" != "skipped") || ("${{ needs.coverage.result }}" != "success" && "${{ needs.coverage.result }}" != "skipped") || "${{ needs.changelog.result }}" != "success" ]]; then
             echo "❌ CI failed"
             exit 1
           fi

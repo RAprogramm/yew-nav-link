@@ -1,0 +1,54 @@
+name: no-std
+
+on:
+  workflow_call:
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+  attestations: write
+  issues: read
+  discussions: write
+
+env:
+  CARGO_INCREMENTAL: 0
+  RUSTFLAGS: -D warnings
+
+jobs:
+  no_std:
+    name: no-std
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+
+      - name: Load cached target directory
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: no-std
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Install cargo-hack
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-hack
+
+      - name: Check with no features
+        run: |
+          rustup target add thumbv7m-none-eabi
+          cargo hack build --target thumbv7m-none-eabi --no-default-features
+
+      - name: Check with std feature
+        run: |
+          rustup target add thumbv7m-none-eabi
+          cargo hack build --target thumbv7m-none-eabi --no-default-features
+
+      - name: Step summary
+        run: |
+          echo "✅ no-std compatibility checks completed" >> $GITHUB_STEP_SUMMARY
