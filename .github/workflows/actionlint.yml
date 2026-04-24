@@ -21,13 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
-      - name: Install actionlint
-        uses: taiki-e/install-action@v2
+      - name: Run actionlint
+        uses: rhysd/actionlint-action@v1
         with:
-          tool: actionlint
-
-      - name: Run actionlint on workflows
-        run: |
-          actionlint -color .github/workflows/*.yml
+          args: .github/workflows/*.yml
