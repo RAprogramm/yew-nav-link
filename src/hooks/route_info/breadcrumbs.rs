@@ -14,8 +14,8 @@ pub trait BreadcrumbLabelProvider: Send + Sync {
 struct BreadcrumbLabelProviderContext(Rc<dyn BreadcrumbLabelProvider>);
 
 impl PartialEq for BreadcrumbLabelProviderContext {
-    fn eq(&self, _other: &Self) -> bool {
-        true
+    fn eq(&self, other: &Self) -> bool {
+        Rc::ptr_eq(&self.0, &other.0)
     }
 }
 
