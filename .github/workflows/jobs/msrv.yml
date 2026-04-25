@@ -23,5 +23,5 @@ jobs:
         id: parse_msrv
         run: |
           MSRV=$(grep -E "rust-version\s*=\s*\"" Cargo.toml | sed 's/.*"\([^"]*\)".*/\1/')
-          echo "msrv=$MSRV" >> $GITHUB_OUTPUT
+          echo "msrv=$MSRV" >> "$GITHUB_OUTPUT"
           echo "_MSRV: $MSRV"

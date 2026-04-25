@@ -35,4 +35,4 @@ jobs:
 
       - name: Step summary
         run: |
-          echo "✅ Benchmarks completed" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Benchmarks completed" >> "$GITHUB_STEP_SUMMARY"

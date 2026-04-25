@@ -43,14 +43,14 @@ jobs:
           LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
           LATEST_VERSION=${LATEST_TAG#v}
           
-          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-          echo "latest_version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+          echo "current_version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
+          echo "latest_version=$LATEST_VERSION" >> "$GITHUB_OUTPUT"
           
           if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
-            echo "version_changed=true" >> $GITHUB_OUTPUT
+            echo "version_changed=true" >> "$GITHUB_OUTPUT"
             echo "Version has changed from $LATEST_VERSION to $CURRENT_VERSION"
           else
-            echo "version_changed=false" >> $GITHUB_OUTPUT
+            echo "version_changed=false" >> "$GITHUB_OUTPUT"
             echo "Version unchanged"
           fi
 
@@ -81,6 +81,11 @@ jobs:
           echo "✅ Release completed" >> $GITHUB_STEP_SUMMARY
 
       - name: Step summary
+        if: steps.version_check.outputs.version_changed == 'true'
+        run: |
+          echo "✅ Release completed" >> "$GITHUB_STEP_SUMMARY"
+ 
+      - name: Step summary
         if: steps.version_check.outputs.version_changed != 'true'
         run: |
-          echo "ℹ️  Skipping release (version unchanged)" >> $GITHUB_STEP_SUMMARY
+          echo "ℹ️  Skipping release (version unchanged)" >> "$GITHUB_STEP_SUMMARY"

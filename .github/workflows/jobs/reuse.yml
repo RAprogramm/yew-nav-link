@@ -29,4 +29,4 @@ jobs:
 
       - name: Step summary
         run: |
-          echo "✅ REUSE compliance check completed" >> $GITHUB_STEP_SUMMARY
+          echo "✅ REUSE compliance check completed" >> "$GITHUB_STEP_SUMMARY"

@@ -57,4 +57,4 @@ jobs:
 
       - name: Step summary
         run: |
-          echo "✅ Test suite completed" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Test suite completed" >> "$GITHUB_STEP_SUMMARY"

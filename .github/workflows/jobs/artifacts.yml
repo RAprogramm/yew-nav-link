@@ -64,4 +64,4 @@ jobs:
 
       - name: Step summary
         run: |
-          echo "✅ Security artifacts generated" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Security artifacts generated" >> "$GITHUB_STEP_SUMMARY"

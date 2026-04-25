@@ -35,7 +35,7 @@ jobs:
         id: changelog
         run: |
           if [ -n "$GITHUB_REF_NAME" ]; then
-            git-cliff --tag $GITHUB_REF_NAME --unreleased
+            git-cliff --tag "$GITHUB_REF_NAME" --unreleased
           else
             git-cliff --unreleased
           fi
@@ -47,4 +47,4 @@ jobs:
 
       - name: Step summary
         run: |
-          echo "✅ Changelog generation completed" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Changelog generation completed" >> "$GITHUB_STEP_SUMMARY"

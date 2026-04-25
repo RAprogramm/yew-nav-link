@@ -64,6 +64,11 @@ jobs:
           echo "✅ Check job completed (nightly build, continued on error)" >> $GITHUB_STEP_SUMMARY
 
       - name: Step summary
+        if: inputs.rust == 'nightly'
+        run: |
+          echo "✅ Check job completed (nightly build, continued on error)" >> "$GITHUB_STEP_SUMMARY"
+ 
+      - name: Step summary
         if: inputs.rust != 'nightly'
         run: |
-          echo "✅ Check job completed successfully" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Check job completed successfully" >> "$GITHUB_STEP_SUMMARY"

@@ -44,4 +44,4 @@ jobs:
 
       - name: Step summary
         run: |
-          echo "✅ Security audit completed" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Security audit completed" >> "$GITHUB_STEP_SUMMARY"

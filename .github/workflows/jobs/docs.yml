@@ -36,4 +36,4 @@ jobs:
 
       - name: Step summary
         run: |
-          echo "✅ Documentation build completed" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Documentation build completed" >> "$GITHUB_STEP_SUMMARY"
