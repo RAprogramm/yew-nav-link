@@ -405,43 +405,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  artifacts:
-    name: Security Artifacts
-    needs: release
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: dtolnay/rust-toolchain@stable
-
-      - name: Install cargo-cyclonedx
-        uses: taiki-e/install-action@v2
-        with:
-          tool: cargo-cyclonedx
-
-      - name: Generate SBOM
-        run: cargo cyclonedx --output sbom.cdx.json
-
-      - name: Install cosign
-        uses: sigstore/cosign-installer@v3
-
-      - name: Sign SBOM
-        run: cosign sign-blob --yes --output-signature sbom.cdx.json.sig sbom.cdx.json
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: security-artifacts
-          path: |
-            sbom.cdx.json
-            sbom.cdx.json.sig
-          retention-days: 7
-
   ci-success:
     name: CI Success
     runs-on: ubuntu-latest
-    needs: [msrv, check, fmt, docs, no_std, security, reuse, test, coverage, benchmarks, changelog, actionlint, release, artifacts]
+    needs: [msrv, check, fmt, docs, no_std, security, reuse, test, coverage, benchmarks, changelog, actionlint, release]
     if: always()
     steps:
       - name: Check job status
@@ -461,9 +428,8 @@ jobs:
           echo "  Changelog: ${{ needs.changelog.result }}"
           echo "  Actionlint: ${{ needs.actionlint.result }}"
           echo "  Release: ${{ needs.release.result }}"
-          echo "  Artifacts: ${{ needs.artifacts.result }}"
           
-          if [[ "${{ needs.msrv.result }}" != "success" || "${{ needs.check.result }}" != "success" || "${{ needs.fmt.result }}" != "success" || "${{ needs.docs.result }}" != "success" || "${{ needs.no_std.result }}" != "success" || "${{ needs.security.result }}" != "success" || "${{ needs.reuse.result }}" != "success" || ("${{ needs.test.result }}" != "success" && "${{ needs.test.result }}" != "skipped") || ("${{ needs.coverage.result }}" != "success" && "${{ needs.coverage.result }}" != "skipped") || ("${{ needs.benchmarks.result }}" != "success" && "${{ needs.benchmarks.result }}" != "skipped") || ("${{ needs.changelog.result }}" != "success" && "${{ needs.changelog.result }}" != "skipped") || ("${{ needs.release.result }}" != "success" && "${{ needs.release.result }}" != "skipped") || ("${{ needs.artifacts.result }}" != "success" && "${{ needs.artifacts.result }}" != "skipped") || "${{ needs.actionlint.result }}" != "success" ]]; then
+          if [[ "${{ needs.msrv.result }}" != "success" || "${{ needs.check.result }}" != "success" || "${{ needs.fmt.result }}" != "success" || "${{ needs.docs.result }}" != "success" || "${{ needs.no_std.result }}" != "success" || "${{ needs.security.result }}" != "success" || "${{ needs.reuse.result }}" != "success" || ("${{ needs.test.result }}" != "success" && "${{ needs.test.result }}" != "skipped") || ("${{ needs.coverage.result }}" != "success" && "${{ needs.coverage.result }}" != "skipped") || ("${{ needs.benchmarks.result }}" != "success" && "${{ needs.benchmarks.result }}" != "skipped") || ("${{ needs.changelog.result }}" != "success" && "${{ needs.changelog.result }}" != "skipped") || ("${{ needs.release.result }}" != "success" && "${{ needs.release.result }}" != "skipped") || "${{ needs.actionlint.result }}" != "success" ]]; then
             echo "❌ CI failed"
             exit 1
           fi
