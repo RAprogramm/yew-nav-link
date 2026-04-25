@@ -92,8 +92,11 @@ jobs:
   changelog:
     uses: ./.github/workflows/jobs/changelog.yml
 
+  actionlint:
+    uses: ./.github/workflows/jobs/actionlint.yml
+
   release:
-    needs: [msrv, check, fmt, docs, no_std, security, reuse, changelog]
+    needs: [msrv, check, fmt, docs, no_std, security, reuse, changelog, actionlint]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     uses: ./.github/workflows/jobs/release.yml
     secrets:
@@ -108,7 +111,7 @@ jobs:
   ci-success:
     name: CI Success
     runs-on: ubuntu-latest
-    needs: [msrv, check, fmt, docs, no_std, security, reuse, test, coverage, benchmarks, changelog, release, artifacts]
+    needs: [msrv, check, fmt, docs, no_std, security, reuse, test, coverage, benchmarks, changelog, actionlint, release, artifacts]
     if: always()
     steps:
       - name: Check job status
@@ -126,10 +129,11 @@ jobs:
           echo "  Coverage: ${{ needs.coverage.result }}"
           echo "  Benchmarks: ${{ needs.benchmarks.result }}"
           echo "  Changelog: ${{ needs.changelog.result }}"
+          echo "  Actionlint: ${{ needs.actionlint.result }}"
           echo "  Release: ${{ needs.release.result }}"
           echo "  Artifacts: ${{ needs.artifacts.result }}"
           
-          if [[ "${{ needs.msrv.result }}" != "success" || "${{ needs.check.result }}" != "success" || "${{ needs.fmt.result }}" != "success" || "${{ needs.docs.result }}" != "success" || "${{ needs.no_std.result }}" != "success" || "${{ needs.security.result }}" != "success" || "${{ needs.reuse.result }}" != "success" || ("${{ needs.test.result }}" != "success" && "${{ needs.test.result }}" != "skipped") || ("${{ needs.coverage.result }}" != "success" && "${{ needs.coverage.result }}" != "skipped") || "${{ needs.changelog.result }}" != "success" ]]; then
+          if [[ "${{ needs.msrv.result }}" != "success" || "${{ needs.check.result }}" != "success" || "${{ needs.fmt.result }}" != "success" || "${{ needs.docs.result }}" != "success" || "${{ needs.no_std.result }}" != "success" || "${{ needs.security.result }}" != "success" || "${{ needs.reuse.result }}" != "success" || ("${{ needs.test.result }}" != "success" && "${{ needs.test.result }}" != "skipped") || ("${{ needs.coverage.result }}" != "success" && "${{ needs.coverage.result }}" != "skipped") || "${{ needs.changelog.result }}" != "success" || "${{ needs.actionlint.result }}" != "success" ]]; then
             echo "❌ CI failed"
             exit 1
           fi
