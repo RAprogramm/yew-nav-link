@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use yew_nav_link::{Match, NavLink, nav_link};
+use yew_router::prelude::*;
 
 use crate::{
     code_utils::CopyCode,
@@ -314,6 +315,66 @@ fn render_file_tree() -> Html {
     }
 }
 
+// ─── Interactive Demo Components ───────────────────────────────────
+
+#[function_component]
+fn RouteStatus() -> Html {
+    let current = use_route::<Route>();
+    let current_name = current
+        .as_ref()
+        .map(|r| format!("{:?}", r))
+        .unwrap_or_else(|| "Unknown".to_string());
+
+    let current_path = current
+        .as_ref()
+        .map(|r| r.to_path())
+        .unwrap_or_default();
+
+    html! {
+        <div class="route-status">
+            <span class="route-status-label">{ "Current route:" }</span>
+            <code class="route-status-name">{ current_name }</code>
+            <span class="route-status-path">{ current_path }</span>
+        </div>
+    }
+}
+
+#[function_component]
+fn MatchDemoNav() -> Html {
+    html! {
+        <div class="match-demo-grid">
+            <div class="match-demo-section">
+                <h5>{ "Exact Match (partial=false)" }</h5>
+                <nav>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink<Route> to={Route::NavListDoc}>{ "NavList" }</NavLink<Route>>
+                        </li>
+                    </ul>
+                </nav>
+                <p class="match-description">{ "Active only when URL matches exactly" }</p>
+            </div>
+            <div class="match-demo-section">
+                <h5>{ "Partial Match (partial=true)" }</h5>
+                <nav>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <NavLink<Route> to={Route::NavLinkDoc} partial=true>{ "Documentation" }</NavLink<Route>>
+                        </li>
+                        <li class="nav-item">
+                            <NavLink<Route> to={Route::NestedRoutesExample} partial=true>{ "Advanced" }</NavLink<Route>>
+                        </li>
+                    </ul>
+                </nav>
+                <p class="match-description">{ "Active on any nested route (e.g. /nav-link, /nav-link/sub)" }</p>
+            </div>
+        </div>
+    }
+}
+
 #[function_component]
 pub fn BasicExample() -> Html {
     html! {
@@ -431,22 +492,8 @@ pub fn BasicExample() -> Html {
                     { " when its route matches the current URL." }
                 </p>
 
-                <h3>{ "Live Result" }</h3>
-                <div class="demo-box">
-                    <nav>
-                        <ul class="nav-list">
-                            <li class="nav-item">
-                                <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-                            </li>
-                            <li class="nav-item">
-                                <NavLink<Route> to={Route::NavLinkDoc}>{ "NavLink" }</NavLink<Route>>
-                            </li>
-                            <li class="nav-item">
-                                <NavLink<Route> to={Route::NavListDoc}>{ "NavList" }</NavLink<Route>>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
+               <h3>{ "Live Result" }</h3>
+                <MatchDemoNav />
             </div>
 
             // ── Step 4: Pages ─────────────────────────────────
@@ -563,10 +610,13 @@ pub fn BasicExample() -> Html {
                 <CopyCode code={FULL_CODE.to_string()} language={"rust".to_string()} />
             </div>
 
-            // ── Live Demo ─────────────────────────────────────
+ // ── Live Demo ─────────────────────────────────────
             <div class="card">
                 <h3>{ "Live Demo" }</h3>
-                <p>{ "Navigate between pages — the active link highlights automatically:" }</p>
+                <p>
+                    { "Navigate between pages - the active link highlights automatically. " }
+                    { "Click any link to navigate and watch the route status update in real-time." }
+                </p>
                 <div class="demo-box">
                     <nav>
                         <ul class="nav-list">
@@ -582,6 +632,7 @@ pub fn BasicExample() -> Html {
                         </ul>
                     </nav>
                 </div>
+                <RouteStatus />
             </div>
 
             // ── When to Use ───────────────────────────────────

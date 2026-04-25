@@ -1,6 +1,6 @@
 [package]
 name = "yew-nav-link"
-version = "0.9.0"
+version = "0.9.1"
 authors = ["RAprogramm <andrey.rozanov.vl@gmail.com>"]
 edition = "2024"
 rust-version = "1.95"
@@ -12,7 +12,7 @@ repository = "https://github.com/RAprogramm/yew-nav-link"
 license = "MIT"
 keywords = ["yew", "router", "navigation", "wasm", "frontend"]
 categories = ["gui", "wasm", "web-programming"]
-exclude = ["examples/**"]
+exclude = ["example/**"]
 
 [package.metadata.docs.rs]
 all-features = true
@@ -34,6 +34,3 @@ harness = false
 
 [lib]
 crate-type = ["rlib"]
-
-[workspace.metadata.clippy]
-warn = ["clippy::pedantic", "clippy::nursery"]

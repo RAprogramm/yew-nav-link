@@ -3,6 +3,340 @@ use yew_nav_link::NavLink;
 
 use crate::{code_utils::CopyCode, demo_popup::DemoBox, routes::Route};
 
+// ─── Configurable Nav Items ────────────────────────────────────────
+
+#[derive(Clone, PartialEq, Debug)]
+struct NavMenuItem {
+    label: String,
+    route: Route,
+    emoji: String,
+}
+
+impl NavMenuItem {
+    fn new(label: &str, route: Route, emoji: &str) -> Self {
+        NavMenuItem {
+            label: label.to_string(),
+            route,
+            emoji: emoji.to_string(),
+        }
+    }
+}
+
+// ─── Bootstrap Navbar Demo ─────────────────────────────────────────
+
+#[function_component]
+fn BootstrapNavbarDemo() -> Html {
+    let items = use_state(|| {
+        vec![
+            NavMenuItem::new("Home", Route::Home, "\u{1F3E0}"),
+            NavMenuItem::new("Docs", Route::NavLinkDoc, "\u{1F4D6}"),
+            NavMenuItem::new("Bootstrap", Route::BootstrapExample, "\u{1F3A8}"),
+        ]
+    });
+
+    let on_add_item = {
+        let items = items.clone();
+        Callback::from(move |_| {
+            let current = (**items).clone();
+            let count = current.len();
+            let mut new_items = current;
+            if count < 8 {
+                new_items.push(NavMenuItem::new(
+                    &format!("Item {}", count + 1),
+                    match count % 5 {
+                        0 => Route::NavListDoc,
+                        1 => Route::DropdownDoc,
+                        2 => Route::TabsDoc,
+                        3 => Route::HooksDoc,
+                        _ => Route::PaginationDoc,
+                    },
+                    "\u{1F517}",
+                ));
+                items.set(new_items);
+            }
+        })
+    };
+
+    let on_remove_item = {
+        let items = items.clone();
+        Callback::from(move |_| {
+            let current = (**items).clone();
+            if current.len() > 1 {
+                let mut new_items = current;
+                new_items.pop();
+                items.set(new_items);
+            }
+        })
+    };
+
+    let item_count = items.len();
+
+    // Route display helper
+    let render_nav_item = {
+        move |item: &NavMenuItem| {
+            match item.route {
+                Route::Home => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::Home}>{ &item.emoji } { " " }{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::NavLinkDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::NavLinkDoc}>{ &item.emoji } { " " }{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::BootstrapExample => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::BootstrapExample}>{ &item.emoji } { " " }{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::NavListDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::NavListDoc}>{ &item.emoji } { " " }{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::DropdownDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::DropdownDoc}>{ &item.emoji } { " " }{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::TabsDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::TabsDoc}>{ &item.emoji } { " " }{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::HooksDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::HooksDoc}>{ &item.emoji } { " " }{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::PaginationDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::PaginationDoc}>{ &item.emoji } { " " }{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                _ => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::Home}>{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+            }
+        }
+    };
+
+    html! {
+        <DemoBox>
+            <div class="dynamic-nav-demo">
+                <div class="dynamic-nav-controls">
+                    <span class="item-count">{ format!("{} items", item_count) }</span>
+                    <button class="btn-demo btn-add" onclick={on_add_item} disabled={item_count >= 8}>
+                        { "\u{2795} Add Item" }
+                    </button>
+                    <button class="btn-demo btn-remove" onclick={on_remove_item} disabled={item_count <= 1}>
+                        { "\u{2796} Remove Last" }
+                    </button>
+                </div>
+                <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+                    <div class="container-fluid">
+                        <span class="navbar-brand">{ "MyApp" }</span>
+                        <ul class="navbar-nav">
+                            { for items.iter().map(|item| render_nav_item(item)) }
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </DemoBox>
+    }
+}
+
+// ─── Bootstrap Pills Demo ──────────────────────────────────────────
+
+#[function_component]
+fn BootstrapPillsDemo() -> Html {
+    let items = use_state(|| {
+        vec![
+            NavMenuItem::new("Home", Route::Home, "\u{1F3E0}"),
+            NavMenuItem::new("Docs", Route::NavLinkDoc, "\u{1F4D6}"),
+            NavMenuItem::new("Bootstrap", Route::BootstrapExample, "\u{1F3A8}"),
+        ]
+    });
+
+    let render_nav_item = {
+        move |item: &NavMenuItem| {
+            match item.route {
+                Route::Home => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::Home}>{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::NavLinkDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::NavLinkDoc}>{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::BootstrapExample => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::BootstrapExample}>{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::NavListDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::NavListDoc}>{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::DropdownDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::DropdownDoc}>{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::TabsDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::TabsDoc}>{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                _ => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::Home}>{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+            }
+        }
+    };
+
+    html! {
+        <DemoBox>
+            <ul class="nav nav-pills">
+                { for items.iter().map(|item| render_nav_item(item)) }
+            </ul>
+        </DemoBox>
+    }
+}
+
+// ─── Bootstrap Tabs Demo ───────────────────────────────────────────
+
+#[function_component]
+fn BootstrapTabsDemo() -> Html {
+    let items = use_state(|| {
+        vec![
+            NavMenuItem::new("Home", Route::Home, "\u{1F3E0}"),
+            NavMenuItem::new("API", Route::NavLinkDoc, "\u{1F4D6}"),
+            NavMenuItem::new("Examples", Route::BootstrapExample, "\u{1F3A8}"),
+        ]
+    });
+
+    let render_nav_item = {
+        move |item: &NavMenuItem| {
+            match item.route {
+                Route::Home => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::Home}>{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::NavLinkDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::NavLinkDoc}>{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::BootstrapExample => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::BootstrapExample}>{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::NavListDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::NavListDoc}>{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::HooksDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::HooksDoc}>{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                _ => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::Home}>{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+            }
+        }
+    };
+
+    html! {
+        <DemoBox>
+            <ul class="nav nav-tabs">
+                { for items.iter().map(|item| render_nav_item(item)) }
+            </ul>
+        </DemoBox>
+    }
+}
+
+// ─── Bootstrap Sidebar Demo ────────────────────────────────────────
+
+#[function_component]
+fn BootstrapSidebarDemo() -> Html {
+    let items = use_state(|| {
+        vec![
+            NavMenuItem::new("Home", Route::Home, "\u{1F3E0}"),
+            NavMenuItem::new("Docs", Route::NavLinkDoc, "\u{1F4D6}"),
+            NavMenuItem::new("Bootstrap", Route::BootstrapExample, "\u{1F3A8}"),
+        ]
+    });
+
+    let render_nav_item = {
+        move |item: &NavMenuItem| {
+            match item.route {
+                Route::Home => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::Home}>{ &item.emoji } { " " }{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::NavLinkDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::NavLinkDoc}>{ &item.emoji } { " " }{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::BootstrapExample => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::BootstrapExample}>{ &item.emoji } { " " }{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::NavListDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::NavListDoc}>{ &item.emoji } { " " }{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                Route::DropdownDoc => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::DropdownDoc}>{ &item.emoji } { " " }{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+                _ => html! {
+                    <li class="nav-item">
+                        <NavLink<Route> to={Route::Home}>{ &item.emoji } { " " }{ &item.label }</NavLink<Route>>
+                    </li>
+                },
+            }
+        }
+    };
+
+    html! {
+        <DemoBox>
+            <div class="d-flex">
+                <div class="d-flex flex-column flex-shrink-0 p-3 bg-light" style="width: 280px;">
+                    <span class="fs-4">{ "Sidebar" }</span>
+                    <hr />
+                    <ul class="nav nav-pills flex-column mb-auto">
+                        { for items.iter().map(|item| render_nav_item(item)) }
+                    </ul>
+                </div>
+            </div>
+        </DemoBox>
+    }
+}
+
+#[function_component]
+pub fn BootstrapExample() -> Html {
+
 const CODE_BOOTSTRAP_NAVBAR: &str = r##"use yew::prelude::*;
 use yew_nav_link::NavLink;
 use yew_router::prelude::*;
