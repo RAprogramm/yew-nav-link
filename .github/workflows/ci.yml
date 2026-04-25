@@ -411,41 +411,23 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-
-      - name: Build release artifact
-        run: cargo build --release --all-features
+      - uses: dtolnay/rust-toolchain@stable
 
       - name: Install cargo-cyclonedx
         uses: taiki-e/install-action@v2
         with:
           tool: cargo-cyclonedx
 
-      - name: Generate SBOM (CycloneDX)
-        run: |
-          cargocyclonedx --output sbom.cdx.json
-
-      - name: Attest build provenance
-        uses: actions/attest-build-provenance@v1
-        with:
-          subject-path: target/release/yew-nav-link*
+      - name: Generate SBOM
+        run: cargo cyclonedx --output sbom.cdx.json
 
       - name: Install cosign
         uses: sigstore/cosign-installer@v3
-        with:
-          cosign-version: latest
 
-      - name: Sign with Sigstore
-        run: |
-          cosign sign-blob --yes --output-signature sbom.cdx.json.sig sbom.cdx.json
-        env:
-          COSIGN_EXPERIMENTAL: true
+      - name: Sign SBOM
+        run: cosign sign-blob --yes --output-signature sbom.cdx.json.sig sbom.cdx.json
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
