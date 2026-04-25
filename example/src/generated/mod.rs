@@ -3,9 +3,9 @@
 
 #[derive(Clone, Debug)]
 pub struct CompItem {
-    pub name: &'static str,
-    pub summary: &'static str,
-    pub category: &'static str,
+    pub name:     &'static str,
+    pub summary:  &'static str,
+    pub category: &'static str
 }
 
 pub static COMPONENTS: &[CompItem] = &[
@@ -21,9 +21,9 @@ pub static COMPONENTS: &[CompItem] = &[
 
 #[derive(Clone, Debug)]
 pub struct HookItem {
-    pub name: &'static str,
+    pub name:        &'static str,
     pub return_type: &'static str,
-    pub summary: &'static str,
+    pub summary:     &'static str
 }
 
 pub static HOOKS: &[HookItem] = &[
@@ -40,103 +40,103 @@ pub static HOOKS: &[HookItem] = &[
 #[derive(Clone, Debug)]
 pub struct SidebarSection {
     pub title: &'static str,
-    pub items: &'static [SidebarItem],
+    pub items: &'static [SidebarItem]
 }
 
 #[derive(Clone, Debug)]
 pub enum SidebarTarget {
     Overview,
-    CompPage(u32),     // doc page index
-    CompItem(u32),     // component in COMPONENTS
-    HookItem(u32),     // hook in HOOKS
+    CompPage(u32), // doc page index
+    CompItem(u32), // component in COMPONENTS
+    HookItem(u32)  // hook in HOOKS
 }
 
 #[derive(Clone, Debug)]
 pub struct SidebarItem {
-    pub label: &'static str,
-    pub target: SidebarTarget,
+    pub label:  &'static str,
+    pub target: SidebarTarget
 }
 
 pub static SIDEBAR: &[SidebarSection] = &[
     SidebarSection {
         title: "Overview",
-        items: &[
-            SidebarItem {
-                label: "Overview",
-                target: SidebarTarget::Overview,
-            },
-        ],
+        items: &[SidebarItem {
+            label:  "Overview",
+            target: SidebarTarget::Overview
+        }]
     },
     SidebarSection {
         title: "Components",
-        items: &[            SidebarItem {
-                label: "NavBadge",
-                target: SidebarTarget::CompItem(0),
+        items: &[
+            SidebarItem {
+                label:  "NavBadge",
+                target: SidebarTarget::CompItem(0)
             },
             SidebarItem {
-                label: "NavHeader",
-                target: SidebarTarget::CompItem(1),
+                label:  "NavHeader",
+                target: SidebarTarget::CompItem(1)
             },
             SidebarItem {
-                label: "NavIcon",
-                target: SidebarTarget::CompItem(2),
+                label:  "NavIcon",
+                target: SidebarTarget::CompItem(2)
             },
             SidebarItem {
-                label: "NavTab",
-                target: SidebarTarget::CompItem(3),
+                label:  "NavTab",
+                target: SidebarTarget::CompItem(3)
             },
             SidebarItem {
-                label: "NavTabPanel",
-                target: SidebarTarget::CompItem(4),
+                label:  "NavTabPanel",
+                target: SidebarTarget::CompItem(4)
             },
             SidebarItem {
-                label: "NavTabs",
-                target: SidebarTarget::CompItem(5),
+                label:  "NavTabs",
+                target: SidebarTarget::CompItem(5)
             },
             SidebarItem {
-                label: "NavText",
-                target: SidebarTarget::CompItem(6),
+                label:  "NavText",
+                target: SidebarTarget::CompItem(6)
             },
             SidebarItem {
-                label: "Pagination",
-                target: SidebarTarget::CompItem(7),
-            },
-        ],
+                label:  "Pagination",
+                target: SidebarTarget::CompItem(7)
+            }
+        ]
     },
     SidebarSection {
         title: "Hooks",
-        items: &[            SidebarItem {
-                label: "use_breadcrumbs",
-                target: SidebarTarget::HookItem(0),
+        items: &[
+            SidebarItem {
+                label:  "use_breadcrumbs",
+                target: SidebarTarget::HookItem(0)
             },
             SidebarItem {
-                label: "use_is_active",
-                target: SidebarTarget::HookItem(1),
+                label:  "use_is_active",
+                target: SidebarTarget::HookItem(1)
             },
             SidebarItem {
-                label: "use_is_exact_active",
-                target: SidebarTarget::HookItem(2),
+                label:  "use_is_exact_active",
+                target: SidebarTarget::HookItem(2)
             },
             SidebarItem {
-                label: "use_is_partial_active",
-                target: SidebarTarget::HookItem(3),
+                label:  "use_is_partial_active",
+                target: SidebarTarget::HookItem(3)
             },
             SidebarItem {
-                label: "use_navigation",
-                target: SidebarTarget::HookItem(4),
+                label:  "use_navigation",
+                target: SidebarTarget::HookItem(4)
             },
             SidebarItem {
-                label: "use_query_params",
-                target: SidebarTarget::HookItem(5),
+                label:  "use_query_params",
+                target: SidebarTarget::HookItem(5)
             },
             SidebarItem {
-                label: "use_route_info",
-                target: SidebarTarget::HookItem(6),
+                label:  "use_route_info",
+                target: SidebarTarget::HookItem(6)
             },
             SidebarItem {
-                label: "use_route_params",
-                target: SidebarTarget::HookItem(7),
-            },
-        ],
-    },
+                label:  "use_route_params",
+                target: SidebarTarget::HookItem(7)
+            }
+        ]
+    }
 ];

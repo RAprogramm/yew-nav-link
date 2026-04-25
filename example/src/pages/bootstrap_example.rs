@@ -134,6 +134,65 @@ fn VerticalNav() -> Html {
     }
 }"##;
 
+// ─── Configurable Nav Items ────────────────────────────────────────
+
+#[derive(Clone, PartialEq, Debug)]
+struct NavMenuItem {
+    label: &'static str,
+    route: Route,
+    emoji: &'static str,
+}
+
+impl NavMenuItem {
+    const fn new(label: &'static str, route: Route, emoji: &'static str) -> Self {
+        NavMenuItem { label, route, emoji }
+    }
+}
+
+fn nav_link_text(text: &str) -> Html {
+    html! { <span>{ text }</span> }
+}
+
+fn render_nav_item(item: &NavMenuItem) -> Html {
+    let text = format!("{} {}", item.emoji, item.label);
+    let children = nav_link_text(&text);
+    match item.route {
+        Route::Home => html! {
+            <li class="nav-item"><NavLink<Route> to={Route::Home}>{ children }</NavLink<Route>></li>
+        },
+        Route::NavLinkDoc => html! {
+            <li class="nav-item"><NavLink<Route> to={Route::NavLinkDoc}>{ children }</NavLink<Route>></li>
+        },
+        Route::BootstrapExample => html! {
+            <li class="nav-item"><NavLink<Route> to={Route::BootstrapExample}>{ children }</NavLink<Route>></li>
+        },
+        Route::NavListDoc => html! {
+            <li class="nav-item"><NavLink<Route> to={Route::NavListDoc}>{ children }</NavLink<Route>></li>
+        },
+        Route::DropdownDoc => html! {
+            <li class="nav-item"><NavLink<Route> to={Route::DropdownDoc}>{ children }</NavLink<Route>></li>
+        },
+        Route::TabsDoc => html! {
+            <li class="nav-item"><NavLink<Route> to={Route::TabsDoc}>{ children }</NavLink<Route>></li>
+        },
+        Route::HooksDoc => html! {
+            <li class="nav-item"><NavLink<Route> to={Route::HooksDoc}>{ children }</NavLink<Route>></li>
+        },
+        Route::PaginationDoc => html! {
+            <li class="nav-item"><NavLink<Route> to={Route::PaginationDoc}>{ children }</NavLink<Route>></li>
+        },
+        Route::BreadcrumbsDoc => html! {
+            <li class="nav-item"><NavLink<Route> to={Route::BreadcrumbsDoc}>{ children }</NavLink<Route>></li>
+        },
+        Route::ExamplesHome => html! {
+            <li class="nav-item"><NavLink<Route> to={Route::ExamplesHome}>{ children }</NavLink<Route>></li>
+        },
+        _ => html! {
+            <li class="nav-item"><NavLink<Route> to={Route::Home}>{ children }</NavLink<Route>></li>
+        },
+    }
+}
+
 #[function_component]
 pub fn BootstrapExample() -> Html {
     html! {
