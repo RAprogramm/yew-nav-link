@@ -264,19 +264,16 @@ jobs:
         with:
           tool: cargo-llvm-cov,cargo-nextest
 
-      - name: Generate code coverage
+      - name: Generate coverage
         run: |
-          cargo llvm-cov nextest --all-features --profile ci --cobertura --output-path coverage.cobertura.xml
+          cargo llvm-cov nextest --all-features --profile ci --lcov --output-path lcov.info
           cargo llvm-cov report --html
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
-          files: coverage.cobertura.xml
-          flags: tests
-          name: codecov-umbrella
+          files: lcov.info
           fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Coverage summary
         run: |
