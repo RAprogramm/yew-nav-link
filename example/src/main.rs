@@ -9,10 +9,10 @@ use yew_router::prelude::*;
 
 mod code_utils;
 mod demo_popup;
-mod doc_metadata;
 mod doc_page;
 mod doc_parser;
 mod file_tree;
+mod generated;
 mod pages;
 mod routes;
 mod templates;
@@ -100,6 +100,29 @@ fn switch(route: Route) -> Html {
 
 #[function_component]
 fn SidebarContent() -> Html {
+    let sections_html: Html = html! {
+        <>
+        { for generated::SIDEBAR.iter().map(|section| {
+            let title = section.title.to_string();
+            let items_html: Vec<Html> = section.items.iter().map(|item| {
+                let route = sidebar_target_route(&item.target);
+                let label = item.label.to_string();
+                html! {
+                    <NavLink<Route> to={route}>
+                        <>{ label }</>
+                    </NavLink<Route>>
+                }
+            }).collect();
+            html! {
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">{ title }</div>
+                    <nav>{ for items_html.iter().cloned() }</nav>
+                </div>
+            }
+        })}
+        </>
+    };
+
     html! {
         <div class="sidebar-inner">
             <div class="sidebar-header">
@@ -107,46 +130,7 @@ fn SidebarContent() -> Html {
                 <div class="sidebar-version">{ SIDEBAR_VERSION }</div>
             </div>
 
-            <div class="sidebar-section">
-                <div class="sidebar-section-title">{ "Getting Started" }</div>
-                <nav>
-                    <NavLink<Route> to={Route::Home}>{ "Overview" }</NavLink<Route>>
-                </nav>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-section-title">{ "Components" }</div>
-                <nav>
-                    <NavLink<Route> to={Route::NavLinkDoc}>{ "NavLink" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::NavListDoc}>{ "NavList & NavItem" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::NavDividerDoc}>{ "NavDivider" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::BadgeDoc}>{ "Badge / Header / Text" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::DropdownDoc}>{ "NavDropdown" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::IconDoc}>{ "NavIcon" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::TabsDoc}>{ "NavTabs / NavTab" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::PaginationDoc}>{ "Pagination" }</NavLink<Route>>
-                </nav>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-section-title">{ "Hooks & Utilities" }</div>
-                <nav>
-                    <NavLink<Route> to={Route::HooksDoc}>{ "Route Hooks" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::NavigationHooks}>{ "Navigation Hooks" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::BreadcrumbsDoc}>{ "Breadcrumbs" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::CustomBreadcrumbs}>{ "Custom Breadcrumbs" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::UtilsDoc}>{ "Path Utilities" }</NavLink<Route>>
-                </nav>
-            </div>
-
-            <div class="sidebar-section">
-                <div class="sidebar-section-title">{ "New in v0.8" }</div>
-                <nav>
-                    <NavLink<Route> to={Route::CustomCssFeatures}>{ "Custom CSS Classes" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::NavigationHooks}>{ "Navigation Hooks" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::CustomBreadcrumbs}>{ "Custom Breadcrumbs" }</NavLink<Route>>
-                </nav>
-            </div>
+            { sections_html }
 
             <div class="sidebar-section">
                 <div class="sidebar-section-title">{ "Examples" }</div>
@@ -159,6 +143,32 @@ fn SidebarContent() -> Html {
                 </nav>
             </div>
         </div>
+    }
+}
+
+fn sidebar_target_route(target: &generated::SidebarTarget) -> Route {
+    match target {
+        generated::SidebarTarget::Overview => Route::Home,
+        generated::SidebarTarget::CompItem(i) => {
+            let name = generated::COMPONENTS[*i as usize].name;
+            comp_route(name)
+        }
+        generated::SidebarTarget::HookItem(_) => Route::HooksDoc,
+        generated::SidebarTarget::CompPage(_) => Route::Home,
+    }
+}
+
+fn comp_route(name: &str) -> Route {
+    match name {
+        "NavLink" => Route::NavLinkDoc,
+        "NavList" | "NavItem" => Route::NavListDoc,
+        "NavDivider" => Route::NavDividerDoc,
+        "NavBadge" | "NavHeader" | "NavText" => Route::BadgeDoc,
+        "NavDropdown" | "NavDropdownItem" | "NavDropdownDivider" => Route::DropdownDoc,
+        "NavIcon" => Route::IconDoc,
+        "NavTabs" | "NavTab" | "NavTabPanel" => Route::TabsDoc,
+        "Pagination" | "PageItem" | "PageLink" => Route::PaginationDoc,
+        _ => Route::Home, // fallback
     }
 }
 
