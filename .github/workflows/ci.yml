@@ -274,6 +274,7 @@ jobs:
         with:
           files: lcov.info
           fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Coverage summary
         run: |
