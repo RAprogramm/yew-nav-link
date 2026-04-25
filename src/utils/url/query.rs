@@ -112,9 +112,9 @@ impl QueryParams {
             .map(String::as_str)
     }
 
-    /// Returns the first value for the given key (alias for [`get`]).
+    /// Returns the first value for the given key (alias for [`Self::get`]).
     ///
-    /// Equivalent to [`get`](Self::get). Included for API compatibility.
+    /// Equivalent to [`Self::get`]. Included for API compatibility.
     #[must_use]
     pub fn get_one(&self, key: &str) -> Option<&str> {
         self.get(key)
@@ -146,9 +146,9 @@ impl QueryParams {
         self.params.contains_key(key)
     }
 
-    /// Checks if the given key exists (alias for [`has`]).
+    /// Checks if the given key exists (alias for [`Self::has`]).
     ///
-    /// Equivalent to [`has`](Self::has). Included for API compatibility.
+    /// Equivalent to [`Self::has`]. Included for API compatibility.
     #[must_use]
     pub fn contains_key(&self, key: &str) -> bool {
         self.has(key)
