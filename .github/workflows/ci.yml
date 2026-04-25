@@ -202,7 +202,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Run REUSE compliance check
+      - name: Install reuse
+        run: pip install --user reuse
+
+      - name: Check REUSE compliance
         run: reuse lint
 
   test:
@@ -247,6 +250,7 @@ jobs:
     needs: msrv
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -289,6 +293,7 @@ jobs:
     name: Benchmarks
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -321,6 +326,7 @@ jobs:
     name: Changelog
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
