@@ -1,0 +1,67 @@
+// ── Tables ─────────────────────────────────────────────────────
+
+.doc-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
+    margin: clamp(0.25rem, 1vw, 0.5rem) 0;
+    display: table;
+    table-layout: auto;
+
+    thead th {
+        text-align: left;
+        padding: clamp(0.25rem, 1vw, 0.5rem) clamp(0.375rem, 1.5vw, 0.625rem);
+        font-size: clamp(0.5rem, 1.2vw, 0.625rem);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border-focus);
+        font-weight: 700;
+    }
+
+    tbody td {
+        padding: clamp(0.25rem, 1vw, 0.5rem) clamp(0.375rem, 1.5vw, 0.625rem);
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+        line-height: 1.5;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    tbody tr {
+        &:last-child td { border-bottom: none; }
+        &:hover { background: var(--accent-dim); }
+    }
+
+    code {
+        background: var(--bg-code);
+        padding: 0.0625rem 0.3125rem;
+        border-radius: 0.1875rem;
+        border: 1px solid var(--border);
+        font-size: clamp(0.625rem, 1.2vw, 0.75rem);
+        color: var(--accent);
+        white-space: nowrap;
+        word-break: keep-all;
+    }
+
+    strong { color: var(--text); }
+}
+
+// Scrollable wrapper for narrow screens
+.card {
+    .table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+.demo table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
+
+    td {
+        padding: clamp(0.25rem, 1vw, 0.5rem) clamp(0.375rem, 1.5vw, 0.625rem);
+        border-bottom: 1px solid var(--border);
+    }
+}
