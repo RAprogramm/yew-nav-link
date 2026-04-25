@@ -10,16 +10,7 @@ readme = "README.md"
 homepage = "https://github.com/RAprogramm/yew-nav-link"
 repository = "https://github.com/RAprogramm/yew-nav-link"
 license = "MIT"
-keywords = [
-  "yew",
-  "router",
-  "navigation",
-  "wasm",
-  "frontend",
-  "component",
-  "spa",
-  "web",
-]
+keywords = ["yew", "router", "navigation", "wasm", "frontend"]
 categories = ["gui", "wasm", "web-programming"]
 exclude = ["examples/**"]
 
