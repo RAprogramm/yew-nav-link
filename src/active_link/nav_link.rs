@@ -10,10 +10,20 @@ use super::{
     utils::{build_class, is_path_prefix}
 };
 
-/// Navigation link with automatic active state detection.
+/// Navigation link with automatic active-state detection.
+///
+/// Renders an `<a>` tag and intercepts left-clicks to push the target route
+/// through `yew_router`'s [`Navigator`]. Modifier-clicks (Cmd/Ctrl/Shift/Alt
+/// or middle-click) fall through to the browser, preserving the standard
+/// "open in new tab" affordance.
+///
+/// When the route matches, the rendered anchor gains:
+/// - the `active` class (or whatever `active_class` overrides it with), and
+/// - `aria-current="page"` so screen readers announce the current location.
 #[component]
 pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R>) -> Html {
     let current_route = use_route::<R>();
+    let navigator = use_navigator();
     let is_active = current_route.is_some_and(|route| {
         if props.partial {
             is_path_prefix(&props.to.to_path(), &route.to_path())
@@ -22,10 +32,42 @@ pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R
         }
     });
 
+    // Build the displayed href so it includes any router basename
+    // (e.g. /yew-nav-link on GitHub Pages). Without a Navigator in scope we
+    // fall back to the bare route path; that path is still a valid relative
+    // anchor on standard hosting.
+    let path = props.to.to_path();
+    let href = navigator.as_ref().map_or_else(
+        || path.clone(),
+        |nav| match nav.basename() {
+            Some(base) if !base.is_empty() => format!("{base}{path}"),
+            _ => path.clone()
+        }
+    );
+
+    let onclick = {
+        let to = props.to.clone();
+        // `navigator` is moved into the closure; nothing else reads it after
+        // this point.
+        Callback::from(move |event: MouseEvent| {
+            // Preserve "open in new tab / window" affordances.
+            if event.meta_key() || event.ctrl_key() || event.shift_key() || event.alt_key() {
+                return;
+            }
+            event.prevent_default();
+            if let Some(nav) = &navigator {
+                nav.push(&to);
+            }
+        })
+    };
+
+    let class = build_class(is_active, props.class, props.active_class);
+    let aria_current = if is_active { Some("page") } else { None };
+
     html! {
-        <Link<R> to={props.to.clone()} classes={classes!(build_class(is_active, props.class, props.active_class))}>
+        <a class={class} href={href} onclick={onclick} aria-current={aria_current}>
             { for props.children.iter() }
-        </Link<R>>
+        </a>
     }
 }
 
@@ -89,6 +131,8 @@ mod tests {
     #[test]
     fn nav_link_exact_returns_html() {
         let html = nav_link(TestRoute::Home, "Home", Match::Exact);
+        // The wrapper now is a function component itself; what matters is
+        // that we get back a renderable `Html` value.
         assert!(matches!(html, Html::VComp(_)));
     }
 
