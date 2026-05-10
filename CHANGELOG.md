@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.2] - 2026-05-10
+
+### Added
+
+- Re-export `BreadcrumbLabelProvider` at the crate root so consumers can write `use yew_nav_link::BreadcrumbLabelProvider;` instead of reaching into the `hooks::` submodule. Purely additive; no behaviour change.
+
 ## [0.9.1] - 2026-05-10
 
 ### Fixed
