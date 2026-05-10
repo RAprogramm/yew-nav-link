@@ -1,5 +1,7 @@
+// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+// SPDX-License-Identifier: MIT
+
 pub mod query_params;
-mod route_params;
 pub mod use_navigation;
 
 pub use query_params::use_query_params;

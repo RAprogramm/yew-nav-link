@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+// SPDX-License-Identifier: MIT
+
 //! Navigation UI components.
 //!
 //! Provides a collection of reusable components for building navigation

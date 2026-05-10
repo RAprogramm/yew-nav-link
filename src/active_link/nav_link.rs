@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+// SPDX-License-Identifier: MIT
+
 use yew::prelude::*;
 use yew_router::prelude::*;
 

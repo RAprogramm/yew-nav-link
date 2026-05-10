@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+// SPDX-License-Identifier: MIT
+
 //! Core navigation primitives.
 //!
 //! Provides semantic building blocks for navigation lists: items, lists,

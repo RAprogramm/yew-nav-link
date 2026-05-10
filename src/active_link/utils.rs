@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+// SPDX-License-Identifier: MIT
+
 /// Checks if `target` path is a segment-wise prefix of `current` path.
 #[inline]
 #[must_use]
@@ -15,6 +18,19 @@ pub fn is_path_prefix(target: &str, current: &str) -> bool {
     true
 }
 
+/// Combines a base CSS class name with an active class name when selected.
+///
+/// When `is_active` is `true`, returns both the base and active classes
+/// separated by a space. Otherwise, returns only the base class.
+///
+/// # Examples
+///
+/// ```
+/// use yew_nav_link::active_link::utils::build_class;
+///
+/// assert_eq!(build_class(true, "nav-link", "active"), "nav-link active");
+/// assert_eq!(build_class(false, "nav-link", "active"), "nav-link");
+/// ```
 #[inline]
 #[must_use]
 pub fn build_class(is_active: bool, base_class: &str, active_class: &str) -> String {

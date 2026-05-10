@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+// SPDX-License-Identifier: MIT
+
 //! URL parsing utilities.
 //!
 //! Provides helpers for parsing URLs and query parameters.
