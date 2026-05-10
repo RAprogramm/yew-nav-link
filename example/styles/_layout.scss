@@ -1,69 +1,123 @@
 // SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
-.app-container {
+.app-shell {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-.main-nav {
-    background: var(--bg-card);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: var(--shadow);
-
-    .nav-content {
-        max-width: 1200px;
-        margin: 0 auto;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.75rem 0;
-    }
-
-    .logo {
-        font-weight: 700;
-        font-size: 1.25rem;
-        color: var(--primary);
-        text-decoration: none;
-        margin-right: 2rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .nav-links {
-        display: flex;
-        gap: 0.25rem;
-        flex-wrap: wrap;
-    }
+main {
+    flex: 1;
+    padding-bottom: 4rem;
 }
 
 .container {
-    max-width: 1200px;
+    max-width: var(--content-width);
     margin: 0 auto;
-    padding: 2rem;
+    padding: 2.5rem 1.5rem;
     width: 100%;
 }
 
-.page-header {
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
+// ── Top navigation ──────────────────────────────────────────────
+.top-nav {
+    background: var(--bg-card);
     border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: saturate(180%) blur(8px);
+}
+
+.top-nav__inner {
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: 0.875rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.top-nav__brand {
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: var(--primary);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+}
+
+.top-nav__links {
+    display: flex;
+    gap: 0.25rem;
+    flex: 1;
+    flex-wrap: wrap;
+
+    .nav-link {
+        text-decoration: none;
+        color: var(--text-muted);
+        padding: 0.5rem 0.875rem;
+        border-radius: var(--radius-sm);
+        font-weight: 500;
+        font-size: 0.9375rem;
+        transition: background-color 0.15s ease, color 0.15s ease;
+
+        &:hover {
+            background: var(--bg-soft);
+            color: var(--text);
+        }
+
+        &.active {
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-weight: 600;
+        }
+    }
+}
+
+.top-nav__source {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: 500;
+
+    &:hover {
+        color: var(--primary);
+    }
+}
+
+// ── Page chrome ─────────────────────────────────────────────────
+.page-header {
+    margin-bottom: 3rem;
 
     h1 {
-        font-size: 2rem;
+        font-size: clamp(1.75rem, 4vw, 2.5rem);
         font-weight: 700;
-        color: var(--text);
-        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.75rem;
     }
 
     p {
+        font-size: 1.125rem;
         color: var(--text-muted);
-        font-size: 1.1rem;
+        max-width: 60ch;
+    }
+}
+
+.page-section {
+    margin-bottom: 3.5rem;
+
+    &__title {
+        font-size: 1.375rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    &__intro {
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+        max-width: 70ch;
     }
 }

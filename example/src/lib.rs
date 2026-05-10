@@ -6,1661 +6,1045 @@ use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
 use yew_nav_link::{
-    BreadcrumbLabelProvider, BreadcrumbLabelProviderContext, Match, NavError, NavLink, NavResult,
-    components::*, hooks::*, nav::*, nav_link, utils::*
+    BreadcrumbItem, BreadcrumbLabelProvider, BreadcrumbLabelProviderContext, Match, NavBadge,
+    NavDivider, NavDropdown, NavDropdownDivider, NavDropdownItem, NavError, NavHeader, NavIcon,
+    NavIconSize, NavItem, NavLink, NavLinkWithIcon, NavList, NavResult, NavTab, NavTabPanel,
+    NavTabs, NavText, Navigation, Pagination, is_absolute, join_paths, nav_link, normalize_path,
+    use_breadcrumbs, use_is_active, use_is_exact_active, use_is_partial_active, use_navigation,
+    use_query_params, use_route_info,
+    utils::{urlencoding_decode, urlencoding_encode}
 };
 use yew_router::prelude::*;
 
-// ============ ROUTES ============
+// ============================================================================
+// Routes
+// ============================================================================
 
 #[derive(Clone, PartialEq, Debug, Routable)]
 enum Route {
     #[at("/")]
     Home,
-    #[at("/basic")]
-    BasicLinks,
+    #[at("/navlink")]
+    NavLink,
+    #[at("/navlink/lab/:slug")]
+    NavLinkLab { slug: String },
     #[at("/components")]
     Components,
-    #[at("/tabs")]
-    TabsDemo,
-    #[at("/pagination")]
-    PaginationDemo,
     #[at("/hooks")]
-    HooksDemo,
-    #[at("/utils")]
-    UtilsDemo,
-    #[at("/dropdown")]
-    DropdownDemo,
-    #[at("/blog")]
-    Blog,
-    #[at("/blog/:id")]
-    BlogPost { id: String },
-    #[at("/nested")]
-    Nested,
-    #[at("/nested/first")]
-    NestedFirst,
-    #[at("/nested/second")]
-    NestedSecond,
-    #[at("/query")]
-    QueryDemo,
-    #[at("/breadcrumbs")]
-    Breadcrumbs,
-    #[at("/breadcrumbs/team/:team")]
-    BreadcrumbsTeam { team: String },
-    #[at("/customization")]
-    Customization,
-    #[at("/errors")]
-    Errors
+    Hooks,
+    #[at("/hooks/team/:team")]
+    HooksTeam { team: String },
+    #[at("/utilities")]
+    Utilities,
+    #[not_found]
+    #[at("/404")]
+    NotFound
 }
 
-// ============ BREADCRUMB LABEL PROVIDER ============
+// ============================================================================
+// DemoCard — the building block: title + description + live preview + code
+// ============================================================================
 
-/// Concrete provider that turns demo URL paths into human labels.
-///
-/// Demonstrates how end users plug a custom `BreadcrumbLabelProvider` into
-/// the tree via `BreadcrumbLabelProviderContext`. `use_breadcrumbs` reads it
-/// from context and applies it segment by segment.
-struct DemoBreadcrumbLabels;
+#[derive(Properties, PartialEq)]
+struct DemoCardProps {
+    title:       AttrValue,
+    #[prop_or_default]
+    description: Option<AttrValue>,
+    code:        AttrValue,
+    children:    Children
+}
 
-impl BreadcrumbLabelProvider for DemoBreadcrumbLabels {
-    fn label_for_path(&self, path: &str) -> String {
-        match path {
-            "/" => "Home".into(),
-            "/breadcrumbs" => "Breadcrumbs".into(),
-            "/breadcrumbs/team" => "Team".into(),
-            "/basic" => "Basic links".into(),
-            "/components" => "Components".into(),
-            "/tabs" => "Tabs".into(),
-            "/pagination" => "Pagination".into(),
-            "/dropdown" => "Dropdown".into(),
-            "/hooks" => "Hooks".into(),
-            "/utils" => "Utilities".into(),
-            "/blog" => "Blog".into(),
-            "/nested" => "Nested".into(),
-            "/query" => "Query".into(),
-            "/customization" => "Customization".into(),
-            "/errors" => "Errors".into(),
-            other if other.starts_with("/blog/") => format!("Post {}", &other[6..]),
-            other if other.starts_with("/breadcrumbs/team/") => {
-                format!("Team {}", &other[18..])
-            }
-            other => other.into()
-        }
+#[function_component]
+fn DemoCard(props: &DemoCardProps) -> Html {
+    html! {
+        <article class="demo-card">
+            <header class="demo-card__head">
+                <h3 class="demo-card__title">{ props.title.clone() }</h3>
+                if let Some(desc) = &props.description {
+                    <p class="demo-card__desc">{ desc }</p>
+                }
+            </header>
+            <div class="demo-card__body">
+                <div class="demo-card__preview" aria-label="Live preview">
+                    { for props.children.iter() }
+                </div>
+                <pre class="demo-card__code" aria-label="Source code"><code>{ props.code.clone() }</code></pre>
+            </div>
+        </article>
     }
 }
 
-// ============ DEMO PAGES ============
+// ============================================================================
+// Page chrome
+// ============================================================================
 
-#[component]
-fn Navigation() -> Html {
+#[derive(Properties, PartialEq)]
+struct PageHeaderProps {
+    title:    AttrValue,
+    subtitle: AttrValue
+}
+
+#[function_component]
+fn PageHeader(props: &PageHeaderProps) -> Html {
     html! {
-        <nav class="main-nav" aria-label="Main navigation">
-            <div class="nav-content">
-                <NavLink<Route>
-                    to={Route::Home}
-                    class="logo"
-                >
+        <header class="page-header">
+            <h1>{ props.title.clone() }</h1>
+            <p>{ props.subtitle.clone() }</p>
+        </header>
+    }
+}
+
+#[derive(Properties, PartialEq)]
+struct PageSectionProps {
+    title:    AttrValue,
+    #[prop_or_default]
+    intro:    Option<AttrValue>,
+    children: Children
+}
+
+#[function_component]
+fn PageSection(props: &PageSectionProps) -> Html {
+    html! {
+        <section class="page-section">
+            <h2 class="page-section__title">{ props.title.clone() }</h2>
+            if let Some(intro) = &props.intro {
+                <p class="page-section__intro">{ intro }</p>
+            }
+            { for props.children.iter() }
+        </section>
+    }
+}
+
+// ============================================================================
+// Top navigation
+// ============================================================================
+
+#[function_component]
+fn TopNav() -> Html {
+    html! {
+        <nav class="top-nav" aria-label="Main navigation">
+            <div class="top-nav__inner">
+                <NavLink<Route> to={Route::Home} class="top-nav__brand">
                     { "yew-nav-link" }
                 </NavLink<Route>>
-
-                <div class="nav-links">
-                    <NavLink<Route> to={Route::BasicLinks}>{ "Basic" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::Components}>{ "Components" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::TabsDemo}>{ "Tabs" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::PaginationDemo}>{ "Pagination" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::DropdownDemo}>{ "Dropdown" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::HooksDemo}>{ "Hooks" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::UtilsDemo}>{ "Utils" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::Blog} partial=true>{ "Blog" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::Nested} partial=true>{ "Nested" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::QueryDemo}>{ "Query" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::Breadcrumbs} partial=true>
-                        { "Breadcrumbs" }
-                    </NavLink<Route>>
-                    <NavLink<Route> to={Route::Customization}>{ "Customization" }</NavLink<Route>>
-                    <NavLink<Route> to={Route::Errors}>{ "Errors" }</NavLink<Route>>
-                </div>
+                <ul class="top-nav__links">
+                    <li>
+                        <NavLink<Route> to={Route::NavLink} partial=true>
+                            { "NavLink" }
+                        </NavLink<Route>>
+                    </li>
+                    <li>
+                        <NavLink<Route> to={Route::Components}>{ "Components" }</NavLink<Route>>
+                    </li>
+                    <li>
+                        <NavLink<Route> to={Route::Hooks} partial=true>{ "Hooks" }</NavLink<Route>>
+                    </li>
+                    <li>
+                        <NavLink<Route> to={Route::Utilities}>{ "Utilities" }</NavLink<Route>>
+                    </li>
+                </ul>
+                <a
+                    class="top-nav__source"
+                    href="https://github.com/RAprogramm/yew-nav-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    { "Source" }
+                </a>
             </div>
         </nav>
     }
 }
 
-#[component]
+// ============================================================================
+// Home
+// ============================================================================
+
+#[function_component]
 fn HomePage() -> Html {
     html! {
         <div class="container">
-            <div class="page-header">
-                <h1>{ "yew-nav-link 2026 Demo" }</h1>
-                <p>{ "Comprehensive demonstration of all navigation components and utilities" }</p>
-            </div>
+            <PageHeader
+                title="yew-nav-link"
+                subtitle="Navigation primitives for Yew with automatic active-state detection."
+            />
 
-            <div class="section">
-                <h2 class="section-title">{ "Overview" }</h2>
-                <p class="section-desc">
-                    { "yew-nav-link provides enhanced navigation components for Yew applications with automatic active state detection, breadcrumbs, tabs, pagination, and more." }
-                </p>
-
-                <div class="demo-grid">
-                    <div class="card">
-                        <div class="card-title">{ "NavLink Component" }</div>
-                        <p>{ "Automatic active state with Exact and Partial matching modes" }</p>
-                        <div class="mt-1">
-                            <NavLink<Route> to={Route::BasicLinks}>{ "Try Basic Demo →" }</NavLink<Route>>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-title">{ "UI Components" }</div>
-                        <p>{ "Badges, icons, dropdowns, tabs, pagination, and more" }</p>
-                        <div class="mt-1">
-                            <NavLink<Route> to={Route::Components}>{ "Try Components →" }</NavLink<Route>>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-title">{ "Hooks" }</div>
-                        <p>{ "use_is_active, use_navigation, use_query_params, use_breadcrumbs" }</p>
-                        <div class="mt-1">
-                            <NavLink<Route> to={Route::HooksDemo}>{ "Try Hooks →" }</NavLink<Route>>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-title">{ "URL Utilities" }</div>
-                        <p>{ "Path normalization, joining, absolute URL detection" }</p>
-                        <div class="mt-1">
-                            <NavLink<Route> to={Route::UtilsDemo}>{ "Try Utils →" }</NavLink<Route>>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "Quick Syntax Reference" }</h2>
-
-                <div class="code-block">{r#"// Component syntax with NavLink
-<NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-
-// Partial matching for nested routes
-<NavLink<Route> to={Route::Blog} partial=true>{ "Blog" }</NavLink<Route>>
-
-// Function syntax for text-only links
-{ nav_link(Route::About, "About", Match::Exact) }
-{ nav_link(Route::Docs, "Docs", Match::Partial) }
-
-// With custom attributes
-<NavLink<Route>
-    to={Route::Home}
-    class="custom-class"
-    style="font-weight: bold;"
->
-    { "Styled Link" }
-</NavLink<Route>>"#}</div>
-            </div>
-        </div>
-    }
-}
-
-#[component]
-fn BasicLinksPage() -> Html {
-    let exact_active_basic = use_is_exact_active(Route::BasicLinks);
-    let partial_active_blog = use_is_partial_active(Route::Blog);
-
-    html! {
-        <div class="container">
-            <div class="page-header">
-                <h1>{ "Basic NavLink Usage" }</h1>
-                <p>{ "Learn the fundamental NavLink component with different matching modes" }</p>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "Component Syntax" }</h2>
-                <p class="section-desc">
-                    { "NavLink wraps yew-router's Link with automatic active state detection." }
-                </p>
-
-                <div class="demo-grid">
-                    <div class="card">
-                        <div class="card-title">{ "Exact Match (Default)" }</div>
-                        <p>{ "Link is active only when route matches exactly" }</p>
-                        <div class="mt-1 flex-col">
-                            <NavLink<Route> to={Route::Home}>{ "Home (Exact)" }</NavLink<Route>>
-                            <NavLink<Route> to={Route::BasicLinks}>{ "Basic Links (Exact)" }</NavLink<Route>>
-                            <span class="section-desc">
-                                { "Current: " }
-                                { if exact_active_basic {
-                                    html! { <span class="status-active">{ "Active" }</span> }
-                                } else {
-                                    html! { <span class="status-inactive">{ "Inactive" }</span> }
-                                }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-title">{ "Partial Match" }</div>
-                        <p>{ "Link stays active for nested/child routes" }</p>
-                        <div class="mt-1 flex-col">
-                            <NavLink<Route> to={Route::Blog} partial=true>
-                                { "Blog (Partial)" }
-                            </NavLink<Route>>
-                            <small class="section-desc">
-                                { "Active on /blog, /blog/post-1, /blog/post-1/comments" }
-                            </small>
-                            <span class="section-desc">
-                                { "Current: " }
-                                { if partial_active_blog {
-                                    html! { <span class="status-active">{ "Active" }</span> }
-                                } else {
-                                    html! { <span class="status-inactive">{ "Inactive" }</span> }
-                                }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="code-block mt-1">{r#"// Exact match - active only on exact route
-<NavLink<Route> to={Route::Home}>
-    { "Home" }
-</NavLink<Route>>
-
-// Partial match - active on route and sub-routes
-<NavLink<Route> to={Route::Blog} partial=true>
-    { "Blog" }
-</NavLink<Route>>
-// Active on: /blog, /blog/*"#}</div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "Function Syntax" }</h2>
-                <p class="section-desc">
-                    { "For simple text-only links, use the nav_link() function." }
-                </p>
-
-                <div class="demo-grid">
-                    <div class="card">
-                        <div class="card-title">{ "nav_link() Function" }</div>
-                        <div class="flex-col">
-                            { nav_link(Route::Home, "Home (Function, Exact)", Match::Exact) }
-                            { nav_link(Route::BasicLinks, "Basic Links (Function, Exact)", Match::Exact) }
-                            { nav_link(Route::Blog, "Blog (Function, Partial)", Match::Partial) }
-                            { nav_link(Route::HooksDemo, "Hooks Demo (Function)", Match::Exact) }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="code-block mt-1">{r#"use yew_nav_link::{nav_link, Match};
-
-// Function syntax for text-only links
-{ nav_link(Route::Home, "Home", Match::Exact) }
-{ nav_link(Route::Docs, "Docs", Match::Partial) }
-
-// Equivalent to:
-// <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-// <NavLink<Route> to={Route::Docs} partial=true>{ "Docs" }</NavLink<Route>>"#}</div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "Custom Styling" }</h2>
-                <p class="section-desc">
-                    { "NavLink applies 'nav-link' class always and 'active' when matched. Customize via CSS." }
-                </p>
-
-                <div class="code-block">{r#"// NavLink applies these CSS classes:
-// - 'nav-link' - always applied
-// - 'active' - when route matches
-
-.nav-link {
-    text-decoration: none;
-    color: #64748b;
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-}
-
-.nav-link:hover {
-    color: #3b82f6;
-    background: rgba(59, 130, 246, 0.05);
-}
-
-.nav-link.active {
-    color: #3b82f6;
-    background: rgba(59, 130, 246, 0.1);
-    font-weight: 600;
-}"#}</div>
-            </div>
-        </div>
-    }
-}
-
-#[component]
-fn ComponentsPage() -> Html {
-    html! {
-        <div class="container">
-            <div class="page-header">
-                <h1>{ "UI Components" }</h1>
-                <p>{ "Badges, icons, headers, text, dividers, and dropdown components" }</p>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "NavBadge" }</h2>
-                <p class="section-desc">{ "Display badges with counts, labels, or status indicators using children" }</p>
-
-                <div class="demo-grid">
-                    <div class="card">
-                        <div class="card-title">{ "Badge Variants" }</div>
-                        <div class="flex-col gap-1">
-                            <div class="flex-row">
-                                { "Messages " }
-                                <NavBadge variant="primary">{ "5" }</NavBadge>
-                            </div>
-                            <div class="flex-row">
-                                { "Notifications " }
-                                <NavBadge variant="danger">{ "99" }</NavBadge>
-                            </div>
-                            <div class="flex-row">
-                                { "Tasks " }
-                                <NavBadge variant="success">{ "3" }</NavBadge>
-                            </div>
-                            <div class="flex-row">
-                                { "Warnings " }
-                                <NavBadge variant="warning">{ "12" }</NavBadge>
-                            </div>
-                            <div class="flex-row">
-                                { "Pill style " }
-                                <NavBadge variant="primary" pill=true>{ "New" }</NavBadge>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="code-block mt-1">{r#"use yew_nav_link::NavBadge;
-
-// Badge with variant and content via children
-<NavBadge variant="danger">{ "5" }</NavBadge>
-<NavBadge variant="success" pill=true>{ "New" }</NavBadge>
-
-// Usage in navigation
-<NavLink<Route> to={Route::Home}>
-    { "Messages " }
-    <NavBadge variant="primary">{ "5" }</NavBadge>
-</NavLink<Route>>"#}</div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "NavIcon & NavLinkWithIcon" }</h2>
-                <p class="section-desc">{ "Add icons to navigation links" }</p>
-
-                <div class="demo-grid">
-                    <div class="card">
-                        <div class="card-title">{ "Icon with Name" }</div>
-                        <div class="flex-col gap-1">
-                            <div class="flex-row">
-                                <NavIcon name={Some("⚙")} size={NavIconSize::Small} />
-                                { " Small Icon" }
-                            </div>
-                            <div class="flex-row">
-                                <NavIcon name={Some("⚙")} size={NavIconSize::Medium} />
-                                { " Medium Icon" }
-                            </div>
-                            <div class="flex-row">
-                                <NavIcon name={Some("⚙")} size={NavIconSize::Large} />
-                                { " Large Icon" }
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-title">{ "Icon with Children" }</div>
-                        <div class="flex-col gap-1">
-                            <div class="flex-row">
-                                <NavIcon size={NavIconSize::Small}>{ "S" }</NavIcon>
-                                { " Small" }
-                            </div>
-                            <div class="flex-row">
-                                <NavIcon size={NavIconSize::Medium}>{ "M" }</NavIcon>
-                                { " Medium" }
-                            </div>
-                            <div class="flex-row">
-                                <NavIcon size={NavIconSize::Large}>{ "L" }</NavIcon>
-                                { " Large" }
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-title">{ "NavLinkWithIcon" }</div>
-                        <p>{ "Wraps content with icon styling" }</p>
-                        <div class="flex-col gap-1">
-                            <NavLink<Route> to={Route::Home}>
-                                <NavLinkWithIcon icon={NavIconSize::Small}>
-                                    { "Home" }
-                                </NavLinkWithIcon>
-                            </NavLink<Route>>
-                            <NavLink<Route> to={Route::Components}>
-                                <NavLinkWithIcon icon={NavIconSize::Medium}>
-                                    { "Components" }
-                                </NavLinkWithIcon>
-                            </NavLink<Route>>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="code-block mt-1">{r#"use yew_nav_link::{NavIcon, NavIconSize, NavLinkWithIcon};
-
-// Icon with name attribute
-<NavIcon name={Some("🏠")} size={NavIconSize::Medium} />
-
-// Icon with children
-<NavIcon size={NavIconSize::Medium}>{ "⚙" }</NavIcon>
-
-// NavLinkWithIcon wraps content with icon styling (no generic - it's not a router link)
-<NavLinkWithIcon icon={NavIconSize::Small}>
-    { "Link text" }
-</NavLinkWithIcon>"#}</div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "NavHeader & NavText" }</h2>
-
-                <div class="demo-grid">
-                    <div class="card">
-                        <div class="card-title">{ "Header & Text" }</div>
-                        <div class="flex-col gap-1">
-                            <NavHeader>{ "Section Title" }</NavHeader>
-                            <NavText text="Regular text content" />
-                            <NavDivider />
-                            <NavText text="More text below divider" />
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-title">{ "In Navigation" }</div>
-                        <NavList>
-                            <NavHeader>{ "Main Menu" }</NavHeader>
-                            <NavItem>
-                                <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink<Route> to={Route::Components}>{ "Components" }</NavLink<Route>>
-                            </NavItem>
-                            <NavDivider />
-                            <NavText text="Version 1.0" />
-                        </NavList>
-                    </div>
-                </div>
-
-                <div class="code-block mt-1">{r#"use yew_nav_link::{NavHeader, NavText, NavDivider, NavList, NavItem};
-
-// Headers and text
-<NavHeader>{ "Navigation" }</NavHeader>
-<NavText text="Some description" />
-<NavDivider />
-
-// Inside navigation
-<NavList>
-    <NavHeader>{ "Menu" }</NavHeader>
-    <NavItem>
-        <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-    </NavItem>
-    <NavText text="v1.0" />
-</NavList>"#}</div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "NavList & NavItem" }</h2>
-                <p class="section-desc">{ "Structured navigation with lists and items" }</p>
-
-                <div class="demo-grid">
-                    <div class="card">
-                        <div class="card-title">{ "Navigation List" }</div>
-                        <NavList>
-                            <NavItem>
-                                <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-                            </NavItem>
-                            <NavItem>
-                                <NavLink<Route> to={Route::Components}>{ "Components" }</NavLink<Route>>
-                            </NavItem>
-                            <NavDivider />
-                            <NavItem>
-                                <NavLink<Route> to={Route::HooksDemo}>{ "Hooks" }</NavLink<Route>>
-                            </NavItem>
-                        </NavList>
-                    </div>
-                </div>
-
-                <div class="code-block mt-1">{r#"use yew_nav_link::{NavList, NavItem, NavDivider};
-
-<NavList>
-    <NavItem>
-        <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-    </NavItem>
-    <NavItem>
-        <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
-    </NavItem>
-    <NavDivider />
-    <NavItem>
-        <NavLink<Route> to={Route::Contact}>{ "Contact" }</NavLink<Route>>
-    </NavItem>
-</NavList>"#}</div>
-            </div>
-        </div>
-    }
-}
-
-#[component]
-fn TabsDemoPage() -> Html {
-    let active_tab = use_state(|| 0u32);
-
-    html! {
-        <div class="container">
-            <div class="page-header">
-                <h1>{ "Tabs Component" }</h1>
-                <p>{ "Tabbed navigation with NavTabs, NavTab, and NavTabPanel" }</p>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "Basic Tabs" }</h2>
-                <p class="section-desc">{ "NavTabs provides tabbed interface. State is managed via active prop on each NavTab." }</p>
-
-                <NavTabs id="demo-tabs">
-                    <NavTab
-                        active={*active_tab == 0}
-                        onclick={Some(Callback::from({
-                            let active_tab = active_tab.clone();
-                            move |_: MouseEvent| { active_tab.set(0); }
-                        }))}
-                        panel_id={Some("panel-1")}
-                    >
-                        { "First Tab" }
-                    </NavTab>
-                    <NavTab
-                        active={*active_tab == 1}
-                        onclick={Some(Callback::from({
-                            let active_tab = active_tab.clone();
-                            move |_: MouseEvent| { active_tab.set(1); }
-                        }))}
-                        panel_id={Some("panel-2")}
-                    >
-                        { "Second Tab" }
-                    </NavTab>
-                    <NavTab
-                        active={*active_tab == 2}
-                        onclick={Some(Callback::from({
-                            let active_tab = active_tab.clone();
-                            move |_: MouseEvent| { active_tab.set(2); }
-                        }))}
-                        panel_id={Some("panel-3")}
-                    >
-                        { "Third Tab" }
-                    </NavTab>
-                </NavTabs>
-
-                <div class="mt-1">
-                    <NavTabPanel id={Some("panel-1")} labelled_by={Some("tab-1")} hidden={*active_tab != 0}>
-                        <div class="card">
-                            <div class="card-title">{ "Content Panel 1" }</div>
-                            <p>{ "This is the content for the first tab. NavTabPanel only renders when its hidden prop is false." }</p>
-                        </div>
-                    </NavTabPanel>
-                    <NavTabPanel id={Some("panel-2")} labelled_by={Some("tab-2")} hidden={*active_tab != 1}>
-                        <div class="card">
-                            <div class="card-title">{ "Content Panel 2" }</div>
-                            <p>{ "Content for the second tab. Tab state is managed by setting the active prop on NavTab and hidden prop on NavTabPanel." }</p>
-                        </div>
-                    </NavTabPanel>
-                    <NavTabPanel id={Some("panel-3")} labelled_by={Some("tab-3")} hidden={*active_tab != 2}>
-                        <div class="card">
-                            <div class="card-title">{ "Content Panel 3" }</div>
-                            <p>{ "Content for the third tab. You control which panel is visible via the hidden prop." }</p>
-                        </div>
-                    </NavTabPanel>
-                </div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "Full Width Tabs" }</h2>
-                <NavTabs full_width=true>
-                    <NavTab
-                        active={*active_tab == 0}
-                        onclick={Some(Callback::from({
-                            let active_tab = active_tab.clone();
-                            move |_: MouseEvent| { active_tab.set(0); }
-                        }))}
-                    >
-                        { "Overview" }
-                    </NavTab>
-                    <NavTab
-                        active={*active_tab == 1}
-                        onclick={Some(Callback::from({
-                            let active_tab = active_tab.clone();
-                            move |_: MouseEvent| { active_tab.set(1); }
-                        }))}
-                    >
-                        { "Details" }
-                    </NavTab>
-                    <NavTab
-                        active={*active_tab == 2}
-                        onclick={Some(Callback::from({
-                            let active_tab = active_tab.clone();
-                            move |_: MouseEvent| { active_tab.set(2); }
-                        }))}
-                        disabled=true
-                    >
-                        { "Disabled" }
-                    </NavTab>
-                </NavTabs>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "Code Example" }</h2>
-                <div class="code-block">{r#"use yew_nav_link::{NavTabs, NavTab, NavTabPanel};
-use yew::prelude::*;
-
-#[component]
-fn TabsExample() -> Html {
-    let active_tab = use_state(|| 0u32);
-
-    html! {
-        <NavTabs id="my-tabs">
-            <NavTab
-                active={*active_tab == 0}
-                onclick={Some(Callback::from({
-                    let active_tab = active_tab.clone();
-                    move |_: MouseEvent| { active_tab.set(0); }
-                }))}
-                panel_id={Some("panel-1")}
+            <PageSection
+                title="Cargo dependencies"
+                intro="Add this to your Cargo.toml. Every snippet on the next pages compiles against it."
             >
-                { "Tab 1" }
-            </NavTab>
+                <DemoCard
+                    title="Cargo.toml"
+                    code={r#"[dependencies]
+yew         = { version = "0.23", features = ["csr"] }
+yew-router  = "0.20"
+yew-nav-link = "0.9""#}
+                >
+                    <p>{ "These are the only dependencies you need." }</p>
+                </DemoCard>
+            </PageSection>
 
-            <NavTabPanel id={Some("panel-1")} hidden={*active_tab != 0}>
-                <div>{ "Content 1" }</div>
-            </NavTabPanel>
-        </NavTabs>
-    }
-}"#}</div>
-            </div>
-
-            <div class="info-box">
-                <p>{ "Note: NavTabs doesn't manage state internally. You must control the active prop on NavTab and hidden prop on NavTabPanel." }</p>
-            </div>
-        </div>
-    }
-}
-
-#[component]
-fn PaginationDemoPage() -> Html {
-    let current_page = use_state(|| 1u32);
-
-    let on_page_change = {
-        let current_page = current_page.clone();
-        Callback::from(move |page: u32| {
-            current_page.set(page);
-        })
-    };
-
-    html! {
-        <div class="container">
-            <div class="page-header">
-                <h1>{ "Pagination Component" }</h1>
-                <p>{ "Page navigation with Pagination component" }</p>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "Pagination Demo" }</h2>
-                <p class="section-desc">
-                    { "Current page: " }{ *current_page }
-                </p>
-
-                <Pagination
-                    current_page={*current_page}
-                    total_pages={10}
-                    siblings={2}
-                    show_first_last=true
-                    on_page_change={Some(on_page_change.clone())}
-                />
-
-                <div class="mt-1">
-                    <p class="section-desc">{ "The Pagination component handles all page rendering automatically including:" }</p>
-                    <ul class="mt-1">
-                        <li>{ "First/last page buttons (when show_first_last=true)" }</li>
-                        <li>{ "Prev/next navigation buttons" }</li>
-                        <li>{ "Siblings configuration for pages around current" }</li>
-                        <li>{ "Ellipsis (...) for skipped pages" }</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "Code Example" }</h2>
-                <div class="code-block">{r#"use yew_nav_link::Pagination;
-
-#[component]
-fn PaginationExample() -> Html {
-    let current_page = use_state(|| 1u32);
-
-    let on_page_change = {
-        let current_page = current_page.clone();
-        Callback::from(move |page: u32| {
-            current_page.set(page);
-        })
-    };
-
-    html! {
-        <Pagination
-            current_page={*current_page}
-            total_pages={20}
-            siblings={2}
-            show_prev_next={true}
-            show_first_last={true}
-            on_page_change={Some(on_page_change)}
-        />
-    }
-}"#}</div>
-            </div>
-
-            <div class="info-box">
-                <p>{ "Note: Pagination is a self-contained component. It renders all page buttons, prev/next, and first/last buttons based on the props you provide." }</p>
-            </div>
-        </div>
-    }
-}
-
-#[component]
-fn DropdownDemoPage() -> Html {
-    html! {
-        <div class="container">
-            <div class="page-header">
-                <h1>{ "Dropdown Component" }</h1>
-                <p>{ "NavDropdown with items, dividers, and headers" }</p>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "Dropdown Demo" }</h2>
-                <p class="section-desc">{ "NavDropdown manages its own open/close state internally" }</p>
-
-                <div class="demo-grid">
-                    <div class="card">
-                        <div class="card-title">{ "Basic Dropdown" }</div>
-                        <NavList>
-                            <NavDropdown toggle_text="Menu">
-                                <NavDropdownItem>
-                                    <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-                                </NavDropdownItem>
-                                <NavDropdownItem>
-                                    <NavLink<Route> to={Route::Components}>{ "Components" }</NavLink<Route>>
-                                </NavDropdownItem>
-                                <NavDropdownDivider />
-                                <NavDropdownItem>
-                                    <NavLink<Route> to={Route::HooksDemo}>{ "Hooks" }</NavLink<Route>>
-                                </NavDropdownItem>
-                            </NavDropdown>
-                        </NavList>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-title">{ "With Disabled Items" }</div>
-                        <NavList>
-                            <NavDropdown toggle_text="Options">
-                                <NavDropdownItem>
-                                    <NavLink<Route> to={Route::Home}>{ "Profile" }</NavLink<Route>>
-                                </NavDropdownItem>
-                                <NavDropdownItem disabled=true>
-                                    { "Admin (Disabled)" }
-                                </NavDropdownItem>
-                                <NavDropdownDivider />
-                                <NavDropdownItem>
-                                    <NavLink<Route> to={Route::UtilsDemo}>{ "Settings" }</NavLink<Route>>
-                                </NavDropdownItem>
-                            </NavDropdown>
-                        </NavList>
-                    </div>
-                </div>
-
-                <div class="code-block mt-1">{r#"use yew_nav_link::{NavDropdown, NavDropdownItem, NavDropdownDivider, NavList};
-
-<NavList>
-    <NavDropdown toggle_text="Menu">
-        <NavDropdownItem>
-            <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-        </NavDropdownItem>
-        <NavDropdownDivider />
-        <NavDropdownItem disabled=true>
-            { "Disabled Item" }
-        </NavDropdownItem>
-    </NavDropdown>
-</NavList>"#}</div>
-            </div>
-
-            <div class="info-box">
-                <p>{ "Note: NavDropdown manages its own open/close state. Just provide toggle_text and children." }</p>
-            </div>
-        </div>
-    }
-}
-
-#[component]
-fn HooksDemoPage() -> Html {
-    let current_route: Option<Route> = use_route_info::<Route>();
-    let is_active_home = use_is_active(Route::Home);
-    let is_exact_active_home = use_is_exact_active(Route::Home);
-    let is_exact_active_hooks = use_is_exact_active(Route::HooksDemo);
-    let is_partial_active_blog = use_is_partial_active(Route::Blog);
-    let breadcrumbs: Vec<BreadcrumbItem<Route>> = use_breadcrumbs();
-    let query_params = use_query_params();
-    let navigation = use_navigation::<Route>();
-
-    html! {
-        <div class="container">
-            <div class="page-header">
-                <h1>{ "Hooks Demo" }</h1>
-                <p>{ "Reactive hooks for route state, navigation, and breadcrumbs" }</p>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "use_route_info" }</h2>
-                <p class="section-desc">{ "Get the current route (returns Option<Route>)" }</p>
-
-                <div class="card">
-                    <table>
-                        <tr>
-                            <th>{ "Property" }</th>
-                            <th>{ "Value" }</th>
-                        </tr>
-                        <tr>
-                            <td>{ "Current Route" }</td>
-                            <td>{ format!("{:?}", current_route) }</td>
-                        </tr>
-                        <tr>
-                            <td>{ "Is Some" }</td>
-                            <td>
-                                { if current_route.is_some() {
-                                    html! { <span class="status-active">{ "Yes" }</span> }
-                                } else {
-                                    html! { <span class="status-inactive">{ "No" }</span> }
-                                }}
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="code-block mt-1">{r#"use yew_nav_link::use_route_info;
-
-// Returns Option<Route> - the current matched route
-let current_route: Option<Route> = use_route_info::<Route>();
-
-if let Some(route) = current_route {
-    // Use the route
-    let path = route.to_path();
-}"#}</div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "use_is_active Hooks" }</h2>
-                <p class="section-desc">{ "These hooks take a route and return bool" }</p>
-
-                <div class="demo-grid">
-                    <div class="card">
-                        <div class="card-title">{ "use_is_active" }</div>
-                        <p>{ "Check if a specific route is active (exact match)" }</p>
-                        <div class="mt-1">
-                            { "Home active: " }
-                            { if is_active_home {
-                                html! { <span class="status-active">{ "Yes" }</span> }
-                            } else {
-                                html! { <span class="status-inactive">{ "No" }</span> }
-                            }}
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-title">{ "use_is_exact_active" }</div>
-                        <p>{ "Same as use_is_active - exact matching" }</p>
-                        <div class="mt-1 flex-col">
-                            <div>
-                                { "Home: " }
-                                { if is_exact_active_home {
-                                    html! { <span class="status-active">{ "Active" }</span> }
-                                } else {
-                                    html! { <span class="status-inactive">{ "Inactive" }</span> }
-                                }}
-                            </div>
-                            <div>
-                                { "HooksDemo: " }
-                                { if is_exact_active_hooks {
-                                    html! { <span class="status-active">{ "Active" }</span> }
-                                } else {
-                                    html! { <span class="status-inactive">{ "Inactive" }</span> }
-                                }}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-title">{ "use_is_partial_active" }</div>
-                        <p>{ "For partial matching (e.g., Blog section)" }</p>
-                        <div class="mt-1">
-                            { "Blog: " }
-                            { if is_partial_active_blog {
-                                html! { <span class="status-active">{ "Active" }</span> }
-                            } else {
-                                html! { <span class="status-inactive">{ "No" }</span> }
-                            }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="code-block mt-1">{r#"use yew_nav_link::{use_is_active, use_is_exact_active, use_is_partial_active};
-
-// All these hooks take a route as argument and return bool
-let is_home = use_is_active(Route::Home);           // exact match
-let is_home = use_is_exact_active(Route::Home);    // exact match (alias)
-let is_blog = use_is_partial_active(Route::Blog);  // partial match"#}</div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "use_breadcrumbs" }</h2>
-                <p class="section-desc">{ "Generate breadcrumb trail from current route" }</p>
-
-                <div class="breadcrumb-demo">
+            <PageSection
+                title="Hello, NavLink"
+                intro="Drop in <NavLink> wherever you'd reach for yew-router's <Link>. The 'active' class arrives for free."
+            >
+                <DemoCard
+                    title="The smallest possible nav"
+                    description="The link below targets this page. Try clicking the others up top — the previously-active link will lose 'active', and the new one gains it. No wiring."
+                    code={r#"html! {
+    <NavLink<Route> to={Route::Home}>
+        { "Home" }
+    </NavLink<Route>>
+}"#}
+                >
                     <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-                    <span class="breadcrumb-separator">{ " / " }</span>
-                    <span>{ "Breadcrumbs Demo (Dynamic breadcrumbs temporarily simplified)" }</span>
-                    <span class="breadcrumb-separator">{ " / " }</span>
-                    <span>{ "Current Page" }</span>
-                </div>
-                <div class="mt-1">
-                    <p class="section-desc">{ "Breadcrumbs: " }{ breadcrumbs.len() }{ " items (use_breadcrumbs() returns Vec<BreadcrumbItem<Route>>)" }</p>
-                </div>
+                </DemoCard>
+            </PageSection>
 
-                <div class="code-block mt-1">{r#"use yew_nav_link::{use_breadcrumbs, BreadcrumbItem};
-
-let breadcrumbs: Vec<BreadcrumbItem<Route>> = use_breadcrumbs();
-
-// BreadcrumbItem provides:
-// - route: Route - the route for this breadcrumb
-// - label: String - display label
-// - is_active: bool - whether this is the current page"#}</div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "use_query_params" }</h2>
-                <p class="section-desc">{ "Access URL query parameters reactively" }</p>
-
-                <div class="card">
-                    <p>{ "Current query params: " }</p>
-                    <pre>{ format!("{:#?}", query_params) }</pre>
-                    <p class="section-desc mt-1">
-                        { "Try adding ?key=value to the URL" }
-                    </p>
-                </div>
-
-                <div class="code-block mt-1">{r#"use yew_nav_link::use_query_params;
-
-let query_params: std::collections::HashMap<String, String> = use_query_params();
-
-// Access params
-let search = query_params.get("q");
-let page = query_params.get("page");"#}</div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "use_navigation" }</h2>
-                <p class="section-desc">{ "Programmatic navigation with Navigation struct" }</p>
-
-                <div class="demo-grid">
-                    <div class="card">
-                        <div class="card-title">{ "Navigation Methods" }</div>
-                        <div class="flex-col gap-1">
-                            <button
-                                onclick={Callback::from({
-                                    let nav = navigation.clone();
-                                    move |_| { nav.push_callback(Route::Home).emit(()); }
-                                })}
-                            >
-                                { "Go to Home" }
-                            </button>
-                            <button
-                                onclick={Callback::from({
-                                    let nav = navigation.clone();
-                                    move |_| { nav.push_callback(Route::BasicLinks).emit(()); }
-                                })}
-                            >
-                                { "Go to Basic Links" }
-                            </button>
-                            <button
-                                onclick={Callback::from({
-                                    let nav = navigation.clone();
-                                    move |_| { nav.go_back.emit(()); }
-                                })}
-                            >
-                                { "Go Back" }
-                            </button>
-                            <button
-                                onclick={Callback::from({
-                                    let nav = navigation.clone();
-                                    move |_| { nav.go_forward.emit(()); }
-                                })}
-                            >
-                                { "Go Forward" }
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="code-block mt-1">{r#"use yew_nav_link::{use_navigation, Navigation};
-
-let navigation: Navigation<Route> = use_navigation();
-
-// Navigation provides callbacks:
-// - go_back: Callback<()> - navigate back
-// - go_forward: Callback<()> - navigate forward
-// - push_callback(route): Callback<()> - navigate to route
-// - replace_callback(route): Callback<()> - replace current entry
-// - go_callback(delta): Callback<()> - go with delta"#}</div>
-            </div>
+            <PageSection
+                title="Where to next"
+                intro="Each page below is a long scroll of self-contained code-and-preview cards. Pick a topic."
+            >
+                <ul class="topic-grid">
+                    <li>
+                        <NavLink<Route> to={Route::NavLink}>
+                            <strong>{ "NavLink" }</strong>
+                            <span>{ "Active state, partial matching, custom classes" }</span>
+                        </NavLink<Route>>
+                    </li>
+                    <li>
+                        <NavLink<Route> to={Route::Components}>
+                            <strong>{ "Components" }</strong>
+                            <span>{ "Badges, dropdowns, tabs, pagination, headers" }</span>
+                        </NavLink<Route>>
+                    </li>
+                    <li>
+                        <NavLink<Route> to={Route::Hooks}>
+                            <strong>{ "Hooks" }</strong>
+                            <span>{ "Active state, breadcrumbs, navigation, query params" }</span>
+                        </NavLink<Route>>
+                    </li>
+                    <li>
+                        <NavLink<Route> to={Route::Utilities}>
+                            <strong>{ "Utilities" }</strong>
+                            <span>{ "Path normalisation, URL codec, errors" }</span>
+                        </NavLink<Route>>
+                    </li>
+                </ul>
+            </PageSection>
         </div>
     }
 }
 
-#[component]
-fn UtilsDemoPage() -> Html {
-    let test_path1 = "/foo/bar/";
-    let test_path2 = "/baz/qux";
-    let joined = join_paths(test_path1, test_path2);
-    let normalized = normalize_path("/foo/bar/../baz/");
-    let is_abs = is_absolute("https://example.com/path");
-    let is_rel = is_absolute("/relative/path");
+// ============================================================================
+// NavLink page — with a self-contained "lab" that uses sub-routes
+// ============================================================================
 
+#[function_component]
+fn NavLinkPage() -> Html {
     html! {
         <div class="container">
-            <div class="page-header">
-                <h1>{ "URL Utilities" }</h1>
-                <p>{ "Path manipulation and URL helper functions" }</p>
-            </div>
+            <PageHeader
+                title="NavLink"
+                subtitle="Wraps yew-router's Link. Adds an 'active' class when the route matches."
+            />
 
-            <div class="section">
-                <h2 class="section-title">{ "join_paths" }</h2>
-                <p class="section-desc">{ "Join two path segments, handling slashes correctly" }</p>
+            <PageSection
+                title="Component syntax"
+                intro="Use <NavLink<R>> with arbitrary children. The library compares the target route to the current one on every render and toggles the 'active' class."
+            >
+                <DemoCard
+                    title="Default classes"
+                    description="Always emits 'nav-link'. Adds 'active' when the current path matches /."
+                    code={r#"html! {
+    <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+}"#}
+                >
+                    <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+                </DemoCard>
 
-                <div class="card">
-                    <table>
-                        <tr>
-                            <th>{ "Input 1" }</th>
-                            <th>{ "Input 2" }</th>
-                            <th>{ "Result" }</th>
-                        </tr>
-                        <tr>
-                            <td><code>{ test_path1 }</code></td>
-                            <td><code>{ test_path2 }</code></td>
-                            <td><code>{ joined }</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>{ "/a/b/" }</code></td>
-                            <td><code>{ "/c/d" }</code></td>
-                            <td><code>{ join_paths("/a/b/", "/c/d") }</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>{ "foo" }</code></td>
-                            <td><code>{ "bar" }</code></td>
-                            <td><code>{ join_paths("foo", "bar") }</code></td>
-                        </tr>
-                    </table>
-                </div>
+                <DemoCard
+                    title="Children can be any Html"
+                    description="A NavLink is just a wrapper — put icons, badges, anything inside."
+                    code={r#"html! {
+    <NavLink<Route> to={Route::Home}>
+        <NavIcon size={NavIconSize::Small}>{ "🏠" }</NavIcon>
+        { " Home " }
+        <NavBadge variant="primary">{ "new" }</NavBadge>
+    </NavLink<Route>>
+}"#}
+                >
+                    <NavLink<Route> to={Route::Home}>
+                        <NavIcon size={NavIconSize::Small}>{ "🏠" }</NavIcon>
+                        { " Home " }
+                        <NavBadge variant="primary">{ "new" }</NavBadge>
+                    </NavLink<Route>>
+                </DemoCard>
+            </PageSection>
 
-                <div class="code-block mt-1">{r#"use yew_nav_link::join_paths;
+            <PageSection
+                title="Function syntax"
+                intro="For text-only links, nav_link() is a one-liner. The Match enum picks exact vs prefix matching."
+            >
+                <DemoCard
+                    title="nav_link with explicit Match::Exact"
+                    code={r#"{ nav_link(Route::Home, "Home", Match::Exact) }"#}
+                >
+                    { nav_link(Route::Home, "Home", Match::Exact) }
+                </DemoCard>
 
-let joined = join_paths("/foo/bar/", "/baz/qux");
-// Result: "/foo/bar/baz/qux"
+                <DemoCard
+                    title="nav_link with Match::Partial"
+                    description="Same call, different match mode. Active when the path is a prefix of the current URL."
+                    code={r#"{ nav_link(Route::NavLink, "NavLink section", Match::Partial) }"#}
+                >
+                    { nav_link(Route::NavLink, "NavLink section", Match::Partial) }
+                </DemoCard>
+            </PageSection>
 
-let joined2 = join_paths("foo", "bar");
-// Result: "foo/bar""#}</div>
-            </div>
+            <NavLinkLab />
 
-            <div class="section">
-                <h2 class="section-title">{ "normalize_path" }</h2>
-                <p class="section-desc">{ "Normalize path by resolving .. and . segments" }</p>
+            <PageSection
+                title="Custom CSS classes"
+                intro="Both the base class and the active-state class are overridable via &'static str props."
+            >
+                <DemoCard
+                    title="Custom base class"
+                    description="Replaces 'nav-link' with whatever you pass. Active class stays the default 'active'."
+                    code={r#"html! {
+    <NavLink<Route> to={Route::NavLink} class="my-link">
+        { "Anchor with custom base class" }
+    </NavLink<Route>>
+}"#}
+                >
+                    <NavLink<Route> to={Route::NavLink} class="my-link">
+                        { "Anchor with custom base class" }
+                    </NavLink<Route>>
+                </DemoCard>
 
-                <div class="card">
-                    <table>
-                        <tr>
-                            <th>{ "Input" }</th>
-                            <th>{ "Result" }</th>
-                        </tr>
-                        <tr>
-                            <td><code>{ "/foo/bar/../baz/" }</code></td>
-                            <td><code>{ normalized }</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>{ "/a/b/./c" }</code></td>
-                            <td><code>{ normalize_path("/a/b/./c") }</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>{ "/a/b/c/../../d" }</code></td>
-                            <td><code>{ normalize_path("/a/b/c/../../d") }</code></td>
-                        </tr>
-                    </table>
-                </div>
+                <DemoCard
+                    title="Custom active class (Bulma-style)"
+                    description="Bulma uses 'is-active'. yew-nav-link doesn't care — pass the framework's class through active_class."
+                    code={r#"html! {
+    <NavLink<Route> to={Route::NavLink} active_class="is-active">
+        { "Bulma-style active marker" }
+    </NavLink<Route>>
+}"#}
+                >
+                    <NavLink<Route> to={Route::NavLink} active_class="is-active">
+                        { "Bulma-style active marker" }
+                    </NavLink<Route>>
+                </DemoCard>
 
-                <div class="code-block mt-1">{r#"use yew_nav_link::normalize_path;
-
-let normalized = normalize_path("/foo/bar/../baz/");
-// Result: "/foo/baz/""#}</div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "is_absolute" }</h2>
-                <p class="section-desc">{ "Check if a URL is absolute (has scheme)" }</p>
-
-                <div class="card">
-                    <table>
-                        <tr>
-                            <th>{ "URL" }</th>
-                            <th>{ "Is Absolute" }</th>
-                        </tr>
-                        <tr>
-                            <td><code>{ "https://example.com/path" }</code></td>
-                            <td>
-                                { if is_abs {
-                                    html! { <span class="status-active">{ "Yes" }</span> }
-                                } else {
-                                    html! { <span class="status-inactive">{ "No" }</span> }
-                                }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><code>{ "/relative/path" }</code></td>
-                            <td>
-                                { if is_rel {
-                                    html! { <span class="status-active">{ "Yes" }</span> }
-                                } else {
-                                    html! { <span class="status-inactive">{ "No" }</span> }
-                                }}
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="code-block mt-1">{r#"use yew_nav_link::is_absolute;
-
-let is_abs = is_absolute("https://example.com/path");
-// true
-
-let is_rel = is_absolute("/relative/path");
-// false"#}</div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "urlencoding_encode / urlencoding_decode" }</h2>
-                <p class="section-desc">
-                    { "Percent-encode / decode strings for use in query parameters or URL \
-                       segments. " }<code>{ "urlencoding_decode" }</code>
-                    { " returns " }<code>{ "Option<String>" }</code>
-                    { " (None on malformed input)." }
-                </p>
-
-                <div class="card">
-                    <table>
-                        <tr>
-                            <th>{ "Input" }</th>
-                            <th>{ "Encoded" }</th>
-                            <th>{ "Round-trip" }</th>
-                        </tr>
-                        { for ["hello world", "rust 2024 / wasm", "a&b=c"]
-                            .iter()
-                            .map(|raw| {
-                                let encoded = urlencoding_encode(raw);
-                                let decoded = urlencoding_decode(&encoded)
-                                    .unwrap_or_else(|| "<invalid>".to_string());
-                                html! {
-                                    <tr>
-                                        <td><code>{ raw }</code></td>
-                                        <td><code>{ encoded }</code></td>
-                                        <td><code>{ decoded }</code></td>
-                                    </tr>
-                                }
-                            })
-                        }
-                    </table>
-                </div>
-
-                <div class="code-block mt-1">{r#"use yew_nav_link::utils::{urlencoding_encode, urlencoding_decode};
-
-let encoded = urlencoding_encode("hello world");
-// "hello%20world"
-
-let decoded: Option<String> = urlencoding_decode(&encoded);
-// Some("hello world")"#}</div>
-            </div>
+                <DemoCard
+                    title="Both overridden"
+                    code={r#"html! {
+    <NavLink<Route>
+        to={Route::NavLink}
+        class="pill"
+        active_class="pill--current"
+    >
+        { "Pill" }
+    </NavLink<Route>>
+}"#}
+                >
+                    <NavLink<Route>
+                        to={Route::NavLink}
+                        class="pill"
+                        active_class="pill--current"
+                    >
+                        { "Pill" }
+                    </NavLink<Route>>
+                </DemoCard>
+            </PageSection>
         </div>
     }
 }
 
-#[component]
-fn BlogPage() -> Html {
-    let posts = vec![
-        ("getting-started", "Getting Started with Yew"),
-        ("advanced-patterns", "Advanced Yew Patterns"),
-        ("wasm-optimization", "WASM Optimization Tips"),
-    ];
+// The active-state lab. Lives at /navlink/lab/:slug. Clicking buttons inside
+// rewrites the URL but stays on this page.
+#[function_component]
+fn NavLinkLab() -> Html {
+    let current = use_route::<Route>();
+    let slug = match current.clone() {
+        Some(Route::NavLinkLab { slug }) => slug,
+        _ => "stay".into()
+    };
 
     html! {
-        <div class="container">
-            <div class="page-header">
-                <h1>{ "Blog" }</h1>
-                <p>{ "Nested routes demonstration - this page stays active on /blog and sub-routes" }</p>
-            </div>
+        <PageSection
+            title="Active-state lab"
+            intro="Clicking these NavLinks rewrites the URL to /navlink/lab/<slug>. You stay on this page; only the URL and the active class change. Use the browser back button to return to /navlink."
+        >
+            <DemoCard
+                title="Three NavLinks pointing into the same page"
+                description={AttrValue::from(format!("Current sub-route: {slug}"))}
+                code={r#"<NavLink<Route> to={Route::NavLinkLab { slug: "alpha".into()  }}>{ "Alpha"  }</NavLink<Route>>
+<NavLink<Route> to={Route::NavLinkLab { slug: "bravo".into()  }}>{ "Bravo"  }</NavLink<Route>>
+<NavLink<Route> to={Route::NavLinkLab { slug: "charlie".into() }}>{ "Charlie" }</NavLink<Route>>"#}
+            >
+                <div class="lab-row">
+                    <NavLink<Route> to={Route::NavLinkLab { slug: "alpha".into() }}>
+                        { "Alpha" }
+                    </NavLink<Route>>
+                    <NavLink<Route> to={Route::NavLinkLab { slug: "bravo".into() }}>
+                        { "Bravo" }
+                    </NavLink<Route>>
+                    <NavLink<Route> to={Route::NavLinkLab { slug: "charlie".into() }}>
+                        { "Charlie" }
+                    </NavLink<Route>>
+                </div>
+            </DemoCard>
 
-            <div class="info-box">
-                <p>{ "The 'Blog' nav link uses partial=true, so it stays active on /blog, /blog/post-1, /blog/post-1/comments, etc." }</p>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "Posts" }</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>{ "Title" }</th>
-                            <th>{ "Link" }</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        { posts.into_iter().map(|(id, title)| {
-                            html! {
-                                <tr>
-                                    <td>{ title }</td>
-                                    <td>
-                                        <NavLink<Route> to={Route::BlogPost { id: id.to_string() }}>
-                                            { "Read →" }
-                                        </NavLink<Route>>
-                                    </td>
-                                </tr>
-                            }
-                        }).collect::<Html>() }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            <DemoCard
+                title="Partial match keeps a parent link active"
+                description="The 'NavLink section' link uses partial=true and stays active across every /navlink/* path."
+                code={r#"<NavLink<Route> to={Route::NavLink} partial=true>
+    { "NavLink section" }
+</NavLink<Route>>"#}
+            >
+                <NavLink<Route> to={Route::NavLink} partial=true>
+                    { "NavLink section" }
+                </NavLink<Route>>
+            </DemoCard>
+        </PageSection>
     }
 }
 
-#[component]
-fn BlogPostPage() -> Html {
-    let route = use_route::<Route>();
-    let post_id = match route {
-        Some(Route::BlogPost {
-            id
-        }) => id,
-        _ => "unknown".to_string()
+// ============================================================================
+// Components page
+// ============================================================================
+
+#[function_component]
+fn ComponentsPage() -> Html {
+    let active_tab = use_state(|| 0u32);
+    let current_page = use_state(|| 1u32);
+
+    let on_tab = {
+        let active_tab = active_tab.clone();
+        move |idx: u32| {
+            let active_tab = active_tab.clone();
+            Callback::from(move |_: MouseEvent| active_tab.set(idx))
+        }
+    };
+
+    let on_page_change = {
+        let current_page = current_page.clone();
+        Callback::from(move |page: u32| current_page.set(page))
     };
 
     html! {
         <div class="container">
-            <div class="page-header">
-                <h1>{ format!("Blog Post: {}", post_id) }</h1>
-                <p>{ "Notice the 'Blog' nav link is still active (partial match)" }</p>
-            </div>
+            <PageHeader
+                title="Components"
+                subtitle="Drop-in widgets that follow the same conventions as NavLink."
+            />
 
-            <div class="section">
-                <p>{ "This page demonstrates partial matching. The Blog link in the main navigation remains active because it uses partial=true." }</p>
+            <PageSection title="Lists">
+                <DemoCard
+                    title="NavList + NavItem + NavDivider"
+                    description="The structural primitives. NavList is a <ul> with sensible ARIA defaults; NavDivider renders a <hr>."
+                    code={r#"html! {
+    <NavList>
+        <NavHeader>{ "Account" }</NavHeader>
+        <NavItem>
+            <NavLink<Route> to={Route::Home}>{ "Profile" }</NavLink<Route>>
+        </NavItem>
+        <NavItem>
+            <NavLink<Route> to={Route::Components}>{ "Settings" }</NavLink<Route>>
+        </NavItem>
+        <NavDivider />
+        <NavText text="v0.9.x" />
+    </NavList>
+}"#}
+                >
+                    <NavList>
+                        <NavHeader>{ "Account" }</NavHeader>
+                        <NavItem>
+                            <NavLink<Route> to={Route::Home}>{ "Profile" }</NavLink<Route>>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink<Route> to={Route::Components}>{ "Settings" }</NavLink<Route>>
+                        </NavItem>
+                        <NavDivider />
+                        <NavText text="v0.9.x" />
+                    </NavList>
+                </DemoCard>
+            </PageSection>
 
-                <div class="card mt-1">
-                    <div class="card-title">{ "Post Content" }</div>
-                    <p>{ format!("This is the content for post: {}", post_id) }</p>
-                    <div class="mt-1">
-                        <NavLink<Route> to={Route::Blog}>{ "← Back to Blog" }</NavLink<Route>>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-}
+            <PageSection title="Badges">
+                <DemoCard
+                    title="Variants"
+                    code={r#"<NavBadge variant="primary">{ "5"  }</NavBadge>
+<NavBadge variant="success">{ "OK" }</NavBadge>
+<NavBadge variant="warning">{ "!"  }</NavBadge>
+<NavBadge variant="danger" pill=true>{ "99+" }</NavBadge>"#}
+                >
+                    <span class="inline-row">
+                        <NavBadge variant="primary">{ "5" }</NavBadge>
+                        <NavBadge variant="success">{ "OK" }</NavBadge>
+                        <NavBadge variant="warning">{ "!" }</NavBadge>
+                        <NavBadge variant="danger" pill=true>{ "99+" }</NavBadge>
+                    </span>
+                </DemoCard>
 
-#[component]
-fn NestedPage() -> Html {
-    html! {
-        <div class="container">
-            <div class="page-header">
-                <h1>{ "Nested Routes Demo" }</h1>
-                <p>{ "Demonstrate nested navigation with partial matching" }</p>
-            </div>
+                <DemoCard
+                    title="Inside a NavLink"
+                    description="Badges combine cleanly with NavLink children to surface counters."
+                    code={r#"<NavLink<Route> to={Route::Components}>
+    { "Inbox " }
+    <NavBadge variant="danger">{ "12" }</NavBadge>
+</NavLink<Route>>"#}
+                >
+                    <NavLink<Route> to={Route::Components}>
+                        { "Inbox " }
+                        <NavBadge variant="danger">{ "12" }</NavBadge>
+                    </NavLink<Route>>
+                </DemoCard>
+            </PageSection>
 
-            <div class="info-box">
-                <p>{ "The 'Nested' nav link uses partial=true and stays active on all sub-routes." }</p>
-            </div>
+            <PageSection title="Icons">
+                <DemoCard
+                    title="Three sizes"
+                    code={r#"<NavIcon size={NavIconSize::Small}>{ "★" }</NavIcon>
+<NavIcon size={NavIconSize::Medium}>{ "★" }</NavIcon>
+<NavIcon size={NavIconSize::Large}>{ "★" }</NavIcon>"#}
+                >
+                    <span class="inline-row">
+                        <NavIcon size={NavIconSize::Small}>{ "★" }</NavIcon>
+                        <NavIcon size={NavIconSize::Medium}>{ "★" }</NavIcon>
+                        <NavIcon size={NavIconSize::Large}>{ "★" }</NavIcon>
+                    </span>
+                </DemoCard>
 
-            <div class="section">
-                <h2 class="section-title">{ "Sub-Navigation" }</h2>
-                <NavList>
-                    <NavItem>
-                        <NavLink<Route> to={Route::NestedFirst}>{ "First Sub-Page" }</NavLink<Route>>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink<Route> to={Route::NestedSecond}>{ "Second Sub-Page" }</NavLink<Route>>
-                    </NavItem>
-                </NavList>
-            </div>
+                <DemoCard
+                    title="NavLinkWithIcon"
+                    description="Pairs an icon with text, stacked or inline."
+                    code={r#"<NavLinkWithIcon icon={NavIconSize::Small}>
+    { "Sized link content" }
+</NavLinkWithIcon>"#}
+                >
+                    <NavLinkWithIcon icon={NavIconSize::Small}>
+                        { "Sized link content" }
+                    </NavLinkWithIcon>
+                </DemoCard>
+            </PageSection>
 
-            <div class="section">
-                <Switch<Route> render={|route: Route| {
-                    match route {
-                        Route::NestedFirst | Route::NestedSecond => html! {
-                            <div class="card">
-                                <h3>{ "Sub-Page Content" }</h3>
-                                <p>{ "This content changes based on the nested route." }</p>
-                            </div>
-                        },
-                        _ => html! {},
-                    }
-                }} />
-            </div>
-        </div>
-    }
-}
+            <PageSection title="Dropdown">
+                <DemoCard
+                    title="Self-managed open/close"
+                    description="NavDropdown owns its own boolean state — no parent wiring required."
+                    code={r#"<NavDropdown toggle_text="Account">
+    <NavDropdownItem>
+        <NavLink<Route> to={Route::Home}>{ "Profile"  }</NavLink<Route>>
+    </NavDropdownItem>
+    <NavDropdownItem>
+        <NavLink<Route> to={Route::Hooks}>{ "Hooks demo" }</NavLink<Route>>
+    </NavDropdownItem>
+    <NavDropdownDivider />
+    <NavDropdownItem disabled=true>{ "Sign out (disabled)" }</NavDropdownItem>
+</NavDropdown>"#}
+                >
+                    <NavDropdown toggle_text="Account">
+                        <NavDropdownItem>
+                            <NavLink<Route> to={Route::Home}>{ "Profile" }</NavLink<Route>>
+                        </NavDropdownItem>
+                        <NavDropdownItem>
+                            <NavLink<Route> to={Route::Hooks}>{ "Hooks demo" }</NavLink<Route>>
+                        </NavDropdownItem>
+                        <NavDropdownDivider />
+                        <NavDropdownItem disabled=true>
+                            { "Sign out (disabled)" }
+                        </NavDropdownItem>
+                    </NavDropdown>
+                </DemoCard>
+            </PageSection>
 
-#[component]
-fn QueryDemoPage() -> Html {
-    let query_params = use_query_params();
+            <PageSection title="Tabs">
+                <DemoCard
+                    title="Controlled tabs"
+                    description="Active tab and panel visibility are driven by use_state — yew-nav-link only renders, you decide what's selected."
+                    code={r#"let active = use_state(|| 0u32);
 
-    html! {
-        <div class="container">
-            <div class="page-header">
-                <h1>{ "Query Parameters" }</h1>
-                <p>{ "Demonstrate URL query parameter handling" }</p>
-            </div>
+html! {
+    <NavTabs id="demo-tabs">
+        <NavTab active={*active == 0} onclick={set(0)} panel_id={Some("p-0")}>
+            { "Overview" }
+        </NavTab>
+        <NavTab active={*active == 1} onclick={set(1)} panel_id={Some("p-1")}>
+            { "Details" }
+        </NavTab>
+        <NavTab active={*active == 2} disabled=true>{ "Disabled" }</NavTab>
+    </NavTabs>
 
-            <div class="section">
-                <h2 class="section-title">{ "Current Query Params" }</h2>
-                <div class="card">
-                    <pre>{ format!("{:#?}", query_params) }</pre>
-                </div>
-
-                <div class="info-box mt-1">
-                    <p>{ "Try adding query parameters to the URL, e.g.: ?search=test&page=2" }</p>
-                </div>
-
-                <div class="code-block mt-1">{r#"// Access query params with use_query_params hook
-let query_params: HashMap<String, String> = use_query_params();
-
-// Example URL: /query?search=rust&page=2
-// query_params = {"search": "rust", "page": "2"}"#}</div>
-            </div>
-        </div>
-    }
-}
-
-#[component]
-fn BreadcrumbsPage() -> Html {
-    let trail = use_breadcrumbs::<Route>();
-    let teams = vec!["alpha", "bravo", "charlie"];
-
-    html! {
-        <div class="container">
-            <div class="page-header">
-                <h1>{ "Breadcrumbs" }</h1>
-                <p>{ "use_breadcrumbs combined with a custom BreadcrumbLabelProvider" }</p>
-            </div>
-
-            <div class="info-box">
-                <p>
-                    { "The app wraps the router in " }
-                    <code>{ "ContextProvider<BreadcrumbLabelProviderContext>" }</code>
-                    { ". `use_breadcrumbs` reads the provider from context and turns each path \
-                       segment into a human label. Click a team below to see the trail update live." }
-                </p>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "Live trail" }</h2>
-                <nav class="breadcrumb-demo" aria-label="Breadcrumb">
-                    { for trail.iter().enumerate().map(|(i, item)| {
-                        let aria = if item.is_active { "page" } else { "" };
-                        html! {
-                            <>
-                                if i > 0 {
-                                    <span class="breadcrumb-separator">{ " / " }</span>
-                                }
-                                <span aria-current={aria}>
-                                    if item.is_active {
-                                        <strong>{ &item.label }</strong>
-                                    } else {
-                                        { &item.label }
-                                    }
-                                </span>
-                            </>
-                        }
-                    }) }
-                </nav>
-                <p class="section-desc mt-1">
-                    { format!("{} item(s) in the trail.", trail.len()) }
-                </p>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "Drill into a team" }</h2>
-                <div class="flex-row">
-                    { for teams.into_iter().map(|team| html! {
-                        <NavLink<Route>
-                            to={Route::BreadcrumbsTeam { team: team.to_string() }}
+    <NavTabPanel id={Some("p-0")} hidden={*active != 0}>
+        <p>{ "Overview content." }</p>
+    </NavTabPanel>
+    <NavTabPanel id={Some("p-1")} hidden={*active != 1}>
+        <p>{ "Details content." }</p>
+    </NavTabPanel>
+}"#}
+                >
+                    <NavTabs id="demo-tabs">
+                        <NavTab
+                            active={*active_tab == 0}
+                            onclick={Some(on_tab(0))}
+                            panel_id={Some("p-0")}
                         >
-                            <>{ team }</>
+                            { "Overview" }
+                        </NavTab>
+                        <NavTab
+                            active={*active_tab == 1}
+                            onclick={Some(on_tab(1))}
+                            panel_id={Some("p-1")}
+                        >
+                            { "Details" }
+                        </NavTab>
+                        <NavTab
+                            active={*active_tab == 2}
+                            disabled=true
+                            onclick={None}
+                        >
+                            { "Disabled" }
+                        </NavTab>
+                    </NavTabs>
+                    <NavTabPanel id={Some("p-0")} hidden={*active_tab != 0}>
+                        <p>{ "Overview content." }</p>
+                    </NavTabPanel>
+                    <NavTabPanel id={Some("p-1")} hidden={*active_tab != 1}>
+                        <p>{ "Details content." }</p>
+                    </NavTabPanel>
+                </DemoCard>
+            </PageSection>
+
+            <PageSection title="Pagination">
+                <DemoCard
+                    title="Pagination with siblings + first/last"
+                    description={AttrValue::from(format!(
+                        "Current page: {}. The component renders prev/next, first/last, sibling pages, and ellipses.",
+                        *current_page
+                    ))}
+                    code={r#"let current_page = use_state(|| 1u32);
+let on_page_change = {
+    let current_page = current_page.clone();
+    Callback::from(move |p: u32| current_page.set(p))
+};
+
+html! {
+    <Pagination
+        current_page={*current_page}
+        total_pages={20}
+        siblings={2}
+        show_first_last=true
+        on_page_change={Some(on_page_change)}
+    />
+}"#}
+                >
+                    <Pagination
+                        current_page={*current_page}
+                        total_pages={20}
+                        siblings={2}
+                        show_first_last=true
+                        on_page_change={Some(on_page_change.clone())}
+                    />
+                </DemoCard>
+            </PageSection>
+        </div>
+    }
+}
+
+// ============================================================================
+// Hooks page (with breadcrumbs lab)
+// ============================================================================
+
+#[function_component]
+fn HooksPage() -> Html {
+    let route_info: Option<Route> = use_route_info::<Route>();
+    let is_active_home = use_is_active(Route::Home);
+    let is_exact_active_hooks = use_is_exact_active(Route::Hooks);
+    let is_partial_active_hooks = use_is_partial_active(Route::Hooks);
+    let query = use_query_params();
+    let nav: Navigation<Route> = use_navigation::<Route>();
+    let trail: Vec<BreadcrumbItem<Route>> = use_breadcrumbs();
+
+    let push_home = nav.push_callback(Route::Home).reform(|_: MouseEvent| ());
+    let replace_components = nav.replace_callback(Route::Components).reform(|_: MouseEvent| ());
+    let go_back = nav.go_back.clone().reform(|_: MouseEvent| ());
+    let go_forward = nav.go_forward.clone().reform(|_: MouseEvent| ());
+
+    html! {
+        <div class="container">
+            <PageHeader
+                title="Hooks"
+                subtitle="Reactive hooks that read the current route, walk it, and steer it."
+            />
+
+            <PageSection title="Active state hooks">
+                <DemoCard
+                    title="use_is_active / use_is_exact_active / use_is_partial_active"
+                    description={AttrValue::from(format!(
+                        "Right now Home is active = {}, Hooks (exact) = {}, Hooks (partial) = {}.",
+                        is_active_home, is_exact_active_hooks, is_partial_active_hooks
+                    ))}
+                    code={r#"let is_home          = use_is_active(Route::Home);
+let is_exact_hooks   = use_is_exact_active(Route::Hooks);
+let is_partial_hooks = use_is_partial_active(Route::Hooks);"#}
+                >
+                    <ul class="status-list">
+                        <li>
+                            { "Home: " }<HookStatus active={is_active_home} />
+                        </li>
+                        <li>
+                            { "Hooks (exact): " }<HookStatus active={is_exact_active_hooks} />
+                        </li>
+                        <li>
+                            { "Hooks (partial): " }<HookStatus active={is_partial_active_hooks} />
+                        </li>
+                    </ul>
+                </DemoCard>
+            </PageSection>
+
+            <PageSection title="use_route_info">
+                <DemoCard
+                    title="The current route as Option<R>"
+                    description={AttrValue::from(format!("Current route: {:?}", route_info))}
+                    code={r#"let current: Option<Route> = use_route_info::<Route>();"#}
+                >
+                    <code class="inline-code">{ format!("{:?}", route_info) }</code>
+                </DemoCard>
+            </PageSection>
+
+            <PageSection title="use_navigation">
+                <DemoCard
+                    title="Programmatic navigation"
+                    description="use_navigation gives you ready-made Callback<()> for every browser-history action. Wrap them with .reform(...) to plug into onclick directly."
+                    code={r#"let nav: Navigation<Route> = use_navigation::<Route>();
+
+let push     = nav.push_callback(Route::Home).reform(|_: MouseEvent| ());
+let replace  = nav.replace_callback(Route::Components).reform(|_: MouseEvent| ());
+let back     = nav.go_back.clone().reform(|_: MouseEvent| ());
+let forward  = nav.go_forward.clone().reform(|_: MouseEvent| ());"#}
+                >
+                    <div class="button-row">
+                        <button class="btn" onclick={push_home}>{ "push Home" }</button>
+                        <button class="btn" onclick={replace_components}>
+                            { "replace Components" }
+                        </button>
+                        <button class="btn" onclick={go_back}>{ "back" }</button>
+                        <button class="btn" onclick={go_forward}>{ "forward" }</button>
+                    </div>
+                </DemoCard>
+            </PageSection>
+
+            <PageSection title="use_query_params">
+                <DemoCard
+                    title="Reactive query string"
+                    description="Append ?foo=bar&page=2 to the URL bar and watch this map update without a reload."
+                    code={r#"let query: HashMap<String, String> = use_query_params();
+let page = query.get("page");"#}
+                >
+                    <pre class="inline-pre">{ format!("{:#?}", query) }</pre>
+                </DemoCard>
+            </PageSection>
+
+            <PageSection
+                title="use_breadcrumbs"
+                intro="The trail is generated from the current path. A BreadcrumbLabelProvider injected via context turns the raw segments into human labels."
+            >
+                <DemoCard
+                    title="Live trail"
+                    description={AttrValue::from(format!("{} item(s) in the trail.", trail.len()))}
+                    code={r#"let trail: Vec<BreadcrumbItem<Route>> = use_breadcrumbs();
+
+html! {
+    <nav aria-label="Breadcrumb" class="trail">
+        { for trail.iter().enumerate().map(|(i, item)| html! {
+            <>
+                if i > 0 { <span class="trail__sep">{ "/" }</span> }
+                <span aria-current={if item.is_active { "page" } else { "" }}>
+                    { &item.label }
+                </span>
+            </>
+        }) }
+    </nav>
+}"#}
+                >
+                    <nav aria-label="Breadcrumb" class="trail">
+                        { for trail.iter().enumerate().map(|(i, item)| {
+                            let aria = if item.is_active { "page" } else { "" };
+                            html! {
+                                <>
+                                    if i > 0 {
+                                        <span class="trail__sep">{ "/" }</span>
+                                    }
+                                    <span aria-current={aria} class={if item.is_active {"trail__current"} else {""}}>
+                                        { &item.label }
+                                    </span>
+                                </>
+                            }
+                        }) }
+                    </nav>
+                </DemoCard>
+
+                <DemoCard
+                    title="Drill into a team"
+                    description="Each link rewrites the URL to /hooks/team/<name>. The provider in App turns the segment into 'Team <name>'."
+                    code={r#"<NavLink<Route> to={Route::HooksTeam { team: "alpha".into() }}>
+    { "Alpha" }
+</NavLink<Route>>"#}
+                >
+                    <div class="lab-row">
+                        <NavLink<Route> to={Route::HooksTeam { team: "alpha".into() }}>
+                            { "Alpha" }
                         </NavLink<Route>>
-                    }) }
-                </div>
-                <p class="section-desc mt-1">
-                    { "The provider rewrites " }<code>{ "/breadcrumbs/team/alpha" }</code>
-                    { " into " }<code>{ "Team alpha" }</code>{ "." }
-                </p>
-            </div>
+                        <NavLink<Route> to={Route::HooksTeam { team: "bravo".into() }}>
+                            { "Bravo" }
+                        </NavLink<Route>>
+                        <NavLink<Route> to={Route::HooksTeam { team: "charlie".into() }}>
+                            { "Charlie" }
+                        </NavLink<Route>>
+                        <NavLink<Route> to={Route::Hooks}>{ "Reset" }</NavLink<Route>>
+                    </div>
+                </DemoCard>
 
-            <div class="section">
-                <h2 class="section-title">{ "Provider implementation" }</h2>
-                <div class="code-block">{r#"use std::rc::Rc;
-use yew::prelude::*;
-use yew_nav_link::{BreadcrumbLabelProvider, BreadcrumbLabelProviderContext, use_breadcrumbs};
+                <DemoCard
+                    title="Custom provider"
+                    description="Implement BreadcrumbLabelProvider, wrap App in ContextProvider<BreadcrumbLabelProviderContext>."
+                    code={r#"use std::rc::Rc;
+use yew_nav_link::{BreadcrumbLabelProvider, BreadcrumbLabelProviderContext};
 
-struct MyLabels;
+struct DemoLabels;
 
-impl BreadcrumbLabelProvider for MyLabels {
+impl BreadcrumbLabelProvider for DemoLabels {
     fn label_for_path(&self, path: &str) -> String {
         match path {
-            "/"               => "Home".into(),
-            "/breadcrumbs"    => "Breadcrumbs".into(),
-            p if p.starts_with("/breadcrumbs/team/") => {
-                format!("Team {}", &p[18..])
-            }
-            other => other.into(),
+            "/"      => "Home".into(),
+            "/hooks" => "Hooks".into(),
+            p if p.starts_with("/hooks/team/") => format!("Team {}", &p[12..]),
+            other    => other.into(),
         }
     }
 }
 
-#[component]
+#[function_component]
 fn App() -> Html {
     let ctx = use_memo((), |()| {
-        BreadcrumbLabelProviderContext::new(Rc::new(MyLabels))
+        BreadcrumbLabelProviderContext::new(Rc::new(DemoLabels))
     });
     html! {
         <ContextProvider<BreadcrumbLabelProviderContext> context={(*ctx).clone()}>
-            // ... router and pages
+            <BrowserRouter> /* ... */ </BrowserRouter>
         </ContextProvider<BreadcrumbLabelProviderContext>>
     }
-}"#}</div>
-            </div>
+}"#}
+                >
+                    <p class="muted">
+                        { "This page is wrapped in exactly that. Click the team links above and watch the trail rename." }
+                    </p>
+                </DemoCard>
+            </PageSection>
         </div>
     }
 }
 
-#[component]
-fn CustomizationPage() -> Html {
-    html! {
-        <div class="container">
-            <div class="page-header">
-                <h1>{ "Custom CSS classes" }</h1>
-                <p>{ "Override the default `nav-link` and `active` classes per link" }</p>
-            </div>
+#[derive(Properties, PartialEq)]
+struct HookStatusProps {
+    active: bool
+}
 
-            <div class="info-box">
-                <p>
-                    { "NavLink applies " }<code>{ "nav-link" }</code>
-                    { " (or your override) plus " }<code>{ "active" }</code>
-                    { " (or your override) when the route matches. Both props take a " }
-                    <code>{ "&'static str" }</code>{ "." }
-                </p>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "Live previews" }</h2>
-                <p class="section-desc">
-                    { "These three links target /customization, so the third one is currently \
-                       active (in your browser's nav style)." }
-                </p>
-                <div class="flex-col gap-1">
-                    <div class="card">
-                        <div class="card-title">{ "Default" }</div>
-                        <NavLink<Route> to={Route::Customization}>
-                            { "Default classes" }
-                        </NavLink<Route>>
-                        <p class="section-desc">
-                            <code>{ "<NavLink to={Route::Customization}>" }</code>
-                        </p>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-title">{ "Custom base class" }</div>
-                        <NavLink<Route>
-                            to={Route::Customization}
-                            class="status-active"
-                        >
-                            { "Always green" }
-                        </NavLink<Route>>
-                        <p class="section-desc">
-                            <code>{ r#"class="status-active""# }</code>
-                            { " — replaces " }<code>{ "nav-link" }</code>{ "." }
-                        </p>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-title">{ "Custom active class" }</div>
-                        <NavLink<Route>
-                            to={Route::Customization}
-                            active_class="badge badge-blue"
-                        >
-                            { "Active becomes a pill" }
-                        </NavLink<Route>>
-                        <p class="section-desc">
-                            <code>{ r#"active_class="badge badge-blue""# }</code>
-                            { " — only applied while the route matches." }
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section">
-                <h2 class="section-title">{ "Code" }</h2>
-                <div class="code-block">{r#"// Default classes: nav-link + active
-<NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-
-// Override the base class only.
-<NavLink<Route> to={Route::Home} class="menu-item">
-    { "Home" }
-</NavLink<Route>>
-
-// Override the active class (e.g. Bulma's `is-active`).
-<NavLink<Route> to={Route::Home} active_class="is-active">
-    { "Home" }
-</NavLink<Route>>
-
-// Override both.
-<NavLink<Route>
-    to={Route::Home}
-    class="menu-item"
-    active_class="is-active"
->
-    { "Home" }
-</NavLink<Route>>"#}</div>
-            </div>
-        </div>
+#[function_component]
+fn HookStatus(props: &HookStatusProps) -> Html {
+    if props.active {
+        html! { <span class="status status--active">{ "active" }</span> }
+    } else {
+        html! { <span class="status status--idle">{ "idle" }</span> }
     }
 }
 
-#[component]
-fn ErrorsPage() -> Html {
-    let route_not_found = NavError::route_not_found();
-    let invalid = NavError::invalid_route("expected `/users/:id`");
-    let cancelled = NavError::navigation_cancelled();
-    let to_demo = parse_route("/components");
-    let to_garbage = parse_route("not a path");
+// ============================================================================
+// Utilities page
+// ============================================================================
+
+#[function_component]
+fn UtilitiesPage() -> Html {
+    let parsed_ok: NavResult<&'static str> = parse_route("/components");
+    let parsed_err: NavResult<&'static str> = parse_route("not a path");
 
     html! {
         <div class="container">
-            <div class="page-header">
-                <h1>{ "NavError & NavResult" }</h1>
-                <p>{ "Typed errors for navigation operations" }</p>
-            </div>
+            <PageHeader
+                title="Utilities"
+                subtitle="Path manipulation, URL encoding, and the typed error story."
+            />
 
-            <div class="section">
-                <h2 class="section-title">{ "Variants" }</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>{ "Constructor" }</th>
-                            <th>{ "Display" }</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>{ "NavError::route_not_found()" }</code></td>
-                            <td><code>{ format!("{route_not_found}") }</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>{ r#"NavError::invalid_route("…")"# }</code></td>
-                            <td><code>{ format!("{invalid}") }</code></td>
-                        </tr>
-                        <tr>
-                            <td><code>{ "NavError::navigation_cancelled()" }</code></td>
-                            <td><code>{ format!("{cancelled}") }</code></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <PageSection title="Path helpers">
+                <DemoCard
+                    title="join_paths"
+                    code={r#"join_paths("/foo/bar/", "/baz") // -> "/foo/bar/baz"
+join_paths("foo",       "bar")  // -> "foo/bar""#}
+                >
+                    <table class="util-table">
+                        <thead>
+                            <tr><th>{ "Inputs" }</th><th>{ "Output" }</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>{ r#"("/foo/bar/", "/baz")"# }</code></td>
+                                <td><code>{ join_paths("/foo/bar/", "/baz") }</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>{ r#"("foo", "bar")"# }</code></td>
+                                <td><code>{ join_paths("foo", "bar") }</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </DemoCard>
 
-            <div class="section">
-                <h2 class="section-title">{ "NavResult in practice" }</h2>
-                <p class="section-desc">
-                    { "A toy parser that accepts only paths starting with `/`. Returns a " }
-                    <code>{ "NavResult<&'static str>" }</code>{ "." }
-                </p>
+                <DemoCard
+                    title="normalize_path"
+                    code={r#"normalize_path("/foo/bar/../baz/") // -> "/foo/baz/"
+normalize_path("/a/./b/c/../d")    // -> "/a/b/d""#}
+                >
+                    <table class="util-table">
+                        <thead>
+                            <tr><th>{ "Input" }</th><th>{ "Output" }</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>{ "/foo/bar/../baz/" }</code></td>
+                                <td><code>{ normalize_path("/foo/bar/../baz/") }</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>{ "/a/./b/c/../d" }</code></td>
+                                <td><code>{ normalize_path("/a/./b/c/../d") }</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </DemoCard>
 
-                <div class="card">
-                    <p>
-                        <code>{ "parse_route(\"/components\")" }</code>{ " → " }
-                        { match &to_demo {
-                            Ok(s)  => html! { <span class="status-active">{ format!("Ok({s:?})") }</span> },
-                            Err(e) => html! { <span class="status-inactive">{ format!("Err({e})") }</span> },
-                        } }
-                    </p>
-                    <p class="mt-1">
-                        <code>{ "parse_route(\"not a path\")" }</code>{ " → " }
-                        { match &to_garbage {
-                            Ok(s)  => html! { <span class="status-active">{ format!("Ok({s:?})") }</span> },
-                            Err(e) => html! { <span class="status-inactive">{ format!("Err({e})") }</span> },
-                        } }
-                    </p>
-                </div>
+                <DemoCard
+                    title="is_absolute"
+                    code={r#"is_absolute("https://example.com") // true
+is_absolute("/relative/path")     // false"#}
+                >
+                    <table class="util-table">
+                        <thead>
+                            <tr><th>{ "URL" }</th><th>{ "Absolute?" }</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>{ "https://example.com" }</code></td>
+                                <td><HookStatus active={is_absolute("https://example.com")} /></td>
+                            </tr>
+                            <tr>
+                                <td><code>{ "/relative/path" }</code></td>
+                                <td><HookStatus active={is_absolute("/relative/path")} /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </DemoCard>
+            </PageSection>
 
-                <div class="code-block mt-1">{r#"use yew_nav_link::{NavError, NavResult};
+            <PageSection title="URL codec">
+                <DemoCard
+                    title="urlencoding_encode + urlencoding_decode round-trip"
+                    code={r#"let encoded = urlencoding_encode("rust 2024");
+// "rust%202024"
 
-fn parse_route(input: &str) -> NavResult<&'static str> {
+let decoded: Option<String> = urlencoding_decode(&encoded);
+// Some("rust 2024")"#}
+                >
+                    <table class="util-table">
+                        <thead>
+                            <tr>
+                                <th>{ "Input" }</th>
+                                <th>{ "Encoded" }</th>
+                                <th>{ "Decoded" }</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            { for ["hello world", "rust 2024 / wasm", "a&b=c"]
+                                .iter()
+                                .map(|s| {
+                                    let enc = urlencoding_encode(s);
+                                    let dec = urlencoding_decode(&enc).unwrap_or_default();
+                                    html! {
+                                        <tr>
+                                            <td><code>{ s }</code></td>
+                                            <td><code>{ enc }</code></td>
+                                            <td><code>{ dec }</code></td>
+                                        </tr>
+                                    }
+                                })
+                            }
+                        </tbody>
+                    </table>
+                </DemoCard>
+            </PageSection>
+
+            <PageSection
+                title="NavError + NavResult"
+                intro="Navigation operations return a typed Result. Three variants cover the realistic cases."
+            >
+                <DemoCard
+                    title="The variants"
+                    code={r#"NavError::route_not_found()       // "route not found"
+NavError::invalid_route("...")    // "invalid route: ..."
+NavError::navigation_cancelled()  // "navigation cancelled""#}
+                >
+                    <table class="util-table">
+                        <thead>
+                            <tr><th>{ "Constructor" }</th><th>{ "Display" }</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>{ "route_not_found()" }</code></td>
+                                <td><code>{ format!("{}", NavError::route_not_found()) }</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>{ r#"invalid_route("oops")"# }</code></td>
+                                <td><code>{ format!("{}", NavError::invalid_route("oops")) }</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>{ "navigation_cancelled()" }</code></td>
+                                <td><code>{ format!("{}", NavError::navigation_cancelled()) }</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </DemoCard>
+
+                <DemoCard
+                    title="A NavResult-returning function"
+                    description="The output below comes from the function in the code block, called twice on this page."
+                    code={r#"fn parse_route(input: &str) -> NavResult<&'static str> {
     if !input.starts_with('/') {
         return Err(NavError::invalid_route(format!("got {input:?}")));
     }
     match input {
         "/components" => Ok("/components"),
-        "/utils"      => Ok("/utils"),
+        "/utilities"  => Ok("/utilities"),
         _             => Err(NavError::route_not_found()),
     }
-}"#}</div>
-            </div>
+}"#}
+                >
+                    <ul class="status-list">
+                        <li>
+                            <code>{ r#"parse_route("/components")"# }</code>{ " → " }
+                            { match &parsed_ok {
+                                Ok(s)  => html! { <span class="status status--active">{ format!("Ok({s:?})") }</span> },
+                                Err(e) => html! { <span class="status status--idle">{ format!("Err({e})") }</span> }
+                            } }
+                        </li>
+                        <li>
+                            <code>{ r#"parse_route("not a path")"# }</code>{ " → " }
+                            { match &parsed_err {
+                                Ok(s)  => html! { <span class="status status--active">{ format!("Ok({s:?})") }</span> },
+                                Err(e) => html! { <span class="status status--idle">{ format!("Err({e})") }</span> }
+                            } }
+                        </li>
+                    </ul>
+                </DemoCard>
+            </PageSection>
         </div>
     }
 }
@@ -1671,49 +1055,77 @@ fn parse_route(input: &str) -> NavResult<&'static str> {
     }
     match input {
         "/components" => Ok("/components"),
-        "/utils" => Ok("/utils"),
+        "/utilities" => Ok("/utilities"),
         _ => Err(NavError::route_not_found())
     }
 }
 
-// ============ APP ============
+// ============================================================================
+// 404
+// ============================================================================
 
-#[component]
+#[function_component]
+fn NotFoundPage() -> Html {
+    html! {
+        <div class="container">
+            <PageHeader
+                title="Not found"
+                subtitle="The path you followed isn't part of the demo."
+            />
+            <p class="muted">
+                <NavLink<Route> to={Route::Home}>{ "← Back to Home" }</NavLink<Route>>
+            </p>
+        </div>
+    }
+}
+
+// ============================================================================
+// Breadcrumb provider
+// ============================================================================
+
+struct DemoLabels;
+
+impl BreadcrumbLabelProvider for DemoLabels {
+    fn label_for_path(&self, path: &str) -> String {
+        match path {
+            "/" => "Home".into(),
+            "/navlink" => "NavLink".into(),
+            "/navlink/lab" => "Lab".into(),
+            "/components" => "Components".into(),
+            "/hooks" => "Hooks".into(),
+            "/hooks/team" => "Team".into(),
+            "/utilities" => "Utilities".into(),
+            other if other.starts_with("/navlink/lab/") => format!("Lab {}", &other[13..]),
+            other if other.starts_with("/hooks/team/") => format!("Team {}", &other[12..]),
+            other => other.into()
+        }
+    }
+}
+
+// ============================================================================
+// App
+// ============================================================================
+
+#[function_component]
 fn App() -> Html {
     let label_ctx = use_memo((), |()| {
-        BreadcrumbLabelProviderContext::new(Rc::new(DemoBreadcrumbLabels))
+        BreadcrumbLabelProviderContext::new(Rc::new(DemoLabels))
     });
 
     html! {
         <ContextProvider<BreadcrumbLabelProviderContext> context={(*label_ctx).clone()}>
             <BrowserRouter>
-                <div class="app-container">
+                <div class="app-shell">
                     <a class="skip-link" href="#main-content">{ "Skip to content" }</a>
-                    <Navigation />
+                    <TopNav />
                     <main id="main-content" tabindex="-1">
-                        <Switch<Route> render={|route: Route| {
-                            match route {
-                                Route::Home => html! { <HomePage/> },
-                                Route::BasicLinks => html! { <BasicLinksPage/> },
-                                Route::Components => html! { <ComponentsPage/> },
-                                Route::TabsDemo => html! { <TabsDemoPage/> },
-                                Route::PaginationDemo => html! { <PaginationDemoPage/> },
-                                Route::DropdownDemo => html! { <DropdownDemoPage/> },
-                                Route::HooksDemo => html! { <HooksDemoPage/> },
-                                Route::UtilsDemo => html! { <UtilsDemoPage/> },
-                                Route::Blog | Route::BlogPost { .. } => {
-                                    html! { <BlogPage/> }
-                                }
-                                Route::Nested
-                                | Route::NestedFirst
-                                | Route::NestedSecond => html! { <NestedPage/> },
-                                Route::QueryDemo => html! { <QueryDemoPage/> },
-                                Route::Breadcrumbs | Route::BreadcrumbsTeam { .. } => {
-                                    html! { <BreadcrumbsPage/> }
-                                }
-                                Route::Customization => html! { <CustomizationPage/> },
-                                Route::Errors => html! { <ErrorsPage/> }
-                            }
+                        <Switch<Route> render={|route: Route| match route {
+                            Route::Home => html! { <HomePage/> },
+                            Route::NavLink | Route::NavLinkLab { .. } => html! { <NavLinkPage/> },
+                            Route::Components => html! { <ComponentsPage/> },
+                            Route::Hooks | Route::HooksTeam { .. } => html! { <HooksPage/> },
+                            Route::Utilities => html! { <UtilitiesPage/> },
+                            Route::NotFound => html! { <NotFoundPage/> }
                         }} />
                     </main>
                 </div>
