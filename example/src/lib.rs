@@ -40,234 +40,6 @@ enum Route {
     QueryDemo
 }
 
-// ============ GLOBAL STYLES ============
-
-fn global_styles() -> Html {
-    html! {
-        <style>{r#"
-            :root {
-                --primary: #3b82f6;
-                --primary-dark: #2563eb;
-                --primary-light: #dbeafe;
-                --success: #10b981;
-                --warning: #f59e0b;
-                --danger: #ef4444;
-                --text: #1e293b;
-                --text-muted: #64748b;
-                --text-light: #94a3b8;
-                --bg: #f8fafc;
-                --bg-card: #ffffff;
-                --border: #e2e8f0;
-                --shadow: 0 1px 3px rgba(0,0,0,0.1);
-                --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
-                --radius: 0.5rem;
-                --radius-sm: 0.375rem;
-            }
-
-            * { box-sizing: border-box; margin: 0; padding: 0; }
-
-            body {
-                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                color: var(--text);
-                background: var(--bg);
-                line-height: 1.6;
-            }
-
-            .app-container { min-height: 100vh; display: flex; flex-direction: column; }
-
-            .main-nav {
-                background: var(--bg-card);
-                border-bottom: 1px solid var(--border);
-                padding: 0 2rem;
-                position: sticky;
-                top: 0;
-                z-index: 100;
-                box-shadow: var(--shadow);
-            }
-
-            .main-nav .nav-content {
-                max-width: 1200px;
-                margin: 0 auto;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.75rem 0;
-            }
-
-            .main-nav .logo {
-                font-weight: 700;
-                font-size: 1.25rem;
-                color: var(--primary);
-                text-decoration: none;
-                margin-right: 2rem;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-            }
-
-            .main-nav .nav-links {
-                display: flex;
-                gap: 0.25rem;
-                flex-wrap: wrap;
-            }
-
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 2rem;
-                width: 100%;
-            }
-
-            .page-header {
-                margin-bottom: 2rem;
-                padding-bottom: 1rem;
-                border-bottom: 1px solid var(--border);
-            }
-
-            .page-header h1 {
-                font-size: 2rem;
-                font-weight: 700;
-                color: var(--text);
-                margin-bottom: 0.5rem;
-            }
-
-            .page-header p {
-                color: var(--text-muted);
-                font-size: 1.1rem;
-            }
-
-            .section {
-                background: var(--bg-card);
-                border: 1px solid var(--border);
-                border-radius: var(--radius);
-                padding: 1.5rem;
-                margin-bottom: 1.5rem;
-                box-shadow: var(--shadow);
-            }
-
-            .section-title {
-                font-size: 1.25rem;
-                font-weight: 600;
-                margin-bottom: 1rem;
-                color: var(--text);
-            }
-
-            .section-desc {
-                color: var(--text-muted);
-                margin-bottom: 1rem;
-                font-size: 0.95rem;
-            }
-
-            .code-block {
-                background: #1e293b;
-                color: #e2e8f0;
-                padding: 1rem;
-                border-radius: var(--radius-sm);
-                font-family: 'Monaco', 'Consolas', monospace;
-                font-size: 0.85rem;
-                overflow-x: auto;
-                margin: 1rem 0;
-                line-height: 1.5;
-            }
-
-            .demo-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                gap: 1rem;
-                margin-top: 1rem;
-            }
-
-            .card {
-                background: var(--bg);
-                border: 1px solid var(--border);
-                border-radius: var(--radius-sm);
-                padding: 1rem;
-            }
-
-            .card-title {
-                font-weight: 600;
-                margin-bottom: 0.5rem;
-                color: var(--text);
-            }
-
-            .badge {
-                display: inline-block;
-                padding: 0.25rem 0.75rem;
-                border-radius: 9999px;
-                font-size: 0.75rem;
-                font-weight: 600;
-            }
-
-            .badge-blue { background: var(--primary-light); color: var(--primary); }
-            .badge-green { background: #d1fae5; color: var(--success); }
-            .badge-yellow { background: #fef3c7; color: var(--warning); }
-            .badge-red { background: #fee2e2; color: var(--danger); }
-
-            .info-box {
-                background: var(--primary-light);
-                border-left: 4px solid var(--primary);
-                padding: 1rem;
-                border-radius: var(--radius-sm);
-                margin: 1rem 0;
-            }
-
-            .info-box p { color: var(--primary-dark); font-size: 0.9rem; }
-
-            .status-active { color: var(--success); font-weight: 600; }
-            .status-inactive { color: var(--text-muted); }
-
-            pre {
-                background: #1e293b;
-                color: #e2e8f0;
-                padding: 1rem;
-                border-radius: var(--radius-sm);
-                overflow-x: auto;
-                font-size: 0.85rem;
-                line-height: 1.5;
-            }
-
-            .flex-row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-            .flex-col { display: flex; flex-direction: column; gap: 0.5rem; }
-            .gap-1 { gap: 1rem; }
-            .mt-1 { margin-top: 1rem; }
-            .mb-1 { margin-bottom: 1rem; }
-
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin: 1rem 0;
-            }
-
-            th, td {
-                padding: 0.75rem;
-                text-align: left;
-                border-bottom: 1px solid var(--border);
-            }
-
-            th {
-                background: var(--bg);
-                font-weight: 600;
-                font-size: 0.875rem;
-                color: var(--text-muted);
-            }
-
-            .breadcrumb-demo {
-                display: flex;
-                gap: 0.5rem;
-                align-items: center;
-                padding: 1rem;
-                background: var(--bg);
-                border-radius: var(--radius-sm);
-                margin: 1rem 0;
-            }
-
-            .breadcrumb-separator {
-                color: var(--text-light);
-            }
-        "#}</style>
-    }
-}
-
 // ============ DEMO PAGES ============
 
 #[component]
@@ -1525,29 +1297,26 @@ let query_params: HashMap<String, String> = use_query_params();
 #[component]
 fn App() -> Html {
     html! {
-        <>
-            { global_styles() }
-            <BrowserRouter>
-                <div class="app-container">
-                    <Navigation />
-                    <Switch<Route> render={|route: Route| {
-                        match route {
-                            Route::Home => html! { <HomePage/> },
-                            Route::BasicLinks => html! { <BasicLinksPage/> },
-                            Route::Components => html! { <ComponentsPage/> },
-                            Route::TabsDemo => html! { <TabsDemoPage/> },
-                            Route::PaginationDemo => html! { <PaginationDemoPage/> },
-                            Route::DropdownDemo => html! { <DropdownDemoPage/> },
-                            Route::HooksDemo => html! { <HooksDemoPage/> },
-                            Route::UtilsDemo => html! { <UtilsDemoPage/> },
-                            Route::Blog | Route::BlogPost { .. } => html! { <BlogPage/> },
-                            Route::Nested | Route::NestedFirst | Route::NestedSecond => html! { <NestedPage/> },
-                            Route::QueryDemo => html! { <QueryDemoPage/> },
-                        }
-                    }} />
-                </div>
-            </BrowserRouter>
-        </>
+        <BrowserRouter>
+            <div class="app-container">
+                <Navigation />
+                <Switch<Route> render={|route: Route| {
+                    match route {
+                        Route::Home => html! { <HomePage/> },
+                        Route::BasicLinks => html! { <BasicLinksPage/> },
+                        Route::Components => html! { <ComponentsPage/> },
+                        Route::TabsDemo => html! { <TabsDemoPage/> },
+                        Route::PaginationDemo => html! { <PaginationDemoPage/> },
+                        Route::DropdownDemo => html! { <DropdownDemoPage/> },
+                        Route::HooksDemo => html! { <HooksDemoPage/> },
+                        Route::UtilsDemo => html! { <UtilsDemoPage/> },
+                        Route::Blog | Route::BlogPost { .. } => html! { <BlogPage/> },
+                        Route::Nested | Route::NestedFirst | Route::NestedSecond => html! { <NestedPage/> },
+                        Route::QueryDemo => html! { <QueryDemoPage/> },
+                    }
+                }} />
+            </div>
+        </BrowserRouter>
     }
 }
 
