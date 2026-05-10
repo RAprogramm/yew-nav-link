@@ -100,13 +100,23 @@ pub fn NavBadge(props: &NavBadgeProps) -> Html {
         classes.push("nav-badge-pill");
     }
 
-    let variant_class = format!("nav-badge-{}", props.variant);
-    classes.push(variant_class);
+    classes.push(variant_class(props.variant));
 
     html! {
         <span {classes}>
             { for props.children.iter() }
         </span>
+    }
+}
+
+/// Maps a `variant` prop value to its precomputed CSS class. Unknown variants
+/// fall back to `nav-badge-primary` (the documented default).
+const fn variant_class(variant: &str) -> &'static str {
+    match variant.as_bytes() {
+        b"success" => "nav-badge-success",
+        b"warning" => "nav-badge-warning",
+        b"danger" => "nav-badge-danger",
+        _ => "nav-badge-primary"
     }
 }
 
@@ -139,5 +149,22 @@ mod tests {
         let props2 = props1.clone();
         assert_eq!(props1.variant, props2.variant);
         assert_eq!(props1.pill, props2.pill);
+    }
+
+    #[test]
+    fn variant_class_maps_documented_variants() {
+        assert_eq!(variant_class("primary"), "nav-badge-primary");
+        assert_eq!(variant_class("success"), "nav-badge-success");
+        assert_eq!(variant_class("warning"), "nav-badge-warning");
+        assert_eq!(variant_class("danger"), "nav-badge-danger");
+    }
+
+    #[test]
+    fn variant_class_unknown_falls_back_to_primary() {
+        // Unknown variant strings keep the historical behaviour of
+        // rendering the primary palette.
+        assert_eq!(variant_class(""), "nav-badge-primary");
+        assert_eq!(variant_class("unknown"), "nav-badge-primary");
+        assert_eq!(variant_class("PRIMARY"), "nav-badge-primary");
     }
 }
