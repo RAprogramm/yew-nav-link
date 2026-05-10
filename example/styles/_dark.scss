@@ -1,15 +1,11 @@
 // SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
-// Dark theme: kicks in when the visitor's OS is set to dark mode.
-// We override design tokens at :root so every component that uses them
-// (cards, navigation, breadcrumbs, badges, …) flips automatically.
-
 @media (prefers-color-scheme: dark) {
     :root {
-        --primary: #60a5fa;
-        --primary-dark: #93c5fd;
-        --primary-light: rgba(96, 165, 250, 0.15);
+        --primary: #818cf8;
+        --primary-dark: #a5b4fc;
+        --primary-soft: rgba(129, 140, 248, 0.18);
 
         --success: #34d399;
         --warning: #fbbf24;
@@ -17,22 +13,26 @@
 
         --text: #e2e8f0;
         --text-muted: #94a3b8;
-        --text-light: #64748b;
+        --text-faint: #64748b;
 
-        --bg: #0f172a;
-        --bg-card: #1e293b;
-        --border: #334155;
+        --bg: #020617;
+        --bg-card: #0f172a;
+        --bg-soft: #1e293b;
 
-        // Code blocks invert: lighter slab, dark foreground.
+        --border: #1e293b;
+        --border-strong: #334155;
+
         --code-bg: #020617;
         --code-fg: #cbd5e1;
 
-        --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
+        --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+        --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.4);
+        --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.55);
     }
 
-    // Soft tints for the variant badges so they remain readable on dark cards.
-    .badge-green { background: rgba(52, 211, 153, 0.15); color: var(--success); }
-    .badge-yellow { background: rgba(251, 191, 36, 0.15); color: var(--warning); }
-    .badge-red { background: rgba(248, 113, 113, 0.15); color: var(--danger); }
+    .nav-badge {
+        &--warning { color: #fde68a; background: rgba(251, 191, 36, 0.18); }
+    }
+
+    .is-active { background: #14b8a6; }
 }
