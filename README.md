@@ -396,6 +396,18 @@ pub struct BreadcrumbItem {
 
 ---
 
+## Project documentation
+
+| File | Purpose |
+|------|---------|
+| [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) | Functional and non-functional requirements (what the crate does, the constraints under which it does it) |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Module layout, the active-state algorithm, hook contracts, breadcrumb context flow |
+| [`docs/ROADMAP.md`](docs/ROADMAP.md) | Trajectory toward 0.10 (breaking-change pass) and 1.0 (API freeze) |
+| [`SECURITY.md`](SECURITY.md) | Coordinated disclosure policy |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Workflow, commit format, code standards |
+
+---
+
 ## Migration Guides
 
 For a full release-by-release log, see [CHANGELOG.md](CHANGELOG.md).
