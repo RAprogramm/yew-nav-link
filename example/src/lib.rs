@@ -45,17 +45,38 @@ enum Route {
 // DemoCard — the building block: title + description + live preview + code
 // ============================================================================
 
+#[wasm_bindgen]
+extern "C" {
+    /// Re-runs highlight.js across the document. Loaded from CDN in
+    /// `index.html`; we trigger it after Yew has mounted any fresh code
+    /// blocks. Safe to call repeatedly — hljs marks already-highlighted
+    /// nodes with a sentinel class.
+    #[wasm_bindgen(js_namespace = hljs, js_name = highlightAll, catch)]
+    fn highlight_all() -> Result<(), JsValue>;
+}
+
 #[derive(Properties, PartialEq)]
 struct DemoCardProps {
     title:       AttrValue,
     #[prop_or_default]
     description: Option<AttrValue>,
+    /// Optional language hint passed to highlight.js (defaults to `rust`).
+    #[prop_or(AttrValue::Static("rust"))]
+    language:    AttrValue,
     code:        AttrValue,
     children:    Children
 }
 
 #[function_component]
 fn DemoCard(props: &DemoCardProps) -> Html {
+    // Re-highlight on every mount. Cheap; hljs deduplicates internally.
+    use_effect_with(props.code.clone(), |_| {
+        let _ = highlight_all();
+        || ()
+    });
+
+    let code_class = format!("language-{}", props.language);
+
     html! {
         <article class="demo-card">
             <header class="demo-card__head">
@@ -68,7 +89,9 @@ fn DemoCard(props: &DemoCardProps) -> Html {
                 <div class="demo-card__preview" aria-label="Live preview">
                     { for props.children.iter() }
                 </div>
-                <pre class="demo-card__code" aria-label="Source code"><code>{ props.code.clone() }</code></pre>
+                <pre class="demo-card__code" aria-label="Source code">
+                    <code class={code_class}>{ props.code.clone() }</code>
+                </pre>
             </div>
         </article>
     }
@@ -175,6 +198,7 @@ fn HomePage() -> Html {
             >
                 <DemoCard
                     title="Cargo.toml"
+                    language="ini"
                     code={r#"[dependencies]
 yew         = { version = "0.23", features = ["csr"] }
 yew-router  = "0.20"

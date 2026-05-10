@@ -69,6 +69,15 @@
         margin: 0;
         white-space: pre;
         tab-size: 4;
+
+        // highlight.js paints token colours on `<code>` and would otherwise
+        // override our pre-level background and padding. Strip those, keep
+        // colours.
+        & > code.hljs {
+            background: transparent;
+            padding: 0;
+            display: block;
+        }
     }
 }
 
