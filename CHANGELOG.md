@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-05-10
+
+### Fixed
+
+- `use_breadcrumbs` segment loop no longer reuses the `is_last` binding name for both the loop bound and the per-iteration boolean; rename the loop bound to `total` so the intent is unambiguous.
+
+### Changed
+
+- Replace the build-script-driven multi-page documentation site under `example/` with a self-contained single-file `cdylib` SPA demo that exercises every public component, hook, and utility against trunk-served routes.
+- Switch the demo crate (`yew-nav-link-demo`) to a `cdylib` library target served by trunk; drop `wasm-bindgen-futures` and `web-sys` feature surface that the rewrite no longer needs.
+- Apply `SPDX-FileCopyrightText` / `SPDX-License-Identifier` headers to every Rust source file and the demo entry HTML.
+- Tighten `.rustfmt.toml` compliance: drop trailing commas inside `use` statements to match `trailing_comma = "Never"`.
+
+### Internal
+
+- Replace ad-hoc `.gitignore` paths with workspace-wide rules; trunk-generated `example/dist/` is no longer tracked.
+
 ## [0.9.0] - 2026-04-16
 
 ### Removed
