@@ -5,37 +5,46 @@
 
 use std::fmt::Write;
 
-/// Decodes a percent-encoded string (e.g. `"%20"` becomes a space).
+/// Decodes a percent-encoded string. Also converts `+` to a space (the
+/// `application/x-www-form-urlencoded` convention).
 ///
-/// Also converts `+` to a space. Returns `None` only if the input is malformed
-/// in a way that prevents decoding (currently always returns `Some`).
+/// `%XX` sequences accumulate into a byte buffer and the buffer is then
+/// decoded as UTF-8 — so a sequence like `"%E2%9C%93"` resolves to `Some("✓")`,
+/// not to three separate Latin-1 chars. Malformed `%XX` triplets are left in
+/// the output verbatim. Returns `None` if the resulting bytes are not valid
+/// UTF-8.
 #[must_use]
 pub fn urlencoding_decode(input: &str) -> Option<String> {
-    let mut result = String::with_capacity(input.len());
+    let mut bytes: Vec<u8> = Vec::with_capacity(input.len());
     let mut chars = input.chars();
 
     while let Some(c) = chars.next() {
-        if c == '%' {
-            let hex: String = chars.by_ref().take(2).collect();
-            if hex.len() == 2 {
-                if let Ok(byte) = u8::from_str_radix(&hex, 16) {
-                    result.push(byte as char);
+        match c {
+            '%' => {
+                let hex: String = chars.by_ref().take(2).collect();
+                if hex.len() == 2 {
+                    if let Ok(byte) = u8::from_str_radix(&hex, 16) {
+                        bytes.push(byte);
+                    } else {
+                        // Not valid hex — keep the literal bytes so users see
+                        // the input was malformed.
+                        bytes.push(b'%');
+                        bytes.extend_from_slice(hex.as_bytes());
+                    }
                 } else {
-                    result.push('%');
-                    result.push_str(&hex);
+                    bytes.push(b'%');
+                    bytes.extend_from_slice(hex.as_bytes());
                 }
-            } else {
-                result.push('%');
-                result.push_str(&hex);
             }
-        } else if c == '+' {
-            result.push(' ');
-        } else {
-            result.push(c);
+            '+' => bytes.push(b' '),
+            other => {
+                let mut buf = [0u8; 4];
+                bytes.extend_from_slice(other.encode_utf8(&mut buf).as_bytes());
+            }
         }
     }
 
-    Some(result)
+    String::from_utf8(bytes).ok()
 }
 
 /// Percent-encodes a string for safe use in URLs.
@@ -53,8 +62,8 @@ pub fn urlencoding_encode(input: &str) -> String {
             }
             ' ' => result.push('+'),
             _ => {
-                for byte in c.to_string().as_bytes() {
-                    // result.push_str(&format!("%{byte:02X}"));
+                let mut buf = [0u8; 4];
+                for byte in c.encode_utf8(&mut buf).as_bytes() {
                     let _ = write!(result, "%{byte:02X}");
                 }
             }
@@ -106,8 +115,30 @@ mod tests {
 
     #[test]
     fn urlencoding_decode_unicode() {
-        let result = urlencoding_decode("%E2%9C%93");
-        assert_eq!(result, Some("â\u{9c}\u{93}".to_string()));
+        // E2 9C 93 is the UTF-8 encoding of U+2713 CHECK MARK (✓).
+        assert_eq!(urlencoding_decode("%E2%9C%93"), Some("✓".to_string()));
+    }
+
+    #[test]
+    fn urlencoding_decode_cyrillic() {
+        // "%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82" is "Привет".
+        let encoded = "%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82";
+        assert_eq!(urlencoding_decode(encoded), Some("Привет".to_string()));
+    }
+
+    #[test]
+    fn urlencoding_decode_invalid_utf8_returns_none() {
+        // A lone 0xFF byte is not valid UTF-8.
+        assert_eq!(urlencoding_decode("%FF"), None);
+    }
+
+    #[test]
+    fn urlencoding_round_trip_preserves_unicode() {
+        let inputs = ["✓", "Привет", "日本語", "hello world!", "a&b=c"];
+        for s in inputs {
+            let encoded = urlencoding_encode(s);
+            assert_eq!(urlencoding_decode(&encoded), Some(s.to_string()));
+        }
     }
 
     #[test]
