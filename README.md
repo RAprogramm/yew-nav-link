@@ -6,6 +6,10 @@ Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic acti
 
 <div align="center">
 
+[**🌐 Live demo →**](https://raprogramm.github.io/yew-nav-link/)
+
+[![CI](https://github.com/RAprogramm/yew-nav-link/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/RAprogramm/yew-nav-link/actions/workflows/ci.yml)
+[![Pages](https://github.com/RAprogramm/yew-nav-link/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/RAprogramm/yew-nav-link/actions/workflows/pages.yml)
 [![Crates.io](https://img.shields.io/crates/v/yew-nav-link)](https://crates.io/crates/yew-nav-link)
 [![docs.rs](https://img.shields.io/docsrs/yew-nav-link)](https://docs.rs/yew-nav-link)
 [![Downloads](https://img.shields.io/crates/d/yew-nav-link)](https://crates.io/crates/yew-nav-link)
@@ -13,7 +17,6 @@ Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic acti
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![REUSE](https://api.reuse.software/badge/github.com/RAprogramm/yew-nav-link)](https://api.reuse.software/info/github.com/RAprogramm/yew-nav-link)
 [![Codecov](https://codecov.io/gh/RAprogramm/yew-nav-link/branch/main/graph/badge.svg)](https://codecov.io/gh/RAprogramm/yew-nav-link)
-[![Hits-of-Code](https://hitsofcode.com/github/RAprogramm/yew-nav-link?branch=main&label=HoC)](https://hitsofcode.com/github/RAprogramm/yew-nav-link/view?branch=main)
 
 </div>
 
@@ -73,7 +76,7 @@ yew-nav-link = "0.9"
 
 | Dependency | Version |
 |------------|---------|
-| Rust | 1.85+ |
+| Rust | 1.95+ |
 | Edition | 2024 |
 | Yew | 0.23+ |
 | yew-router | 0.20+ |
@@ -164,58 +167,69 @@ html! {
 
 ### Programmatic Navigation
 
+`use_navigation::<R>()` returns a [`Navigation<R>`] handle exposing pre-built `Callback`s — no manual `Callback::from(...)` boilerplate.
+
 ```rust
-use yew_nav_link::hooks::use_navigation;
+use yew::prelude::*;
+use yew_nav_link::use_navigation;
 
 #[component]
 fn MyComponent() -> Html {
-    let navigation = use_navigation::<Route>();
-    
+    let nav = use_navigation::<Route>();
+
     html! {
-        <button onclick={navigation.on_click(|| navigation.push(Route::About))}>
-            Go to About
-        </button>
-        
-        <button onclick={navigation.on_click(|| navigation.replace(Route::Home))}>
-            Replace with Home
-        </button>
-        
-        <button onclick={navigation.on_click(|| navigation.back())}>
-            Back
-        </button>
+        <>
+            // Push a new entry onto the history stack.
+            <button onclick={nav.push_callback(Route::About).reform(|_: MouseEvent| ())}>
+                { "Go to About" }
+            </button>
+
+            // Replace the current entry without growing history.
+            <button onclick={nav.replace_callback(Route::Home).reform(|_: MouseEvent| ())}>
+                { "Replace with Home" }
+            </button>
+
+            // Browser back / forward.
+            <button onclick={nav.go_back.reform(|_: MouseEvent| ())}>{ "Back" }</button>
+            <button onclick={nav.go_forward.reform(|_: MouseEvent| ())}>{ "Forward" }</button>
+        </>
     }
 }
 ```
 
 ### Custom Breadcrumb Providers
 
+Implement [`BreadcrumbLabelProvider`] to control how each path segment is rendered. The provider operates on **paths** (e.g. `/docs/api`), not on `Routable` enum variants — it works the same for static and parameterised routes.
+
 ```rust
-use yew_nav_link::hooks::{use_breadcrumbs, BreadcrumbLabelProvider};
+use std::rc::Rc;
+use yew_nav_link::{BreadcrumbLabelProvider, use_breadcrumbs};
 
-#[derive(Clone)]
-struct MyBreadcrumbProvider;
+struct MyLabels;
 
-impl BreadcrumbLabelProvider<Route> for MyBreadcrumbProvider {
-    fn get_label(&self, route: &Route) -> String {
-        match route {
-            Route::Home => "Homepage".to_string(),
-            Route::About => "About Us".to_string(),
-            Route::User { id } => format!("User #{}", id),
-            _ => route.to_string(),
+impl BreadcrumbLabelProvider for MyLabels {
+    fn label_for_path(&self, path: &str) -> String {
+        match path {
+            "/" => "Home".into(),
+            "/about" => "About us".into(),
+            p if p.starts_with("/users/") => format!("User {}", &p[7..]),
+            other => other.into(),
         }
     }
 }
 
 #[component]
-fn MyComponent() -> Html {
-    let breadcrumbs = use_breadcrumbs::<Route, MyBreadcrumbProvider>(MyBreadcrumbProvider);
-    
+fn Crumbs() -> Html {
+    // Provide the implementation through context (omitted for brevity);
+    // then read the trail.
+    let trail = use_breadcrumbs::<Route>();
+
     html! {
         <nav aria-label="Breadcrumb">
-            { for breadcrumbs.into_iter().map(|item| {
-                html! {
-                    <span>{ item.label }</span>
-                }
+            { for trail.into_iter().map(|item| html! {
+                <span aria-current={if item.is_active { "page" } else { "" }}>
+                    { item.label }
+                </span>
             }) }
         </nav>
     }
@@ -258,10 +272,9 @@ fn MyComponent() -> Html {
 | `use_is_active(route)` | `bool` | Whether the given route is currently active |
 | `use_is_exact_active(route)` | `bool` | Whether the route matches exactly |
 | `use_is_partial_active(route)` | `bool` | Whether the route is a prefix of the current path |
-| `use_breadcrumbs()` | `Vec<BreadcrumbItem>` | Auto-generated breadcrumb trail from current route |
+| `use_breadcrumbs()` | `Vec<BreadcrumbItem<R>>` | Auto-generated breadcrumb trail from current route |
 | `use_navigation<R>()` | `Navigation<R>` | Programmatic navigation (push, replace, go back/forward) |
-| `use_route_params()` | `RouteParams` | URL route parameters (`/users/:id`) |
-| `use_query_params()` | `QueryParams` | URL query string parameters |
+| `use_query_params()` | `HashMap<String, String>` | URL query string parameters |
 
 ### Utilities
 
@@ -326,17 +339,19 @@ See the source code and inline documentation for detailed design documentation.
 
 ## Examples
 
-Run the comprehensive interactive demo:
+A **live demo** is published at <https://raprogramm.github.io/yew-nav-link/>. It exercises every component, hook, and utility in the public API.
+
+Run the same demo locally:
 
 ```bash
 rustup target add wasm32-unknown-unknown
 cargo install trunk
 
-cd examples/comprehensive
+cd example
 trunk serve
 ```
 
-Open http://127.0.0.1:8080 for live demos, code snippets, and architecture diagrams for every component.
+Open <http://127.0.0.1:3000> (port set in [`example/trunk.toml`](example/trunk.toml)).
 
 ---
 
@@ -383,10 +398,13 @@ pub struct BreadcrumbItem {
 
 ## Migration Guides
 
-| From | To | Guide |
+For a full release-by-release log, see [CHANGELOG.md](CHANGELOG.md).
+
+| From | To | Notes |
 |------|-----|-------|
-| 0.5.x | 0.6.x | See [CHANGELOG.md](CHANGELOG.md) |
-| 0.6.x | 0.7.x | See [CHANGELOG.md](CHANGELOG.md) |
+| 0.8.x | 0.9.x | Macro feature removed; component/function APIs unchanged. See [CHANGELOG `[0.9.0]`](CHANGELOG.md). |
+| 0.9.0 | 0.9.1 | Single-file SPA demo replaces the multi-page docs site under `example/`; library API unchanged. |
+| 0.9.1 | 0.9.2 | `BreadcrumbLabelProvider` now re-exported at the crate root. Drop-in upgrade. |
 
 ---
 
