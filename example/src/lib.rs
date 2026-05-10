@@ -94,7 +94,7 @@ impl BreadcrumbLabelProvider for DemoBreadcrumbLabels {
 #[component]
 fn Navigation() -> Html {
     html! {
-        <nav class="main-nav">
+        <nav class="main-nav" aria-label="Main navigation">
             <div class="nav-content">
                 <NavLink<Route>
                     to={Route::Home}
@@ -1688,29 +1688,34 @@ fn App() -> Html {
         <ContextProvider<BreadcrumbLabelProviderContext> context={(*label_ctx).clone()}>
             <BrowserRouter>
                 <div class="app-container">
+                    <a class="skip-link" href="#main-content">{ "Skip to content" }</a>
                     <Navigation />
-                    <Switch<Route> render={|route: Route| {
-                        match route {
-                            Route::Home => html! { <HomePage/> },
-                            Route::BasicLinks => html! { <BasicLinksPage/> },
-                            Route::Components => html! { <ComponentsPage/> },
-                            Route::TabsDemo => html! { <TabsDemoPage/> },
-                            Route::PaginationDemo => html! { <PaginationDemoPage/> },
-                            Route::DropdownDemo => html! { <DropdownDemoPage/> },
-                            Route::HooksDemo => html! { <HooksDemoPage/> },
-                            Route::UtilsDemo => html! { <UtilsDemoPage/> },
-                            Route::Blog | Route::BlogPost { .. } => html! { <BlogPage/> },
-                            Route::Nested | Route::NestedFirst | Route::NestedSecond => {
-                                html! { <NestedPage/> }
+                    <main id="main-content" tabindex="-1">
+                        <Switch<Route> render={|route: Route| {
+                            match route {
+                                Route::Home => html! { <HomePage/> },
+                                Route::BasicLinks => html! { <BasicLinksPage/> },
+                                Route::Components => html! { <ComponentsPage/> },
+                                Route::TabsDemo => html! { <TabsDemoPage/> },
+                                Route::PaginationDemo => html! { <PaginationDemoPage/> },
+                                Route::DropdownDemo => html! { <DropdownDemoPage/> },
+                                Route::HooksDemo => html! { <HooksDemoPage/> },
+                                Route::UtilsDemo => html! { <UtilsDemoPage/> },
+                                Route::Blog | Route::BlogPost { .. } => {
+                                    html! { <BlogPage/> }
+                                }
+                                Route::Nested
+                                | Route::NestedFirst
+                                | Route::NestedSecond => html! { <NestedPage/> },
+                                Route::QueryDemo => html! { <QueryDemoPage/> },
+                                Route::Breadcrumbs | Route::BreadcrumbsTeam { .. } => {
+                                    html! { <BreadcrumbsPage/> }
+                                }
+                                Route::Customization => html! { <CustomizationPage/> },
+                                Route::Errors => html! { <ErrorsPage/> }
                             }
-                            Route::QueryDemo => html! { <QueryDemoPage/> },
-                            Route::Breadcrumbs | Route::BreadcrumbsTeam { .. } => {
-                                html! { <BreadcrumbsPage/> }
-                            }
-                            Route::Customization => html! { <CustomizationPage/> },
-                            Route::Errors => html! { <ErrorsPage/> }
-                        }
-                    }} />
+                        }} />
+                    </main>
                 </div>
             </BrowserRouter>
         </ContextProvider<BreadcrumbLabelProviderContext>>
