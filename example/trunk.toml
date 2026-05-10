@@ -1,0 +1,14 @@
+// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+// SPDX-License-Identifier: MIT
+
+[build]
+target = "dist"
+dist = "dist"
+
+[serve]
+address = "127.0.0.1"
+port = 3000
+open = false
+
+[watch]
+clean = true
