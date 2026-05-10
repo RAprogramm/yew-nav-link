@@ -30,19 +30,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801"
 
 [[package]]
-name = "comprehensive"
-version = "0.1.0"
-dependencies = [
- "gloo-timers 0.4.0",
- "wasm-bindgen",
- "wasm-bindgen-futures",
- "web-sys",
- "yew",
- "yew-nav-link",
- "yew-router",
-]
-
-[[package]]
 name = "console_error_panic_hook"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -952,6 +939,18 @@ name = "yew-nav-link"
 version = "0.9.1"
 dependencies = [
  "yew",
+ "yew-router",
+]
+
+[[package]]
+name = "yew-nav-link-demo"
+version = "0.1.0"
+dependencies = [
+ "gloo-timers 0.4.0",
+ "wasm-bindgen",
+ "web-sys",
+ "yew",
+ "yew-nav-link",
  "yew-router",
 ]
 

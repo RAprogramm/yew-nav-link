@@ -1,22 +1,17 @@
 [package]
-name = "comprehensive"
+name = "yew-nav-link-demo"
 version = "0.1.0"
 edition = "2024"
 publish = false
 
-[build-dependencies]
+[lib]
+crate-type = ["cdylib"]
+path = "src/lib.rs"
 
 [dependencies]
 yew = { version = "0.23", features = ["csr"] }
 yew-router = "0.20"
 yew-nav-link = { path = "../" }
 wasm-bindgen = "0.2"
-wasm-bindgen-futures = "0.4"
-web-sys = { version = "0.3", features = [
-  "HtmlElement",
-  "Element",
-  "Clipboard",
-  "Navigator",
-  "Window",
-] }
 gloo-timers = { version = "0.4", features = ["futures"] }
+web-sys = "0.3"
