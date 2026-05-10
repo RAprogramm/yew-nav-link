@@ -426,12 +426,38 @@ jobs:
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
 
+      - name: Extract release notes from CHANGELOG.md
+        id: notes
+        if: steps.version_check.outputs.version_changed == 'true'
+        env:
+          VERSION: ${{ steps.version_check.outputs.current_version }}
+        run: |
+          # Pull the section between "## [VERSION] - …" (exclusive) and the
+          # next "## [" header (exclusive). Falls back to a generic line if
+          # the entry is missing so the release is still populated.
+          notes_file="$(mktemp)"
+          awk -v v="$VERSION" '
+            BEGIN { in_section = 0 }
+            /^## \[/ {
+              if (in_section) { exit }
+              if ($0 ~ "^## \\[" v "\\]") { in_section = 1; next }
+            }
+            in_section { print }
+          ' CHANGELOG.md > "$notes_file"
+
+          if [ ! -s "$notes_file" ]; then
+            echo "Release v$VERSION." > "$notes_file"
+          fi
+
+          echo "path=$notes_file" >> "$GITHUB_OUTPUT"
+
       - name: Create GitHub release
         if: steps.version_check.outputs.version_changed == 'true'
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version_check.outputs.current_version }}
           name: v${{ steps.version_check.outputs.current_version }}
+          body_path: ${{ steps.notes.outputs.path }}
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
