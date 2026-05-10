@@ -26,8 +26,10 @@
                 "unminified-javascript": "off",
                 "network-dependency-tree-insight": "off",
                 "render-blocking-insight": "off",
+                "render-blocking-resources": "off",
                 "uses-responsive-images": "off",
-                "third-party-cookies": "off"
+                "third-party-cookies": "off",
+                "valid-source-maps": "off"
             }
         }
     }
