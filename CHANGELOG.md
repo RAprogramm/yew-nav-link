@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.3] - 2026-05-10
+
+### Added
+
+- Make `BreadcrumbLabelProviderContext` part of the public API and add a `::new(Rc<dyn BreadcrumbLabelProvider>)` constructor. Consumers can now actually inject a custom `BreadcrumbLabelProvider` via Yew's `ContextProvider`; previously the trait was exported but unusable because the context wrapper was crate-private. Re-exported at the crate root and from `hooks::*` for parity with the existing breadcrumb types.
+
 ## [0.9.2] - 2026-05-10
 
 ### Added

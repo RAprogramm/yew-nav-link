@@ -936,7 +936,7 @@ dependencies = [
 
 [[package]]
 name = "yew-nav-link"
-version = "0.9.2"
+version = "0.9.3"
 dependencies = [
  "yew",
  "yew-router",
