@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.4] - 2026-05-10
+
+### Fixed
+
+- `normalize_path` now actually resolves `.` and `..` segments without escaping the root, matching the contract documented in `docs/REQUIREMENTS.md` FR-UT-3, the README, and the live demo. The previous implementation only collapsed duplicate slashes and trimmed a trailing slash; passing `"/foo/bar/../baz/"` now returns `"/foo/baz/"` as advertised.
+- `urlencoding_decode` is now UTF-8 aware. Previously each `%XX` byte was cast to `char` (Latin-1), so multi-byte sequences came back garbled — `%E2%9C%93` returned three junk chars instead of `"✓"`. Bytes are now accumulated and decoded via `String::from_utf8`, and the function correctly returns `None` for input that does not decode to valid UTF-8.
+- `pagination_page::generate_pages` no longer panics on adversarial inputs. `current` outside `[1, total]` is clamped, `total = 0` returns an empty list, and `siblings = u32::MAX` no longer overflows on wasm32 (32-bit `usize`); all internal arithmetic uses saturating helpers on `u32`.
+
+### Changed
+
+- `normalize_path` preserves a single trailing `/` when the input ended with one (e.g. `"/docs/"` returns `"/docs/"`). Previously it always stripped trailing slashes, contradicting the documented contract and the demo's example output.
+
+### Performance
+
+- `NavBadge` no longer allocates a fresh `String` per render. The `format!("nav-badge-{}", variant)` call is replaced by a `const fn` returning a precomputed `&'static str` for each documented variant.
+
+### Documentation
+
+- `QueryParams` rustdoc examples now use `.expect("<reason>")` instead of bare `.unwrap()` so users do not copy a panic-on-missing-key idiom into their own code.
+- `nav_link()` ships a runnable doctest demonstrating both `Match::Exact` and `Match::Partial` usage. Previously the public top-level export had no `///` example.
+
+### Tests
+
+- Eight new `normalize_path` cases covering `.`/`..` resolution, root-escape attempts, trailing-slash preservation, and empty input.
+- Three new `urlencoding_decode` cases for ✓, Cyrillic, and invalid-UTF-8 input, plus a UTF-8 round-trip property covering ASCII, Cyrillic, Japanese, and reserved characters.
+- Four new `generate_pages` boundary cases (`total = 0`, out-of-range `current`, `siblings = u32::MAX`).
+
 ## [0.9.3] - 2026-05-10
 
 ### Added
