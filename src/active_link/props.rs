@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
+//! Type-checked properties for [`crate::NavLink`].
+
 use std::marker::PhantomData;
 
 use yew::prelude::*;

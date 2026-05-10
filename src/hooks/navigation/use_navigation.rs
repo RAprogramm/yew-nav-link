@@ -1,6 +1,13 @@
 // SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
+//! Programmatic navigation built on top of yew-router's `Navigator`.
+//!
+//! [`use_navigation`] returns a [`Navigation<R>`] handle exposing pre-built
+//! `Callback<()>` values for `push`, `replace`, `go`, `go_back`, and
+//! `go_forward` so consumers can plug them into `onclick` without writing
+//! `Callback::from(move |_| ...)` boilerplate themselves.
+
 use std::marker::PhantomData;
 
 use yew::prelude::*;

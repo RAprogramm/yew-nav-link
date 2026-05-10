@@ -1,6 +1,12 @@
 // SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
+//! The [`NavLink`] component and the [`nav_link`] function-syntax helper.
+//!
+//! Both build on the same active-state algorithm: compare the current route
+//! to the target on every render and toggle the `active` class plus
+//! `aria-current="page"` accordingly.
+
 use yew::prelude::*;
 use yew_router::prelude::*;
 

@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
+//! Helpers shared between [`crate::NavLink`] and its callers: segment-wise
+//! path-prefix matching and the active-class string builder.
+
 /// Checks if `target` path is a segment-wise prefix of `current` path.
 #[inline]
 #[must_use]
