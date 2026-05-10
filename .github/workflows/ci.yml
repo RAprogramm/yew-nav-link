@@ -404,14 +404,21 @@ jobs:
         with:
           tool: git-cliff
 
-      - name: Update CHANGELOG.md
+      - name: Preview Unreleased section in run summary
         id: changelog
         run: |
-          if [ -n "$GITHUB_REF_NAME" ]; then
-            git-cliff --tag "$GITHUB_REF_NAME" --unreleased 2>/dev/null || true
-          else
-            git-cliff --unreleased 2>/dev/null || true
-          fi
+          # Generate the [Unreleased] section from conventional commits and
+          # surface it in the workflow run summary so every push to main
+          # shows reviewers exactly what git-cliff sees. We do not mutate
+          # CHANGELOG.md here; the dedicated changelog-refresh.yml workflow
+          # opens a PR for that on a weekly cron.
+          {
+            echo "## CHANGELOG preview (Unreleased)"
+            echo
+            echo '```markdown'
+            git-cliff --unreleased 2>/dev/null || echo "(git-cliff produced no output)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
   release:
     name: Release
