@@ -71,6 +71,10 @@
         min-height: 4rem;
     }
 
+    &__code-wrap {
+        position: relative;
+    }
+
     &__code {
         background: var(--code-bg);
         color: var(--code-fg);
@@ -91,6 +95,36 @@
             background: transparent;
             padding: 0;
             display: block;
+        }
+    }
+
+    &__copy {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        z-index: 1;
+        appearance: none;
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--code-fg);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: var(--radius-sm);
+        padding: 0.25rem 0.625rem;
+        font-family: var(--font-sans);
+        font-size: 0.75rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.15s ease, color 0.15s ease,
+            border-color 0.15s ease;
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.16);
+            color: #ffffff;
+        }
+
+        &--success {
+            background: rgba(16, 185, 129, 0.25);
+            color: #6ee7b7;
+            border-color: rgba(16, 185, 129, 0.4);
         }
     }
 }
@@ -267,6 +301,14 @@
 // ─────────────────────────────────────────────────────────────────
 // Util tables (Utilities page)
 // ─────────────────────────────────────────────────────────────────
+
+// Wrapper so wide tables scroll horizontally on phones instead of
+// blowing out the card width.
+.util-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
 
 .util-table {
     width: 100%;
@@ -694,5 +736,82 @@
 
     &:hover {
         text-decoration: underline;
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Responsive: phone-sized viewports (≤ 720 px)
+// ─────────────────────────────────────────────────────────────────
+
+@media (max-width: 720px) {
+    .container {
+        padding: 1.5rem 1rem;
+    }
+
+    .demo-card {
+        padding: 1rem;
+
+        &__preview {
+            padding: 1rem;
+        }
+
+        &__code {
+            padding: 1rem;
+            font-size: 0.75rem;
+        }
+
+        &__copy {
+            top: 0.375rem;
+            right: 0.375rem;
+            font-size: 0.6875rem;
+            padding: 0.1875rem 0.5rem;
+        }
+    }
+
+    // Word-break for inline literals so they cannot push the layout sideways.
+    code,
+    .inline-code {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    // Util tables already scroll inside .util-table-wrap; force a minimum
+    // column width so columns do not collapse to unreadable widths first.
+    .util-table {
+        min-width: 26rem;
+    }
+}
+
+@media (max-width: 720px) {
+    // Top nav: stack brand + Source on row 1, links scroll horizontally on row 2.
+    .top-nav__inner {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+            "brand source"
+            "links links";
+        row-gap: 0.5rem;
+        padding: 0.625rem 1rem;
+    }
+
+    .top-nav__brand { grid-area: brand; }
+    .top-nav__source { grid-area: source; }
+
+    .top-nav__links {
+        grid-area: links;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -0.25rem;
+        padding: 0 0.25rem;
+
+        // Hide the scrollbar on mobile while keeping the swipe affordance.
+        scrollbar-width: thin;
+
+        .nav-link {
+            white-space: nowrap;
+            font-size: 0.875rem;
+            padding: 0.375rem 0.75rem;
+        }
     }
 }

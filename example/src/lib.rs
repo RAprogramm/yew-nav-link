@@ -55,6 +55,56 @@ extern "C" {
     fn highlight_all() -> Result<(), JsValue>;
 }
 
+/// Writes `text` to the system clipboard. Fire-and-forget — we don't await
+/// the returned `Promise`. On browsers without `navigator.clipboard` the
+/// call is a no-op.
+fn write_to_clipboard(text: &str) {
+    if let Some(window) = web_sys::window() {
+        let _ = window.navigator().clipboard().write_text(text);
+    }
+}
+
+#[derive(Properties, PartialEq)]
+struct CopyButtonProps {
+    text: AttrValue
+}
+
+#[function_component]
+fn CopyButton(props: &CopyButtonProps) -> Html {
+    let copied = use_state(|| false);
+
+    let onclick = {
+        let text = props.text.clone();
+        let copied = copied.clone();
+        Callback::from(move |_: MouseEvent| {
+            write_to_clipboard(&text);
+            copied.set(true);
+            let copied_revert = copied.clone();
+            gloo_timers::callback::Timeout::new(1500, move || {
+                copied_revert.set(false);
+            })
+            .forget();
+        })
+    };
+
+    let (label, class) = if *copied {
+        ("Copied", "demo-card__copy demo-card__copy--success")
+    } else {
+        ("Copy", "demo-card__copy")
+    };
+
+    html! {
+        <button
+            type="button"
+            class={class}
+            onclick={onclick}
+            aria-label="Copy code to clipboard"
+        >
+            { label }
+        </button>
+    }
+}
+
 #[derive(Properties, PartialEq)]
 struct DemoCardProps {
     title:       AttrValue,
@@ -98,9 +148,12 @@ fn DemoCard(props: &DemoCardProps) -> Html {
                 <div class="demo-card__preview" aria-label="Live preview">
                     { for props.children.iter() }
                 </div>
-                <pre class="demo-card__code" aria-label="Source code">
-                    <code class={code_class}>{ props.code.clone() }</code>
-                </pre>
+                <div class="demo-card__code-wrap">
+                    <CopyButton text={props.code.clone()} />
+                    <pre class="demo-card__code" aria-label="Source code">
+                        <code class={code_class}>{ props.code.clone() }</code>
+                    </pre>
+                </div>
             </div>
         </article>
     }
@@ -929,6 +982,7 @@ fn UtilitiesPage() -> Html {
                     code={r#"join_paths("/foo/bar/", "/baz") // -> "/foo/bar/baz"
 join_paths("foo",       "bar")  // -> "foo/bar""#}
                 >
+                    <div class="util-table-wrap">
                     <table class="util-table">
                         <thead>
                             <tr><th>{ "Inputs" }</th><th>{ "Output" }</th></tr>
@@ -944,6 +998,7 @@ join_paths("foo",       "bar")  // -> "foo/bar""#}
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                 </DemoCard>
 
                 <DemoCard
@@ -951,6 +1006,7 @@ join_paths("foo",       "bar")  // -> "foo/bar""#}
                     code={r#"normalize_path("/foo/bar/../baz/") // -> "/foo/baz/"
 normalize_path("/a/./b/c/../d")    // -> "/a/b/d""#}
                 >
+                    <div class="util-table-wrap">
                     <table class="util-table">
                         <thead>
                             <tr><th>{ "Input" }</th><th>{ "Output" }</th></tr>
@@ -966,6 +1022,7 @@ normalize_path("/a/./b/c/../d")    // -> "/a/b/d""#}
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                 </DemoCard>
 
                 <DemoCard
@@ -973,6 +1030,7 @@ normalize_path("/a/./b/c/../d")    // -> "/a/b/d""#}
                     code={r#"is_absolute("https://example.com") // true
 is_absolute("/relative/path")     // false"#}
                 >
+                    <div class="util-table-wrap">
                     <table class="util-table">
                         <thead>
                             <tr><th>{ "URL" }</th><th>{ "Absolute?" }</th></tr>
@@ -988,6 +1046,7 @@ is_absolute("/relative/path")     // false"#}
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                 </DemoCard>
             </PageSection>
 
@@ -1000,6 +1059,7 @@ is_absolute("/relative/path")     // false"#}
 let decoded: Option<String> = urlencoding_decode(&encoded);
 // Some("rust 2024")"#}
                 >
+                    <div class="util-table-wrap">
                     <table class="util-table">
                         <thead>
                             <tr>
@@ -1025,6 +1085,7 @@ let decoded: Option<String> = urlencoding_decode(&encoded);
                             }
                         </tbody>
                     </table>
+                    </div>
                 </DemoCard>
             </PageSection>
 
@@ -1038,6 +1099,7 @@ let decoded: Option<String> = urlencoding_decode(&encoded);
 NavError::invalid_route("...")    // "invalid route: ..."
 NavError::navigation_cancelled()  // "navigation cancelled""#}
                 >
+                    <div class="util-table-wrap">
                     <table class="util-table">
                         <thead>
                             <tr><th>{ "Constructor" }</th><th>{ "Display" }</th></tr>
@@ -1057,6 +1119,7 @@ NavError::navigation_cancelled()  // "navigation cancelled""#}
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                 </DemoCard>
 
                 <DemoCard
