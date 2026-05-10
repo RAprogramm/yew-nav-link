@@ -12,9 +12,22 @@ pub trait BreadcrumbLabelProvider: Send + Sync {
     fn label_for_path(&self, path: &str) -> String;
 }
 
-/// Context type for storing the breadcrumb label provider.
+/// Yew context wrapper around a [`BreadcrumbLabelProvider`].
+///
+/// Place an instance into the tree with `<ContextProvider<…>>` to override
+/// the default path-as-label behaviour of [`use_breadcrumbs`]. Equality is
+/// pointer-equality on the inner [`Rc`], so re-renders happen only when the
+/// concrete provider value changes.
 #[derive(Clone)]
-struct BreadcrumbLabelProviderContext(Rc<dyn BreadcrumbLabelProvider>);
+pub struct BreadcrumbLabelProviderContext(pub Rc<dyn BreadcrumbLabelProvider>);
+
+impl BreadcrumbLabelProviderContext {
+    /// Wraps the given provider so it can be passed to `ContextProvider`.
+    #[must_use]
+    pub fn new(provider: Rc<dyn BreadcrumbLabelProvider>) -> Self {
+        Self(provider)
+    }
+}
 
 impl PartialEq for BreadcrumbLabelProviderContext {
     fn eq(&self, other: &Self) -> bool {

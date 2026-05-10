@@ -149,8 +149,9 @@ pub use components::{
 };
 pub use errors::{NavError, NavResult};
 pub use hooks::{
-    BreadcrumbItem, BreadcrumbLabelProvider, Navigation, use_breadcrumbs, use_is_active,
-    use_is_exact_active, use_is_partial_active, use_navigation, use_query_params, use_route_info
+    BreadcrumbItem, BreadcrumbLabelProvider, BreadcrumbLabelProviderContext, Navigation,
+    use_breadcrumbs, use_is_active, use_is_exact_active, use_is_partial_active, use_navigation,
+    use_query_params, use_route_info
 };
 pub use nav::{NavDivider, NavDividerProps, NavItem, NavItemProps, NavList, NavListProps};
 pub use utils::{is_absolute, join_paths, normalize_path};

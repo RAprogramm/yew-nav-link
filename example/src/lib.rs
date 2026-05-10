@@ -1,9 +1,14 @@
 // SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
+use std::rc::Rc;
+
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
-use yew_nav_link::{Match, NavLink, components::*, hooks::*, nav::*, nav_link, utils::*};
+use yew_nav_link::{
+    BreadcrumbLabelProvider, BreadcrumbLabelProviderContext, Match, NavError, NavLink, NavResult,
+    components::*, hooks::*, nav::*, nav_link, utils::*
+};
 use yew_router::prelude::*;
 
 // ============ ROUTES ============
@@ -37,7 +42,51 @@ enum Route {
     #[at("/nested/second")]
     NestedSecond,
     #[at("/query")]
-    QueryDemo
+    QueryDemo,
+    #[at("/breadcrumbs")]
+    Breadcrumbs,
+    #[at("/breadcrumbs/team/:team")]
+    BreadcrumbsTeam { team: String },
+    #[at("/customization")]
+    Customization,
+    #[at("/errors")]
+    Errors
+}
+
+// ============ BREADCRUMB LABEL PROVIDER ============
+
+/// Concrete provider that turns demo URL paths into human labels.
+///
+/// Demonstrates how end users plug a custom `BreadcrumbLabelProvider` into
+/// the tree via `BreadcrumbLabelProviderContext`. `use_breadcrumbs` reads it
+/// from context and applies it segment by segment.
+struct DemoBreadcrumbLabels;
+
+impl BreadcrumbLabelProvider for DemoBreadcrumbLabels {
+    fn label_for_path(&self, path: &str) -> String {
+        match path {
+            "/" => "Home".into(),
+            "/breadcrumbs" => "Breadcrumbs".into(),
+            "/breadcrumbs/team" => "Team".into(),
+            "/basic" => "Basic links".into(),
+            "/components" => "Components".into(),
+            "/tabs" => "Tabs".into(),
+            "/pagination" => "Pagination".into(),
+            "/dropdown" => "Dropdown".into(),
+            "/hooks" => "Hooks".into(),
+            "/utils" => "Utilities".into(),
+            "/blog" => "Blog".into(),
+            "/nested" => "Nested".into(),
+            "/query" => "Query".into(),
+            "/customization" => "Customization".into(),
+            "/errors" => "Errors".into(),
+            other if other.starts_with("/blog/") => format!("Post {}", &other[6..]),
+            other if other.starts_with("/breadcrumbs/team/") => {
+                format!("Team {}", &other[18..])
+            }
+            other => other.into()
+        }
+    }
 }
 
 // ============ DEMO PAGES ============
@@ -65,6 +114,11 @@ fn Navigation() -> Html {
                     <NavLink<Route> to={Route::Blog} partial=true>{ "Blog" }</NavLink<Route>>
                     <NavLink<Route> to={Route::Nested} partial=true>{ "Nested" }</NavLink<Route>>
                     <NavLink<Route> to={Route::QueryDemo}>{ "Query" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::Breadcrumbs} partial=true>
+                        { "Breadcrumbs" }
+                    </NavLink<Route>>
+                    <NavLink<Route> to={Route::Customization}>{ "Customization" }</NavLink<Route>>
+                    <NavLink<Route> to={Route::Errors}>{ "Errors" }</NavLink<Route>>
                 </div>
             </div>
         </nav>
@@ -1135,6 +1189,49 @@ let is_abs = is_absolute("https://example.com/path");
 let is_rel = is_absolute("/relative/path");
 // false"#}</div>
             </div>
+
+            <div class="section">
+                <h2 class="section-title">{ "urlencoding_encode / urlencoding_decode" }</h2>
+                <p class="section-desc">
+                    { "Percent-encode / decode strings for use in query parameters or URL \
+                       segments. " }<code>{ "urlencoding_decode" }</code>
+                    { " returns " }<code>{ "Option<String>" }</code>
+                    { " (None on malformed input)." }
+                </p>
+
+                <div class="card">
+                    <table>
+                        <tr>
+                            <th>{ "Input" }</th>
+                            <th>{ "Encoded" }</th>
+                            <th>{ "Round-trip" }</th>
+                        </tr>
+                        { for ["hello world", "rust 2024 / wasm", "a&b=c"]
+                            .iter()
+                            .map(|raw| {
+                                let encoded = urlencoding_encode(raw);
+                                let decoded = urlencoding_decode(&encoded)
+                                    .unwrap_or_else(|| "<invalid>".to_string());
+                                html! {
+                                    <tr>
+                                        <td><code>{ raw }</code></td>
+                                        <td><code>{ encoded }</code></td>
+                                        <td><code>{ decoded }</code></td>
+                                    </tr>
+                                }
+                            })
+                        }
+                    </table>
+                </div>
+
+                <div class="code-block mt-1">{r#"use yew_nav_link::utils::{urlencoding_encode, urlencoding_decode};
+
+let encoded = urlencoding_encode("hello world");
+// "hello%20world"
+
+let decoded: Option<String> = urlencoding_decode(&encoded);
+// Some("hello world")"#}</div>
+            </div>
         </div>
     }
 }
@@ -1292,31 +1389,331 @@ let query_params: HashMap<String, String> = use_query_params();
     }
 }
 
+#[component]
+fn BreadcrumbsPage() -> Html {
+    let trail = use_breadcrumbs::<Route>();
+    let teams = vec!["alpha", "bravo", "charlie"];
+
+    html! {
+        <div class="container">
+            <div class="page-header">
+                <h1>{ "Breadcrumbs" }</h1>
+                <p>{ "use_breadcrumbs combined with a custom BreadcrumbLabelProvider" }</p>
+            </div>
+
+            <div class="info-box">
+                <p>
+                    { "The app wraps the router in " }
+                    <code>{ "ContextProvider<BreadcrumbLabelProviderContext>" }</code>
+                    { ". `use_breadcrumbs` reads the provider from context and turns each path \
+                       segment into a human label. Click a team below to see the trail update live." }
+                </p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">{ "Live trail" }</h2>
+                <nav class="breadcrumb-demo" aria-label="Breadcrumb">
+                    { for trail.iter().enumerate().map(|(i, item)| {
+                        let aria = if item.is_active { "page" } else { "" };
+                        html! {
+                            <>
+                                if i > 0 {
+                                    <span class="breadcrumb-separator">{ " / " }</span>
+                                }
+                                <span aria-current={aria}>
+                                    if item.is_active {
+                                        <strong>{ &item.label }</strong>
+                                    } else {
+                                        { &item.label }
+                                    }
+                                </span>
+                            </>
+                        }
+                    }) }
+                </nav>
+                <p class="section-desc mt-1">
+                    { format!("{} item(s) in the trail.", trail.len()) }
+                </p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">{ "Drill into a team" }</h2>
+                <div class="flex-row">
+                    { for teams.into_iter().map(|team| html! {
+                        <NavLink<Route>
+                            to={Route::BreadcrumbsTeam { team: team.to_string() }}
+                        >
+                            <>{ team }</>
+                        </NavLink<Route>>
+                    }) }
+                </div>
+                <p class="section-desc mt-1">
+                    { "The provider rewrites " }<code>{ "/breadcrumbs/team/alpha" }</code>
+                    { " into " }<code>{ "Team alpha" }</code>{ "." }
+                </p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">{ "Provider implementation" }</h2>
+                <div class="code-block">{r#"use std::rc::Rc;
+use yew::prelude::*;
+use yew_nav_link::{BreadcrumbLabelProvider, BreadcrumbLabelProviderContext, use_breadcrumbs};
+
+struct MyLabels;
+
+impl BreadcrumbLabelProvider for MyLabels {
+    fn label_for_path(&self, path: &str) -> String {
+        match path {
+            "/"               => "Home".into(),
+            "/breadcrumbs"    => "Breadcrumbs".into(),
+            p if p.starts_with("/breadcrumbs/team/") => {
+                format!("Team {}", &p[18..])
+            }
+            other => other.into(),
+        }
+    }
+}
+
+#[component]
+fn App() -> Html {
+    let ctx = use_memo((), |()| {
+        BreadcrumbLabelProviderContext::new(Rc::new(MyLabels))
+    });
+    html! {
+        <ContextProvider<BreadcrumbLabelProviderContext> context={(*ctx).clone()}>
+            // ... router and pages
+        </ContextProvider<BreadcrumbLabelProviderContext>>
+    }
+}"#}</div>
+            </div>
+        </div>
+    }
+}
+
+#[component]
+fn CustomizationPage() -> Html {
+    html! {
+        <div class="container">
+            <div class="page-header">
+                <h1>{ "Custom CSS classes" }</h1>
+                <p>{ "Override the default `nav-link` and `active` classes per link" }</p>
+            </div>
+
+            <div class="info-box">
+                <p>
+                    { "NavLink applies " }<code>{ "nav-link" }</code>
+                    { " (or your override) plus " }<code>{ "active" }</code>
+                    { " (or your override) when the route matches. Both props take a " }
+                    <code>{ "&'static str" }</code>{ "." }
+                </p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">{ "Live previews" }</h2>
+                <p class="section-desc">
+                    { "These three links target /customization, so the third one is currently \
+                       active (in your browser's nav style)." }
+                </p>
+                <div class="flex-col gap-1">
+                    <div class="card">
+                        <div class="card-title">{ "Default" }</div>
+                        <NavLink<Route> to={Route::Customization}>
+                            { "Default classes" }
+                        </NavLink<Route>>
+                        <p class="section-desc">
+                            <code>{ "<NavLink to={Route::Customization}>" }</code>
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">{ "Custom base class" }</div>
+                        <NavLink<Route>
+                            to={Route::Customization}
+                            class="status-active"
+                        >
+                            { "Always green" }
+                        </NavLink<Route>>
+                        <p class="section-desc">
+                            <code>{ r#"class="status-active""# }</code>
+                            { " — replaces " }<code>{ "nav-link" }</code>{ "." }
+                        </p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">{ "Custom active class" }</div>
+                        <NavLink<Route>
+                            to={Route::Customization}
+                            active_class="badge badge-blue"
+                        >
+                            { "Active becomes a pill" }
+                        </NavLink<Route>>
+                        <p class="section-desc">
+                            <code>{ r#"active_class="badge badge-blue""# }</code>
+                            { " — only applied while the route matches." }
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">{ "Code" }</h2>
+                <div class="code-block">{r#"// Default classes: nav-link + active
+<NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+
+// Override the base class only.
+<NavLink<Route> to={Route::Home} class="menu-item">
+    { "Home" }
+</NavLink<Route>>
+
+// Override the active class (e.g. Bulma's `is-active`).
+<NavLink<Route> to={Route::Home} active_class="is-active">
+    { "Home" }
+</NavLink<Route>>
+
+// Override both.
+<NavLink<Route>
+    to={Route::Home}
+    class="menu-item"
+    active_class="is-active"
+>
+    { "Home" }
+</NavLink<Route>>"#}</div>
+            </div>
+        </div>
+    }
+}
+
+#[component]
+fn ErrorsPage() -> Html {
+    let route_not_found = NavError::route_not_found();
+    let invalid = NavError::invalid_route("expected `/users/:id`");
+    let cancelled = NavError::navigation_cancelled();
+    let to_demo = parse_route("/components");
+    let to_garbage = parse_route("not a path");
+
+    html! {
+        <div class="container">
+            <div class="page-header">
+                <h1>{ "NavError & NavResult" }</h1>
+                <p>{ "Typed errors for navigation operations" }</p>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">{ "Variants" }</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>{ "Constructor" }</th>
+                            <th>{ "Display" }</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>{ "NavError::route_not_found()" }</code></td>
+                            <td><code>{ format!("{route_not_found}") }</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>{ r#"NavError::invalid_route("…")"# }</code></td>
+                            <td><code>{ format!("{invalid}") }</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>{ "NavError::navigation_cancelled()" }</code></td>
+                            <td><code>{ format!("{cancelled}") }</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">{ "NavResult in practice" }</h2>
+                <p class="section-desc">
+                    { "A toy parser that accepts only paths starting with `/`. Returns a " }
+                    <code>{ "NavResult<&'static str>" }</code>{ "." }
+                </p>
+
+                <div class="card">
+                    <p>
+                        <code>{ "parse_route(\"/components\")" }</code>{ " → " }
+                        { match &to_demo {
+                            Ok(s)  => html! { <span class="status-active">{ format!("Ok({s:?})") }</span> },
+                            Err(e) => html! { <span class="status-inactive">{ format!("Err({e})") }</span> },
+                        } }
+                    </p>
+                    <p class="mt-1">
+                        <code>{ "parse_route(\"not a path\")" }</code>{ " → " }
+                        { match &to_garbage {
+                            Ok(s)  => html! { <span class="status-active">{ format!("Ok({s:?})") }</span> },
+                            Err(e) => html! { <span class="status-inactive">{ format!("Err({e})") }</span> },
+                        } }
+                    </p>
+                </div>
+
+                <div class="code-block mt-1">{r#"use yew_nav_link::{NavError, NavResult};
+
+fn parse_route(input: &str) -> NavResult<&'static str> {
+    if !input.starts_with('/') {
+        return Err(NavError::invalid_route(format!("got {input:?}")));
+    }
+    match input {
+        "/components" => Ok("/components"),
+        "/utils"      => Ok("/utils"),
+        _             => Err(NavError::route_not_found()),
+    }
+}"#}</div>
+            </div>
+        </div>
+    }
+}
+
+fn parse_route(input: &str) -> NavResult<&'static str> {
+    if !input.starts_with('/') {
+        return Err(NavError::invalid_route(format!("got {input:?}")));
+    }
+    match input {
+        "/components" => Ok("/components"),
+        "/utils" => Ok("/utils"),
+        _ => Err(NavError::route_not_found())
+    }
+}
+
 // ============ APP ============
 
 #[component]
 fn App() -> Html {
+    let label_ctx = use_memo((), |()| {
+        BreadcrumbLabelProviderContext::new(Rc::new(DemoBreadcrumbLabels))
+    });
+
     html! {
-        <BrowserRouter>
-            <div class="app-container">
-                <Navigation />
-                <Switch<Route> render={|route: Route| {
-                    match route {
-                        Route::Home => html! { <HomePage/> },
-                        Route::BasicLinks => html! { <BasicLinksPage/> },
-                        Route::Components => html! { <ComponentsPage/> },
-                        Route::TabsDemo => html! { <TabsDemoPage/> },
-                        Route::PaginationDemo => html! { <PaginationDemoPage/> },
-                        Route::DropdownDemo => html! { <DropdownDemoPage/> },
-                        Route::HooksDemo => html! { <HooksDemoPage/> },
-                        Route::UtilsDemo => html! { <UtilsDemoPage/> },
-                        Route::Blog | Route::BlogPost { .. } => html! { <BlogPage/> },
-                        Route::Nested | Route::NestedFirst | Route::NestedSecond => html! { <NestedPage/> },
-                        Route::QueryDemo => html! { <QueryDemoPage/> },
-                    }
-                }} />
-            </div>
-        </BrowserRouter>
+        <ContextProvider<BreadcrumbLabelProviderContext> context={(*label_ctx).clone()}>
+            <BrowserRouter>
+                <div class="app-container">
+                    <Navigation />
+                    <Switch<Route> render={|route: Route| {
+                        match route {
+                            Route::Home => html! { <HomePage/> },
+                            Route::BasicLinks => html! { <BasicLinksPage/> },
+                            Route::Components => html! { <ComponentsPage/> },
+                            Route::TabsDemo => html! { <TabsDemoPage/> },
+                            Route::PaginationDemo => html! { <PaginationDemoPage/> },
+                            Route::DropdownDemo => html! { <DropdownDemoPage/> },
+                            Route::HooksDemo => html! { <HooksDemoPage/> },
+                            Route::UtilsDemo => html! { <UtilsDemoPage/> },
+                            Route::Blog | Route::BlogPost { .. } => html! { <BlogPage/> },
+                            Route::Nested | Route::NestedFirst | Route::NestedSecond => {
+                                html! { <NestedPage/> }
+                            }
+                            Route::QueryDemo => html! { <QueryDemoPage/> },
+                            Route::Breadcrumbs | Route::BreadcrumbsTeam { .. } => {
+                                html! { <BreadcrumbsPage/> }
+                            }
+                            Route::Customization => html! { <CustomizationPage/> },
+                            Route::Errors => html! { <ErrorsPage/> }
+                        }
+                    }} />
+                </div>
+            </BrowserRouter>
+        </ContextProvider<BreadcrumbLabelProviderContext>>
     }
 }
 
