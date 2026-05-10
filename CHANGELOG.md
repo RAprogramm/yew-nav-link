@@ -7,6 +7,91 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-05-10
+
+The breaking-change pass before 1.0. Four small, targeted breakages consumers
+upgrade through in one hop. No new dependencies, MSRV unchanged at 1.95.
+
+### Breaking changes
+
+- `NavError` is now `#[non_exhaustive]`. Foreign-crate exhaustive matches must
+  add a wildcard arm. Internal matches inside `yew-nav-link` are unaffected.
+  This unlocks adding new error variants (timeouts, redirect cancellation,
+  permission denied) under future semver-minor releases without breaking
+  consumers.
+- `BreadcrumbLabelProviderContext`'s tuple field is now private. Construct
+  with `::new(Rc<dyn BreadcrumbLabelProvider>)` and read with `.provider()`.
+  Hiding the field lets the type evolve (provider chain, internal cache,
+  swap `Rc` for `Arc`) without breaking consumers in 1.x.
+- The orphan `src/hooks/navigation/route_params.rs` module is removed. It was
+  declared in CHANGELOG 0.8.0 and the README but never wired into `pub use`,
+  so no consumer could actually reach it. Migration: use yew-router's
+  `use_route::<R>()` with a `Routable` enum whose variants capture the
+  parameters as struct fields.
+- Active `NavLink` emits `aria-current="page"` on its rendered `<a>`. The
+  rendered DOM changes; CSS that targets the active state via `aria-current`
+  will start matching for the first time, while CSS that only targets
+  `.active` continues to work.
+
+### Added
+
+- New `BreadcrumbLabelProviderContext::provider()` accessor returning a clone
+  of the inner `Rc<dyn BreadcrumbLabelProvider>`.
+- `NavLink` now reads the active `Navigator`'s basename to build the rendered
+  `href` so consumers deploying under a project subpath (e.g. GitHub Pages)
+  get the correct URLs without the demo's runtime detection workaround.
+
+### Changed
+
+- `NavLink` is rendered as a manual `<a>` element instead of wrapping
+  `yew_router::Link`. Behaviour matches `Link` for navigation, modifier
+  clicks (Cmd/Ctrl/Shift/Alt) still fall through to the browser, and we now
+  control the rendered attribute set.
+
+### Migration guide
+
+```rust
+// Was — exhaustive match on NavError
+match err {
+    NavError::RouteNotFound       => /* ... */,
+    NavError::InvalidRoute(msg)   => /* ... */,
+    NavError::NavigationCancelled => /* ... */,
+}
+
+// Now — wildcard required because NavError is non_exhaustive
+match err {
+    NavError::RouteNotFound       => /* ... */,
+    NavError::InvalidRoute(msg)   => /* ... */,
+    NavError::NavigationCancelled => /* ... */,
+    _ => /* future variants */,
+}
+```
+
+```rust
+// Was — tuple-construction or .0 field access
+let ctx = BreadcrumbLabelProviderContext(Rc::new(my_provider));
+let inner = ctx.0;
+
+// Now
+let ctx = BreadcrumbLabelProviderContext::new(Rc::new(my_provider));
+let inner = ctx.provider();
+```
+
+`use_route_params()` was advertised but never reachable; its replacement is
+the standard yew-router pattern:
+
+```rust
+#[derive(Routable, Clone, PartialEq)]
+enum Route {
+    #[at("/users/:id")]
+    User { id: String },
+}
+
+if let Some(Route::User { id }) = use_route::<Route>() {
+    // use id
+}
+```
+
 ## [0.9.4] - 2026-05-10
 
 ### Fixed
