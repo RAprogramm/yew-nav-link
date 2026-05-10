@@ -71,21 +71,22 @@ cargo test
 ```
 src/
 ├── lib.rs              # Public API and re-exports
-├── nav_link.rs         # Core NavLink component
+├── active_link/        # NavLink component and match strategies
+│   ├── mod.rs
+│   ├── nav_link.rs
+│   ├── props.rs
+│   └── utils.rs
 ├── nav/                # Primitives: NavList, NavItem, NavDivider
-├── components/         # UI components
-├── hooks/              # Reactive hooks
+├── components/         # UI components (badges, dropdowns, tabs, pagination, …)
+├── hooks/              # Reactive hooks (route info, navigation, query params)
 ├── utils/              # Path, URL, keyboard utilities
 ├── attrs.rs            # Attribute builders
-├── errors.rs           # Error types
-└── macros/             # Declarative macros (feature-gated)
+└── errors.rs           # Error types
 ```
 
 ## Feature Flags
 
-| Feature | Description |
-|---------|-------------|
-| `macros` | Enables declarative macros (`nav_link!`) |
+`yew-nav-link` has no feature flags.
 
 ## Questions?
 
