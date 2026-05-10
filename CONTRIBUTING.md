@@ -1,93 +1,181 @@
+<!--
+SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+SPDX-License-Identifier: MIT
+-->
+
 # Contributing
 
-Thank you for your interest in contributing to `yew-nav-link`. This document outlines the workflow and standards for all contributions.
+Thank you for your interest in contributing to `yew-nav-link`. This document
+walks you from a fresh clone all the way to a merged pull request. Anything
+that touches the public API also touches `docs/REQUIREMENTS.md` and
+`docs/ARCHITECTURE.md` — keep all three in sync.
+
+## Code of conduct
+
+Participation is governed by [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
+Report unacceptable behaviour via the contact in that file.
+
+## Dev environment
+
+You need:
+
+- Rust **stable 1.95+** plus a `nightly` toolchain (used only for `rustfmt`):
+  ```bash
+  rustup default stable
+  rustup toolchain install nightly --component rustfmt
+  rustup target add wasm32-unknown-unknown
+  ```
+- [`trunk`](https://trunkrs.dev/) for the demo crate:
+  ```bash
+  cargo install --locked trunk
+  ```
+- The CI tooling, mirrored locally so you can reproduce the pipeline:
+  ```bash
+  cargo install --locked cargo-deny cargo-audit cargo-llvm-cov cargo-nextest \
+                          git-cliff
+  pip install --user reuse
+  ```
+
+The pre-commit hook in `.hooks/pre-commit` invokes most of these, so a single
+`git commit` runs `fmt --check`, `clippy --pedantic --nursery`,
+`cargo deny check`, `cargo audit`, and `actionlint`.
+
+To wire it in once per clone:
+
+```bash
+git config core.hooksPath .hooks
+```
+
+## Common tasks
+
+| Task | Command |
+|---|---|
+| Build | `cargo build --workspace --all-features` |
+| Format check | `cargo +nightly fmt --all -- --check` |
+| Lint | `cargo clippy --workspace --all-targets --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery` |
+| Tests | `cargo nextest run --all-features` |
+| Doc tests | `cargo test --doc --all-features` |
+| Coverage report | `cargo llvm-cov --all-features --html` |
+| Build the demo | `cd example && trunk build --release` |
+| Serve the demo | `cd example && trunk serve` then open <http://127.0.0.1:3000> |
+| Generate CHANGELOG preview | `git-cliff --unreleased` |
+| Verify SPDX headers | `reuse lint` |
 
 ## Workflow
 
-### 1. Create a Branch
+### 1. Open or pick an issue
 
-Branch names must match the issue number:
+- Bugs: use the [bug report template][bug].
+- Features: use the [feature request template][feature].
+- Security: **do not** open a public issue — see [`SECURITY.md`](SECURITY.md).
+- Questions: GitHub Discussions or Issues with the `question` label.
+- Browse [`good first issue`][gfi] for bounded entry points.
+
+[bug]: https://github.com/RAprogramm/yew-nav-link/issues/new?template=bug.yml
+[feature]: https://github.com/RAprogramm/yew-nav-link/issues/new?template=feature.yml
+[gfi]: https://github.com/RAprogramm/yew-nav-link/issues?q=is%3Aopen+label%3A%22good+first+issue%22
+
+### 2. Create a branch
+
+Branch names match the issue number:
 
 ```bash
 git checkout -b 123
 ```
 
-### 2. Commit Format
+### 3. Commit format
 
 ```bash
 git commit -m "#123 feat: add custom class support"
 ```
 
-Format: `#<issue> <type>: <description>`
+| Type | Use for | Triggers in CHANGELOG |
+|---|---|---|
+| `feat` | New public API | yes — `Features` |
+| `fix` | Bug fix | yes — `Bug Fixes` |
+| `docs` | Markdown / rustdoc only | yes — `Documentation` |
+| `refactor` | Internal restructuring, no behaviour change | yes — `Refactoring` |
+| `ci` | CI / release pipeline | yes — `CI` |
+| `test` | Test additions or modifications | no |
+| `chore` | Maintenance, dependency bumps, tooling | no |
 
-| Type | Description |
-|------|-------------|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `docs` | Documentation only |
-| `refactor` | Code restructuring, no behavior change |
-| `test` | Test additions or modifications |
-| `chore` | Maintenance, dependencies, tooling |
+`git-cliff` reads these prefixes (`cliff.toml`).
 
-### 3. Create a Pull Request
+### 4. Open a pull request
 
-- **Title**: Issue number only (e.g. `123`)
-- **Description**: Must include `Closes #123`
+- **Title:** issue number only (e.g. `123`).
+- **Body:** must include `Closes #123` so the issue auto-closes on merge.
+- **Reviews:** there is no required-reviewer rule on `main`, but every PR
+  must pass the `CI Success` aggregate status check before merge — that's
+  enforced by branch protection.
+- **Merge style:** rebase. We keep `main` linear; force-pushes to `main`
+  and branch deletion are blocked.
 
-## Pre-commit Checklist
-
-Run these commands before pushing:
-
-```bash
-cargo +nightly fmt
-cargo clippy -- -D warnings
-cargo test
-```
-
-## CI Pipeline
-
-| Job | Command | Requirement |
-|-----|---------|-------------|
-| Format | `cargo +nightly fmt --check` | Must pass |
-| Lint | `cargo clippy -- -D warnings` | Must pass |
-| Test | `cargo nextest run --workspace --all-features` | Must pass |
-| Coverage | `cargo llvm-cov` | 95%+ target |
-| Audit | `cargo audit` | Informational |
-| Package | `cargo package --locked` | Must pass |
-
-## Code Standards
+## Code standards
 
 | Rule | Requirement |
-|------|-------------|
-| No `unwrap()` / `expect()` | Use `?`, `.ok_or()`, or explicit error handling |
-| No unnecessary `clone()` | Pass references where possible |
-| `::` only in imports | `use foo::bar` is valid; `foo::bar()` in paths is not |
-| Doc comments | All public items must have `///` documentation |
-| Max line width | 99 characters |
-| Edition | Rust 2024 |
+|---|---|
+| `unsafe` | Forbidden in `src/` and `tests/`. |
+| `unwrap()` / `expect()` | Forbidden outside `#[cfg(test)]`. Use `?`, `Option::map_or_else`, `unwrap_or`. |
+| Unnecessary `clone()` | Avoid. Pass references. |
+| Public items | Every `pub` item carries a `///` doc comment, plus a doctest where it makes sense. |
+| Line width | 99 characters (`max_width` in `.rustfmt.toml`). |
+| Trailing commas | Never (`trailing_comma = "Never"` in `.rustfmt.toml`). |
+| Edition | Rust 2024. |
+| MSRV | 1.95. |
 
-## Project Structure
+## CI overview
 
-```
-src/
-├── lib.rs              # Public API and re-exports
-├── active_link/        # NavLink component and match strategies
-│   ├── mod.rs
-│   ├── nav_link.rs
-│   ├── props.rs
-│   └── utils.rs
-├── nav/                # Primitives: NavList, NavItem, NavDivider
-├── components/         # UI components (badges, dropdowns, tabs, pagination, …)
-├── hooks/              # Reactive hooks (route info, navigation, query params)
-├── utils/              # Path, URL, keyboard utilities
-├── attrs.rs            # Attribute builders
-└── errors.rs           # Error types
-```
+`.github/workflows/ci.yml` runs the following jobs on every PR. The
+`ci-success` aggregate must come back green for branch protection to allow
+merge.
 
-## Feature Flags
+| Job | Required | Notes |
+|---|---|---|
+| `Extract MSRV` | yes | reads `rust-version` from `Cargo.toml` |
+| `Check` | yes | matrix: 3 toolchains × 3 OSes |
+| `Format` | yes | nightly `rustfmt --check` |
+| `Lint (clippy)` | yes | pedantic + nursery |
+| `Documentation` | yes | `cargo doc --all-features` with `RUSTDOCFLAGS=-D warnings` |
+| `no-std` | yes | informational stub (Yew is std-only) |
+| `Security` | yes | `cargo deny check` + `cargo audit` |
+| `REUSE Compliance` | yes | `reuse lint` |
+| `Test` | yes (skip allowed) | `cargo nextest` + doctests |
+| `Coverage` | yes (skip allowed) | `cargo llvm-cov` → Codecov upload |
+| `Benchmarks` | yes (skip allowed) | `cargo bench --no-run` |
+| `Example WASM build` | yes | `trunk build --release` against `example/` |
+| `Lighthouse` | yes | thresholds: perf 0.85, a11y 0.9, best-practices 0.9, SEO 0.9 |
+| `Actionlint` | yes | lints all workflow YAML |
+| `Changelog` | yes (skip allowed) | runs `git-cliff` |
+| `Release` | yes (skip allowed) | publishes on push to `main` when `Cargo.toml` version changes |
 
-`yew-nav-link` has no feature flags.
+A separate `.github/workflows/pages.yml` deploys the demo to
+<https://raprogramm.github.io/yew-nav-link/> on push to `main`.
+
+## Releasing
+
+The bump → publish dance is documented in [`RELEASE.md`](RELEASE.md). In
+short: edit `Cargo.toml` `version`, prepend a `[X.Y.Z] - YYYY-MM-DD`
+section to `CHANGELOG.md`, merge to `main`, and the release job pushes to
+crates.io and creates the GitHub release.
+
+## Recognition
+
+All contributors are listed in [`AUTHORS.md`](AUTHORS.md). When your first
+PR merges, add yourself to that list in a follow-up patch (or ask the
+maintainer to do it).
+
+## References
+
+- [`README.md`](README.md) — overview and quick start.
+- [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)
+- [`SECURITY.md`](SECURITY.md)
+- [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) — formal functional and non-functional requirements.
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — design rationale.
+- [`docs/ROADMAP.md`](docs/ROADMAP.md) — trajectory toward 0.10 and 1.0.
 
 ## Questions?
 
-Open an issue or start a discussion in the [repository](https://github.com/RAprogramm/yew-nav-link).
+Open a [discussion][discussions] or an issue with the `question` label.
+
+[discussions]: https://github.com/RAprogramm/yew-nav-link/discussions
