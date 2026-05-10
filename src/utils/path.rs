@@ -11,7 +11,8 @@
 //! ```rust
 //! use yew_nav_link::{is_absolute, join_paths, normalize_path};
 //!
-//! assert_eq!(normalize_path("/docs//api/"), "/docs/api");
+//! assert_eq!(normalize_path("/docs//api/"), "/docs/api/");
+//! assert_eq!(normalize_path("/foo/bar/../baz"), "/foo/baz");
 //! assert!(is_absolute("/docs"));
 //! assert_eq!(join_paths("/base", "child"), "/base/child");
 //! ```
@@ -20,35 +21,68 @@
 //!
 //! | Function | Signature | Description |
 //! |----------|-----------|-------------|
-//! | `normalize_path` | `(path: &str) -> String` | Collapse double slashes, trim trailing `/` |
+//! | `normalize_path` | `(path: &str) -> String` | Collapse `//`, resolve `.`/`..` without escaping root |
 //! | `is_absolute` | `(path: &str) -> bool` | Check if path starts with `/` |
 //! | `join_paths` | `(base: &str, path: &str) -> String` | Join or replace base path |
 
-/// Normalizes a path by collapsing duplicate slashes and removing trailing
-/// slashes.
+/// Normalizes a path: collapse duplicate separators and resolve `.` and
+/// `..` segments without escaping the root.
 ///
-/// Preserves the root `/` path.
+/// - Preserves the leading `/` for absolute paths and a single trailing `/` if
+///   the input ended with one.
+/// - `..` segments pop the previous component; at the root they are a no-op
+///   (the path cannot escape `/`).
+/// - `.` segments are dropped.
+/// - The bare `/` and `""` inputs round-trip unchanged.
+///
+/// # Examples
+///
+/// ```
+/// use yew_nav_link::normalize_path;
+///
+/// assert_eq!(normalize_path("/docs//api/"), "/docs/api/");
+/// assert_eq!(normalize_path("/foo/bar/../baz/"), "/foo/baz/");
+/// assert_eq!(normalize_path("/a/./b/c/../d"), "/a/b/d");
+/// assert_eq!(normalize_path("/../foo"), "/foo");
+/// assert_eq!(normalize_path("/"), "/");
+/// ```
 #[must_use]
 pub fn normalize_path(path: &str) -> String {
-    let mut result = String::with_capacity(path.len());
-    let mut prev_was_slash = false;
+    if path.is_empty() {
+        return String::new();
+    }
 
-    for ch in path.chars() {
-        if ch == '/' {
-            if !prev_was_slash {
-                result.push(ch);
-                prev_was_slash = true;
+    let absolute = path.starts_with('/');
+    let trailing_slash = path.len() > 1 && path.ends_with('/');
+
+    let mut stack: Vec<&str> = Vec::new();
+    for segment in path.split('/').filter(|s| !s.is_empty()) {
+        match segment {
+            "." => {}
+            ".." => {
+                stack.pop();
             }
-        } else {
-            result.push(ch);
-            prev_was_slash = false;
+            other => stack.push(other)
         }
     }
 
-    if result.len() > 1 && result.ends_with('/') {
-        result.pop();
+    if stack.is_empty() {
+        return if absolute {
+            "/".to_string()
+        } else {
+            String::new()
+        };
     }
 
+    let body = stack.join("/");
+    let mut result = String::with_capacity(body.len() + 2);
+    if absolute {
+        result.push('/');
+    }
+    result.push_str(&body);
+    if trailing_slash {
+        result.push('/');
+    }
     result
 }
 
@@ -77,15 +111,46 @@ mod tests {
     use super::*;
 
     #[test]
-    fn normalize_removes_double_slashes() {
+    fn normalize_collapses_double_slashes() {
         assert_eq!(normalize_path("/docs//api"), "/docs/api");
         assert_eq!(normalize_path("a//b///c"), "a/b/c");
     }
 
     #[test]
-    fn normalize_removes_trailing_slash() {
-        assert_eq!(normalize_path("/docs/"), "/docs");
+    fn normalize_preserves_trailing_slash_for_directories() {
+        assert_eq!(normalize_path("/docs/"), "/docs/");
         assert_eq!(normalize_path("/"), "/");
+    }
+
+    #[test]
+    fn normalize_resolves_double_dot() {
+        assert_eq!(normalize_path("/foo/bar/../baz"), "/foo/baz");
+        assert_eq!(normalize_path("/foo/bar/../baz/"), "/foo/baz/");
+        assert_eq!(normalize_path("/a/b/c/../../d"), "/a/d");
+    }
+
+    #[test]
+    fn normalize_resolves_single_dot() {
+        assert_eq!(normalize_path("/a/./b/c/../d"), "/a/b/d");
+        assert_eq!(normalize_path("./foo/./bar"), "foo/bar");
+    }
+
+    #[test]
+    fn normalize_does_not_escape_root() {
+        assert_eq!(normalize_path("/../foo"), "/foo");
+        assert_eq!(normalize_path("/../../foo"), "/foo");
+        assert_eq!(normalize_path("/.."), "/");
+    }
+
+    #[test]
+    fn normalize_handles_empty_input() {
+        assert_eq!(normalize_path(""), "");
+    }
+
+    #[test]
+    fn normalize_relative_paths() {
+        assert_eq!(normalize_path("foo/../bar"), "bar");
+        assert_eq!(normalize_path("foo/./bar"), "foo/bar");
     }
 
     #[test]
