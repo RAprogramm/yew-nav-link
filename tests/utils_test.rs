@@ -10,20 +10,17 @@ fn normalize_removes_double_slashes() {
 }
 
 #[test]
-fn normalize_removes_trailing_slash() {
-    assert_eq!(normalize_path("/docs/"), "/docs");
+fn normalize_preserves_trailing_slash() {
+    assert_eq!(normalize_path("/docs/"), "/docs/");
     assert_eq!(normalize_path("/"), "/");
     assert_eq!(normalize_path(""), "");
 }
 
 #[test]
-fn normalize_preserves_single_slash() {
-    assert_eq!(normalize_path("/"), "/");
-}
-
-#[test]
-fn normalize_handles_empty_string() {
-    assert_eq!(normalize_path(""), "");
+fn normalize_resolves_dot_segments() {
+    assert_eq!(normalize_path("/foo/bar/../baz"), "/foo/baz");
+    assert_eq!(normalize_path("/a/./b/c/../d"), "/a/b/d");
+    assert_eq!(normalize_path("/../foo"), "/foo");
 }
 
 #[test]
