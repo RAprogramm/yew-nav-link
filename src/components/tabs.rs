@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+// SPDX-License-Identifier: MIT
+
 //! # `NavTabs`
 //!
 //! Tab navigation container that wraps [`NavTab`](super::NavTab) items.

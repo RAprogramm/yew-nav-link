@@ -1,3 +1,8 @@
+// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+// SPDX-License-Identifier: MIT
+
+use std::fmt::{Display, Formatter};
+
 /// Path matching strategy for `NavLink` active state detection.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 #[must_use]
@@ -9,8 +14,8 @@ pub enum Match {
     Partial
 }
 
-impl std::fmt::Display for Match {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl Display for Match {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Exact => write!(f, "exact"),
             Self::Partial => write!(f, "partial")

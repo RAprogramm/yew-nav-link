@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+// SPDX-License-Identifier: MIT
+
 //! # `Pagination Page Generation`
 //!
 //! Internal logic for computing which page numbers to display in a
@@ -57,7 +60,9 @@ pub fn generate_pages(current: u32, total: u32, siblings: u32) -> Vec<u32> {
 
     // Add middle pages
     for page in start..=end {
-        pages.push(u32::try_from(page).expect("reason"));
+        // Safe: page is bounded by `total: u32`
+        #[allow(clippy::cast_possible_truncation)]
+        pages.push(page as u32);
     }
 
     // Add ellipsis before last if needed (end < total_pages - 2 means we need

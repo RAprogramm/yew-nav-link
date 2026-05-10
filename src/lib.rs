@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+// SPDX-License-Identifier: MIT
+
 //! # yew-nav-link
 //!
 //! Navigation link component for [Yew](https://yew.rs) with automatic active

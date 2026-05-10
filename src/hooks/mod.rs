@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+// SPDX-License-Identifier: MIT
+
 //! Reactive hooks for navigation state.
 //!
 //! Provides Yew hooks for reading route information, checking active state,

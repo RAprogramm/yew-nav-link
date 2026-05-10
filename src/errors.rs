@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+// SPDX-License-Identifier: MIT
+
 //! # NavError
 //!
 //! Error types returned by navigation operations. Use [`NavResult<T>`] as a
@@ -25,6 +28,11 @@
 //! | `InvalidRoute(String)` | Route string could not be parsed |
 //! | `NavigationCancelled` | Navigation was cancelled |
 
+use std::{
+    error::Error,
+    fmt::{Display, Formatter}
+};
+
 /// Errors that can occur during navigation operations.
 ///
 /// Returned by navigation hooks and helper functions when something
@@ -40,8 +48,8 @@ pub enum NavError {
     NavigationCancelled
 }
 
-impl std::fmt::Display for NavError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl Display for NavError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::RouteNotFound => write!(f, "route not found"),
             Self::InvalidRoute(msg) => write!(f, "invalid route: {msg}"),
@@ -50,7 +58,7 @@ impl std::fmt::Display for NavError {
     }
 }
 
-impl std::error::Error for NavError {}
+impl Error for NavError {}
 
 impl NavError {
     /// Creates a [`NavError::RouteNotFound`] error.
