@@ -28,64 +28,65 @@
 ///
 /// A `Vec<u32>` of page numbers. `0` entries represent ellipsis (`...`).
 pub fn generate_pages(current: u32, total: u32, siblings: u32) -> Vec<u32> {
-    if total <= 1 {
+    if total == 0 {
+        return Vec::new();
+    }
+    if total == 1 {
         return vec![1];
     }
 
-    let total_pages = total as usize;
-    let current = current as usize;
+    // Clamp current into [1, total] so out-of-range inputs don't drift the
+    // window math; clamp siblings to (total - 1) so it can never push the
+    // window past the available page count.
+    let current = current.clamp(1, total);
+    let siblings = siblings.min(total.saturating_sub(1));
 
-    let start = if current > (siblings as usize) + 2 {
-        current - siblings as usize
+    // All arithmetic from here on operates on u32 with saturating helpers so
+    // that adversarial inputs (e.g. siblings = u32::MAX on wasm32 where
+    // usize is 32 bits) cannot overflow.
+    let start = if current > siblings.saturating_add(2) {
+        current.saturating_sub(siblings)
     } else {
         2
     };
 
-    let end = if current + (siblings as usize) < total_pages - 1 {
-        current + siblings as usize
+    let end = if current.saturating_add(siblings) < total.saturating_sub(1) {
+        current.saturating_add(siblings)
     } else {
-        total_pages - 1
+        total.saturating_sub(1)
     };
 
-    let mut pages = Vec::new();
-
-    // Always include first page
+    let mut pages: Vec<u32> = Vec::new();
     pages.push(1);
 
-    // Add ellipsis after first if needed (start > 3 means we need ellipsis after
-    // page 1)
+    // Ellipsis between first page and the window's start.
     if start > 3 {
-        pages.push(0); // ellipsis
+        pages.push(0);
     }
 
-    // Add middle pages
-    for page in start..=end {
-        // Safe: page is bounded by `total: u32`
-        #[allow(clippy::cast_possible_truncation)]
-        pages.push(page as u32);
-    }
-
-    // Add ellipsis before last if needed (end < total_pages - 2 means we need
-    // ellipsis before last page)
-    if end < total_pages - 2 {
-        pages.push(0); // ellipsis
-    }
-
-    // Always include last page if more than 1 page
-    if total > 1 {
-        pages.push(total);
-    }
-
-    // Remove duplicates (e.g., when start=2, we already have 1, don't add 2 twice)
-    let mut result: Vec<u32> = Vec::new();
-    let mut prev: Option<u32> = None;
-    for p in pages {
-        if Some(p) != prev {
-            result.push(p);
-            prev = Some(p);
+    // Middle window. `end >= start` is invariant by the clamps above except
+    // when `end < 2`, which means there is no middle window at all.
+    if end >= start {
+        for page in start..=end {
+            pages.push(page);
         }
     }
 
+    // Ellipsis between the window's end and the last page.
+    if end < total.saturating_sub(2) {
+        pages.push(0);
+    }
+
+    pages.push(total);
+
+    // Collapse consecutive duplicates (e.g. start = 2 already covered by the
+    // pushed `1`, or start == end == total when current is the last page).
+    let mut result: Vec<u32> = Vec::with_capacity(pages.len());
+    for p in pages {
+        if result.last().copied() != Some(p) {
+            result.push(p);
+        }
+    }
     result
 }
 
@@ -233,5 +234,41 @@ mod tests {
         let pages = generate_pages(3, 5, 10);
         // Expected: [1,2,3,4,5]
         assert_eq!(pages, vec![1, 2, 3, 4, 5]);
+    }
+
+    // ── Boundary cases ─────────────────────────────────────────────────────
+
+    #[test]
+    fn generate_pages_total_zero_returns_empty() {
+        // Zero pages → empty list, no synthesised "1".
+        assert!(generate_pages(1, 0, 0).is_empty());
+        assert!(generate_pages(5, 0, 3).is_empty());
+    }
+
+    #[test]
+    fn generate_pages_current_above_total_is_clamped() {
+        // current > total should not push the window past the last page.
+        let pages = generate_pages(99, 10, 1);
+        assert_eq!(pages, vec![1, 0, 9, 10]);
+    }
+
+    #[test]
+    fn generate_pages_current_zero_is_clamped() {
+        // current = 0 is treated as page 1 (1-indexed contract).
+        let pages = generate_pages(0, 10, 1);
+        assert_eq!(pages, vec![1, 2, 0, 10]);
+    }
+
+    #[test]
+    fn generate_pages_siblings_max_does_not_overflow() {
+        // siblings = u32::MAX would overflow `current as usize + siblings as
+        // usize` on wasm32 (32-bit usize) without saturating arithmetic.
+        // We only assert the call does not panic and the output is sane.
+        let pages = generate_pages(5, 10, u32::MAX);
+        assert!(pages.first() == Some(&1));
+        assert!(pages.last() == Some(&10));
+        // When siblings >= total - 1, every page from 2..=total-1 is in
+        // the window — no ellipses anywhere.
+        assert_eq!(pages, vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
     }
 }

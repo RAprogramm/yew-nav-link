@@ -29,7 +29,42 @@ pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R
     }
 }
 
-/// Creates a `NavLink` with the specified match mode.
+/// Creates a `NavLink` with the specified match mode for plain-text labels.
+///
+/// `match_mode` selects between exact and prefix matching:
+///
+/// - [`Match::Exact`]: the link is active only when the current route equals
+///   `to`.
+/// - [`Match::Partial`]: the link stays active for any nested route whose path
+///   begins with `to.to_path()`.
+///
+/// # Examples
+///
+/// ```rust
+/// use yew::prelude::*;
+/// use yew_nav_link::{Match, nav_link};
+/// use yew_router::prelude::*;
+///
+/// #[derive(Clone, PartialEq, Debug, Routable)]
+/// enum Route {
+///     #[at("/")]
+///     Home,
+///     #[at("/docs")]
+///     Docs,
+///     #[at("/docs/api")]
+///     DocsApi
+/// }
+///
+/// #[function_component]
+/// fn Menu() -> Html {
+///     html! {
+///         <nav>
+///             { nav_link(Route::Home, "Home", Match::Exact) }
+///             { nav_link(Route::Docs, "Docs", Match::Partial) }
+///         </nav>
+///     }
+/// }
+/// ```
 pub fn nav_link<R: Routable + PartialEq + Clone + 'static>(
     to: R,
     children: &str,
