@@ -63,6 +63,10 @@ struct DemoCardProps {
     /// Optional language hint passed to highlight.js (defaults to `rust`).
     #[prop_or(AttrValue::Static("rust"))]
     language:    AttrValue,
+    /// When `true` the card stacks preview-then-code so wide components
+    /// (tabs, pagination, dropdown menus) get full card width.
+    #[prop_or(false)]
+    wide:        bool,
     code:        AttrValue,
     children:    Children
 }
@@ -76,9 +80,14 @@ fn DemoCard(props: &DemoCardProps) -> Html {
     });
 
     let code_class = format!("language-{}", props.language);
+    let card_class = if props.wide {
+        "demo-card demo-card--wide"
+    } else {
+        "demo-card"
+    };
 
     html! {
-        <article class="demo-card">
+        <article class={card_class}>
             <header class="demo-card__head">
                 <h3 class="demo-card__title">{ props.title.clone() }</h3>
                 if let Some(desc) = &props.description {
@@ -557,30 +566,41 @@ fn ComponentsPage() -> Html {
             <PageSection title="Dropdown">
                 <DemoCard
                     title="Self-managed open/close"
-                    description="NavDropdown owns its own boolean state — no parent wiring required."
-                    code={r#"<NavDropdown toggle_text="Account">
-    <NavDropdownItem>
-        <NavLink<Route> to={Route::Home}>{ "Profile"  }</NavLink<Route>>
-    </NavDropdownItem>
-    <NavDropdownItem>
-        <NavLink<Route> to={Route::Hooks}>{ "Hooks demo" }</NavLink<Route>>
-    </NavDropdownItem>
-    <NavDropdownDivider />
-    <NavDropdownItem disabled=true>{ "Sign out (disabled)" }</NavDropdownItem>
-</NavDropdown>"#}
+                    description="NavDropdown owns its own boolean state — no parent wiring required. Wrap it in NavList so the rendered <li> sits inside a proper <ul>."
+                    wide=true
+                    code={r#"<NavList>
+    <NavDropdown toggle_text="Account">
+        <NavDropdownItem>
+            <NavLink<Route> to={Route::Home}>{ "Profile"  }</NavLink<Route>>
+        </NavDropdownItem>
+        <NavDropdownItem>
+            <NavLink<Route> to={Route::Hooks}>{ "Hooks demo" }</NavLink<Route>>
+        </NavDropdownItem>
+        <NavDropdownDivider />
+        <NavDropdownItem disabled=true>
+            { "Sign out (disabled)" }
+        </NavDropdownItem>
+    </NavDropdown>
+</NavList>"#}
                 >
-                    <NavDropdown toggle_text="Account">
-                        <NavDropdownItem>
-                            <NavLink<Route> to={Route::Home}>{ "Profile" }</NavLink<Route>>
-                        </NavDropdownItem>
-                        <NavDropdownItem>
-                            <NavLink<Route> to={Route::Hooks}>{ "Hooks demo" }</NavLink<Route>>
-                        </NavDropdownItem>
-                        <NavDropdownDivider />
-                        <NavDropdownItem disabled=true>
-                            { "Sign out (disabled)" }
-                        </NavDropdownItem>
-                    </NavDropdown>
+                    <NavList>
+                        <NavDropdown toggle_text="Account">
+                            <NavDropdownItem>
+                                <NavLink<Route> to={Route::Home}>
+                                    { "Profile" }
+                                </NavLink<Route>>
+                            </NavDropdownItem>
+                            <NavDropdownItem>
+                                <NavLink<Route> to={Route::Hooks}>
+                                    { "Hooks demo" }
+                                </NavLink<Route>>
+                            </NavDropdownItem>
+                            <NavDropdownDivider />
+                            <NavDropdownItem disabled=true>
+                                { "Sign out (disabled)" }
+                            </NavDropdownItem>
+                        </NavDropdown>
+                    </NavList>
                 </DemoCard>
             </PageSection>
 
@@ -588,6 +608,7 @@ fn ComponentsPage() -> Html {
                 <DemoCard
                     title="Controlled tabs"
                     description="Active tab and panel visibility are driven by use_state — yew-nav-link only renders, you decide what's selected."
+                    wide=true
                     code={r#"let active = use_state(|| 0u32);
 
 html! {
@@ -648,6 +669,7 @@ html! {
                         "Current page: {}. The component renders prev/next, first/last, sibling pages, and ellipses.",
                         *current_page
                     ))}
+                    wide=true
                     code={r#"let current_page = use_state(|| 1u32);
 let on_page_change = {
     let current_page = current_page.clone();
