@@ -30,9 +30,13 @@
         --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.55);
     }
 
-    .nav-badge {
-        &--warning { color: #fde68a; background: rgba(251, 191, 36, 0.18); }
+    // Tinted variant fixes for legibility on dark cards.
+    .nav-badge-warning {
+        color: #fde68a;
+        background: rgba(251, 191, 36, 0.18);
     }
 
-    .is-active { background: #14b8a6; }
+    .is-active {
+        background: #14b8a6;
+    }
 }

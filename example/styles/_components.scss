@@ -1,7 +1,10 @@
 // SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
-// ── DemoCard: title, description, side-by-side preview + code ──
+// ─────────────────────────────────────────────────────────────────
+// DemoCard: title, description, side-by-side preview + code
+// ─────────────────────────────────────────────────────────────────
+
 .demo-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
@@ -69,7 +72,10 @@
     }
 }
 
-// ── Topic grid (Home page) ──────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// Topic grid (Home page)
+// ─────────────────────────────────────────────────────────────────
+
 .topic-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -110,7 +116,10 @@
     }
 }
 
-// ── Reusable preview helpers ────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// Reusable preview helpers
+// ─────────────────────────────────────────────────────────────────
+
 .inline-row {
     display: inline-flex;
     flex-wrap: wrap;
@@ -159,11 +168,17 @@
     font-size: 0.9375rem;
     font-weight: 500;
     cursor: pointer;
-    transition: border-color 0.15s ease, background-color 0.15s ease;
+    transition: border-color 0.15s ease, background-color 0.15s ease,
+        color 0.15s ease;
 
     &:hover {
         border-color: var(--primary);
         background: var(--primary-soft);
+        color: var(--primary);
+    }
+
+    &:active {
+        transform: translateY(1px);
     }
 }
 
@@ -226,7 +241,10 @@
     color: var(--text-muted);
 }
 
-// ── Util tables (Utilities page) ────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// Util tables (Utilities page)
+// ─────────────────────────────────────────────────────────────────
+
 .util-table {
     width: 100%;
     border-collapse: collapse;
@@ -255,7 +273,10 @@
     }
 }
 
-// ── Breadcrumb trail ────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// Breadcrumb trail
+// ─────────────────────────────────────────────────────────────────
+
 .trail {
     display: flex;
     flex-wrap: wrap;
@@ -273,7 +294,10 @@
     }
 }
 
-// ── Inline custom link styles used by NavLink class/active_class demos
+// ─────────────────────────────────────────────────────────────────
+// Custom NavLink class / active_class demos
+// ─────────────────────────────────────────────────────────────────
+
 .my-link {
     text-decoration: underline;
     color: var(--primary-dark);
@@ -308,7 +332,11 @@
     }
 }
 
-// ── Library components: defaults ─────────────────────────────────
+// ═════════════════════════════════════════════════════════════════
+// Library components
+// ═════════════════════════════════════════════════════════════════
+
+// NavLink default skin (consumers can override; we provide one).
 .nav-link {
     color: var(--primary);
     text-decoration: none;
@@ -319,6 +347,7 @@
     }
 }
 
+// NavList / NavItem / NavDivider / NavHeader / NavText
 .nav-list {
     background: var(--bg-card);
     padding: 0.5rem;
@@ -326,11 +355,13 @@
     border: 1px solid var(--border);
     width: 100%;
     max-width: 260px;
+    list-style: none;
 }
 
 .nav-item {
     padding: 0.375rem 0.5rem;
     border-radius: var(--radius-sm);
+    list-style: none;
 
     &:hover {
         background: var(--bg-soft);
@@ -341,24 +372,46 @@
     border: 0;
     border-top: 1px solid var(--border);
     margin: 0.5rem 0;
+    list-style: none;
+}
+
+.nav-divider-vertical {
+    border: 0;
+    border-left: 1px solid var(--border);
+    height: 1.25rem;
+    margin: 0 0.5rem;
+}
+
+.nav-divider-text {
+    font-size: 0.75rem;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.125rem 0.5rem;
 }
 
 .nav-header {
+    list-style: none;
+    padding: 0.375rem 0.5rem 0.125rem;
+}
+
+.nav-header-text {
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    padding: 0.375rem 0.5rem 0.125rem;
 }
 
 .nav-text {
     color: var(--text-muted);
     font-size: 0.875rem;
     padding: 0.25rem 0.5rem;
+    list-style: none;
 }
 
-// NavBadge
+// NavBadge — actual library classes are nav-badge, nav-badge-pill,
+// and nav-badge-{primary|success|warning|danger}.
 .nav-badge {
     display: inline-flex;
     align-items: center;
@@ -367,84 +420,151 @@
     font-size: 0.75rem;
     font-weight: 600;
     line-height: 1.4;
+    background: var(--bg-soft);
+    color: var(--text-muted);
 
-    &--pill {
+    &-pill {
         border-radius: var(--radius-pill);
     }
 
-    &--primary { background: var(--primary-soft); color: var(--primary); }
-    &--success { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-    &--warning { background: rgba(245, 158, 11, 0.18); color: #92400e; }
-    &--danger  { background: rgba(239, 68, 68, 0.15);  color: var(--danger); }
+    &-primary {
+        background: var(--primary-soft);
+        color: var(--primary);
+    }
+
+    &-success {
+        background: rgba(16, 185, 129, 0.15);
+        color: var(--success);
+    }
+
+    &-warning {
+        background: rgba(245, 158, 11, 0.18);
+        color: #92400e;
+    }
+
+    &-danger {
+        background: rgba(239, 68, 68, 0.15);
+        color: var(--danger);
+    }
 }
 
-// NavIcon
+// NavIcon — actual library size classes are nav-icon-sm/md/lg.
 .nav-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    line-height: 1;
 
-    &--small  { font-size: 0.875rem; width: 1rem; height: 1rem; }
-    &--medium { font-size: 1.125rem; width: 1.25rem; height: 1.25rem; }
-    &--large  { font-size: 1.5rem; width: 1.75rem; height: 1.75rem; }
+    &-sm { font-size: 0.875rem; width: 1rem; height: 1rem; }
+    &-md { font-size: 1.125rem; width: 1.25rem; height: 1.25rem; }
+    &-lg { font-size: 1.5rem; width: 1.75rem; height: 1.75rem; }
 }
 
-// NavTabs
+.nav-link-with-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+// NavTabs / NavTab / NavTabPanel
 .nav-tabs {
     display: flex;
     gap: 0.25rem;
     border-bottom: 1px solid var(--border);
-    margin-bottom: 1rem;
+    margin: 0 0 1rem 0;
+    padding: 0;
     width: 100%;
     flex-wrap: wrap;
+    list-style: none;
 }
 
+.nav-tabs-fill {
+    & > .nav-tab {
+        flex: 1 1 0;
+    }
+}
+
+// NavTab is a <li> wrapper containing a bare <button>; style both.
 .nav-tab {
-    padding: 0.5rem 1rem;
-    font-size: 0.9375rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    border: none;
-    background: none;
-    border-bottom: 2px solid transparent;
-    cursor: pointer;
+    list-style: none;
     margin-bottom: -1px;
 
-    &:hover:not(:disabled) {
-        color: var(--text);
+    & > button {
+        appearance: none;
+        background: none;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--text-muted);
+        cursor: pointer;
+        font: inherit;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        line-height: 1.3;
+        transition: color 0.15s ease, border-color 0.15s ease;
+
+        &:hover:not(:disabled) {
+            color: var(--text);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     }
 
-    &.active {
+    &.active > button {
         color: var(--primary);
         border-bottom-color: var(--primary);
-    }
-
-    &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
     }
 }
 
 .nav-tab-panel {
     width: 100%;
     padding: 0.5rem;
+
+    &[hidden] {
+        display: none;
+    }
 }
 
-// Dropdown
+// NavDropdown — actual classes are nav-dropdown, nav-dropdown-toggle,
+// nav-dropdown-menu, nav-dropdown-item, nav-dropdown-divider.
 .nav-dropdown {
     position: relative;
+    list-style: none;
 }
 
-.nav-dropdown__toggle {
+.nav-dropdown-toggle {
+    appearance: none;
     background: var(--bg-card);
     border: 1px solid var(--border-strong);
     border-radius: var(--radius-sm);
-    padding: 0.5rem 1rem;
-    font-size: 0.9375rem;
+    color: var(--text);
     cursor: pointer;
+    font: inherit;
+    font-size: 0.9375rem;
+    padding: 0.5rem 1rem;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+
+    &:hover {
+        border-color: var(--primary);
+        background: var(--primary-soft);
+    }
+
+    &[aria-expanded="true"] {
+        border-color: var(--primary);
+        background: var(--primary-soft);
+    }
 }
 
-.nav-dropdown__menu {
+.nav-dropdown-caret {
+    margin-left: 0.25rem;
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+}
+
+.nav-dropdown-menu {
     position: absolute;
     top: calc(100% + 0.25rem);
     left: 0;
@@ -455,12 +575,27 @@
     min-width: 12rem;
     padding: 0.375rem;
     z-index: 50;
+    list-style: none;
+    margin: 0;
+    display: none;
+
+    &.open {
+        display: block;
+    }
 }
 
-.nav-dropdown__item {
+.nav-dropdown-item {
     padding: 0.375rem 0.625rem;
     border-radius: var(--radius-sm);
     font-size: 0.9375rem;
+    list-style: none;
+
+    a,
+    .nav-link {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+    }
 
     &:hover:not(.disabled) {
         background: var(--bg-soft);
@@ -472,40 +607,69 @@
     }
 }
 
-// Pagination
-.pagination {
-    display: flex;
-    gap: 0.25rem;
-    flex-wrap: wrap;
-    align-items: center;
+.nav-dropdown-divider {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: 0.375rem 0;
+    list-style: none;
 }
 
-.pagination button,
-.pagination a {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 0.375rem 0.75rem;
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    cursor: pointer;
-    text-decoration: none;
-    min-width: 2.25rem;
-    text-align: center;
+// Pagination — <ul class="pagination"> with <li class="pagination-item">
+// holding a bare <button>.
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
 
-    &:hover:not([disabled]) {
-        border-color: var(--border-strong);
-        color: var(--text);
+.pagination-item {
+    list-style: none;
+
+    & > button,
+    & > a {
+        appearance: none;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        color: var(--text-muted);
+        cursor: pointer;
+        font: inherit;
+        font-size: 0.875rem;
+        min-width: 2.25rem;
+        padding: 0.375rem 0.75rem;
+        text-align: center;
+        text-decoration: none;
+        transition: border-color 0.15s ease, color 0.15s ease,
+            background-color 0.15s ease;
+
+        &:hover:not([disabled]) {
+            border-color: var(--border-strong);
+            color: var(--text);
+        }
+
+        &[disabled] {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     }
 
-    &[disabled] {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    &.active {
+    &.active > button,
+    &.active > a {
         background: var(--primary);
-        color: #ffffff;
         border-color: var(--primary);
+        color: #ffffff;
+    }
+}
+
+.page-link {
+    color: var(--primary);
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
     }
 }
