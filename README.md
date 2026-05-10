@@ -16,6 +16,7 @@ Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic acti
 [![MSRV](https://img.shields.io/crates/msrv/yew-nav-link)](https://crates.io/crates/yew-nav-link)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![REUSE](https://api.reuse.software/badge/github.com/RAprogramm/yew-nav-link)](https://api.reuse.software/info/github.com/RAprogramm/yew-nav-link)
+[![OSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/RAprogramm/yew-nav-link/badge)](https://securityscorecards.dev/viewer/?uri=github.com/RAprogramm/yew-nav-link)
 [![Codecov](https://codecov.io/gh/RAprogramm/yew-nav-link/branch/main/graph/badge.svg)](https://codecov.io/gh/RAprogramm/yew-nav-link)
 
 </div>
