@@ -18,14 +18,27 @@ pub trait BreadcrumbLabelProvider: Send + Sync {
 /// the default path-as-label behaviour of [`use_breadcrumbs`]. Equality is
 /// pointer-equality on the inner [`Rc`], so re-renders happen only when the
 /// concrete provider value changes.
+///
+/// The inner `Rc` is **not** publicly accessible — construct via
+/// [`BreadcrumbLabelProviderContext::new`] and read with
+/// [`BreadcrumbLabelProviderContext::provider`]. Keeping the field private
+/// lets future versions evolve the representation (e.g. a provider chain or
+/// internal cache) without breaking consumers.
 #[derive(Clone)]
-pub struct BreadcrumbLabelProviderContext(pub Rc<dyn BreadcrumbLabelProvider>);
+pub struct BreadcrumbLabelProviderContext(Rc<dyn BreadcrumbLabelProvider>);
 
 impl BreadcrumbLabelProviderContext {
     /// Wraps the given provider so it can be passed to `ContextProvider`.
     #[must_use]
     pub fn new(provider: Rc<dyn BreadcrumbLabelProvider>) -> Self {
         Self(provider)
+    }
+
+    /// Returns a clone of the inner [`Rc`] for callers that need to invoke
+    /// the provider directly.
+    #[must_use]
+    pub fn provider(&self) -> Rc<dyn BreadcrumbLabelProvider> {
+        Rc::clone(&self.0)
     }
 }
 
