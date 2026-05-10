@@ -65,7 +65,9 @@ impl QueryParams {
     /// assert_eq!(params.get("page"), Some("1"));
     ///
     /// let params2 = QueryParams::parse("tag=rust&tag=web");
-    /// let tag_all = params2.get_all("tag").unwrap();
+    /// let tag_all = params2
+    ///     .get_all("tag")
+    ///     .expect("`tag` is set twice by the input above");
     /// assert_eq!(tag_all, &vec!["rust".to_string(), "web".to_string()]);
     /// ```
     #[must_use]
@@ -174,7 +176,9 @@ impl QueryParams {
     /// let mut params = QueryParams::parse("tag=rust");
     /// params.set("tag", "web");
     ///
-    /// let all = params.get_all("tag").unwrap();
+    /// let all = params
+    ///     .get_all("tag")
+    ///     .expect("`tag` was set immediately above");
     /// assert_eq!(all, &["rust".to_string(), "web".to_string()]);
     /// ```
     pub fn set(&mut self, key: &str, value: &str) {
@@ -196,7 +200,9 @@ impl QueryParams {
     /// let mut params = QueryParams::parse("key=old1&key=old2");
     /// params.set_value("key", "new");
     ///
-    /// let all = params.get_all("key").unwrap();
+    /// let all = params
+    ///     .get_all("key")
+    ///     .expect("`key` was set immediately above");
     /// assert_eq!(all, &["new".to_string()]);
     /// ```
     pub fn set_value(&mut self, key: &str, value: &str) {
