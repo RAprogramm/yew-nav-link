@@ -26,6 +26,7 @@ yew-router = "0.20"
 
 [dev-dependencies]
 criterion = "0.8"
+proptest = "1"
 wasm-bindgen-test = "0.3"
 
 [[bench]]
