@@ -1,4 +1,9 @@
+# Cargo build artifacts
+target/
+**/target/
+
+# Trunk build output
+example/dist/
+
+# crates.io archives
 *.crate
-target
-examples/comprehensive/target
-examples/comprehensive/dist
