@@ -1,6 +1,12 @@
 // SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
+//! Active-state matching strategy.
+//!
+//! [`Match`] selects between exact equality and segment-wise prefix matching.
+//! Used by [`crate::NavLink`] and the [`crate::nav_link()`] function-syntax
+//! helper.
+
 use std::fmt::{Display, Formatter};
 
 /// Path matching strategy for `NavLink` active state detection.
