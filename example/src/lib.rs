@@ -1152,15 +1152,34 @@ impl BreadcrumbLabelProvider for DemoLabels {
 // App
 // ============================================================================
 
+/// Pages-aware basename detection.
+///
+/// On GitHub Pages the demo lives at `/yew-nav-link/`; under
+/// `trunk serve` it lives at `/`. We read the current pathname once at
+/// app startup and ask yew-router to honour the project subpath when it
+/// is present, so every NavLink / Navigator generates URLs that stay
+/// inside the deployment.
+const PAGES_BASENAME: &str = "/yew-nav-link";
+
+fn detect_basename() -> Option<AttrValue> {
+    let pathname = web_sys::window()?.location().pathname().ok()?;
+    if pathname == PAGES_BASENAME || pathname.starts_with(&format!("{PAGES_BASENAME}/")) {
+        Some(AttrValue::Static(PAGES_BASENAME))
+    } else {
+        None
+    }
+}
+
 #[function_component]
 fn App() -> Html {
     let label_ctx = use_memo((), |()| {
         BreadcrumbLabelProviderContext::new(Rc::new(DemoLabels))
     });
+    let basename = detect_basename();
 
     html! {
         <ContextProvider<BreadcrumbLabelProviderContext> context={(*label_ctx).clone()}>
-            <BrowserRouter>
+            <BrowserRouter basename={basename}>
                 <div class="app-shell">
                     <a class="skip-link" href="#main-content">{ "Skip to content" }</a>
                     <TopNav />
