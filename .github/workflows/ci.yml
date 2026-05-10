@@ -312,6 +312,36 @@ jobs:
         run: trunk build --release
         working-directory: example
 
+      - name: Enforce WASM size budget
+        env:
+          MAX_RAW_BYTES: 1572864  # 1.5 MiB
+          MAX_GZIP_BYTES: 389120  # 380 KiB
+        run: |
+          set -euo pipefail
+          wasm=$(find example/dist -maxdepth 1 -name '*.wasm' -print -quit)
+          if [ -z "$wasm" ]; then
+            echo "No .wasm in example/dist" >&2
+            exit 1
+          fi
+          raw=$(stat -c '%s' "$wasm")
+          gzipped=$(gzip -c "$wasm" | wc -c)
+          {
+            echo "## WASM size budget"
+            echo
+            printf '| Metric | Bytes | Budget |\n'
+            printf '|---|---:|---:|\n'
+            printf '| Raw | %s | %s |\n' "$raw" "$MAX_RAW_BYTES"
+            printf '| Gzipped | %s | %s |\n' "$gzipped" "$MAX_GZIP_BYTES"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$raw" -gt "$MAX_RAW_BYTES" ]; then
+            echo "::error::Raw WASM ($raw) exceeds budget ($MAX_RAW_BYTES)"
+            exit 1
+          fi
+          if [ "$gzipped" -gt "$MAX_GZIP_BYTES" ]; then
+            echo "::error::Gzipped WASM ($gzipped) exceeds budget ($MAX_GZIP_BYTES)"
+            exit 1
+          fi
+
   lighthouse:
     name: Lighthouse
     needs: msrv
