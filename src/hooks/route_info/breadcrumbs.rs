@@ -43,7 +43,7 @@ where
     let current = use_route::<R>();
     let provider = use_context::<BreadcrumbLabelProviderContext>();
 
-    current.map_or_else(std::vec::Vec::new, |route| {
+    current.map_or_else(Vec::new, |route| {
         let path = route.to_path();
         let segments: Vec<&str> = path.split('/').filter(|s| !s.is_empty()).collect();
         let mut items = Vec::new();
@@ -58,11 +58,11 @@ where
             is_active: segments.is_empty()
         });
         // Segments
-        let is_last = segments.len();
+        let total = segments.len();
         for (i, segment) in segments.iter().enumerate() {
             built.push('/');
             built.push_str(segment);
-            let is_last = i + 1 == is_last;
+            let is_last = i + 1 == total;
             let label = provider
                 .as_ref()
                 .map_or_else(|| built.clone(), |p| p.0.label_for_path(&built));
