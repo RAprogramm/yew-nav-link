@@ -16,6 +16,8 @@
 //!         NavError::RouteNotFound => { /* handle */ }
 //!         NavError::InvalidRoute(msg) => { /* handle */ }
 //!         NavError::NavigationCancelled => { /* handle */ }
+//!         // Required because NavError is non_exhaustive.
+//!         _ => { /* handle future variants */ }
 //!     }
 //! }
 //! ```
@@ -37,8 +39,30 @@ use std::{
 ///
 /// Returned by navigation hooks and helper functions when something
 /// goes wrong while resolving or activating a route.
+///
+/// # Stability
+///
+/// This enum is `#[non_exhaustive]`: future minor releases may add new
+/// variants without bumping the major version. Consumers matching on
+/// `NavError` must include a wildcard arm (`_ =>`) so the match remains
+/// exhaustive across upgrades.
+///
+/// ```rust
+/// use yew_nav_link::NavError;
+///
+/// fn describe(err: &NavError) -> &'static str {
+///     match err {
+///         NavError::RouteNotFound => "missing route",
+///         NavError::InvalidRoute(_) => "bad route",
+///         NavError::NavigationCancelled => "cancelled",
+///         // Required because NavError is non_exhaustive.
+///         _ => "unknown navigation error"
+///     }
+/// }
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[must_use]
+#[non_exhaustive]
 pub enum NavError {
     /// The target route does not match any registered route.
     RouteNotFound,

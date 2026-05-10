@@ -92,10 +92,12 @@ logic and accept all required state through props.
 
 ### 1.5 Errors
 
-**FR-ER-1.** `NavError` is a `pub enum` with three variants:
-`RouteNotFound`, `InvalidRoute(String)`, `NavigationCancelled`. It
-implements `std::fmt::Display`, `std::error::Error`, `Clone`, `PartialEq`,
-`Eq`, and `Debug`.
+**FR-ER-1.** `NavError` is a `#[non_exhaustive]` `pub enum`. As of 0.10
+it has three variants: `RouteNotFound`, `InvalidRoute(String)`,
+`NavigationCancelled`. It implements `std::fmt::Display`,
+`std::error::Error`, `Clone`, `PartialEq`, `Eq`, and `Debug`. Future
+minor releases may add new variants without bumping the major version;
+consumer matches must include a `_ =>` arm.
 
 **FR-ER-2.** `NavResult<T>` is a public alias for `Result<T, NavError>`.
 
