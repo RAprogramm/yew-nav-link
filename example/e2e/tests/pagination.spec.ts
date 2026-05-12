@@ -7,10 +7,15 @@ test.describe('Pagination', () => {
   test('marks the current page item active', async ({ page }) => {
     await page.goto('/components');
 
-    const pagination = page.locator('ul.pagination').first();
+    // The pagination container is the `<nav aria-label="pagination">`
+    // wrapper. Anchor on that role rather than internal class names so
+    // the test survives stylesheet renames.
+    const pagination = page.locator('nav[aria-label="pagination"]').first();
     await expect(pagination).toBeVisible();
 
-    const active = pagination.locator('li.pagination-item.active');
+    // The active page button is the only descendant carrying
+    // aria-current="page" (Pagination emits "page" / "false" per item).
+    const active = pagination.locator('button[aria-current="page"]');
     await expect(active).toHaveCount(1);
   });
 });
