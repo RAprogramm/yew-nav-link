@@ -69,8 +69,13 @@ release PR's merge commit lands.
 - `.github/workflows/release-plz.yml` — the two jobs. Concurrency is keyed on `release-plz-${{ github.ref }}` so two pushes never race a release PR update.
 
 The `CRATES_IO_TOKEN` repository secret is reused from the previous
-manual flow. `GITHUB_TOKEN` is the standard workflow token with
-`contents: write` + `pull-requests: write` granted in the workflow.
+manual flow. Pull-request operations authenticate as a dedicated
+GitHub App: the workflow mints a short-lived installation token via
+`actions/create-github-app-token` from `RELEASE_PLZ_APP_ID` +
+`RELEASE_PLZ_APP_PRIVATE_KEY` and hands it to `release-plz`. Setup is
+documented in [`docs/RELEASE_PLZ_APP_SETUP.md`](docs/RELEASE_PLZ_APP_SETUP.md) —
+the App scopes are exactly `Contents: read & write` and `Pull
+requests: read & write`, scoped to this single repository.
 
 ## What the maintainer still does
 
