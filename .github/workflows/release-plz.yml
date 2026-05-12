@@ -8,6 +8,14 @@
 #   `release` runs after the release PR is merged — it tags the commit,
 #   publishes to crates.io, and creates the matching GitHub release.
 #
+# Authentication is via a dedicated GitHub App (see
+# `docs/RELEASE_PLZ_APP_SETUP.md`). The App identity is required, not
+# optional: PRs opened by `secrets.GITHUB_TOKEN` do not trigger
+# downstream workflows (the `CI` checks for the release PR, the
+# `Release attestations` workflow for the published release). Using
+# the App identity makes every release fully autonomous from a single
+# conventional commit on `main`.
+#
 # See `release-plz.toml` for the per-package configuration and
 # `RELEASE.md` for the human-facing flow.
 
@@ -19,8 +27,7 @@ on:
       - main
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 concurrency:
   group: release-plz-${{ github.ref }}
@@ -32,10 +39,18 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.repository_owner == 'RAprogramm' }}
     steps:
+      - name: Mint GitHub App token
+        id: app_token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.RELEASE_PLZ_APP_ID }}
+          private-key: ${{ secrets.RELEASE_PLZ_APP_PRIVATE_KEY }}
+
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          token: ${{ steps.app_token.outputs.token }}
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -45,7 +60,7 @@ jobs:
         with:
           command: release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app_token.outputs.token }}
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
 
   release-plz-pr:
@@ -54,11 +69,18 @@ jobs:
     if: ${{ github.repository_owner == 'RAprogramm' }}
     needs: release-plz-release
     steps:
+      - name: Mint GitHub App token
+        id: app_token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.RELEASE_PLZ_APP_ID }}
+          private-key: ${{ secrets.RELEASE_PLZ_APP_PRIVATE_KEY }}
+
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.app_token.outputs.token }}
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -68,5 +90,5 @@ jobs:
         with:
           command: release-pr
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app_token.outputs.token }}
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
