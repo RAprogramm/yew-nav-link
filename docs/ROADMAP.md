@@ -11,9 +11,9 @@ authoritative cutline of each release.
 
 [milestones]: https://github.com/RAprogramm/yew-nav-link/milestones
 
-## 0.9.x — current line (patch series)
+## 0.9.x — previous line (closed)
 
-**Released.** Status: maintained.
+**Released.** Status: closed; no further patches. The active line is 0.10.x.
 
 - 0.9.0 dropped the macros feature.
 - 0.9.1 replaced the multi-page demo with a single-file SPA, fixed the
@@ -23,35 +23,38 @@ authoritative cutline of each release.
 - 0.9.3 made `BreadcrumbLabelProviderContext` part of the public API so
   consumers can actually inject a provider (the trait alone was reachable
   but inert).
+- 0.9.4 fixed `normalize_path` `.`/`..` resolution, made
+  `urlencoding_decode` UTF-8 aware, and stopped `pagination_page` panics
+  on adversarial inputs.
 
-The 0.9.x line continues to receive **patch-level fixes only**: bug fixes,
-documentation, demo, CI, and dependency bumps. No public API changes land
-on 0.9.x.
+## 0.10.x — current line
 
-## 0.10.0 — breaking-change pass
+**Released 2026-05-10.** Status: maintained.
 
-**Target window:** before 1.0 freeze. **Status:** planned.
+The breaking-change pass before 1.0 — four targeted breakages consumers
+upgrade through in one hop:
 
-This is where every accumulated breaking change ships at once, so
-consumers upgrade in a single hop:
+- `NavError` is `#[non_exhaustive]`, leaving room for new variants under
+  semver-minor.
+- `BreadcrumbLabelProviderContext`'s tuple field is private; construct
+  via `::new` and read via `.provider()`.
+- The orphan `route_params.rs` module is removed; migrate to
+  `use_route::<R>()` with a `Routable` enum.
+- Active `NavLink` emits `aria-current="page"` on the rendered `<a>` for
+  screen-reader-correct active state.
 
-- **Drop the unused `route_params.rs` module.** It exists privately,
-  isn't re-exported, and is documented as removed in CHANGELOG. Cleaning
-  it out is a tree-shake, not a feature loss.
-- **Library-level `aria-current="page"` on active `NavLink`.** Today the
-  demo wraps active items in `aria-current` manually. Embedding it in
-  `NavLink` itself fixes accessibility once for every consumer; it
-  changes the rendered HTML, hence the breaking bump.
-- **Tighter MSRV review.** 1.95 was the latest stable when the line was
-  cut; 0.10 will pin to whichever stable Rust ships within the
-  development window.
-- **Audit `prop_or_default` defaults** across components for consistency
-  before they freeze at 1.0.
+MSRV review for the line completed with no bump: stable Rust 1.95 was
+the latest stable when 0.10 was cut and remained so through the window
+(see closed issue #71).
+
+Subsequent 0.10.x patches address CI, dependency bumps, and
+documentation only — no public API changes.
 
 ## 1.0.0 — API freeze
 
-**Target window:** after 0.10 has spent at least one quarter in the
-ecosystem with no API changes. **Status:** dependent on 0.10 feedback.
+**Target window:** earliest 2026-08, after 0.10.x has spent at least
+one quarter in the ecosystem with no public API changes. **Status:**
+dependent on 0.10 feedback.
 
 The 1.0 commitment is small and deliberately boring:
 
