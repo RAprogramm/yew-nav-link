@@ -1798,8 +1798,12 @@ name = "yew-nav-link"
 version = "0.10.0"
 dependencies = [
  "criterion",
+ "js-sys",
  "proptest",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
  "wasm-bindgen-test",
+ "web-sys",
  "yew",
  "yew-router",
 ]
