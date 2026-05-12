@@ -1,0 +1,90 @@
+# SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+# SPDX-License-Identifier: MIT
+
+# Mutation testing is the strongest available evidence that line/branch
+# coverage is not coverage theatre. cargo-mutants injects mutations into
+# the source and reports those that survive the test suite — a survived
+# mutant is a behaviour the tests do not exercise.
+#
+# This job runs nightly (cron) and on demand (workflow_dispatch). It is
+# intentionally out of the PR critical path: a single full mutants run
+# can take 30-60 minutes, and the right cadence for the signal is daily,
+# not per-PR.
+
+name: Mutants
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mutants-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_INCREMENTAL: 0
+
+jobs:
+  mutants:
+    name: cargo-mutants
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+
+      - name: Load cached target directory
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: mutants
+          save-if: true
+
+      - name: Install cargo-mutants
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-mutants
+
+      - name: Run cargo-mutants
+        run: cargo mutants --no-shuffle --timeout-multiplier 2 --output mutants.out
+
+      - name: Append mutants summary to workflow output
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ -f mutants.out/outcomes.json ]; then
+            total=$(jq '[.outcomes[]] | length' mutants.out/outcomes.json)
+            caught=$(jq '[.outcomes[] | select(.summary == "CaughtMutant")] | length' mutants.out/outcomes.json)
+            missed=$(jq '[.outcomes[] | select(.summary == "MissedMutant")] | length' mutants.out/outcomes.json)
+            timeout=$(jq '[.outcomes[] | select(.summary == "Timeout")] | length' mutants.out/outcomes.json)
+            unviable=$(jq '[.outcomes[] | select(.summary == "Unviable")] | length' mutants.out/outcomes.json)
+            {
+              echo "## Mutation testing"
+              echo
+              printf '| Metric | Count |\n'
+              printf '|---|---:|\n'
+              printf '| Total mutants | %s |\n' "$total"
+              printf '| Caught | %s |\n' "$caught"
+              printf '| Missed (survived) | %s |\n' "$missed"
+              printf '| Timeout | %s |\n' "$timeout"
+              printf '| Unviable | %s |\n' "$unviable"
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "(mutants.out/outcomes.json not produced)" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload mutants report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutants-report
+          path: mutants.out/
+          retention-days: 30
