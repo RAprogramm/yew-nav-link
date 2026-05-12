@@ -86,8 +86,11 @@ git checkout -b 123
 ### 3. Commit format
 
 ```bash
-git commit -m "#123 feat: add custom class support"
+git commit -m "#123 feat add custom class support"
 ```
+
+Format is `#<issue> <type> <description>` — no colon after the type, no
+`(scope)`. Breaking changes carry a `!` on the type (`feat!`, `refactor!`).
 
 | Type | Use for | Triggers in CHANGELOG |
 |---|---|---|
@@ -99,7 +102,9 @@ git commit -m "#123 feat: add custom class support"
 | `test` | Test additions or modifications | no |
 | `chore` | Maintenance, dependency bumps, tooling | no |
 
-`git-cliff` reads these prefixes (`cliff.toml`).
+`git-cliff` reads these prefixes (`cliff.toml`), normalising the
+`#<N> <type> <desc>` form into a conventional-commit subject for the
+CHANGELOG.
 
 ### 4. Open a pull request
 
@@ -172,8 +177,8 @@ Releases are fully autonomous from a contributor's perspective. The
 maintainer does **not** edit `Cargo.toml` or `CHANGELOG.md` by hand —
 [release-plz](https://release-plz.dev) does it. The loop:
 
-1. Land any conventional commit on `main` (`feat:`, `fix:`, `docs:`,
-   `refactor:`, `ci:`, `deps:` — `test:` and `chore:` are skipped).
+1. Land any typed commit on `main` (`feat`, `fix`, `docs`, `refactor`,
+   `ci`, `deps` — `test` and `chore` are skipped).
 2. `Release-plz` workflow opens (or updates) a single release PR titled
    `chore: release vX.Y.Z`. The version bump and `CHANGELOG.md` section
    are derived from the conventional commits since the last tag.

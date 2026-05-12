@@ -21,6 +21,7 @@ filter_unconventional = true
 split_commits = false
 commit_preprocessors = [
   { pattern = '\(#(\d+)\)', replace = "([#${1}](https://github.com/RAprogramm/yew-nav-link/issues/${1}))" },
+  { pattern = '^#\d+\s+(feat|fix|refactor|docs|ci|chore|test|deps|revert)(!)?:?\s+', replace = "${1}${2}: " },
 ]
 commit_parsers = [
   { author = "dependabot", group = "Dependencies" },
@@ -29,6 +30,7 @@ commit_parsers = [
   { message = "^refactor", group = "Refactoring" },
   { message = "^docs", group = "Documentation" },
   { message = "^ci", group = "CI" },
+  { message = "^revert", group = "Reverts" },
   { message = "^deps|^chore\\(deps\\)", group = "Dependencies" },
   { message = "^chore", skip = true },
   { message = "^test", skip = true },
