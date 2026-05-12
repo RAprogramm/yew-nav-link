@@ -1,0 +1,90 @@
+# SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+# SPDX-License-Identifier: MIT
+
+# On every published GitHub release, generate a CycloneDX SBOM and a
+# signed SLSA build-provenance attestation for the `.crate` artefact
+# that release-plz published to crates.io, then attach both to the
+# release so consumers can run `gh attestation verify` against them.
+
+name: Release attestations
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to re-attest (e.g. v0.10.0)
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: release-attestations-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  attest:
+    name: Generate SBOM and provenance
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout tagged commit
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+          fetch-depth: 0
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+
+      - name: Load cached target directory
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: release-attestations
+          save-if: false
+
+      - name: Package crate
+        run: cargo package --no-verify --allow-dirty
+
+      - name: Locate .crate file
+        id: artefact
+        run: |
+          set -euo pipefail
+          crate=$(find target/package -maxdepth 1 -name '*.crate' -print -quit)
+          if [ -z "$crate" ]; then
+            echo "::error::No .crate file produced under target/package" >&2
+            exit 1
+          fi
+          echo "path=$crate" >> "$GITHUB_OUTPUT"
+          echo "name=$(basename "$crate")" >> "$GITHUB_OUTPUT"
+
+      - name: Generate CycloneDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: ./
+          format: cyclonedx-json
+          output-file: yew-nav-link-sbom.cdx.json
+          upload-artifact: false
+          upload-release-assets: false
+
+      - name: Generate build provenance attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            ${{ steps.artefact.outputs.path }}
+            yew-nav-link-sbom.cdx.json
+
+      - name: Attach SBOM to GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          set -euo pipefail
+          gh release upload "$TAG" yew-nav-link-sbom.cdx.json --clobber
