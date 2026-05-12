@@ -1,5 +1,7 @@
 //! Integration tests for utils module.
 
+#![cfg(not(target_arch = "wasm32"))]
+
 use yew_nav_link::utils::{is_absolute, join_paths, normalize_path};
 
 #[test]
