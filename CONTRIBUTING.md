@@ -108,8 +108,12 @@ git commit -m "#123 feat: add custom class support"
 - **Reviews:** there is no required-reviewer rule on `main`, but every PR
   must pass the `CI Success` aggregate status check before merge — that's
   enforced by branch protection.
-- **Merge style:** rebase. We keep `main` linear; force-pushes to `main`
-  and branch deletion are blocked.
+- **Merge style:** squash, with branch auto-deleted on merge. The PR title
+  becomes the conventional-commit subject on `main`; the PR body becomes the
+  commit message body. We keep `main` linear; force-pushes to `main` and
+  branch deletion are blocked. Rebase merge stays allowed for the rare case
+  where intermediate commits carry independent value. See
+  [`docs/BRANCHING.md`](docs/BRANCHING.md) for the full policy.
 
 ## Code standards
 
