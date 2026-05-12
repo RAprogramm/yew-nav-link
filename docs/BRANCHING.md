@@ -47,15 +47,16 @@ clean up before pushing if needed.
 
 ## 3. Commit format
 
-Every commit message starts with the issue reference and a conventional
-commit prefix:
+Every commit message starts with the issue reference and a type prefix:
 
 ```
-#<issue> <type>: <description>
+#<issue> <type> <description>
 ```
 
-The prefixes feed `cliff.toml` and decide which CHANGELOG section the
-commit lands in:
+No colon after the type, no `(scope)`. `cliff.toml` rewrites this form
+into a conventional-commit subject (`<type>: <description>`) before
+git-cliff classifies it, so the prefixes still decide which CHANGELOG
+section the commit lands in:
 
 | Prefix | CHANGELOG section | Triggers minor/patch bump under release-plz |
 |---|---|---|
@@ -68,7 +69,7 @@ commit lands in:
 | `test` | (skipped) | none |
 | `chore` | (skipped) | none |
 
-Breaking changes carry a `!` after the type (`feat!:`, `refactor!:`) and
+Breaking changes carry a `!` after the type (`feat!`, `refactor!`) and
 trigger a major bump.
 
 ## 4. Merge style
@@ -118,7 +119,7 @@ git push -u origin <new-issue>
 gh pr create --title "<new-issue>" --body "Closes #<new-issue>"
 ```
 
-The revert commit follows the same `#<issue> revert: <description>` form,
+The revert commit follows the same `#<issue> revert <description>` form,
 and the new issue documents *why* the original change was rolled back.
 
 ## 7. Releases
