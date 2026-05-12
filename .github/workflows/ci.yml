@@ -174,6 +174,59 @@ jobs:
       - name: Compare public API against the last crates.io release
         run: cargo semver-checks check-release --verbose
 
+  public_api:
+    name: Public API
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+
+      - name: Load cached target directory
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: public-api
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Install cargo-public-api
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-public-api
+
+      - name: Verify public API matches docs/public-api.txt
+        run: |
+          set -euo pipefail
+          current=$(mktemp)
+          cargo public-api -sss > "$current"
+          if diff -u docs/public-api.txt "$current" > /tmp/papi.diff; then
+            echo "Public API surface matches the baseline."
+            exit 0
+          fi
+          {
+            echo "## Public API drift"
+            echo
+            echo "\`docs/public-api.txt\` no longer matches the surface that"
+            echo "\`cargo public-api -sss\` produces. Regenerate the baseline"
+            echo "with:"
+            echo
+            echo '```bash'
+            echo 'cargo public-api -sss > docs/public-api.txt'
+            echo '```'
+            echo
+            echo 'Diff:'
+            echo
+            echo '```diff'
+            cat /tmp/papi.diff
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::error::Public API surface changed. Run 'cargo public-api -sss > docs/public-api.txt' and commit."
+          exit 1
+
   no_std:
     name: no-std
     runs-on: ubuntu-latest
@@ -597,7 +650,7 @@ jobs:
   ci-success:
     name: CI Success
     runs-on: ubuntu-latest
-    needs: [msrv, check, fmt, docs, semver_checks, no_std, security, reuse, test, wasm_tests, coverage, benchmarks, wasm-build, e2e, lighthouse, changelog, actionlint]
+    needs: [msrv, check, fmt, docs, semver_checks, public_api, no_std, security, reuse, test, wasm_tests, coverage, benchmarks, wasm-build, e2e, lighthouse, changelog, actionlint]
     if: always()
     steps:
       - name: Check job status
@@ -609,6 +662,7 @@ jobs:
           echo "  Format: ${{ needs.fmt.result }}"
           echo "  Docs: ${{ needs.docs.result }}"
           echo "  Semver Checks: ${{ needs.semver_checks.result }}"
+          echo "  Public API: ${{ needs.public_api.result }}"
           echo "  no-std: ${{ needs.no_std.result }}"
           echo "  Security: ${{ needs.security.result }}"
           echo "  REUSE: ${{ needs.reuse.result }}"
@@ -622,7 +676,7 @@ jobs:
           echo "  Changelog: ${{ needs.changelog.result }}"
           echo "  Actionlint: ${{ needs.actionlint.result }}"
 
-          if [[ "${{ needs.msrv.result }}" != "success" || "${{ needs.check.result }}" != "success" || "${{ needs.fmt.result }}" != "success" || "${{ needs.docs.result }}" != "success" || "${{ needs.semver_checks.result }}" != "success" || "${{ needs.no_std.result }}" != "success" || "${{ needs.security.result }}" != "success" || "${{ needs.reuse.result }}" != "success" || ("${{ needs.test.result }}" != "success" && "${{ needs.test.result }}" != "skipped") || "${{ needs.wasm_tests.result }}" != "success" || ("${{ needs.coverage.result }}" != "success" && "${{ needs.coverage.result }}" != "skipped") || ("${{ needs.benchmarks.result }}" != "success" && "${{ needs.benchmarks.result }}" != "skipped") || "${{ needs.wasm-build.result }}" != "success" || "${{ needs.e2e.result }}" != "success" || "${{ needs.lighthouse.result }}" != "success" || ("${{ needs.changelog.result }}" != "success" && "${{ needs.changelog.result }}" != "skipped") || "${{ needs.actionlint.result }}" != "success" ]]; then
+          if [[ "${{ needs.msrv.result }}" != "success" || "${{ needs.check.result }}" != "success" || "${{ needs.fmt.result }}" != "success" || "${{ needs.docs.result }}" != "success" || "${{ needs.semver_checks.result }}" != "success" || "${{ needs.public_api.result }}" != "success" || "${{ needs.no_std.result }}" != "success" || "${{ needs.security.result }}" != "success" || "${{ needs.reuse.result }}" != "success" || ("${{ needs.test.result }}" != "success" && "${{ needs.test.result }}" != "skipped") || "${{ needs.wasm_tests.result }}" != "success" || ("${{ needs.coverage.result }}" != "success" && "${{ needs.coverage.result }}" != "skipped") || ("${{ needs.benchmarks.result }}" != "success" && "${{ needs.benchmarks.result }}" != "skipped") || "${{ needs.wasm-build.result }}" != "success" || "${{ needs.e2e.result }}" != "success" || "${{ needs.lighthouse.result }}" != "success" || ("${{ needs.changelog.result }}" != "success" && "${{ needs.changelog.result }}" != "skipped") || "${{ needs.actionlint.result }}" != "success" ]]; then
             echo "❌ CI failed"
             exit 1
           fi
