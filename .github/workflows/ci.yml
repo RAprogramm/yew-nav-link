@@ -594,97 +594,10 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-  release:
-    name: Release
-    needs: [msrv, check, fmt, docs, no_std, security, reuse, changelog, actionlint]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Setup Rust toolchain
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-
-      - name: Load cached target directory
-        uses: Swatinem/rust-cache@v2
-        with:
-          key: release
-          save-if: ${{ github.ref == 'refs/heads/main' }}
-
-      - name: Check version change
-        id: version_check
-        run: |
-          CURRENT_VERSION=$(grep -E "version\s*=\s*\"" Cargo.toml | head -1 | sed 's/.*"\([^"]*\)".*/\1/')
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          LATEST_VERSION=${LATEST_TAG#v}
-          
-          echo "current_version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
-          echo "latest_version=$LATEST_VERSION" >> "$GITHUB_OUTPUT"
-          
-          if [ "$CURRENT_VERSION" != "$LATEST_VERSION" ]; then
-            echo "version_changed=true" >> "$GITHUB_OUTPUT"
-            echo "Version has changed from $LATEST_VERSION to $CURRENT_VERSION"
-          else
-            echo "version_changed=false" >> "$GITHUB_OUTPUT"
-            echo "Version unchanged"
-          fi
-
-      - name: Build release artifact
-        run: cargo build --release --all-features
-
-      - name: Publish to crates.io
-        if: steps.version_check.outputs.version_changed == 'true'
-        run: |
-          cargo login ${{ secrets.CRATES_IO_TOKEN }}
-          cargo publish
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
-
-      - name: Extract release notes from CHANGELOG.md
-        id: notes
-        if: steps.version_check.outputs.version_changed == 'true'
-        env:
-          VERSION: ${{ steps.version_check.outputs.current_version }}
-        run: |
-          # Pull the section between "## [VERSION] - …" (exclusive) and the
-          # next "## [" header (exclusive). Falls back to a generic line if
-          # the entry is missing so the release is still populated.
-          notes_file="$(mktemp)"
-          awk -v v="$VERSION" '
-            BEGIN { in_section = 0 }
-            /^## \[/ {
-              if (in_section) { exit }
-              if ($0 ~ "^## \\[" v "\\]") { in_section = 1; next }
-            }
-            in_section { print }
-          ' CHANGELOG.md > "$notes_file"
-
-          if [ ! -s "$notes_file" ]; then
-            echo "Release v$VERSION." > "$notes_file"
-          fi
-
-          echo "path=$notes_file" >> "$GITHUB_OUTPUT"
-
-      - name: Create GitHub release
-        if: steps.version_check.outputs.version_changed == 'true'
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: v${{ steps.version_check.outputs.current_version }}
-          name: v${{ steps.version_check.outputs.current_version }}
-          body_path: ${{ steps.notes.outputs.path }}
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   ci-success:
     name: CI Success
     runs-on: ubuntu-latest
-    needs: [msrv, check, fmt, docs, semver_checks, no_std, security, reuse, test, wasm_tests, coverage, benchmarks, wasm-build, e2e, lighthouse, changelog, actionlint, release]
+    needs: [msrv, check, fmt, docs, semver_checks, no_std, security, reuse, test, wasm_tests, coverage, benchmarks, wasm-build, e2e, lighthouse, changelog, actionlint]
     if: always()
     steps:
       - name: Check job status
@@ -708,9 +621,8 @@ jobs:
           echo "  Lighthouse: ${{ needs.lighthouse.result }}"
           echo "  Changelog: ${{ needs.changelog.result }}"
           echo "  Actionlint: ${{ needs.actionlint.result }}"
-          echo "  Release: ${{ needs.release.result }}"
 
-          if [[ "${{ needs.msrv.result }}" != "success" || "${{ needs.check.result }}" != "success" || "${{ needs.fmt.result }}" != "success" || "${{ needs.docs.result }}" != "success" || "${{ needs.semver_checks.result }}" != "success" || "${{ needs.no_std.result }}" != "success" || "${{ needs.security.result }}" != "success" || "${{ needs.reuse.result }}" != "success" || ("${{ needs.test.result }}" != "success" && "${{ needs.test.result }}" != "skipped") || "${{ needs.wasm_tests.result }}" != "success" || ("${{ needs.coverage.result }}" != "success" && "${{ needs.coverage.result }}" != "skipped") || ("${{ needs.benchmarks.result }}" != "success" && "${{ needs.benchmarks.result }}" != "skipped") || "${{ needs.wasm-build.result }}" != "success" || "${{ needs.e2e.result }}" != "success" || "${{ needs.lighthouse.result }}" != "success" || ("${{ needs.changelog.result }}" != "success" && "${{ needs.changelog.result }}" != "skipped") || ("${{ needs.release.result }}" != "success" && "${{ needs.release.result }}" != "skipped") || "${{ needs.actionlint.result }}" != "success" ]]; then
+          if [[ "${{ needs.msrv.result }}" != "success" || "${{ needs.check.result }}" != "success" || "${{ needs.fmt.result }}" != "success" || "${{ needs.docs.result }}" != "success" || "${{ needs.semver_checks.result }}" != "success" || "${{ needs.no_std.result }}" != "success" || "${{ needs.security.result }}" != "success" || "${{ needs.reuse.result }}" != "success" || ("${{ needs.test.result }}" != "success" && "${{ needs.test.result }}" != "skipped") || "${{ needs.wasm_tests.result }}" != "success" || ("${{ needs.coverage.result }}" != "success" && "${{ needs.coverage.result }}" != "skipped") || ("${{ needs.benchmarks.result }}" != "success" && "${{ needs.benchmarks.result }}" != "skipped") || "${{ needs.wasm-build.result }}" != "success" || "${{ needs.e2e.result }}" != "success" || "${{ needs.lighthouse.result }}" != "success" || ("${{ needs.changelog.result }}" != "success" && "${{ needs.changelog.result }}" != "skipped") || "${{ needs.actionlint.result }}" != "success" ]]; then
             echo "❌ CI failed"
             exit 1
           fi
