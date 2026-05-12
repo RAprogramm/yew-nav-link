@@ -194,6 +194,25 @@ jobs:
       - name: Run cargo-audit
         run: cargo audit
 
+      - name: Install cargo-machete
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-machete
+
+      - name: Run cargo-machete
+        run: cargo machete
+
+      - name: Setup nightly Rust toolchain for cargo-udeps
+        uses: dtolnay/rust-toolchain@nightly
+
+      - name: Install cargo-udeps
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-udeps
+
+      - name: Run cargo-udeps
+        run: cargo +nightly udeps --all-targets --all-features
+
   reuse:
     name: REUSE Compliance
     runs-on: ubuntu-latest
