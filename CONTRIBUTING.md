@@ -149,6 +149,7 @@ merge.
 | `Coverage` | yes (skip allowed) | `cargo llvm-cov` → Codecov upload |
 | `Benchmarks` | yes (skip allowed) | `cargo bench --no-run` |
 | `Example WASM build` | yes | `trunk build --release` against `example/` |
+| `E2E` | yes | Playwright suite under `example/e2e/` on chromium + firefox |
 | `Lighthouse` | yes | thresholds: perf 0.85, a11y 0.9, best-practices 0.9, SEO 0.9 |
 | `Actionlint` | yes | lints all workflow YAML |
 | `Changelog` | yes (skip allowed) | runs `git-cliff` |
