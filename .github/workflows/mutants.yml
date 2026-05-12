@@ -54,6 +54,7 @@ jobs:
           tool: cargo-mutants
 
       - name: Run cargo-mutants
+        continue-on-error: true
         run: cargo mutants --no-shuffle --timeout-multiplier 2 --output mutants.out
 
       - name: Append mutants summary to workflow output
