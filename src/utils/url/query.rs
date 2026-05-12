@@ -247,15 +247,16 @@ impl QueryParams {
             return String::new();
         }
 
-        let pairs: Vec<String> = self
-            .params
-            .iter()
-            .flat_map(|(key, values)| {
-                values.iter().map(move |value| {
-                    format!("{}={}", urlencoding_encode(key), urlencoding_encode(value))
-                })
-            })
-            .collect();
+        let mut pairs: Vec<String> = Vec::with_capacity(self.params.len());
+        for (key, values) in &self.params {
+            for value in values {
+                pairs.push(format!(
+                    "{}={}",
+                    urlencoding_encode(key),
+                    urlencoding_encode(value)
+                ));
+            }
+        }
 
         format!("?{}", pairs.join("&"))
     }
