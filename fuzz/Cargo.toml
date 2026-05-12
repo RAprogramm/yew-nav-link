@@ -1,0 +1,43 @@
+# SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+# SPDX-License-Identifier: MIT
+
+[package]
+name = "yew-nav-link-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+
+[dependencies.yew-nav-link]
+path = ".."
+
+# Empty [workspace] table marks this crate as its own workspace root so
+# cargo-fuzz's nightly toolchain does not try to compile the parent crate
+# under wasm32 dev-deps.
+[workspace]
+
+[[bin]]
+name = "fuzz_normalize_path"
+path = "fuzz_targets/fuzz_normalize_path.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_join_paths"
+path = "fuzz_targets/fuzz_join_paths.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_urlencoding_roundtrip"
+path = "fuzz_targets/fuzz_urlencoding_roundtrip.rs"
+test = false
+doc = false
+bench = false
