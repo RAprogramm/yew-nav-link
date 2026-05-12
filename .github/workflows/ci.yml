@@ -315,7 +315,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Install reuse
-        run: pip install --user reuse
+        run: pip install --user reuse==6.2.0
 
       - name: Check REUSE compliance
         run: reuse lint
@@ -528,7 +528,7 @@ jobs:
           node-version: 20
 
       - name: Install Playwright dependencies
-        run: npm install --no-audit --no-fund --no-package-lock
+        run: npm ci --no-audit --no-fund
         working-directory: example/e2e
 
       - name: Cache Playwright browsers
