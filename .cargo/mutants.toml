@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+# SPDX-License-Identifier: MIT
+
+# cargo-mutants drives mutation testing for `yew-nav-link`. The defaults
+# inject every supported mutation into every function; this file narrows
+# the scope so the surviving-mutant report stays focused on logic that
+# actually deserves a test, not on derive-generated noise.
+
+# Skip mutations inside the demo crate and the wasm browser tests — the
+# library proper is what the suite gates.
+exclude_globs = [
+  "example/**",
+  "tests/wasm/**",
+  "tests/wasm.rs",
+  "benches/**",
+]
+
+# Skip mutations that flip Debug / Display / Clone implementations and
+# generated trait machinery. Surviving such a mutant is almost always a
+# false positive (the impl is auto-derived or trivially correct).
+exclude_re = [
+  "impl Debug",
+  "impl Display",
+  "impl Clone",
+  "impl PartialEq",
+  "impl Default",
+]

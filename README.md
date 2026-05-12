@@ -10,6 +10,7 @@ Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic acti
 
 [![CI](https://github.com/RAprogramm/yew-nav-link/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/RAprogramm/yew-nav-link/actions/workflows/ci.yml)
 [![Pages](https://github.com/RAprogramm/yew-nav-link/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/RAprogramm/yew-nav-link/actions/workflows/pages.yml)
+[![Mutants](https://github.com/RAprogramm/yew-nav-link/actions/workflows/mutants.yml/badge.svg?branch=main)](https://github.com/RAprogramm/yew-nav-link/actions/workflows/mutants.yml)
 [![Crates.io](https://img.shields.io/crates/v/yew-nav-link)](https://crates.io/crates/yew-nav-link)
 [![docs.rs](https://img.shields.io/docsrs/yew-nav-link)](https://docs.rs/yew-nav-link)
 [![Downloads](https://img.shields.io/crates/d/yew-nav-link)](https://crates.io/crates/yew-nav-link)
