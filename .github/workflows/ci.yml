@@ -187,6 +187,9 @@ jobs:
         with:
           toolchain: stable
 
+      - name: Setup nightly Rust toolchain for rustdoc JSON
+        uses: dtolnay/rust-toolchain@nightly
+
       - name: Load cached target directory
         uses: Swatinem/rust-cache@v2
         with:
