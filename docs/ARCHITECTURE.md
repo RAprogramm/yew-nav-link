@@ -157,3 +157,20 @@ component, hook, and utility appears in at least one card whose live
 preview is rendered side-by-side with the exact Rust snippet that
 produces it. The breadcrumb label provider is mounted at the top of the
 tree so `use_breadcrumbs` has a real provider to read.
+
+## 8. Decision history
+
+This document is intentionally short on *why*. The reasoning behind each
+non-trivial design choice lives in the
+[Architecture Decision Records](adr/), one per file in MADR format.
+
+| Decision | ADR |
+|---|---|
+| `class` / `active_class` use `&'static str`, not `AttrValue` | [0001](adr/0001-static-str-classes.md) |
+| The `macros` feature was dropped in 0.9.0 | [0002](adr/0002-drop-macros-feature.md) |
+| `NavError` is `#[non_exhaustive]` from 0.10.0 | [0003](adr/0003-non-exhaustive-nav-error.md) |
+| `NavLink` renders a manual `<a>` instead of wrapping `yew_router::Link` | [0004](adr/0004-manual-anchor-over-yew-router-link.md) |
+| Active links emit `aria-current="page"` | [0005](adr/0005-active-state-via-aria-current.md) |
+
+New non-trivial decisions land as new ADRs; this table is updated in the
+same PR.

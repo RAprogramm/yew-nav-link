@@ -334,7 +334,10 @@ yew-nav-link
 └── errors            # NavError, NavResult types
 ```
 
-See the source code and inline documentation for detailed design documentation.
+For *why* the crate is shaped this way — the trade-offs picked over each
+alternative — see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the
+overview and [`docs/adr/`](docs/adr/) for individual architecture
+decision records.
 
 ---
 
