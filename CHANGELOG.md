@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.1](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.0...v0.10.1) - 2026-05-12
+
+### CI
+
+- *(deps)* bump the actions group with 8 updates
+
 ## [0.10.0] - 2026-05-10
 
 The breaking-change pass before 1.0. Four small, targeted breakages consumers
