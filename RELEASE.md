@@ -51,7 +51,14 @@ After 1.0 the standard major/minor/patch rules apply.
 
 6. **Open a PR**, wait for `CI Success` to pass.
 
-7. **Rebase-merge to `main`.** That push triggers the `release` job in
+   The `Semver Checks` job runs `cargo semver-checks check-release`
+   against the previously-published crates.io version. If your changes
+   touch the public API in a way that does not match the version bump
+   in step 3, this job fails — re-decide the version (a wider bump or
+   smaller change) and make the PR consistent. Update both directions
+   here, never bypass the gate with `--allow-...` flags.
+
+7. **Squash-merge to `main`.** That push triggers the `release` job in
    `.github/workflows/ci.yml`, which:
 
    1. Reads the `version` value from `Cargo.toml`.
