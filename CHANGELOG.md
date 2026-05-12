@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.4](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.3...v0.10.4) - 2026-05-12
+
+### CI
+
+- mirror cliff.toml commit preprocessor into release-plz.toml ([#163](https://github.com/RAprogramm/yew-nav-link/issues/163))
+- normalize project commit format in cliff.toml so CHANGELOG body populates ([#161](https://github.com/RAprogramm/yew-nav-link/issues/161))
+
+### Documentation
+
+- refresh ROADMAP after 0.10.x release ([#158](https://github.com/RAprogramm/yew-nav-link/issues/158))
+
 ## [0.10.3](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.2...v0.10.3) - 2026-05-12
 
 ## [0.10.2](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.1...v0.10.2) - 2026-05-12
