@@ -5,5 +5,8 @@ target/
 # Trunk build output
 example/dist/
 
+# mdBook build output
+docs/book/
+
 # crates.io archives
 *.crate

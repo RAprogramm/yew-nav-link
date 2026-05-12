@@ -56,6 +56,19 @@ jobs:
       - name: SPA fallback (copy index.html to 404.html)
         run: cp example/dist/index.html example/dist/404.html
 
+      - name: Install mdBook
+        uses: taiki-e/install-action@v2
+        with:
+          tool: mdbook
+
+      - name: Build book
+        run: mdbook build docs
+
+      - name: Stage book under demo /book/
+        run: |
+          mkdir -p example/dist/book
+          cp -r docs/book/. example/dist/book/
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:

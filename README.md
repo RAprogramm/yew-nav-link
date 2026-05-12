@@ -6,7 +6,7 @@ Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic acti
 
 <div align="center">
 
-[**🌐 Live demo →**](https://raprogramm.github.io/yew-nav-link/)
+[**🌐 Live demo →**](https://raprogramm.github.io/yew-nav-link/) — [**📖 Architectural book →**](https://raprogramm.github.io/yew-nav-link/book/)
 
 [![CI](https://github.com/RAprogramm/yew-nav-link/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/RAprogramm/yew-nav-link/actions/workflows/ci.yml)
 [![Pages](https://github.com/RAprogramm/yew-nav-link/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/RAprogramm/yew-nav-link/actions/workflows/pages.yml)
@@ -404,6 +404,7 @@ pub struct BreadcrumbItem {
 
 | File | Purpose |
 |------|---------|
+| [Architectural book](https://raprogramm.github.io/yew-nav-link/book/) | Rendered mdBook of the documents below — search, syntax-highlighting, navigation. Source lives under `docs/`. |
 | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) | Functional and non-functional requirements (what the crate does, the constraints under which it does it) |
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Module layout, the active-state algorithm, hook contracts, breadcrumb context flow |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Trajectory toward 0.10 (breaking-change pass) and 1.0 (API freeze) |
