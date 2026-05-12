@@ -142,6 +142,7 @@ merge.
 | `Lint (clippy)` | yes | pedantic + nursery |
 | `Documentation` | yes | `cargo doc --all-features` with `RUSTDOCFLAGS=-D warnings` |
 | `Public API` | yes | `cargo public-api -sss` must match `docs/public-api.txt` |
+| `Book` | yes | `mdbook build docs` against `docs/book.toml` |
 | `no-std` | yes | informational stub (Yew is std-only) |
 | `Security` | yes | `cargo deny check` + `cargo audit` |
 | `REUSE Compliance` | yes | `reuse lint` |

@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+# SPDX-License-Identifier: MIT
+
+[book]
+title = "yew-nav-link — architectural reference"
+authors = ["RAprogramm"]
+language = "en"
+src = "."
+
+[build]
+build-dir = "book"
+create-missing = false
+
+[output.html]
+git-repository-url = "https://github.com/RAprogramm/yew-nav-link"
+edit-url-template = "https://github.com/RAprogramm/yew-nav-link/edit/main/docs/{path}"
+default-theme = "navy"
+preferred-dark-theme = "navy"
+no-section-label = false
+
+[output.html.fold]
+enable = true
+level = 1
+
+[output.html.search]
+enable = true
+limit-results = 30
+use-boolean-and = true
+boost-title = 2
