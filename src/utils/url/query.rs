@@ -250,9 +250,9 @@ impl QueryParams {
         let pairs: Vec<String> = self
             .params
             .iter()
-            .flat_map(|(k, v)| {
-                v.iter().map(move |val| {
-                    format!("{}={}", urlencoding_encode(k), urlencoding_encode(val))
+            .flat_map(|(key, values)| {
+                values.iter().map(move |value| {
+                    format!("{}={}", urlencoding_encode(key), urlencoding_encode(value))
                 })
             })
             .collect();
@@ -295,7 +295,7 @@ impl QueryParams {
     pub fn iter(&self) -> impl Iterator<Item = (&str, &str)> {
         self.params
             .iter()
-            .map(|(k, v)| (k.as_str(), v.first().map_or("", String::as_str)))
+            .map(|(key, values)| (key.as_str(), values.first().map_or("", String::as_str)))
     }
 
     /// Returns an iterator over all parameter key-value pairs including
@@ -311,9 +311,11 @@ impl QueryParams {
     /// assert_eq!(count, 2);
     /// ```
     pub fn iter_all(&self) -> impl Iterator<Item = (&str, &str)> {
-        self.params
-            .iter()
-            .flat_map(|(k, v)| v.iter().map(move |val| (k.as_str(), val.as_str())))
+        self.params.iter().flat_map(|(key, values)| {
+            values
+                .iter()
+                .map(move |value| (key.as_str(), value.as_str()))
+        })
     }
 }
 
