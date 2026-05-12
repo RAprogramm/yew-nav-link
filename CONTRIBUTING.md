@@ -156,20 +156,51 @@ merge.
 | `Actionlint` | yes | lints all workflow YAML |
 | `Changelog` | yes (skip allowed) | runs `git-cliff` |
 
-Two more workflows handle deployment side-effects on push to `main`:
+Three more workflows handle deployment side-effects on push to `main`:
 
-- `.github/workflows/pages.yml` deploys the demo to
-  <https://raprogramm.github.io/yew-nav-link/>.
-- `.github/workflows/release-plz.yml` opens / updates the release PR
-  and, when that PR is merged, tags + publishes to crates.io + creates
-  the GitHub release. See [`RELEASE.md`](RELEASE.md) for the full flow.
+- `.github/workflows/pages.yml` deploys the demo and the mdBook to
+  <https://raprogramm.github.io/yew-nav-link/> and
+  <https://raprogramm.github.io/yew-nav-link/book/>.
+- `.github/workflows/release-plz.yml` runs the release loop (see below).
+- `.github/workflows/release-attestations.yml` fires on `release:
+  published` and attaches a CycloneDX SBOM plus a Sigstore-signed SLSA
+  build-provenance attestation to the GitHub Release.
 
 ## Releasing
 
-The bump → publish dance is documented in [`RELEASE.md`](RELEASE.md). In
-short: edit `Cargo.toml` `version`, prepend a `[X.Y.Z] - YYYY-MM-DD`
-section to `CHANGELOG.md`, merge to `main`, and the release job pushes to
-crates.io and creates the GitHub release.
+Releases are fully autonomous from a contributor's perspective. The
+maintainer does **not** edit `Cargo.toml` or `CHANGELOG.md` by hand —
+[release-plz](https://release-plz.dev) does it. The loop:
+
+1. Land any conventional commit on `main` (`feat:`, `fix:`, `docs:`,
+   `refactor:`, `ci:`, `deps:` — `test:` and `chore:` are skipped).
+2. `Release-plz` workflow opens (or updates) a single release PR titled
+   `chore: release vX.Y.Z`. The version bump and `CHANGELOG.md` section
+   are derived from the conventional commits since the last tag.
+3. `CI` runs on the release PR automatically — the workflow authenticates
+   as the dedicated **GitHub App** `release-plz-yew-nav-link`, so PRs it
+   opens trigger downstream workflows the same way human PRs do. (The
+   default `GITHUB_TOKEN` does not; that is GitHub's anti-recursion
+   policy.)
+4. Maintainer reviews and squash-merges the release PR.
+5. `Release-plz` workflow runs again on the merge, tags `vX.Y.Z`,
+   publishes to crates.io, and creates the GitHub Release.
+6. `Release attestations` fires on the `release: published` event,
+   generates the SBOM and signed provenance, and attaches them.
+
+Step 4 is the only human action in the chain. There is no manual
+version-bump path; the `Cargo.toml` and `CHANGELOG.md` mutations are
+exclusively the release PR's diff.
+
+The App identity is configured once per repository — see
+[`docs/RELEASE_PLZ_APP_SETUP.md`](docs/RELEASE_PLZ_APP_SETUP.md). Two
+repository secrets carry the credentials: `RELEASE_PLZ_APP_ID` and
+`RELEASE_PLZ_APP_PRIVATE_KEY`. The App has exactly two repository
+permissions: **Contents: read & write** and **Pull requests: read &
+write**, scoped to this single repo.
+
+For yanking, pre-releases, and the older manual-backfill recipe, see
+[`RELEASE.md`](RELEASE.md).
 
 ## Recognition
 
