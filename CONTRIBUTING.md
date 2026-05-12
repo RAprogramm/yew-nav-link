@@ -145,6 +145,7 @@ merge.
 | `Security` | yes | `cargo deny check` + `cargo audit` |
 | `REUSE Compliance` | yes | `reuse lint` |
 | `Test` | yes (skip allowed) | `cargo nextest` + doctests |
+| `WASM Tests` | yes | `wasm-pack test --headless --chrome --firefox --test wasm` |
 | `Coverage` | yes (skip allowed) | `cargo llvm-cov` → Codecov upload |
 | `Benchmarks` | yes (skip allowed) | `cargo bench --no-run` |
 | `Example WASM build` | yes | `trunk build --release` against `example/` |

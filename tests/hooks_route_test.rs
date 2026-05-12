@@ -1,4 +1,4 @@
-#![cfg(test)]
+#![cfg(all(test, not(target_arch = "wasm32")))]
 
 mod hooks_route_test {
     use yew_nav_link::hooks::BreadcrumbItem;

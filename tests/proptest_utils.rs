@@ -5,6 +5,8 @@
 //! examples in the unit-test modules pin specific cases; these properties
 //! assert invariants over arbitrary UTF-8 / arbitrary path inputs.
 
+#![cfg(not(target_arch = "wasm32"))]
+
 use proptest::prelude::*;
 use yew_nav_link::utils::{
     is_absolute, join_paths, normalize_path, urlencoding_decode, urlencoding_encode

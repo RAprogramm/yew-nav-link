@@ -1,4 +1,4 @@
-#![cfg(test)]
+#![cfg(all(test, not(target_arch = "wasm32")))]
 
 mod pagination_test {
     use yew::prelude::*;

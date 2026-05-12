@@ -1,5 +1,7 @@
 //! Integration tests for components module.
 
+#![cfg(not(target_arch = "wasm32"))]
+
 use yew::prelude::*;
 
 #[test]

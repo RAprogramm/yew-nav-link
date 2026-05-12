@@ -32,9 +32,27 @@ yew = { version = "0.23", features = ["csr"] }
 yew-router = "0.20"
 
 [dev-dependencies]
+wasm-bindgen = "0.2"
+wasm-bindgen-test = "0.3"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+web-sys = { version = "0.3", features = [
+  "Window",
+  "Document",
+  "Element",
+  "HtmlElement",
+  "HtmlCollection",
+  "History",
+] }
+
+# Native-only dev-deps. `criterion` pulls in non-wasm runtime crates and
+# `proptest`'s default features pull `rusty-fork` -> `wait-timeout`, which
+# does not compile for `wasm32-unknown-unknown`. Both are exercised only by
+# native test targets (`tests/proptest_utils.rs`, `benches/`), so gating
+# keeps the wasm test build minimal and lets the browser suite link cleanly.
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
 criterion = "0.8"
 proptest = "1"
-wasm-bindgen-test = "0.3"
 
 [[bench]]
 name = "path"

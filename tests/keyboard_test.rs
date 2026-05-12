@@ -1,5 +1,7 @@
 //! Keyboard navigation tests.
 
+#![cfg(not(target_arch = "wasm32"))]
+
 use yew_nav_link::utils::{KeyboardDirection, KeyboardNavConfig};
 
 #[test]

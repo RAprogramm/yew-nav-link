@@ -285,6 +285,42 @@ jobs:
       - name: Run doctests
         run: cargo test --doc --all-features
 
+  wasm_tests:
+    name: WASM Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Load cached target directory
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: wasm-tests
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - name: Install wasm-pack
+        uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-pack
+
+      - name: Install chromedriver
+        uses: nanasess/setup-chromedriver@v2
+
+      - name: Install geckodriver
+        uses: browser-actions/setup-geckodriver@latest
+
+      - name: Run browser tests on Chrome
+        run: wasm-pack test --headless --chrome --test wasm
+
+      - name: Run browser tests on Firefox
+        run: wasm-pack test --headless --firefox --test wasm
+
   coverage:
     name: Coverage
     needs: test
@@ -586,7 +622,7 @@ jobs:
   ci-success:
     name: CI Success
     runs-on: ubuntu-latest
-    needs: [msrv, check, fmt, docs, semver_checks, no_std, security, reuse, test, coverage, benchmarks, wasm-build, lighthouse, changelog, actionlint, release]
+    needs: [msrv, check, fmt, docs, semver_checks, no_std, security, reuse, test, wasm_tests, coverage, benchmarks, wasm-build, lighthouse, changelog, actionlint, release]
     if: always()
     steps:
       - name: Check job status
@@ -602,6 +638,7 @@ jobs:
           echo "  Security: ${{ needs.security.result }}"
           echo "  REUSE: ${{ needs.reuse.result }}"
           echo "  Test: ${{ needs.test.result }}"
+          echo "  WASM Tests: ${{ needs.wasm_tests.result }}"
           echo "  Coverage: ${{ needs.coverage.result }}"
           echo "  Benchmarks: ${{ needs.benchmarks.result }}"
           echo "  WASM build: ${{ needs.wasm-build.result }}"
@@ -610,7 +647,7 @@ jobs:
           echo "  Actionlint: ${{ needs.actionlint.result }}"
           echo "  Release: ${{ needs.release.result }}"
 
-          if [[ "${{ needs.msrv.result }}" != "success" || "${{ needs.check.result }}" != "success" || "${{ needs.fmt.result }}" != "success" || "${{ needs.docs.result }}" != "success" || "${{ needs.semver_checks.result }}" != "success" || "${{ needs.no_std.result }}" != "success" || "${{ needs.security.result }}" != "success" || "${{ needs.reuse.result }}" != "success" || ("${{ needs.test.result }}" != "success" && "${{ needs.test.result }}" != "skipped") || ("${{ needs.coverage.result }}" != "success" && "${{ needs.coverage.result }}" != "skipped") || ("${{ needs.benchmarks.result }}" != "success" && "${{ needs.benchmarks.result }}" != "skipped") || "${{ needs.wasm-build.result }}" != "success" || "${{ needs.lighthouse.result }}" != "success" || ("${{ needs.changelog.result }}" != "success" && "${{ needs.changelog.result }}" != "skipped") || ("${{ needs.release.result }}" != "success" && "${{ needs.release.result }}" != "skipped") || "${{ needs.actionlint.result }}" != "success" ]]; then
+          if [[ "${{ needs.msrv.result }}" != "success" || "${{ needs.check.result }}" != "success" || "${{ needs.fmt.result }}" != "success" || "${{ needs.docs.result }}" != "success" || "${{ needs.semver_checks.result }}" != "success" || "${{ needs.no_std.result }}" != "success" || "${{ needs.security.result }}" != "success" || "${{ needs.reuse.result }}" != "success" || ("${{ needs.test.result }}" != "success" && "${{ needs.test.result }}" != "skipped") || "${{ needs.wasm_tests.result }}" != "success" || ("${{ needs.coverage.result }}" != "success" && "${{ needs.coverage.result }}" != "skipped") || ("${{ needs.benchmarks.result }}" != "success" && "${{ needs.benchmarks.result }}" != "skipped") || "${{ needs.wasm-build.result }}" != "success" || "${{ needs.lighthouse.result }}" != "success" || ("${{ needs.changelog.result }}" != "success" && "${{ needs.changelog.result }}" != "skipped") || ("${{ needs.release.result }}" != "success" && "${{ needs.release.result }}" != "skipped") || "${{ needs.actionlint.result }}" != "success" ]]; then
             echo "❌ CI failed"
             exit 1
           fi

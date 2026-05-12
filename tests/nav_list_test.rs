@@ -2,6 +2,8 @@
 //!
 //! Tests the public API of nav components.
 
+#![cfg(not(target_arch = "wasm32"))]
+
 use yew::prelude::*;
 
 #[test]

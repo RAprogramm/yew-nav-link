@@ -1,4 +1,4 @@
-#![cfg(test)]
+#![cfg(all(test, not(target_arch = "wasm32")))]
 
 use yew_nav_link::utils::{urlencoding_decode, urlencoding_encode};
 

@@ -1,5 +1,7 @@
 //! Integration tests for nav components.
 
+#![cfg(not(target_arch = "wasm32"))]
+
 use yew::prelude::*;
 
 #[test]

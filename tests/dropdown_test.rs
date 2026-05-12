@@ -1,4 +1,4 @@
-#![cfg(test)]
+#![cfg(all(test, not(target_arch = "wasm32")))]
 
 use yew::prelude::*;
 use yew_nav_link::components::{NavDropdownDividerProps, NavDropdownItemProps, NavDropdownProps};
