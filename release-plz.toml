@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+# SPDX-License-Identifier: MIT
+
+# release-plz drives the release cadence for `yew-nav-link`:
+#   1. on every push to `main`, it computes the next version from
+#      conventional commits since the latest tag and opens (or updates)
+#      a release PR that bumps `Cargo.toml` and prepends a section to
+#      `CHANGELOG.md`;
+#   2. when that release PR is squash-merged, it publishes to crates.io,
+#      tags `vX.Y.Z`, and creates the GitHub release.
+#
+# Reference: https://release-plz.dev
+
+[workspace]
+allow_dirty = false
+changelog_update = true
+git_release_enable = true
+git_tag_enable = true
+publish = true
+publish_allow_dirty = false
+release = true
+
+[[package]]
+name = "yew-nav-link"
+# Mirror the section structure of the existing CHANGELOG so the diff
+# stays minimal when release-plz writes a new release entry.
+changelog_path = "CHANGELOG.md"
+git_release_name = "v{{ version }}"
+git_tag_name = "v{{ version }}"
+publish_features = ["default"]
+
+[changelog]
+# Map conventional commits to the same headings cliff.toml has been using
+# so the merged CHANGELOG remains stylistically consistent.
+header = """
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+"""
+commit_parsers = [
+    { message = "^feat", group = "Features" },
+    { message = "^fix", group = "Bug Fixes" },
+    { message = "^refactor", group = "Refactoring" },
+    { message = "^docs", group = "Documentation" },
+    { message = "^ci", group = "CI" },
+    { message = "^deps|^chore\\(deps\\)", group = "Dependencies" },
+    { message = "^chore", skip = true },
+    { message = "^test", skip = true },
+]
+sort_commits = "newest"
+trim = true

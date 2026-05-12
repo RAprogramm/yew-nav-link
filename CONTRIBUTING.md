@@ -153,10 +153,14 @@ merge.
 | `Lighthouse` | yes | thresholds: perf 0.85, a11y 0.9, best-practices 0.9, SEO 0.9 |
 | `Actionlint` | yes | lints all workflow YAML |
 | `Changelog` | yes (skip allowed) | runs `git-cliff` |
-| `Release` | yes (skip allowed) | publishes on push to `main` when `Cargo.toml` version changes |
 
-A separate `.github/workflows/pages.yml` deploys the demo to
-<https://raprogramm.github.io/yew-nav-link/> on push to `main`.
+Two more workflows handle deployment side-effects on push to `main`:
+
+- `.github/workflows/pages.yml` deploys the demo to
+  <https://raprogramm.github.io/yew-nav-link/>.
+- `.github/workflows/release-plz.yml` opens / updates the release PR
+  and, when that PR is merged, tags + publishes to crates.io + creates
+  the GitHub release. See [`RELEASE.md`](RELEASE.md) for the full flow.
 
 ## Releasing
 
