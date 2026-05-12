@@ -17,6 +17,13 @@ exclude = ["example/**"]
 [package.metadata.docs.rs]
 all-features = true
 
+# cargo-udeps cannot detect usage of crates that participate only through
+# proc-macro attributes (`#[wasm_bindgen_test]`) under non-native targets.
+# `wasm-bindgen-test` is exercised by `wasm-pack test` in the dedicated CI
+# job and is genuinely required there.
+[package.metadata.cargo-udeps.ignore]
+development = ["wasm-bindgen-test"]
+
 [features]
 default = []
 
