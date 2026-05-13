@@ -39,6 +39,8 @@ jobs:
           tool: git-cliff
 
       - name: Regenerate [Unreleased] in CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           git-cliff --unreleased > /tmp/unreleased.md
