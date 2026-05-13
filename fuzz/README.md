@@ -24,13 +24,17 @@ input generator.
 ```bash
 cargo install --locked cargo-fuzz
 cd fuzz
-cargo +nightly fuzz run fuzz_normalize_path -- -max_total_time=60
-cargo +nightly fuzz run fuzz_join_paths -- -max_total_time=60
-cargo +nightly fuzz run fuzz_urlencoding_roundtrip -- -max_total_time=60
+cargo +nightly fuzz run --target x86_64-unknown-linux-gnu fuzz_normalize_path -- -max_total_time=60
+cargo +nightly fuzz run --target x86_64-unknown-linux-gnu fuzz_join_paths -- -max_total_time=60
+cargo +nightly fuzz run --target x86_64-unknown-linux-gnu fuzz_urlencoding_roundtrip -- -max_total_time=60
 ```
 
 `cargo fuzz` requires a nightly toolchain — the macro it expands to
-needs unstable `#[no_main]` instrumentation hooks.
+needs unstable `#[no_main]` instrumentation hooks. The explicit
+`--target x86_64-unknown-linux-gnu` is required on hosts where
+cargo-fuzz would otherwise pick `x86_64-unknown-linux-musl`; musl's
+static libc is incompatible with AddressSanitizer's dynamic-libc
+instrumentation.
 
 ## Layout
 
