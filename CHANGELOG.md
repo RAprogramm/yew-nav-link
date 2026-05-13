@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.5](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.4...v0.10.5) - 2026-05-13
+
+### CI
+
+- pin cargo-fuzz target to x86_64-unknown-linux-gnu ([#169](https://github.com/RAprogramm/yew-nav-link/issues/169))
+- pass GITHUB_TOKEN to git-cliff in changelog-refresh workflow ([#165](https://github.com/RAprogramm/yew-nav-link/issues/165))
+
 ## [0.10.4](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.3...v0.10.4) - 2026-05-12
 
 ### CI
