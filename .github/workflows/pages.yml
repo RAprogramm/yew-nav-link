@@ -57,7 +57,7 @@ jobs:
         run: cp example/dist/index.html example/dist/404.html
 
       - name: Install mdBook
-        uses: taiki-e/install-action@c070f87102a1c75b3183910f391c1cb887fe13c8 # v2
+        uses: taiki-e/install-action@7be9fd86bd1707236395105d6e9329dd1511a7e1 # v2
         with:
           tool: mdbook
 
