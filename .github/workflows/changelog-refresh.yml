@@ -29,12 +29,12 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           fetch-depth: 0
 
       - name: Install git-cliff
-        uses: taiki-e/install-action@c070f87102a1c75b3183910f391c1cb887fe13c8 # v2
+        uses: taiki-e/install-action@0631aa6515c7d545823c67cfae7ef4fc7f490154 # v2
         with:
           tool: git-cliff
 
