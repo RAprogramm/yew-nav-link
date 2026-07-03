@@ -40,24 +40,16 @@ pub fn handle_arrow_key(
 
     let direction = direction?;
 
-    // Handle empty list
     if total_items == 0 {
         return None;
     }
 
-    let next = match direction {
-        KeyboardDirection::Forward => current_index + 1,
-        KeyboardDirection::Backward => current_index.saturating_sub(1)
-    };
-
-    if config.wrap {
-        Some(next % total_items)
-    } else if (direction == KeyboardDirection::Backward && current_index == 0)
-        || (direction == KeyboardDirection::Forward && current_index >= total_items - 1)
-    {
-        None
-    } else {
-        Some(next)
+    let last = total_items - 1;
+    match direction {
+        KeyboardDirection::Forward if current_index >= last => config.wrap.then_some(0),
+        KeyboardDirection::Forward => Some(current_index + 1),
+        KeyboardDirection::Backward if current_index == 0 => config.wrap.then_some(last),
+        KeyboardDirection::Backward => Some(current_index.min(last) - 1)
     }
 }
 
@@ -184,6 +176,26 @@ mod tests {
             ..KeyboardNavConfig::default()
         };
         let result = handle_arrow_key("ArrowRight", 4, 5, &config);
+        assert_eq!(result, Some(0));
+    }
+
+    #[test]
+    fn handle_arrow_key_wrap_backward_from_first() {
+        let config = KeyboardNavConfig {
+            wrap: true,
+            ..KeyboardNavConfig::default()
+        };
+        let result = handle_arrow_key("ArrowLeft", 0, 5, &config);
+        assert_eq!(result, Some(4));
+    }
+
+    #[test]
+    fn handle_arrow_key_wrap_backward_single_item() {
+        let config = KeyboardNavConfig {
+            wrap: true,
+            ..KeyboardNavConfig::default()
+        };
+        let result = handle_arrow_key("ArrowLeft", 0, 1, &config);
         assert_eq!(result, Some(0));
     }
 
