@@ -20,6 +20,10 @@ Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic acti
 [![OSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/RAprogramm/yew-nav-link/badge)](https://securityscorecards.dev/viewer/?uri=github.com/RAprogramm/yew-nav-link)
 [![Codecov](https://codecov.io/gh/RAprogramm/yew-nav-link/branch/main/graph/badge.svg)](https://codecov.io/gh/RAprogramm/yew-nav-link)
 
+<img src="docs/assets/navlink-demo.gif" alt="Animated demo: clicking the Yew, Nav and Link tabs changes the URL path and page content while the active tab is highlighted automatically" width="740">
+
+*Click a `NavLink` — the route changes, and the `active` class plus `aria-current="page"` follow automatically.*
+
 </div>
 
 ---
