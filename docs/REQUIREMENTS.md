@@ -71,6 +71,9 @@ breadcrumb trail from the current path. The label of each item comes from a
 `BreadcrumbLabelProvider` injected into the tree via
 `BreadcrumbLabelProviderContext`. When no provider is present the path
 itself is used as the label. The last item has `is_active == true`.
+Each item's `route` is resolved from its own path prefix via
+`Routable::recognize`; when the prefix does not correspond to any route
+in `R`, the item falls back to the current route.
 
 ### 1.4 Components
 
