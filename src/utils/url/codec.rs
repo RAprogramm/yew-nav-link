@@ -21,19 +21,14 @@ pub fn urlencoding_decode(input: &str) -> Option<String> {
     while let Some(c) = chars.next() {
         match c {
             '%' => {
-                let hex: String = chars.by_ref().take(2).collect();
-                if hex.len() == 2 {
-                    if let Ok(byte) = u8::from_str_radix(&hex, 16) {
-                        bytes.push(byte);
-                    } else {
-                        // Not valid hex — keep the literal bytes so users see
-                        // the input was malformed.
-                        bytes.push(b'%');
-                        bytes.extend_from_slice(hex.as_bytes());
-                    }
+                let hi = chars.next();
+                let lo = chars.next();
+                if let Some(byte) = hex_pair_to_byte(hi, lo) {
+                    bytes.push(byte);
                 } else {
                     bytes.push(b'%');
-                    bytes.extend_from_slice(hex.as_bytes());
+                    push_utf8(&mut bytes, hi);
+                    push_utf8(&mut bytes, lo);
                 }
             }
             '+' => bytes.push(b' '),
@@ -45,6 +40,24 @@ pub fn urlencoding_decode(input: &str) -> Option<String> {
     }
 
     String::from_utf8(bytes).ok()
+}
+
+/// Combines two hex-digit characters into the byte they encode.
+///
+/// Returns `None` unless both characters are present and are hex digits,
+/// which keeps malformed `%XX` triplets in the output verbatim.
+fn hex_pair_to_byte(hi: Option<char>, lo: Option<char>) -> Option<u8> {
+    let high = hi?.to_digit(16)?;
+    let low = lo?.to_digit(16)?;
+    u8::try_from(high * 16 + low).ok()
+}
+
+/// Appends the UTF-8 bytes of `c` to `bytes` when the character is present.
+fn push_utf8(bytes: &mut Vec<u8>, c: Option<char>) {
+    if let Some(c) = c {
+        let mut buf = [0u8; 4];
+        bytes.extend_from_slice(c.encode_utf8(&mut buf).as_bytes());
+    }
 }
 
 /// Percent-encodes a string for safe use in URLs.

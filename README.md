@@ -65,23 +65,29 @@ Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic acti
 
 The core `NavLink` component eliminates manual active state tracking. It compares the current route against the target on every render and applies the `active` CSS class automatically — zero configuration required.
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ---
 
 ## Installation
 
 ```toml
 [dependencies]
-yew-nav-link = "0.9"
+yew-nav-link = "0.10"
 ```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Requirements
 
 | Dependency | Version |
 |------------|---------|
-| Rust | 1.95+ |
+| Rust | 1.96+ |
 | Edition | 2024 |
 | Yew | 0.23+ |
 | yew-router | 0.20+ |
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ---
 
@@ -238,6 +244,8 @@ fn Crumbs() -> Html {
 }
 ```
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ## Components
 
 ### Core Navigation
@@ -290,6 +298,8 @@ fn Crumbs() -> Html {
 | `handle_arrow_key(config, key)` | Keyboard navigation handler |
 | `handle_home_end(config, key)` | Home/End key handler for navigation |
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ---
 
 ## CSS Integration
@@ -320,6 +330,8 @@ Define your own `nav-link` and `active` styles:
 }
 ```
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ---
 
 ## Architecture
@@ -340,6 +352,8 @@ alternative — see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the
 overview and [`docs/adr/`](docs/adr/) for individual architecture
 decision records.
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ---
 
 ## Examples
@@ -357,6 +371,8 @@ trunk serve
 ```
 
 Open <http://127.0.0.1:3000> (port set in [`example/trunk.toml`](example/trunk.toml)).
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ---
 
@@ -399,6 +415,8 @@ pub struct BreadcrumbItem {
 }
 ```
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ---
 
 ## Project documentation
@@ -412,6 +430,8 @@ pub struct BreadcrumbItem {
 | [`docs/BRANCHING.md`](docs/BRANCHING.md) | Branching, commit, and merge policy enforced on `main` |
 | [`SECURITY.md`](SECURITY.md) | Coordinated disclosure policy |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Workflow, commit format, code standards |
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ---
 
@@ -464,14 +484,20 @@ Top section is the entire project, proceeding through folders to individual file
 
 </details>
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ---
 
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow and code standards.
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ---
 
 ## License
 
 Licensed under the [MIT License](LICENSE).
+
+<p align="right">(<a href="#top">back to top</a>)</p>

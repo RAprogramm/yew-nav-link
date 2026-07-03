@@ -116,6 +116,13 @@ fn handle_arrow_key_horizontal_wrap_forward() {
 }
 
 #[test]
+fn handle_arrow_key_horizontal_wrap_backward() {
+    let config = KeyboardNavConfig::new().with_wrap(true);
+    let prev = yew_nav_link::utils::handle_arrow_key("ArrowLeft", 0, 5, &config);
+    assert_eq!(prev, Some(4));
+}
+
+#[test]
 fn handle_arrow_key_horizontal_no_wrap() {
     let config = KeyboardNavConfig::new().with_wrap(false);
     let next = yew_nav_link::utils::handle_arrow_key("ArrowRight", 4, 5, &config);

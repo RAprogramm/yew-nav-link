@@ -61,6 +61,12 @@ pub struct BreadcrumbItem<R> {
 
 /// Returns a list of [`BreadcrumbItem`]s representing the current navigation
 /// path.
+///
+/// Each item's `route` is resolved from its own path prefix via
+/// [`Routable::recognize`], so parent breadcrumbs navigate to their actual
+/// routes. When a prefix does not correspond to any route in `R` (e.g.
+/// `/users` when only `/users/:id` exists), the item falls back to the
+/// current route.
 #[hook]
 pub fn use_breadcrumbs<R>() -> Vec<BreadcrumbItem<R>>
 where
@@ -74,16 +80,14 @@ where
         let segments: Vec<&str> = path.split('/').filter(|s| !s.is_empty()).collect();
         let mut items = Vec::new();
         let mut built = String::new();
-        // Root
         let root_label = provider
             .as_ref()
             .map_or_else(|| "/".to_string(), |p| p.0.label_for_path("/"));
         items.push(BreadcrumbItem {
-            route:     route.clone(),
+            route:     R::recognize("/").unwrap_or_else(|| route.clone()),
             label:     root_label,
             is_active: segments.is_empty()
         });
-        // Segments
         let total = segments.len();
         for (i, segment) in segments.iter().enumerate() {
             built.push('/');
@@ -93,7 +97,7 @@ where
                 .as_ref()
                 .map_or_else(|| built.clone(), |p| p.0.label_for_path(&built));
             items.push(BreadcrumbItem {
-                route: route.clone(),
+                route: R::recognize(&built).unwrap_or_else(|| route.clone()),
                 label,
                 is_active: is_last
             });
