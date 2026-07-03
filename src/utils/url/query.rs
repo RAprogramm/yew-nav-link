@@ -12,7 +12,7 @@
 //! Keys map to **multiple values** to support query strings like
 //! `tag=rust&tag=web` properly.
 
-use std::{collections::HashMap, fmt};
+use std::fmt;
 
 use super::codec::{urlencoding_decode, urlencoding_encode};
 
@@ -22,6 +22,11 @@ use super::codec::{urlencoding_decode, urlencoding_encode};
 /// Keys and values are automatically percent-decoded on parse and
 /// percent-encoded on serialization. Multiple values per key are supported
 /// for query strings such as `tag=rust&tag=web`.
+///
+/// Keys keep their insertion order, so
+/// [`to_query_string`](Self::to_query_string) is deterministic and `parse` →
+/// serialize round-trips preserve the original parameter order. Equality
+/// remains key-order-insensitive.
 ///
 /// # Examples
 ///
@@ -39,12 +44,29 @@ use super::codec::{urlencoding_decode, urlencoding_encode};
 /// assert!(qs.contains("limit=10"));
 /// assert!(qs.contains("sort=name"));
 /// ```
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Debug, Default)]
 pub struct QueryParams {
-    params: HashMap<String, Vec<String>>
+    params: Vec<(String, Vec<String>)>
 }
 
+impl PartialEq for QueryParams {
+    fn eq(&self, other: &Self) -> bool {
+        self.params.len() == other.params.len()
+            && self
+                .params
+                .iter()
+                .all(|(key, values)| other.get_all(key) == Some(values))
+    }
+}
+
+impl Eq for QueryParams {}
+
 impl QueryParams {
+    fn entry_mut(&mut self, key: &str) -> Option<&mut Vec<String>> {
+        self.params
+            .iter_mut()
+            .find_map(|(k, values)| (k == key).then_some(values))
+    }
     /// Creates an empty [`QueryParams`].
     #[must_use]
     pub fn new() -> Self {
@@ -73,25 +95,25 @@ impl QueryParams {
     #[must_use]
     pub fn parse(query: &str) -> Self {
         let query = query.trim_start_matches('?');
-        let mut params: HashMap<String, Vec<String>> = HashMap::new();
+        let mut result = Self::default();
 
         for pair in query.split('&') {
-            let parts: Vec<&str> = pair.splitn(2, '=').collect();
-            if let Some(key) = parts.first() {
-                let decoded_key = urlencoding_decode(key).unwrap_or_else(|| key.to_string());
-                if !decoded_key.is_empty() {
-                    let value = parts
-                        .get(1)
-                        .map(|v| urlencoding_decode(v).unwrap_or_else(|| v.to_string()))
-                        .unwrap_or_default();
-                    params.entry(decoded_key).or_default().push(value);
+            let (key, value) = pair
+                .split_once('=')
+                .map_or((pair, None), |(k, v)| (k, Some(v)));
+            let decoded_key = urlencoding_decode(key).unwrap_or_else(|| key.to_string());
+            if !decoded_key.is_empty() {
+                let value = value
+                    .map(|v| urlencoding_decode(v).unwrap_or_else(|| v.to_string()))
+                    .unwrap_or_default();
+                match result.entry_mut(&decoded_key) {
+                    Some(values) => values.push(value),
+                    None => result.params.push((decoded_key, vec![value]))
                 }
             }
         }
 
-        Self {
-            params
-        }
+        result
     }
 
     /// Returns the first value for the given key, if present.
@@ -111,9 +133,8 @@ impl QueryParams {
     /// ```
     #[must_use]
     pub fn get(&self, key: &str) -> Option<&str> {
-        self.params
-            .get(key)
-            .and_then(|v| v.first())
+        self.get_all(key)
+            .and_then(|values| values.first())
             .map(String::as_str)
     }
 
@@ -132,7 +153,9 @@ impl QueryParams {
     /// all values in order.
     #[must_use]
     pub fn get_all(&self, key: &str) -> Option<&Vec<String>> {
-        self.params.get(key)
+        self.params
+            .iter()
+            .find_map(|(k, values)| (k == key).then_some(values))
     }
 
     /// Returns `true` if the given key exists in the parameters.
@@ -148,7 +171,7 @@ impl QueryParams {
     /// ```
     #[must_use]
     pub fn has(&self, key: &str) -> bool {
-        self.params.contains_key(key)
+        self.params.iter().any(|(k, _)| k == key)
     }
 
     /// Checks if the given key exists (alias for [`Self::has`]).
@@ -182,10 +205,10 @@ impl QueryParams {
     /// assert_eq!(all, &["rust".to_string(), "web".to_string()]);
     /// ```
     pub fn set(&mut self, key: &str, value: &str) {
-        self.params
-            .entry(key.to_string())
-            .or_default()
-            .push(value.to_string());
+        match self.entry_mut(key) {
+            Some(values) => values.push(value.to_string()),
+            None => self.params.push((key.to_string(), vec![value.to_string()]))
+        }
     }
 
     /// Sets a value for the given key, **replacing** any existing values.
@@ -206,7 +229,10 @@ impl QueryParams {
     /// assert_eq!(all, &["new".to_string()]);
     /// ```
     pub fn set_value(&mut self, key: &str, value: &str) {
-        self.params.insert(key.to_string(), vec![value.to_string()]);
+        match self.entry_mut(key) {
+            Some(values) => *values = vec![value.to_string()],
+            None => self.params.push((key.to_string(), vec![value.to_string()]))
+        }
     }
 
     /// Removes a key and all its values, if present.
@@ -221,14 +247,15 @@ impl QueryParams {
     /// assert!(!params.has("key"));
     /// ```
     pub fn remove(&mut self, key: &str) {
-        self.params.remove(key);
+        self.params.retain(|(k, _)| k != key);
     }
 
     /// Serializes the parameters to a query string starting with `?`.
     ///
     /// Returns an empty string if there are no parameters.
     /// Multiple values for the same key are serialized as repeated
-    /// `key=value` pairs.
+    /// `key=value` pairs. Keys appear in insertion order, so the output
+    /// is deterministic.
     ///
     /// # Examples
     ///
@@ -263,19 +290,19 @@ impl QueryParams {
 
     /// Returns the number of unique parameter keys.
     #[must_use]
-    pub fn len(&self) -> usize {
+    pub const fn len(&self) -> usize {
         self.params.len()
     }
 
     /// Returns `true` if there are no parameters.
     #[must_use]
-    pub fn is_empty(&self) -> bool {
+    pub const fn is_empty(&self) -> bool {
         self.params.is_empty()
     }
 
     /// Returns an iterator over parameter keys.
     pub fn keys(&self) -> impl Iterator<Item = &str> {
-        self.params.keys().map(String::as_str)
+        self.params.iter().map(|(key, _)| key.as_str())
     }
 
     /// Returns an iterator over single values (first value per key).
@@ -284,8 +311,8 @@ impl QueryParams {
     /// Use [`iter_all`](Self::iter_all) to iterate over all values.
     pub fn values(&self) -> impl Iterator<Item = &str> {
         self.params
-            .values()
-            .map(|v| v.first().map_or("", String::as_str))
+            .iter()
+            .map(|(_, values)| values.first().map_or("", String::as_str))
     }
 
     /// Returns an iterator over all parameter key-value pairs (first value per
@@ -546,6 +573,24 @@ mod tests {
     fn query_params_get_all_none() {
         let params = QueryParams::parse("a=1");
         assert_eq!(params.get_all("missing"), None);
+    }
+
+    #[test]
+    fn query_params_to_string_preserves_insertion_order() {
+        let params = QueryParams::parse("z=1&a=2&m=3&z=4");
+        assert_eq!(params.to_query_string(), "?z=1&z=4&a=2&m=3");
+
+        let mut built = QueryParams::new();
+        built.set("beta", "1");
+        built.set("alpha", "2");
+        assert_eq!(built.to_query_string(), "?beta=1&alpha=2");
+    }
+
+    #[test]
+    fn query_params_eq_ignores_key_order() {
+        let p1 = QueryParams::parse("a=1&b=2");
+        let p2 = QueryParams::parse("b=2&a=1");
+        assert_eq!(p1, p2);
     }
 
     #[test]
