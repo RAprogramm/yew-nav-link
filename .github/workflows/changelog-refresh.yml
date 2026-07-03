@@ -43,7 +43,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          git-cliff --unreleased > /tmp/unreleased.md
+          git-cliff --unreleased --strip header > /tmp/unreleased.md
 
           if [ ! -s /tmp/unreleased.md ]; then
             echo "git-cliff produced no output; nothing to refresh."
@@ -58,8 +58,9 @@ jobs:
           changelog_path = pathlib.Path("CHANGELOG.md")
           unreleased = pathlib.Path("/tmp/unreleased.md").read_text().strip()
 
-          # If git-cliff yielded nothing more than its header, no commits
-          # have landed since the latest tag. Leave CHANGELOG.md alone.
+          # If git-cliff yielded nothing more than the section heading, no
+          # commits have landed since the latest tag. Leave CHANGELOG.md
+          # alone.
           stripped = unreleased.lower().replace(" ", "")
           if stripped in ("##[unreleased]", ""):
               print("No unreleased commits since the last tag.")
@@ -81,7 +82,7 @@ jobs:
               )
               sys.exit(1)
 
-          updated = pattern.sub(unreleased + "\n", changelog)
+          updated = pattern.sub(lambda _: unreleased + "\n", changelog)
 
           if updated == changelog:
               print("CHANGELOG.md already in sync.")
