@@ -142,6 +142,9 @@ jobs:
         run: |
           RUSTDOCFLAGS="-D warnings" cargo doc --all-features
 
+      - name: Verify version references match Cargo.toml
+        run: ./scripts/sync-versions.sh --check
+
   semver_checks:
     name: Semver Checks
     runs-on: ubuntu-latest

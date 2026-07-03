@@ -34,6 +34,9 @@ cargo audit
 echo "⚙️ Running actionlint..."
 actionlint
 
+echo "🔗 Checking version references against Cargo.toml..."
+./scripts/sync-versions.sh --check
+
 # echo "📦 Running sqlx prepare..."
 # cargo sqlx prepare --check --workspace
 

@@ -168,6 +168,14 @@ description = "Run checks and publish the crate (requires TAG and token)"
 
 # ------- Extras -------
 
+[tasks.sync-versions]
+category = "Utility"
+clear = true
+workspace = false
+description = "Sync version/MSRV references in docs from Cargo.toml"
+script_runner = "bash"
+script = ['./scripts/sync-versions.sh']
+
 [tasks.format]
 category = "Format"
 clear = true
@@ -270,6 +278,7 @@ script = [
 
   printf "%b%s%b\n" "$BOLD$MAGENTA" "Hooks & Utilities" "$RESET"
   row "cargo make install-hooks"       "Install .hooks/pre-commit"
+  row "cargo make sync-versions"       "Sync version/MSRV references in docs from Cargo.toml"
   echo
 
   printf "%b%s%b\n" "$BOLD$DIM" "Environment variables:" "$RESET"
