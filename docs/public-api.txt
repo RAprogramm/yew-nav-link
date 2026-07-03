@@ -5,13 +5,13 @@ pub enum yew_nav_link::active_link::mode::Match
 pub yew_nav_link::active_link::mode::Match::Exact
 pub yew_nav_link::active_link::mode::Match::Partial
 impl core::fmt::Display for yew_nav_link::active_link::mode::Match
-pub fn yew_nav_link::active_link::mode::Match::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn yew_nav_link::active_link::mode::Match::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub mod yew_nav_link::active_link::nav_link
 pub struct yew_nav_link::active_link::nav_link::NavLink<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>
 impl<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static> yew::functional::FunctionProvider for yew_nav_link::active_link::nav_link::NavLink<R>
 pub type yew_nav_link::active_link::nav_link::NavLink<R>::Properties = yew_nav_link::active_link::props::NavLinkProps<R>
-pub fn yew_nav_link::active_link::nav_link::NavLink<R>::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
-pub fn yew_nav_link::active_link::nav_link::nav_link<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>(to: R, children: &str, match_mode: yew_nav_link::active_link::mode::Match) -> yew::html::Html
+pub fn yew_nav_link::active_link::nav_link::NavLink<R>::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::active_link::nav_link::nav_link<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>(R, &str, yew_nav_link::active_link::mode::Match) -> yew::html::Html
 pub mod yew_nav_link::active_link::props
 pub struct yew_nav_link::active_link::props::NavLinkProps<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>
 pub yew_nav_link::active_link::props::NavLinkProps::active_class: &'static str
@@ -23,17 +23,17 @@ impl<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clo
 pub type yew_nav_link::active_link::props::NavLinkProps<R>::Builder = NavLinkPropsBuilder<R>
 pub fn yew_nav_link::active_link::props::NavLinkProps<R>::builder() -> Self::Builder
 pub mod yew_nav_link::active_link::utils
-pub fn yew_nav_link::active_link::utils::build_class(is_active: bool, base_class: &str, active_class: &str) -> alloc::string::String
-pub fn yew_nav_link::active_link::utils::is_path_prefix(target: &str, current: &str) -> bool
+pub fn yew_nav_link::active_link::utils::build_class(bool, &str, &str) -> alloc::string::String
+pub fn yew_nav_link::active_link::utils::is_path_prefix(&str, &str) -> bool
 pub enum yew_nav_link::active_link::Match
 pub yew_nav_link::active_link::Match::Exact
 pub yew_nav_link::active_link::Match::Partial
 impl core::fmt::Display for yew_nav_link::active_link::mode::Match
-pub fn yew_nav_link::active_link::mode::Match::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn yew_nav_link::active_link::mode::Match::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub struct yew_nav_link::active_link::NavLink<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>
 impl<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static> yew::functional::FunctionProvider for yew_nav_link::active_link::nav_link::NavLink<R>
 pub type yew_nav_link::active_link::nav_link::NavLink<R>::Properties = yew_nav_link::active_link::props::NavLinkProps<R>
-pub fn yew_nav_link::active_link::nav_link::NavLink<R>::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::active_link::nav_link::NavLink<R>::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::active_link::NavLinkProps<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>
 pub yew_nav_link::active_link::NavLinkProps::active_class: &'static str
 pub yew_nav_link::active_link::NavLinkProps::children: yew::html::component::children::Children
@@ -43,8 +43,8 @@ pub yew_nav_link::active_link::NavLinkProps::to: R
 impl<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static> yew::html::component::properties::Properties for yew_nav_link::active_link::props::NavLinkProps<R>
 pub type yew_nav_link::active_link::props::NavLinkProps<R>::Builder = NavLinkPropsBuilder<R>
 pub fn yew_nav_link::active_link::props::NavLinkProps<R>::builder() -> Self::Builder
-pub fn yew_nav_link::active_link::is_path_prefix(target: &str, current: &str) -> bool
-pub fn yew_nav_link::active_link::nav_link<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>(to: R, children: &str, match_mode: yew_nav_link::active_link::mode::Match) -> yew::html::Html
+pub fn yew_nav_link::active_link::is_path_prefix(&str, &str) -> bool
+pub fn yew_nav_link::active_link::nav_link<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>(R, &str, yew_nav_link::active_link::mode::Match) -> yew::html::Html
 pub mod yew_nav_link::attrs
 pub struct yew_nav_link::attrs::NavItemAttrs
 pub yew_nav_link::attrs::NavItemAttrs::class: yew::html::classes::Classes
@@ -54,9 +54,9 @@ pub yew_nav_link::attrs::NavItemAttrs::role: core::option::Option<&'static str>
 impl yew_nav_link::attrs::NavItemAttrs
 pub const fn yew_nav_link::attrs::NavItemAttrs::disabled(self) -> Self
 pub fn yew_nav_link::attrs::NavItemAttrs::new() -> Self
-pub fn yew_nav_link::attrs::NavItemAttrs::with_class(self, class: impl core::convert::Into<yew::html::classes::Classes>) -> Self
-pub const fn yew_nav_link::attrs::NavItemAttrs::with_id(self, id: &'static str) -> Self
-pub const fn yew_nav_link::attrs::NavItemAttrs::with_role(self, value: &'static str) -> Self
+pub fn yew_nav_link::attrs::NavItemAttrs::with_class(self, impl core::convert::Into<yew::html::classes::Classes>) -> Self
+pub const fn yew_nav_link::attrs::NavItemAttrs::with_id(self, &'static str) -> Self
+pub const fn yew_nav_link::attrs::NavItemAttrs::with_role(self, &'static str) -> Self
 pub struct yew_nav_link::attrs::NavLinkAttrs
 pub yew_nav_link::attrs::NavLinkAttrs::aria_current: core::option::Option<&'static str>
 pub yew_nav_link::attrs::NavLinkAttrs::class: yew::html::classes::Classes
@@ -65,20 +65,20 @@ pub yew_nav_link::attrs::NavLinkAttrs::id: core::option::Option<&'static str>
 pub yew_nav_link::attrs::NavLinkAttrs::role: core::option::Option<&'static str>
 impl yew_nav_link::attrs::NavLinkAttrs
 pub fn yew_nav_link::attrs::NavLinkAttrs::new() -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_aria_current(self, value: &'static str) -> Self
-pub fn yew_nav_link::attrs::NavLinkAttrs::with_class(self, class: impl core::convert::Into<yew::html::classes::Classes>) -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_data_toggle(self, value: &'static str) -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_id(self, id: &'static str) -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_role(self, value: &'static str) -> Self
+pub const fn yew_nav_link::attrs::NavLinkAttrs::with_aria_current(self, &'static str) -> Self
+pub fn yew_nav_link::attrs::NavLinkAttrs::with_class(self, impl core::convert::Into<yew::html::classes::Classes>) -> Self
+pub const fn yew_nav_link::attrs::NavLinkAttrs::with_data_toggle(self, &'static str) -> Self
+pub const fn yew_nav_link::attrs::NavLinkAttrs::with_id(self, &'static str) -> Self
+pub const fn yew_nav_link::attrs::NavLinkAttrs::with_role(self, &'static str) -> Self
 pub struct yew_nav_link::attrs::NavListAttrs
 pub yew_nav_link::attrs::NavListAttrs::aria_label: core::option::Option<&'static str>
 pub yew_nav_link::attrs::NavListAttrs::class: yew::html::classes::Classes
 pub yew_nav_link::attrs::NavListAttrs::id: core::option::Option<&'static str>
 impl yew_nav_link::attrs::NavListAttrs
 pub fn yew_nav_link::attrs::NavListAttrs::new() -> Self
-pub const fn yew_nav_link::attrs::NavListAttrs::with_aria_label(self, label: &'static str) -> Self
-pub fn yew_nav_link::attrs::NavListAttrs::with_class(self, class: impl core::convert::Into<yew::html::classes::Classes>) -> Self
-pub const fn yew_nav_link::attrs::NavListAttrs::with_id(self, id: &'static str) -> Self
+pub const fn yew_nav_link::attrs::NavListAttrs::with_aria_label(self, &'static str) -> Self
+pub fn yew_nav_link::attrs::NavListAttrs::with_class(self, impl core::convert::Into<yew::html::classes::Classes>) -> Self
+pub const fn yew_nav_link::attrs::NavListAttrs::with_id(self, &'static str) -> Self
 pub mod yew_nav_link::components
 pub enum yew_nav_link::components::NavIconSize
 pub yew_nav_link::components::NavIconSize::Large
@@ -87,7 +87,7 @@ pub yew_nav_link::components::NavIconSize::Small
 pub struct yew_nav_link::components::NavBadge
 impl yew::functional::FunctionProvider for yew_nav_link::NavBadge
 pub type yew_nav_link::NavBadge::Properties = yew_nav_link::NavBadgeProps
-pub fn yew_nav_link::NavBadge::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavBadge::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::components::NavBadgeProps
 pub yew_nav_link::components::NavBadgeProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::NavBadgeProps::classes: yew::html::classes::Classes
@@ -99,11 +99,11 @@ pub fn yew_nav_link::NavBadgeProps::builder() -> Self::Builder
 pub struct yew_nav_link::components::NavDropdown
 impl yew::functional::FunctionProvider for yew_nav_link::NavDropdown
 pub type yew_nav_link::NavDropdown::Properties = yew_nav_link::NavDropdownProps
-pub fn yew_nav_link::NavDropdown::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavDropdown::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::components::NavDropdownDivider
 impl yew::functional::FunctionProvider for yew_nav_link::NavDropdownDivider
 pub type yew_nav_link::NavDropdownDivider::Properties = yew_nav_link::components::NavDropdownDividerProps
-pub fn yew_nav_link::NavDropdownDivider::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavDropdownDivider::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::components::NavDropdownDividerProps
 pub yew_nav_link::components::NavDropdownDividerProps::classes: yew::html::classes::Classes
 impl yew::html::component::properties::Properties for yew_nav_link::components::NavDropdownDividerProps
@@ -112,7 +112,7 @@ pub fn yew_nav_link::components::NavDropdownDividerProps::builder() -> Self::Bui
 pub struct yew_nav_link::components::NavDropdownItem
 impl yew::functional::FunctionProvider for yew_nav_link::NavDropdownItem
 pub type yew_nav_link::NavDropdownItem::Properties = yew_nav_link::components::NavDropdownItemProps
-pub fn yew_nav_link::NavDropdownItem::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavDropdownItem::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::components::NavDropdownItemProps
 pub yew_nav_link::components::NavDropdownItemProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::NavDropdownItemProps::classes: yew::html::classes::Classes
@@ -131,7 +131,7 @@ pub fn yew_nav_link::NavDropdownProps::builder() -> Self::Builder
 pub struct yew_nav_link::components::NavHeader
 impl yew::functional::FunctionProvider for yew_nav_link::NavHeader
 pub type yew_nav_link::NavHeader::Properties = yew_nav_link::NavHeaderProps
-pub fn yew_nav_link::NavHeader::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavHeader::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::components::NavHeaderProps
 pub yew_nav_link::components::NavHeaderProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::NavHeaderProps::classes: yew::html::classes::Classes
@@ -142,7 +142,7 @@ pub fn yew_nav_link::NavHeaderProps::builder() -> Self::Builder
 pub struct yew_nav_link::components::NavIcon
 impl yew::functional::FunctionProvider for yew_nav_link::NavIcon
 pub type yew_nav_link::NavIcon::Properties = yew_nav_link::NavIconProps
-pub fn yew_nav_link::NavIcon::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavIcon::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::components::NavIconProps
 pub yew_nav_link::components::NavIconProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::NavIconProps::classes: yew::html::classes::Classes
@@ -154,7 +154,7 @@ pub fn yew_nav_link::NavIconProps::builder() -> Self::Builder
 pub struct yew_nav_link::components::NavLinkWithIcon
 impl yew::functional::FunctionProvider for yew_nav_link::NavLinkWithIcon
 pub type yew_nav_link::NavLinkWithIcon::Properties = yew_nav_link::NavLinkWithIconProps
-pub fn yew_nav_link::NavLinkWithIcon::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavLinkWithIcon::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::components::NavLinkWithIconProps
 pub yew_nav_link::components::NavLinkWithIconProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::NavLinkWithIconProps::classes: yew::html::classes::Classes
@@ -165,11 +165,11 @@ pub fn yew_nav_link::NavLinkWithIconProps::builder() -> Self::Builder
 pub struct yew_nav_link::components::NavTab
 impl yew::functional::FunctionProvider for yew_nav_link::NavTab
 pub type yew_nav_link::NavTab::Properties = yew_nav_link::NavTabProps
-pub fn yew_nav_link::NavTab::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavTab::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::components::NavTabPanel
 impl yew::functional::FunctionProvider for yew_nav_link::NavTabPanel
 pub type yew_nav_link::NavTabPanel::Properties = yew_nav_link::NavTabPanelProps
-pub fn yew_nav_link::NavTabPanel::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavTabPanel::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::components::NavTabPanelProps
 pub yew_nav_link::components::NavTabPanelProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::NavTabPanelProps::classes: yew::html::classes::Classes
@@ -193,7 +193,7 @@ pub fn yew_nav_link::NavTabProps::builder() -> Self::Builder
 pub struct yew_nav_link::components::NavTabs
 impl yew::functional::FunctionProvider for yew_nav_link::NavTabs
 pub type yew_nav_link::NavTabs::Properties = yew_nav_link::NavTabsProps
-pub fn yew_nav_link::NavTabs::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavTabs::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::components::NavTabsProps
 pub yew_nav_link::components::NavTabsProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::NavTabsProps::classes: yew::html::classes::Classes
@@ -206,7 +206,7 @@ pub fn yew_nav_link::NavTabsProps::builder() -> Self::Builder
 pub struct yew_nav_link::components::NavText
 impl yew::functional::FunctionProvider for yew_nav_link::NavText
 pub type yew_nav_link::NavText::Properties = yew_nav_link::NavTextProps
-pub fn yew_nav_link::NavText::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavText::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::components::NavTextProps
 pub yew_nav_link::components::NavTextProps::classes: yew::html::classes::Classes
 pub yew_nav_link::components::NavTextProps::text: &'static str
@@ -216,7 +216,7 @@ pub fn yew_nav_link::NavTextProps::builder() -> Self::Builder
 pub struct yew_nav_link::components::PageItem
 impl yew::functional::FunctionProvider for yew_nav_link::PageItem
 pub type yew_nav_link::PageItem::Properties = yew_nav_link::PageItemProps
-pub fn yew_nav_link::PageItem::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::PageItem::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::components::PageItemProps
 pub yew_nav_link::components::PageItemProps::active: bool
 pub yew_nav_link::components::PageItemProps::children: yew::html::component::children::Children
@@ -229,7 +229,7 @@ pub fn yew_nav_link::PageItemProps::builder() -> Self::Builder
 pub struct yew_nav_link::components::PageLink
 impl yew::functional::FunctionProvider for yew_nav_link::PageLink
 pub type yew_nav_link::PageLink::Properties = yew_nav_link::PageLinkProps
-pub fn yew_nav_link::PageLink::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::PageLink::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::components::PageLinkProps
 pub yew_nav_link::components::PageLinkProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::PageLinkProps::classes: yew::html::classes::Classes
@@ -240,7 +240,7 @@ pub fn yew_nav_link::PageLinkProps::builder() -> Self::Builder
 pub struct yew_nav_link::components::Pagination
 impl yew::functional::FunctionProvider for yew_nav_link::Pagination
 pub type yew_nav_link::Pagination::Properties = yew_nav_link::PaginationProps
-pub fn yew_nav_link::Pagination::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::Pagination::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::components::PaginationProps
 pub yew_nav_link::components::PaginationProps::classes: yew::html::classes::Classes
 pub yew_nav_link::components::PaginationProps::current_page: u32
@@ -260,12 +260,12 @@ pub yew_nav_link::errors::NavError::InvalidRoute(alloc::string::String)
 pub yew_nav_link::errors::NavError::NavigationCancelled
 pub yew_nav_link::errors::NavError::RouteNotFound
 impl yew_nav_link::errors::NavError
-pub fn yew_nav_link::errors::NavError::invalid_route<S: core::convert::Into<alloc::string::String>>(msg: S) -> Self
+pub fn yew_nav_link::errors::NavError::invalid_route<S: core::convert::Into<alloc::string::String>>(S) -> Self
 pub const fn yew_nav_link::errors::NavError::navigation_cancelled() -> Self
 pub const fn yew_nav_link::errors::NavError::route_not_found() -> Self
 impl core::error::Error for yew_nav_link::errors::NavError
 impl core::fmt::Display for yew_nav_link::errors::NavError
-pub fn yew_nav_link::errors::NavError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn yew_nav_link::errors::NavError::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub type yew_nav_link::errors::NavResult<T> = core::result::Result<T, yew_nav_link::errors::NavError>
 pub mod yew_nav_link::hooks
 pub mod yew_nav_link::hooks::use_navigation
@@ -274,9 +274,9 @@ pub yew_nav_link::hooks::use_navigation::Navigation::_marker: core::marker::Phan
 pub yew_nav_link::hooks::use_navigation::Navigation::go_back: yew::callback::Callback<()>
 pub yew_nav_link::hooks::use_navigation::Navigation::go_forward: yew::callback::Callback<()>
 impl<R> yew_nav_link::Navigation<R> where R: yew_router::routable::Routable + core::clone::Clone + 'static
-pub fn yew_nav_link::Navigation<R>::go_callback(&self, delta: isize) -> yew::callback::Callback<()>
-pub fn yew_nav_link::Navigation<R>::push_callback(&self, route: R) -> yew::callback::Callback<()>
-pub fn yew_nav_link::Navigation<R>::replace_callback(&self, route: R) -> yew::callback::Callback<()>
+pub fn yew_nav_link::Navigation<R>::go_callback(&self, isize) -> yew::callback::Callback<()>
+pub fn yew_nav_link::Navigation<R>::push_callback(&self, R) -> yew::callback::Callback<()>
+pub fn yew_nav_link::Navigation<R>::replace_callback(&self, R) -> yew::callback::Callback<()>
 pub fn yew_nav_link::hooks::use_navigation::use_navigation<'hook, R>() -> impl 'hook + yew::functional::hooks::Hook<Output = yew_nav_link::Navigation<R>> where R: yew_router::routable::Routable + core::clone::Clone + 'static + 'hook
 pub struct yew_nav_link::hooks::BreadcrumbItem<R>
 pub yew_nav_link::hooks::BreadcrumbItem::is_active: bool
@@ -284,24 +284,24 @@ pub yew_nav_link::hooks::BreadcrumbItem::label: alloc::string::String
 pub yew_nav_link::hooks::BreadcrumbItem::route: R
 pub struct yew_nav_link::hooks::BreadcrumbLabelProviderContext(_)
 impl yew_nav_link::BreadcrumbLabelProviderContext
-pub fn yew_nav_link::BreadcrumbLabelProviderContext::new(provider: alloc::rc::Rc<dyn yew_nav_link::BreadcrumbLabelProvider>) -> Self
+pub fn yew_nav_link::BreadcrumbLabelProviderContext::new(alloc::rc::Rc<dyn yew_nav_link::BreadcrumbLabelProvider>) -> Self
 pub fn yew_nav_link::BreadcrumbLabelProviderContext::provider(&self) -> alloc::rc::Rc<dyn yew_nav_link::BreadcrumbLabelProvider>
 impl core::cmp::PartialEq for yew_nav_link::BreadcrumbLabelProviderContext
-pub fn yew_nav_link::BreadcrumbLabelProviderContext::eq(&self, other: &Self) -> bool
+pub fn yew_nav_link::BreadcrumbLabelProviderContext::eq(&self, &Self) -> bool
 pub struct yew_nav_link::hooks::Navigation<R> where R: yew_router::routable::Routable + core::clone::Clone + 'static
 pub yew_nav_link::hooks::Navigation::_marker: core::marker::PhantomData<R>
 pub yew_nav_link::hooks::Navigation::go_back: yew::callback::Callback<()>
 pub yew_nav_link::hooks::Navigation::go_forward: yew::callback::Callback<()>
 impl<R> yew_nav_link::Navigation<R> where R: yew_router::routable::Routable + core::clone::Clone + 'static
-pub fn yew_nav_link::Navigation<R>::go_callback(&self, delta: isize) -> yew::callback::Callback<()>
-pub fn yew_nav_link::Navigation<R>::push_callback(&self, route: R) -> yew::callback::Callback<()>
-pub fn yew_nav_link::Navigation<R>::replace_callback(&self, route: R) -> yew::callback::Callback<()>
+pub fn yew_nav_link::Navigation<R>::go_callback(&self, isize) -> yew::callback::Callback<()>
+pub fn yew_nav_link::Navigation<R>::push_callback(&self, R) -> yew::callback::Callback<()>
+pub fn yew_nav_link::Navigation<R>::replace_callback(&self, R) -> yew::callback::Callback<()>
 pub trait yew_nav_link::hooks::BreadcrumbLabelProvider: core::marker::Send + core::marker::Sync
-pub fn yew_nav_link::hooks::BreadcrumbLabelProvider::label_for_path(&self, path: &str) -> alloc::string::String
+pub fn yew_nav_link::hooks::BreadcrumbLabelProvider::label_for_path(&self, &str) -> alloc::string::String
 pub fn yew_nav_link::hooks::use_breadcrumbs<'hook, R>() -> impl 'hook + yew::functional::hooks::Hook<Output = alloc::vec::Vec<yew_nav_link::BreadcrumbItem<R>>> where R: yew_router::routable::Routable + core::clone::Clone + core::cmp::PartialEq + 'static + 'hook
-pub fn yew_nav_link::hooks::use_is_active<'hook, R>(route: R) -> impl 'hook + yew::functional::hooks::Hook<Output = bool> where R: yew_router::routable::Routable + core::clone::Clone + core::cmp::PartialEq + 'static + 'hook
-pub fn yew_nav_link::hooks::use_is_exact_active<'hook, R>(route: R) -> impl 'hook + yew::functional::hooks::Hook<Output = bool> where R: yew_router::routable::Routable + core::clone::Clone + core::cmp::PartialEq + 'static + 'hook
-pub fn yew_nav_link::hooks::use_is_partial_active<'hook, R>(route: R) -> impl 'hook + yew::functional::hooks::Hook<Output = bool> where R: yew_router::routable::Routable + core::clone::Clone + core::cmp::PartialEq + 'static + 'hook
+pub fn yew_nav_link::hooks::use_is_active<'hook, R>(R) -> impl 'hook + yew::functional::hooks::Hook<Output = bool> where R: yew_router::routable::Routable + core::clone::Clone + core::cmp::PartialEq + 'static + 'hook
+pub fn yew_nav_link::hooks::use_is_exact_active<'hook, R>(R) -> impl 'hook + yew::functional::hooks::Hook<Output = bool> where R: yew_router::routable::Routable + core::clone::Clone + core::cmp::PartialEq + 'static + 'hook
+pub fn yew_nav_link::hooks::use_is_partial_active<'hook, R>(R) -> impl 'hook + yew::functional::hooks::Hook<Output = bool> where R: yew_router::routable::Routable + core::clone::Clone + core::cmp::PartialEq + 'static + 'hook
 pub fn yew_nav_link::hooks::use_navigation<'hook, R>() -> impl 'hook + yew::functional::hooks::Hook<Output = yew_nav_link::Navigation<R>> where R: yew_router::routable::Routable + core::clone::Clone + 'static + 'hook
 pub fn yew_nav_link::hooks::use_query_params<'hook>() -> impl 'hook + yew::functional::hooks::Hook<Output = yew_nav_link::utils::QueryParams>
 pub fn yew_nav_link::hooks::use_route_info<'hook, R: yew_router::routable::Routable + 'static + 'hook>() -> impl 'hook + yew::functional::hooks::Hook<Output = core::option::Option<R>>
@@ -309,7 +309,7 @@ pub mod yew_nav_link::nav
 pub struct yew_nav_link::nav::NavDivider
 impl yew::functional::FunctionProvider for yew_nav_link::NavDivider
 pub type yew_nav_link::NavDivider::Properties = yew_nav_link::NavDividerProps
-pub fn yew_nav_link::NavDivider::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavDivider::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::nav::NavDividerProps
 pub yew_nav_link::nav::NavDividerProps::classes: yew::html::classes::Classes
 pub yew_nav_link::nav::NavDividerProps::text: core::option::Option<&'static str>
@@ -320,7 +320,7 @@ pub fn yew_nav_link::NavDividerProps::builder() -> Self::Builder
 pub struct yew_nav_link::nav::NavItem
 impl yew::functional::FunctionProvider for yew_nav_link::NavItem
 pub type yew_nav_link::NavItem::Properties = yew_nav_link::NavItemProps
-pub fn yew_nav_link::NavItem::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavItem::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::nav::NavItemProps
 pub yew_nav_link::nav::NavItemProps::children: yew::html::component::children::Children
 pub yew_nav_link::nav::NavItemProps::classes: yew::html::classes::Classes
@@ -331,7 +331,7 @@ pub fn yew_nav_link::NavItemProps::builder() -> Self::Builder
 pub struct yew_nav_link::nav::NavList
 impl yew::functional::FunctionProvider for yew_nav_link::NavList
 pub type yew_nav_link::NavList::Properties = yew_nav_link::NavListProps
-pub fn yew_nav_link::NavList::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavList::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::nav::NavListProps
 pub yew_nav_link::nav::NavListProps::aria_label: core::option::Option<&'static str>
 pub yew_nav_link::nav::NavListProps::children: yew::html::component::children::Children
@@ -344,17 +344,17 @@ pub mod yew_nav_link::nav_link
 pub struct yew_nav_link::nav_link::NavLink<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>
 impl<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static> yew::functional::FunctionProvider for yew_nav_link::active_link::nav_link::NavLink<R>
 pub type yew_nav_link::active_link::nav_link::NavLink<R>::Properties = yew_nav_link::active_link::props::NavLinkProps<R>
-pub fn yew_nav_link::active_link::nav_link::NavLink<R>::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
-pub fn yew_nav_link::nav_link::nav_link<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>(to: R, children: &str, match_mode: yew_nav_link::active_link::mode::Match) -> yew::html::Html
+pub fn yew_nav_link::active_link::nav_link::NavLink<R>::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::nav_link::nav_link<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>(R, &str, yew_nav_link::active_link::mode::Match) -> yew::html::Html
 pub mod yew_nav_link::use_navigation
 pub struct yew_nav_link::use_navigation::Navigation<R> where R: yew_router::routable::Routable + core::clone::Clone + 'static
 pub yew_nav_link::use_navigation::Navigation::_marker: core::marker::PhantomData<R>
 pub yew_nav_link::use_navigation::Navigation::go_back: yew::callback::Callback<()>
 pub yew_nav_link::use_navigation::Navigation::go_forward: yew::callback::Callback<()>
 impl<R> yew_nav_link::Navigation<R> where R: yew_router::routable::Routable + core::clone::Clone + 'static
-pub fn yew_nav_link::Navigation<R>::go_callback(&self, delta: isize) -> yew::callback::Callback<()>
-pub fn yew_nav_link::Navigation<R>::push_callback(&self, route: R) -> yew::callback::Callback<()>
-pub fn yew_nav_link::Navigation<R>::replace_callback(&self, route: R) -> yew::callback::Callback<()>
+pub fn yew_nav_link::Navigation<R>::go_callback(&self, isize) -> yew::callback::Callback<()>
+pub fn yew_nav_link::Navigation<R>::push_callback(&self, R) -> yew::callback::Callback<()>
+pub fn yew_nav_link::Navigation<R>::replace_callback(&self, R) -> yew::callback::Callback<()>
 pub fn yew_nav_link::use_navigation::use_navigation<'hook, R>() -> impl 'hook + yew::functional::hooks::Hook<Output = yew_nav_link::Navigation<R>> where R: yew_router::routable::Routable + core::clone::Clone + 'static + 'hook
 pub mod yew_nav_link::utils
 pub enum yew_nav_link::utils::KeyboardDirection
@@ -365,32 +365,32 @@ pub yew_nav_link::utils::KeyboardNavConfig::vertical: bool
 pub yew_nav_link::utils::KeyboardNavConfig::wrap: bool
 impl yew_nav_link::utils::KeyboardNavConfig
 pub const fn yew_nav_link::utils::KeyboardNavConfig::new() -> Self
-pub const fn yew_nav_link::utils::KeyboardNavConfig::with_vertical(self, vertical: bool) -> Self
-pub const fn yew_nav_link::utils::KeyboardNavConfig::with_wrap(self, wrap: bool) -> Self
+pub const fn yew_nav_link::utils::KeyboardNavConfig::with_vertical(self, bool) -> Self
+pub const fn yew_nav_link::utils::KeyboardNavConfig::with_wrap(self, bool) -> Self
 pub struct yew_nav_link::utils::QueryParams
 impl yew_nav_link::utils::QueryParams
-pub fn yew_nav_link::utils::QueryParams::contains_key(&self, key: &str) -> bool
-pub fn yew_nav_link::utils::QueryParams::get(&self, key: &str) -> core::option::Option<&str>
-pub fn yew_nav_link::utils::QueryParams::get_all(&self, key: &str) -> core::option::Option<&alloc::vec::Vec<alloc::string::String>>
-pub fn yew_nav_link::utils::QueryParams::get_one(&self, key: &str) -> core::option::Option<&str>
-pub fn yew_nav_link::utils::QueryParams::has(&self, key: &str) -> bool
+pub fn yew_nav_link::utils::QueryParams::contains_key(&self, &str) -> bool
+pub fn yew_nav_link::utils::QueryParams::get(&self, &str) -> core::option::Option<&str>
+pub fn yew_nav_link::utils::QueryParams::get_all(&self, &str) -> core::option::Option<&alloc::vec::Vec<alloc::string::String>>
+pub fn yew_nav_link::utils::QueryParams::get_one(&self, &str) -> core::option::Option<&str>
+pub fn yew_nav_link::utils::QueryParams::has(&self, &str) -> bool
 pub const fn yew_nav_link::utils::QueryParams::is_empty(&self) -> bool
 pub fn yew_nav_link::utils::QueryParams::iter(&self) -> impl core::iter::traits::iterator::Iterator<Item = (&str, &str)>
 pub fn yew_nav_link::utils::QueryParams::iter_all(&self) -> impl core::iter::traits::iterator::Iterator<Item = (&str, &str)>
 pub fn yew_nav_link::utils::QueryParams::keys(&self) -> impl core::iter::traits::iterator::Iterator<Item = &str>
 pub const fn yew_nav_link::utils::QueryParams::len(&self) -> usize
 pub fn yew_nav_link::utils::QueryParams::new() -> Self
-pub fn yew_nav_link::utils::QueryParams::parse(query: &str) -> Self
-pub fn yew_nav_link::utils::QueryParams::remove(&mut self, key: &str)
-pub fn yew_nav_link::utils::QueryParams::set(&mut self, key: &str, value: &str)
-pub fn yew_nav_link::utils::QueryParams::set_value(&mut self, key: &str, value: &str)
+pub fn yew_nav_link::utils::QueryParams::parse(&str) -> Self
+pub fn yew_nav_link::utils::QueryParams::remove(&mut self, &str)
+pub fn yew_nav_link::utils::QueryParams::set(&mut self, &str, &str)
+pub fn yew_nav_link::utils::QueryParams::set_value(&mut self, &str, &str)
 pub fn yew_nav_link::utils::QueryParams::to_query_string(&self) -> alloc::string::String
 pub fn yew_nav_link::utils::QueryParams::values(&self) -> impl core::iter::traits::iterator::Iterator<Item = &str>
 impl core::cmp::Eq for yew_nav_link::utils::QueryParams
 impl core::cmp::PartialEq for yew_nav_link::utils::QueryParams
-pub fn yew_nav_link::utils::QueryParams::eq(&self, other: &Self) -> bool
+pub fn yew_nav_link::utils::QueryParams::eq(&self, &Self) -> bool
 impl core::fmt::Display for yew_nav_link::utils::QueryParams
-pub fn yew_nav_link::utils::QueryParams::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn yew_nav_link::utils::QueryParams::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub struct yew_nav_link::utils::UrlParts
 pub yew_nav_link::utils::UrlParts::fragment: core::option::Option<alloc::string::String>
 pub yew_nav_link::utils::UrlParts::host: core::option::Option<alloc::string::String>
@@ -399,33 +399,33 @@ pub yew_nav_link::utils::UrlParts::port: core::option::Option<alloc::string::Str
 pub yew_nav_link::utils::UrlParts::query: core::option::Option<alloc::string::String>
 pub yew_nav_link::utils::UrlParts::scheme: core::option::Option<alloc::string::String>
 impl yew_nav_link::utils::UrlParts
-pub fn yew_nav_link::utils::UrlParts::parse(url: &str) -> Self
+pub fn yew_nav_link::utils::UrlParts::parse(&str) -> Self
 pub fn yew_nav_link::utils::UrlParts::query_params(&self) -> core::option::Option<yew_nav_link::utils::QueryParams>
-pub fn yew_nav_link::utils::handle_arrow_key(key: &str, current_index: usize, total_items: usize, config: &yew_nav_link::utils::KeyboardNavConfig) -> core::option::Option<usize>
-pub fn yew_nav_link::utils::handle_home_end(key: &str, _current_index: usize, total_items: usize) -> core::option::Option<usize>
-pub fn yew_nav_link::utils::is_absolute(path: &str) -> bool
-pub fn yew_nav_link::utils::is_activation_key(key: &str) -> bool
-pub fn yew_nav_link::utils::is_navigation_key(key: &str) -> bool
-pub fn yew_nav_link::utils::join_paths(base: &str, path: &str) -> alloc::string::String
-pub fn yew_nav_link::utils::normalize_path(path: &str) -> alloc::string::String
-pub fn yew_nav_link::utils::urlencoding_decode(input: &str) -> core::option::Option<alloc::string::String>
-pub fn yew_nav_link::utils::urlencoding_encode(input: &str) -> alloc::string::String
+pub fn yew_nav_link::utils::handle_arrow_key(&str, usize, usize, &yew_nav_link::utils::KeyboardNavConfig) -> core::option::Option<usize>
+pub fn yew_nav_link::utils::handle_home_end(&str, usize, usize) -> core::option::Option<usize>
+pub fn yew_nav_link::utils::is_absolute(&str) -> bool
+pub fn yew_nav_link::utils::is_activation_key(&str) -> bool
+pub fn yew_nav_link::utils::is_navigation_key(&str) -> bool
+pub fn yew_nav_link::utils::join_paths(&str, &str) -> alloc::string::String
+pub fn yew_nav_link::utils::normalize_path(&str) -> alloc::string::String
+pub fn yew_nav_link::utils::urlencoding_decode(&str) -> core::option::Option<alloc::string::String>
+pub fn yew_nav_link::utils::urlencoding_encode(&str) -> alloc::string::String
 pub enum yew_nav_link::Match
 pub yew_nav_link::Match::Exact
 pub yew_nav_link::Match::Partial
 impl core::fmt::Display for yew_nav_link::active_link::mode::Match
-pub fn yew_nav_link::active_link::mode::Match::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn yew_nav_link::active_link::mode::Match::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 #[non_exhaustive] pub enum yew_nav_link::NavError
 pub yew_nav_link::NavError::InvalidRoute(alloc::string::String)
 pub yew_nav_link::NavError::NavigationCancelled
 pub yew_nav_link::NavError::RouteNotFound
 impl yew_nav_link::errors::NavError
-pub fn yew_nav_link::errors::NavError::invalid_route<S: core::convert::Into<alloc::string::String>>(msg: S) -> Self
+pub fn yew_nav_link::errors::NavError::invalid_route<S: core::convert::Into<alloc::string::String>>(S) -> Self
 pub const fn yew_nav_link::errors::NavError::navigation_cancelled() -> Self
 pub const fn yew_nav_link::errors::NavError::route_not_found() -> Self
 impl core::error::Error for yew_nav_link::errors::NavError
 impl core::fmt::Display for yew_nav_link::errors::NavError
-pub fn yew_nav_link::errors::NavError::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub fn yew_nav_link::errors::NavError::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub enum yew_nav_link::NavIconSize
 pub yew_nav_link::NavIconSize::Large
 pub yew_nav_link::NavIconSize::Medium
@@ -436,14 +436,14 @@ pub yew_nav_link::BreadcrumbItem::label: alloc::string::String
 pub yew_nav_link::BreadcrumbItem::route: R
 pub struct yew_nav_link::BreadcrumbLabelProviderContext(_)
 impl yew_nav_link::BreadcrumbLabelProviderContext
-pub fn yew_nav_link::BreadcrumbLabelProviderContext::new(provider: alloc::rc::Rc<dyn yew_nav_link::BreadcrumbLabelProvider>) -> Self
+pub fn yew_nav_link::BreadcrumbLabelProviderContext::new(alloc::rc::Rc<dyn yew_nav_link::BreadcrumbLabelProvider>) -> Self
 pub fn yew_nav_link::BreadcrumbLabelProviderContext::provider(&self) -> alloc::rc::Rc<dyn yew_nav_link::BreadcrumbLabelProvider>
 impl core::cmp::PartialEq for yew_nav_link::BreadcrumbLabelProviderContext
-pub fn yew_nav_link::BreadcrumbLabelProviderContext::eq(&self, other: &Self) -> bool
+pub fn yew_nav_link::BreadcrumbLabelProviderContext::eq(&self, &Self) -> bool
 pub struct yew_nav_link::NavBadge
 impl yew::functional::FunctionProvider for yew_nav_link::NavBadge
 pub type yew_nav_link::NavBadge::Properties = yew_nav_link::NavBadgeProps
-pub fn yew_nav_link::NavBadge::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavBadge::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavBadgeProps
 pub yew_nav_link::NavBadgeProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavBadgeProps::classes: yew::html::classes::Classes
@@ -455,7 +455,7 @@ pub fn yew_nav_link::NavBadgeProps::builder() -> Self::Builder
 pub struct yew_nav_link::NavDivider
 impl yew::functional::FunctionProvider for yew_nav_link::NavDivider
 pub type yew_nav_link::NavDivider::Properties = yew_nav_link::NavDividerProps
-pub fn yew_nav_link::NavDivider::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavDivider::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavDividerProps
 pub yew_nav_link::NavDividerProps::classes: yew::html::classes::Classes
 pub yew_nav_link::NavDividerProps::text: core::option::Option<&'static str>
@@ -466,15 +466,15 @@ pub fn yew_nav_link::NavDividerProps::builder() -> Self::Builder
 pub struct yew_nav_link::NavDropdown
 impl yew::functional::FunctionProvider for yew_nav_link::NavDropdown
 pub type yew_nav_link::NavDropdown::Properties = yew_nav_link::NavDropdownProps
-pub fn yew_nav_link::NavDropdown::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavDropdown::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavDropdownDivider
 impl yew::functional::FunctionProvider for yew_nav_link::NavDropdownDivider
 pub type yew_nav_link::NavDropdownDivider::Properties = yew_nav_link::components::NavDropdownDividerProps
-pub fn yew_nav_link::NavDropdownDivider::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavDropdownDivider::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavDropdownItem
 impl yew::functional::FunctionProvider for yew_nav_link::NavDropdownItem
 pub type yew_nav_link::NavDropdownItem::Properties = yew_nav_link::components::NavDropdownItemProps
-pub fn yew_nav_link::NavDropdownItem::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavDropdownItem::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavDropdownProps
 pub yew_nav_link::NavDropdownProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavDropdownProps::classes: yew::html::classes::Classes
@@ -486,7 +486,7 @@ pub fn yew_nav_link::NavDropdownProps::builder() -> Self::Builder
 pub struct yew_nav_link::NavHeader
 impl yew::functional::FunctionProvider for yew_nav_link::NavHeader
 pub type yew_nav_link::NavHeader::Properties = yew_nav_link::NavHeaderProps
-pub fn yew_nav_link::NavHeader::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavHeader::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavHeaderProps
 pub yew_nav_link::NavHeaderProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavHeaderProps::classes: yew::html::classes::Classes
@@ -497,7 +497,7 @@ pub fn yew_nav_link::NavHeaderProps::builder() -> Self::Builder
 pub struct yew_nav_link::NavIcon
 impl yew::functional::FunctionProvider for yew_nav_link::NavIcon
 pub type yew_nav_link::NavIcon::Properties = yew_nav_link::NavIconProps
-pub fn yew_nav_link::NavIcon::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavIcon::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavIconProps
 pub yew_nav_link::NavIconProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavIconProps::classes: yew::html::classes::Classes
@@ -509,7 +509,7 @@ pub fn yew_nav_link::NavIconProps::builder() -> Self::Builder
 pub struct yew_nav_link::NavItem
 impl yew::functional::FunctionProvider for yew_nav_link::NavItem
 pub type yew_nav_link::NavItem::Properties = yew_nav_link::NavItemProps
-pub fn yew_nav_link::NavItem::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavItem::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavItemAttrs
 pub yew_nav_link::NavItemAttrs::class: yew::html::classes::Classes
 pub yew_nav_link::NavItemAttrs::disabled: bool
@@ -518,9 +518,9 @@ pub yew_nav_link::NavItemAttrs::role: core::option::Option<&'static str>
 impl yew_nav_link::attrs::NavItemAttrs
 pub const fn yew_nav_link::attrs::NavItemAttrs::disabled(self) -> Self
 pub fn yew_nav_link::attrs::NavItemAttrs::new() -> Self
-pub fn yew_nav_link::attrs::NavItemAttrs::with_class(self, class: impl core::convert::Into<yew::html::classes::Classes>) -> Self
-pub const fn yew_nav_link::attrs::NavItemAttrs::with_id(self, id: &'static str) -> Self
-pub const fn yew_nav_link::attrs::NavItemAttrs::with_role(self, value: &'static str) -> Self
+pub fn yew_nav_link::attrs::NavItemAttrs::with_class(self, impl core::convert::Into<yew::html::classes::Classes>) -> Self
+pub const fn yew_nav_link::attrs::NavItemAttrs::with_id(self, &'static str) -> Self
+pub const fn yew_nav_link::attrs::NavItemAttrs::with_role(self, &'static str) -> Self
 pub struct yew_nav_link::NavItemProps
 pub yew_nav_link::NavItemProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavItemProps::classes: yew::html::classes::Classes
@@ -531,7 +531,7 @@ pub fn yew_nav_link::NavItemProps::builder() -> Self::Builder
 pub struct yew_nav_link::NavLink<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>
 impl<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static> yew::functional::FunctionProvider for yew_nav_link::active_link::nav_link::NavLink<R>
 pub type yew_nav_link::active_link::nav_link::NavLink<R>::Properties = yew_nav_link::active_link::props::NavLinkProps<R>
-pub fn yew_nav_link::active_link::nav_link::NavLink<R>::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::active_link::nav_link::NavLink<R>::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavLinkAttrs
 pub yew_nav_link::NavLinkAttrs::aria_current: core::option::Option<&'static str>
 pub yew_nav_link::NavLinkAttrs::class: yew::html::classes::Classes
@@ -540,11 +540,11 @@ pub yew_nav_link::NavLinkAttrs::id: core::option::Option<&'static str>
 pub yew_nav_link::NavLinkAttrs::role: core::option::Option<&'static str>
 impl yew_nav_link::attrs::NavLinkAttrs
 pub fn yew_nav_link::attrs::NavLinkAttrs::new() -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_aria_current(self, value: &'static str) -> Self
-pub fn yew_nav_link::attrs::NavLinkAttrs::with_class(self, class: impl core::convert::Into<yew::html::classes::Classes>) -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_data_toggle(self, value: &'static str) -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_id(self, id: &'static str) -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_role(self, value: &'static str) -> Self
+pub const fn yew_nav_link::attrs::NavLinkAttrs::with_aria_current(self, &'static str) -> Self
+pub fn yew_nav_link::attrs::NavLinkAttrs::with_class(self, impl core::convert::Into<yew::html::classes::Classes>) -> Self
+pub const fn yew_nav_link::attrs::NavLinkAttrs::with_data_toggle(self, &'static str) -> Self
+pub const fn yew_nav_link::attrs::NavLinkAttrs::with_id(self, &'static str) -> Self
+pub const fn yew_nav_link::attrs::NavLinkAttrs::with_role(self, &'static str) -> Self
 pub struct yew_nav_link::NavLinkProps<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>
 pub yew_nav_link::NavLinkProps::active_class: &'static str
 pub yew_nav_link::NavLinkProps::children: yew::html::component::children::Children
@@ -557,7 +557,7 @@ pub fn yew_nav_link::active_link::props::NavLinkProps<R>::builder() -> Self::Bui
 pub struct yew_nav_link::NavLinkWithIcon
 impl yew::functional::FunctionProvider for yew_nav_link::NavLinkWithIcon
 pub type yew_nav_link::NavLinkWithIcon::Properties = yew_nav_link::NavLinkWithIconProps
-pub fn yew_nav_link::NavLinkWithIcon::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavLinkWithIcon::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavLinkWithIconProps
 pub yew_nav_link::NavLinkWithIconProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavLinkWithIconProps::classes: yew::html::classes::Classes
@@ -568,16 +568,16 @@ pub fn yew_nav_link::NavLinkWithIconProps::builder() -> Self::Builder
 pub struct yew_nav_link::NavList
 impl yew::functional::FunctionProvider for yew_nav_link::NavList
 pub type yew_nav_link::NavList::Properties = yew_nav_link::NavListProps
-pub fn yew_nav_link::NavList::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavList::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavListAttrs
 pub yew_nav_link::NavListAttrs::aria_label: core::option::Option<&'static str>
 pub yew_nav_link::NavListAttrs::class: yew::html::classes::Classes
 pub yew_nav_link::NavListAttrs::id: core::option::Option<&'static str>
 impl yew_nav_link::attrs::NavListAttrs
 pub fn yew_nav_link::attrs::NavListAttrs::new() -> Self
-pub const fn yew_nav_link::attrs::NavListAttrs::with_aria_label(self, label: &'static str) -> Self
-pub fn yew_nav_link::attrs::NavListAttrs::with_class(self, class: impl core::convert::Into<yew::html::classes::Classes>) -> Self
-pub const fn yew_nav_link::attrs::NavListAttrs::with_id(self, id: &'static str) -> Self
+pub const fn yew_nav_link::attrs::NavListAttrs::with_aria_label(self, &'static str) -> Self
+pub fn yew_nav_link::attrs::NavListAttrs::with_class(self, impl core::convert::Into<yew::html::classes::Classes>) -> Self
+pub const fn yew_nav_link::attrs::NavListAttrs::with_id(self, &'static str) -> Self
 pub struct yew_nav_link::NavListProps
 pub yew_nav_link::NavListProps::aria_label: core::option::Option<&'static str>
 pub yew_nav_link::NavListProps::children: yew::html::component::children::Children
@@ -589,11 +589,11 @@ pub fn yew_nav_link::NavListProps::builder() -> Self::Builder
 pub struct yew_nav_link::NavTab
 impl yew::functional::FunctionProvider for yew_nav_link::NavTab
 pub type yew_nav_link::NavTab::Properties = yew_nav_link::NavTabProps
-pub fn yew_nav_link::NavTab::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavTab::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavTabPanel
 impl yew::functional::FunctionProvider for yew_nav_link::NavTabPanel
 pub type yew_nav_link::NavTabPanel::Properties = yew_nav_link::NavTabPanelProps
-pub fn yew_nav_link::NavTabPanel::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavTabPanel::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavTabPanelProps
 pub yew_nav_link::NavTabPanelProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavTabPanelProps::classes: yew::html::classes::Classes
@@ -617,7 +617,7 @@ pub fn yew_nav_link::NavTabProps::builder() -> Self::Builder
 pub struct yew_nav_link::NavTabs
 impl yew::functional::FunctionProvider for yew_nav_link::NavTabs
 pub type yew_nav_link::NavTabs::Properties = yew_nav_link::NavTabsProps
-pub fn yew_nav_link::NavTabs::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavTabs::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavTabsProps
 pub yew_nav_link::NavTabsProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavTabsProps::classes: yew::html::classes::Classes
@@ -630,7 +630,7 @@ pub fn yew_nav_link::NavTabsProps::builder() -> Self::Builder
 pub struct yew_nav_link::NavText
 impl yew::functional::FunctionProvider for yew_nav_link::NavText
 pub type yew_nav_link::NavText::Properties = yew_nav_link::NavTextProps
-pub fn yew_nav_link::NavText::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::NavText::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavTextProps
 pub yew_nav_link::NavTextProps::classes: yew::html::classes::Classes
 pub yew_nav_link::NavTextProps::text: &'static str
@@ -642,13 +642,13 @@ pub yew_nav_link::Navigation::_marker: core::marker::PhantomData<R>
 pub yew_nav_link::Navigation::go_back: yew::callback::Callback<()>
 pub yew_nav_link::Navigation::go_forward: yew::callback::Callback<()>
 impl<R> yew_nav_link::Navigation<R> where R: yew_router::routable::Routable + core::clone::Clone + 'static
-pub fn yew_nav_link::Navigation<R>::go_callback(&self, delta: isize) -> yew::callback::Callback<()>
-pub fn yew_nav_link::Navigation<R>::push_callback(&self, route: R) -> yew::callback::Callback<()>
-pub fn yew_nav_link::Navigation<R>::replace_callback(&self, route: R) -> yew::callback::Callback<()>
+pub fn yew_nav_link::Navigation<R>::go_callback(&self, isize) -> yew::callback::Callback<()>
+pub fn yew_nav_link::Navigation<R>::push_callback(&self, R) -> yew::callback::Callback<()>
+pub fn yew_nav_link::Navigation<R>::replace_callback(&self, R) -> yew::callback::Callback<()>
 pub struct yew_nav_link::PageItem
 impl yew::functional::FunctionProvider for yew_nav_link::PageItem
 pub type yew_nav_link::PageItem::Properties = yew_nav_link::PageItemProps
-pub fn yew_nav_link::PageItem::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::PageItem::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::PageItemProps
 pub yew_nav_link::PageItemProps::active: bool
 pub yew_nav_link::PageItemProps::children: yew::html::component::children::Children
@@ -661,7 +661,7 @@ pub fn yew_nav_link::PageItemProps::builder() -> Self::Builder
 pub struct yew_nav_link::PageLink
 impl yew::functional::FunctionProvider for yew_nav_link::PageLink
 pub type yew_nav_link::PageLink::Properties = yew_nav_link::PageLinkProps
-pub fn yew_nav_link::PageLink::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::PageLink::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::PageLinkProps
 pub yew_nav_link::PageLinkProps::children: yew::html::component::children::Children
 pub yew_nav_link::PageLinkProps::classes: yew::html::classes::Classes
@@ -672,7 +672,7 @@ pub fn yew_nav_link::PageLinkProps::builder() -> Self::Builder
 pub struct yew_nav_link::Pagination
 impl yew::functional::FunctionProvider for yew_nav_link::Pagination
 pub type yew_nav_link::Pagination::Properties = yew_nav_link::PaginationProps
-pub fn yew_nav_link::Pagination::run(ctx: &mut yew::functional::HookContext, props: &Self::Properties) -> yew::html::HtmlResult
+pub fn yew_nav_link::Pagination::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::PaginationProps
 pub yew_nav_link::PaginationProps::classes: yew::html::classes::Classes
 pub yew_nav_link::PaginationProps::current_page: u32
@@ -687,15 +687,15 @@ impl yew::html::component::properties::Properties for yew_nav_link::PaginationPr
 pub type yew_nav_link::PaginationProps::Builder = PaginationPropsBuilder
 pub fn yew_nav_link::PaginationProps::builder() -> Self::Builder
 pub trait yew_nav_link::BreadcrumbLabelProvider: core::marker::Send + core::marker::Sync
-pub fn yew_nav_link::BreadcrumbLabelProvider::label_for_path(&self, path: &str) -> alloc::string::String
-pub fn yew_nav_link::is_absolute(path: &str) -> bool
-pub fn yew_nav_link::join_paths(base: &str, path: &str) -> alloc::string::String
-pub fn yew_nav_link::nav_link<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>(to: R, children: &str, match_mode: yew_nav_link::active_link::mode::Match) -> yew::html::Html
-pub fn yew_nav_link::normalize_path(path: &str) -> alloc::string::String
+pub fn yew_nav_link::BreadcrumbLabelProvider::label_for_path(&self, &str) -> alloc::string::String
+pub fn yew_nav_link::is_absolute(&str) -> bool
+pub fn yew_nav_link::join_paths(&str, &str) -> alloc::string::String
+pub fn yew_nav_link::nav_link<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>(R, &str, yew_nav_link::active_link::mode::Match) -> yew::html::Html
+pub fn yew_nav_link::normalize_path(&str) -> alloc::string::String
 pub fn yew_nav_link::use_breadcrumbs<'hook, R>() -> impl 'hook + yew::functional::hooks::Hook<Output = alloc::vec::Vec<yew_nav_link::BreadcrumbItem<R>>> where R: yew_router::routable::Routable + core::clone::Clone + core::cmp::PartialEq + 'static + 'hook
-pub fn yew_nav_link::use_is_active<'hook, R>(route: R) -> impl 'hook + yew::functional::hooks::Hook<Output = bool> where R: yew_router::routable::Routable + core::clone::Clone + core::cmp::PartialEq + 'static + 'hook
-pub fn yew_nav_link::use_is_exact_active<'hook, R>(route: R) -> impl 'hook + yew::functional::hooks::Hook<Output = bool> where R: yew_router::routable::Routable + core::clone::Clone + core::cmp::PartialEq + 'static + 'hook
-pub fn yew_nav_link::use_is_partial_active<'hook, R>(route: R) -> impl 'hook + yew::functional::hooks::Hook<Output = bool> where R: yew_router::routable::Routable + core::clone::Clone + core::cmp::PartialEq + 'static + 'hook
+pub fn yew_nav_link::use_is_active<'hook, R>(R) -> impl 'hook + yew::functional::hooks::Hook<Output = bool> where R: yew_router::routable::Routable + core::clone::Clone + core::cmp::PartialEq + 'static + 'hook
+pub fn yew_nav_link::use_is_exact_active<'hook, R>(R) -> impl 'hook + yew::functional::hooks::Hook<Output = bool> where R: yew_router::routable::Routable + core::clone::Clone + core::cmp::PartialEq + 'static + 'hook
+pub fn yew_nav_link::use_is_partial_active<'hook, R>(R) -> impl 'hook + yew::functional::hooks::Hook<Output = bool> where R: yew_router::routable::Routable + core::clone::Clone + core::cmp::PartialEq + 'static + 'hook
 pub fn yew_nav_link::use_navigation<'hook, R>() -> impl 'hook + yew::functional::hooks::Hook<Output = yew_nav_link::Navigation<R>> where R: yew_router::routable::Routable + core::clone::Clone + 'static + 'hook
 pub fn yew_nav_link::use_query_params<'hook>() -> impl 'hook + yew::functional::hooks::Hook<Output = yew_nav_link::utils::QueryParams>
 pub fn yew_nav_link::use_route_info<'hook, R: yew_router::routable::Routable + 'static + 'hook>() -> impl 'hook + yew::functional::hooks::Hook<Output = core::option::Option<R>>
