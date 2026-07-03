@@ -374,11 +374,11 @@ pub fn yew_nav_link::utils::QueryParams::get(&self, key: &str) -> core::option::
 pub fn yew_nav_link::utils::QueryParams::get_all(&self, key: &str) -> core::option::Option<&alloc::vec::Vec<alloc::string::String>>
 pub fn yew_nav_link::utils::QueryParams::get_one(&self, key: &str) -> core::option::Option<&str>
 pub fn yew_nav_link::utils::QueryParams::has(&self, key: &str) -> bool
-pub fn yew_nav_link::utils::QueryParams::is_empty(&self) -> bool
+pub const fn yew_nav_link::utils::QueryParams::is_empty(&self) -> bool
 pub fn yew_nav_link::utils::QueryParams::iter(&self) -> impl core::iter::traits::iterator::Iterator<Item = (&str, &str)>
 pub fn yew_nav_link::utils::QueryParams::iter_all(&self) -> impl core::iter::traits::iterator::Iterator<Item = (&str, &str)>
 pub fn yew_nav_link::utils::QueryParams::keys(&self) -> impl core::iter::traits::iterator::Iterator<Item = &str>
-pub fn yew_nav_link::utils::QueryParams::len(&self) -> usize
+pub const fn yew_nav_link::utils::QueryParams::len(&self) -> usize
 pub fn yew_nav_link::utils::QueryParams::new() -> Self
 pub fn yew_nav_link::utils::QueryParams::parse(query: &str) -> Self
 pub fn yew_nav_link::utils::QueryParams::remove(&mut self, key: &str)
@@ -386,6 +386,9 @@ pub fn yew_nav_link::utils::QueryParams::set(&mut self, key: &str, value: &str)
 pub fn yew_nav_link::utils::QueryParams::set_value(&mut self, key: &str, value: &str)
 pub fn yew_nav_link::utils::QueryParams::to_query_string(&self) -> alloc::string::String
 pub fn yew_nav_link::utils::QueryParams::values(&self) -> impl core::iter::traits::iterator::Iterator<Item = &str>
+impl core::cmp::Eq for yew_nav_link::utils::QueryParams
+impl core::cmp::PartialEq for yew_nav_link::utils::QueryParams
+pub fn yew_nav_link::utils::QueryParams::eq(&self, other: &Self) -> bool
 impl core::fmt::Display for yew_nav_link::utils::QueryParams
 pub fn yew_nav_link::utils::QueryParams::fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result
 pub struct yew_nav_link::utils::UrlParts
