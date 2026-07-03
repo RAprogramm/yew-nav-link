@@ -7,10 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.10.7](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.6...v0.10.7) - 2026-07-03
+## [0.10.7](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.5...v0.10.7) - 2026-07-03
+
+### Bug Fixes
+
+- wrap backward arrow navigation to last item ([#176](https://github.com/RAprogramm/yew-nav-link/issues/176))
+- resolve breadcrumb routes from their own path prefixes ([#176](https://github.com/RAprogramm/yew-nav-link/issues/176))
+
+### Refactoring
+
+- preserve insertion order in QueryParams serialization ([#176](https://github.com/RAprogramm/yew-nav-link/issues/176))
+- decode percent triplets without per-triplet allocation ([#176](https://github.com/RAprogramm/yew-nav-link/issues/176))
+
+### Documentation
+
+- add back-to-top links to README sections ([#176](https://github.com/RAprogramm/yew-nav-link/issues/176))
+- update install snippets to 0.10 and MSRV references to 1.96 ([#176](https://github.com/RAprogramm/yew-nav-link/issues/176))
+- align REQUIREMENTS NavLink and is_absolute contracts with implementation ([#176](https://github.com/RAprogramm/yew-nav-link/issues/176))
+- refresh public-api snapshot for QueryParams changes and cargo-public-api 0.52 ([#176](https://github.com/RAprogramm/yew-nav-link/issues/176))
 
 ### CI
 
+- sync doc version references from Cargo.toml single source of truth ([#176](https://github.com/RAprogramm/yew-nav-link/issues/176))
 - strip git-cliff header when refreshing Unreleased changelog ([#185](https://github.com/RAprogramm/yew-nav-link/issues/185))
 - revert split_commits, dependabot squash bodies flood the changelog ([#183](https://github.com/RAprogramm/yew-nav-link/issues/183))
 - parse squash-merge commit bodies line by line in git-cliff ([#181](https://github.com/RAprogramm/yew-nav-link/issues/181))
