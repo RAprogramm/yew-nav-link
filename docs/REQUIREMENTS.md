@@ -14,8 +14,10 @@ test suite, the demo, or the CI pipeline.
 
 ### 1.1 `NavLink<R>`
 
-**FR-NL-1.** Render a yew-router `Link<R>` with the same target and child
-content. The component is a wrapper, never a replacement.
+**FR-NL-1.** Render an `<a>` element whose `href` reflects the target
+route's path (prefixed with the router basename when one is set), with the
+given child content. History updates are delegated to yew-router's
+`Navigator`.
 
 **FR-NL-2.** Compute an *active* state by comparing the current route to the
 target on every render:
@@ -33,9 +35,11 @@ target on every render:
   `active_class` prop (`&'static str`). Only emitted when *active* per
   FR-NL-2.
 
-**FR-NL-4.** When the user clicks the link, the browser history is updated
-to `to` and the framework re-renders dependent hooks. Behaviour is delegated
-to `yew_router::Link`; the wrapper does not intercept clicks.
+**FR-NL-4.** A plain left-click is intercepted: the default browser
+navigation is prevented and `to` is pushed through the `Navigator`, so
+dependent hooks re-render. Modifier-clicks (Cmd/Ctrl/Shift/Alt) fall
+through to the browser, preserving "open in new tab" affordances. Active
+links additionally emit `aria-current="page"`.
 
 ### 1.2 `nav_link()` function
 
@@ -106,8 +110,8 @@ consumer matches must include a `_ =>` arm.
 
 ### 1.6 Utilities
 
-**FR-UT-1.** `is_absolute(path)` returns `true` iff `path` starts with a
-URL scheme (`scheme://...`).
+**FR-UT-1.** `is_absolute(path)` returns `true` iff `path` starts with
+`/`.
 
 **FR-UT-2.** `join_paths(a, b)` concatenates two path segments,
 collapsing duplicate separators.
