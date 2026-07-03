@@ -54,6 +54,8 @@ jobs:
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88 # stable
+        with:
+          toolchain: stable
 
       - name: Run release-plz release
         uses: release-plz/action@e8792575c7f2366cf6ff3ccc33ead9ace5b691c7 # v0.5
@@ -84,6 +86,8 @@ jobs:
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88 # stable
+        with:
+          toolchain: stable
 
       - name: Run release-plz release-pr
         uses: release-plz/action@e8792575c7f2366cf6ff3ccc33ead9ace5b691c7 # v0.5

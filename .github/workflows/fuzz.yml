@@ -40,6 +40,8 @@ jobs:
 
       - name: Setup nightly Rust toolchain
         uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88 # nightly
+        with:
+          toolchain: nightly
 
       - name: Load cached target directory
         uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
