@@ -18,8 +18,9 @@ trim = true
 [git]
 conventional_commits = true
 filter_unconventional = true
-split_commits = false
+split_commits = true
 commit_preprocessors = [
+  { pattern = '^\* ', replace = "" },
   { pattern = '\(#(\d+)\)', replace = "([#${1}](https://github.com/RAprogramm/yew-nav-link/issues/${1}))" },
   { pattern = '^#\d+\s+(feat|fix|refactor|docs|ci|chore|test|deps|revert)(!)?:?\s+', replace = "${1}${2}: " },
 ]
@@ -34,7 +35,6 @@ commit_parsers = [
   { message = "^deps|^chore\\(deps\\)", group = "Dependencies" },
   { message = "^chore", skip = true },
   { message = "^test", skip = true },
-  { body = ".*", group = "Other" },
 ]
 filter_commits = false
 tag_pattern = "v[0-9].*"
