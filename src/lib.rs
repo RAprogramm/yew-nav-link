@@ -22,7 +22,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! yew-nav-link = "0.9"
+//! yew-nav-link = "0.10"
 //! ```
 //!
 //! ## Component Syntax

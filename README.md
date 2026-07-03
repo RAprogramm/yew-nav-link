@@ -73,7 +73,7 @@ The core `NavLink` component eliminates manual active state tracking. It compare
 
 ```toml
 [dependencies]
-yew-nav-link = "0.9"
+yew-nav-link = "0.10"
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>

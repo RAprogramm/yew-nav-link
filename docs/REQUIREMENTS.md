@@ -124,7 +124,7 @@ escaping the root.
 
 | Requirement | Value |
 |-------------|-------|
-| MSRV | Rust **1.95+**, enforced by CI's MSRV matrix on Linux/macOS/Windows |
+| MSRV | Rust **1.96+**, enforced by CI's MSRV matrix on Linux/macOS/Windows |
 | Edition | 2024 |
 | Yew | 0.23+ |
 | yew-router | 0.20+ |
