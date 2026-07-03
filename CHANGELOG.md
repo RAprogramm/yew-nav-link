@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+
+- ![RAprogramm](https://github.com/RAprogramm.png?size=20) add animated NavLink demo GIF to README ([#190](https://github.com/RAprogramm/yew-nav-link/issues/190))
+
 ## [0.10.7](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.5...v0.10.7) - 2026-07-03
 
 ### Bug Fixes
