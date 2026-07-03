@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.7](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.6...v0.10.7) - 2026-07-03
+
+### CI
+
+- strip git-cliff header when refreshing Unreleased changelog ([#185](https://github.com/RAprogramm/yew-nav-link/issues/185))
+- revert split_commits, dependabot squash bodies flood the changelog ([#183](https://github.com/RAprogramm/yew-nav-link/issues/183))
+- parse squash-merge commit bodies line by line in git-cliff ([#181](https://github.com/RAprogramm/yew-nav-link/issues/181))
+- *(deps)* bump the actions group across 1 directory with 14 updates ([#174](https://github.com/RAprogramm/yew-nav-link/issues/174))
+
 ## [0.10.5](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.4...v0.10.5) - 2026-05-13
 
 ### CI

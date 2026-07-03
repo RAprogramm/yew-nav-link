@@ -1602,7 +1602,7 @@ dependencies = [
 
 [[package]]
 name = "yew-nav-link"
-version = "0.10.6"
+version = "0.10.7"
 dependencies = [
  "criterion",
  "js-sys",
