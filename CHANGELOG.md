@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.9](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.8...v0.10.9) - 2026-07-06
+
+### CI
+
+- *(deps)* bump taiki-e/install-action in the actions group ([#191](https://github.com/RAprogramm/yew-nav-link/issues/191))
+
 ## [0.10.8](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.7...v0.10.8) - 2026-07-03
 
 ### Documentation
