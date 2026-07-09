@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.10](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.9...v0.10.10) - 2026-07-09
+
+### Documentation
+
+- drop REQUIREMENTS reference to removed no_std CI job ([#207](https://github.com/RAprogramm/yew-nav-link/issues/207))
+- expand PR template into author and reviewer checklists ([#205](https://github.com/RAprogramm/yew-nav-link/issues/205))
+- add layered module architecture diagram ([#203](https://github.com/RAprogramm/yew-nav-link/issues/203))
+- add scannable quality-gates matrix to README ([#201](https://github.com/RAprogramm/yew-nav-link/issues/201))
+- update ARCHITECTURE.md layout after mod.rs rename ([#197](https://github.com/RAprogramm/yew-nav-link/issues/197))
+
+### Refactoring
+
+- replace mod.rs files with module_name.rs per RustManifest ([#194](https://github.com/RAprogramm/yew-nav-link/issues/194))
+
 ## [0.10.9](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.8...v0.10.9) - 2026-07-06
 
 ### CI
