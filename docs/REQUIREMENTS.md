@@ -132,7 +132,7 @@ escaping the root.
 | Edition | 2024 |
 | Yew | 0.23+ |
 | yew-router | 0.20+ |
-| `no_std` | **Not supported.** The Yew runtime requires `std`; this is a deliberate non-goal documented in CI's `no_std` job. |
+| `no_std` | **Not supported.** The Yew runtime requires `std` (allocations, `Rc`, threading primitives behind WASM); this is a deliberate non-goal. |
 | Browser support | Whatever Yew CSR + `wasm32-unknown-unknown` supports |
 
 ### 2.2 Versioning
