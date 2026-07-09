@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov.vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
 //! Browser tests for `NavLink`. Each `#[wasm_bindgen_test]` renders a
