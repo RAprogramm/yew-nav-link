@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov.vl@gmail.com>
+# SPDX-FileCopyrightText: RAprogramm <andrey.rozanov.vl@gmail.com>
 #
 # Syncs version and MSRV references in docs from Cargo.toml, the single
 # source of truth. Run from the repository root:
