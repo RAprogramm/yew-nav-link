@@ -32,7 +32,7 @@
 
 use std::{
     error::Error,
-    fmt::{Display, Formatter}
+    fmt::{Display, Formatter, Result as FmtResult}
 };
 
 /// Errors that can occur during navigation operations.
@@ -73,7 +73,7 @@ pub enum NavError {
 }
 
 impl Display for NavError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         match self {
             Self::RouteNotFound => write!(f, "route not found"),
             Self::InvalidRoute(msg) => write!(f, "invalid route: {msg}"),

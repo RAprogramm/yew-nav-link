@@ -7,7 +7,7 @@
 //! Used by [`crate::NavLink`] and the [`crate::nav_link()`] function-syntax
 //! helper.
 
-use std::fmt::{Display, Formatter};
+use std::fmt::{Display, Formatter, Result as FmtResult};
 
 /// Path matching strategy for `NavLink` active state detection.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -21,7 +21,7 @@ pub enum Match {
 }
 
 impl Display for Match {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         match self {
             Self::Exact => write!(f, "exact"),
             Self::Partial => write!(f, "partial")
