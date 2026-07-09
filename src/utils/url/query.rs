@@ -12,7 +12,7 @@
 //! Keys map to **multiple values** to support query strings like
 //! `tag=rust&tag=web` properly.
 
-use std::fmt;
+use std::fmt::{Display, Formatter, Result as FmtResult};
 
 use super::codec::{urlencoding_decode, urlencoding_encode};
 
@@ -347,8 +347,8 @@ impl QueryParams {
     }
 }
 
-impl fmt::Display for QueryParams {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl Display for QueryParams {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         write!(f, "{}", self.to_query_string())
     }
 }
