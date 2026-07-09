@@ -369,6 +369,8 @@ Define your own `nav-link` and `active` styles:
 
 ## Architecture
 
+<img src="docs/assets/architecture.svg" alt="Layered module architecture: lib.rs on top; hooks and components in the middle; active_link and nav render primitives below; utils, attrs and errors as the Yew-free leaf. Each layer depends only on the layers beneath it." width="820">
+
 ```
 yew-nav-link
 ├── active_link       # Core NavLink component + Match enum

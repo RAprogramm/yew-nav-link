@@ -10,6 +10,8 @@ This is a design rationale, not a tutorial. For the *what*, read the
 
 ## 1. Crate layout
 
+![Layered module architecture: lib.rs on top; hooks (route_info, navigation) and components in the middle; active_link and nav render primitives below; utils, attrs and errors as the Yew-free leaf. Each layer depends only on the layers beneath it.](assets/architecture.svg)
+
 ```text
 src/
 ├── lib.rs            Public API and re-exports. The crate root re-exports
