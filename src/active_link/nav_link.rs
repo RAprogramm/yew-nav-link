@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov.vl@gmail.com>
+// SPDX-FileCopyrightText: RAprogramm <andrey.rozanov.vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
 //! The [`NavLink`] component and the [`nav_link`] function-syntax helper.
