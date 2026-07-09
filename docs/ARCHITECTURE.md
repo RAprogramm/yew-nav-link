@@ -14,8 +14,9 @@ This is a design rationale, not a tutorial. For the *what*, read the
 src/
 ├── lib.rs            Public API and re-exports. The crate root re-exports
 │                     every type a typical consumer will reach for.
-├── active_link/      The NavLink<R> component, the Match enum, and the
-│   ├── mod.rs        per-render utility that decides the active state.
+├── active_link.rs    Module root for the NavLink<R> component: the Match
+│                     enum and re-exports of the submodules below.
+├── active_link/
 │   ├── nav_link.rs
 │   ├── props.rs
 │   ├── mode.rs
@@ -139,7 +140,7 @@ props.
 ```text
 tests/                                 # integration tests, Yew-aware
 benches/                               # criterion benchmarks (path utils)
-src/**/mod.rs (#[cfg(test)] modules)   # unit tests, focused per module
+src/**/*.rs (#[cfg(test)] modules)     # unit tests, focused per module
 ```
 
 Integration tests live in `tests/` so they run against the public API
