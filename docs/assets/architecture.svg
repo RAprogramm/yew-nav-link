@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+SPDX-FileCopyrightText: 2024-2026 RAprogramm <andrey.rozanov-vl@gmail.com>
+SPDX-License-Identifier: MIT
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" width="900" height="500" role="img" aria-labelledby="title desc" font-family="'Segoe UI', Helvetica, Arial, sans-serif">
+  <title id="title">yew-nav-link module architecture</title>
+  <desc id="desc">A five-layer dependency diagram. From top to bottom: the public API (lib.rs); reactive hooks (route_info and navigation); UI components; the active_link and nav render primitives; and the Yew-free leaf layer of utils, attrs and errors. Each layer depends only on the layers below it.</desc>
+
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8a94a6"/>
+    </marker>
+  </defs>
+
+  <rect x="12" y="12" width="876" height="476" rx="14" fill="#ffffff" stroke="#d0d7de" stroke-width="1.5"/>
+
+  <text x="450" y="44" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">yew-nav-link — module architecture</text>
+  <text x="450" y="66" text-anchor="middle" font-size="12" fill="#57606a">layers depend downward &#8226; utils/ is the Yew-free leaf</text>
+
+  <!-- spine arrows (upper layer depends on the one below) -->
+  <g stroke="#8a94a6" stroke-width="2">
+    <line x1="450" y1="134" x2="450" y2="154" marker-end="url(#arr)"/>
+    <line x1="450" y1="202" x2="450" y2="222" marker-end="url(#arr)"/>
+    <line x1="450" y1="270" x2="450" y2="290" marker-end="url(#arr)"/>
+    <line x1="450" y1="338" x2="450" y2="358" marker-end="url(#arr)"/>
+  </g>
+
+  <!-- Layer A: public API -->
+  <rect x="48" y="88" width="804" height="46" rx="8" fill="#fff4e5" stroke="#f0a52e" stroke-width="1.5"/>
+  <text x="450" y="116" text-anchor="middle" font-size="14" fill="#7a4a00"><tspan font-weight="700">lib.rs</tspan> — public API &amp; re-exports (crate root)</text>
+
+  <!-- Layer B: hooks -->
+  <rect x="48" y="156" width="382" height="46" rx="8" fill="#eaf0ff" stroke="#4c6ef5" stroke-width="1.5"/>
+  <text x="239" y="177" text-anchor="middle" font-size="14" fill="#1b3a8f"><tspan font-weight="700">hooks/route_info</tspan></text>
+  <text x="239" y="193" text-anchor="middle" font-size="11" fill="#3a559f">reads route state · breadcrumbs</text>
+  <rect x="470" y="156" width="382" height="46" rx="8" fill="#eaf0ff" stroke="#4c6ef5" stroke-width="1.5"/>
+  <text x="661" y="177" text-anchor="middle" font-size="14" fill="#1b3a8f"><tspan font-weight="700">hooks/navigation</tspan></text>
+  <text x="661" y="193" text-anchor="middle" font-size="11" fill="#3a559f">writes URL · query params</text>
+
+  <!-- Layer C: components -->
+  <rect x="48" y="224" width="804" height="46" rx="8" fill="#eaf0ff" stroke="#4c6ef5" stroke-width="1.5"/>
+  <text x="450" y="252" text-anchor="middle" font-size="14" fill="#1b3a8f"><tspan font-weight="700">components/</tspan> — Tabs · Dropdown · Pagination · Badge · Icon · Header · Text</text>
+
+  <!-- Layer D: render primitives -->
+  <rect x="48" y="292" width="382" height="46" rx="8" fill="#eaf0ff" stroke="#4c6ef5" stroke-width="1.5"/>
+  <text x="239" y="320" text-anchor="middle" font-size="14" fill="#1b3a8f"><tspan font-weight="700">active_link/</tspan> — Match · NavLink&lt;R&gt;</text>
+  <rect x="470" y="292" width="382" height="46" rx="8" fill="#eaf0ff" stroke="#4c6ef5" stroke-width="1.5"/>
+  <text x="661" y="320" text-anchor="middle" font-size="14" fill="#1b3a8f"><tspan font-weight="700">nav/</tspan> — NavList · NavItem · NavDivider</text>
+
+  <!-- Layer E: leaf -->
+  <rect x="48" y="360" width="252" height="46" rx="8" fill="#e6f7ee" stroke="#1a9e5f" stroke-width="1.5"/>
+  <text x="174" y="381" text-anchor="middle" font-size="14" fill="#0b6b3a"><tspan font-weight="700">utils/</tspan></text>
+  <text x="174" y="397" text-anchor="middle" font-size="11" fill="#1a7a48">path · url · keyboard</text>
+  <rect x="324" y="360" width="252" height="46" rx="8" fill="#e6f7ee" stroke="#1a9e5f" stroke-width="1.5"/>
+  <text x="450" y="381" text-anchor="middle" font-size="14" fill="#0b6b3a"><tspan font-weight="700">attrs</tspan></text>
+  <text x="450" y="397" text-anchor="middle" font-size="11" fill="#1a7a48">type-safe attribute builders</text>
+  <rect x="600" y="360" width="252" height="46" rx="8" fill="#e6f7ee" stroke="#1a9e5f" stroke-width="1.5"/>
+  <text x="726" y="381" text-anchor="middle" font-size="14" fill="#0b6b3a"><tspan font-weight="700">errors</tspan></text>
+  <text x="726" y="397" text-anchor="middle" font-size="11" fill="#1a7a48">NavError · NavResult&lt;T&gt;</text>
+
+  <text x="450" y="440" text-anchor="middle" font-size="12" fill="#1a7a48" font-weight="600">leaf layer — no Yew dependency, unit-testable in isolation</text>
+  <text x="450" y="468" text-anchor="middle" font-size="11" fill="#57606a">Reactive state flows in one direction: URL &#8594; yew-router &#8594; use_route() &#8594; hooks &#8594; components</text>
+</svg>

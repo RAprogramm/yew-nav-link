@@ -10,6 +10,8 @@ This is a design rationale, not a tutorial. For the *what*, read the
 
 ## 1. Crate layout
 
+![Layered module architecture: lib.rs on top; hooks (route_info, navigation) and components in the middle; active_link and nav render primitives below; utils, attrs and errors as the Yew-free leaf. Each layer depends only on the layers beneath it.](assets/architecture.svg)
+
 ```text
 src/
 ├── lib.rs            Public API and re-exports. The crate root re-exports
@@ -128,8 +130,7 @@ props.
 - **No `unsafe`.** There is no FFI surface and no performance hot-path that
   would justify it.
 - **No `no_std`.** Yew requires `std` (allocations, `Rc`, threading
-  primitives behind WASM); the CI `no_std` job documents this and exits
-  successfully so a no-std intention is impossible to merge by accident.
+  primitives behind WASM), so the crate is `std`-only by necessity.
 - **No async.** The hooks are synchronous; `use_navigation` returns
   callbacks and yew-router does the rest.
 - **No internal `RefCell` / `Rc` mutability** beyond the breadcrumb

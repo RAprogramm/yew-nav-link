@@ -31,6 +31,7 @@ Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic acti
 ## Table of Contents
 
 - [Overview](#overview)
+- [Quality Gates](#quality-gates)
 - [Installation](#installation)
 - [Requirements](#requirements)
 - [Quick Start](#quick-start)
@@ -68,6 +69,34 @@ Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic acti
 | **Customization** | Custom CSS classes, programmatic navigation, and extensible breadcrumb providers |
 
 The core `NavLink` component eliminates manual active state tracking. It compares the current route against the target on every render and applies the `active` CSS class automatically — zero configuration required.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+---
+
+## Quality Gates
+
+Every gate below runs in CI and blocks merge on failure — no advisory-only
+checks. This table is the fast path for reviewers: each quality dimension
+maps to the tool that enforces it and the workflow that runs it.
+
+| Dimension | Enforced by | Workflow |
+|-----------|-------------|----------|
+| **Unit + doctests** | `cargo nextest` + `cargo test --doc`, across MSRV / stable / nightly on Linux, macOS, Windows | `ci.yml` · `test`, `check` |
+| **Browser tests** | `wasm-bindgen-test` headless on Chrome **and** Firefox | `ci.yml` · `wasm_tests` |
+| **End-to-end tests** | Playwright against the trunk-built demo (Chromium + Firefox) | `ci.yml` · `e2e` |
+| **Property testing** | `proptest` over path / URL / query invariants | `ci.yml` · `test` |
+| **Fuzzing** | `cargo-fuzz`, 3 targets (path join, path normalize, URL round-trip) | `fuzz.yml` |
+| **Mutation testing** | `cargo-mutants` over library logic | `mutants.yml` |
+| **Coverage control** | `cargo-llvm-cov` → Codecov, **95 % project + patch gate** | `ci.yml` · `coverage` |
+| **Static analysis** | `clippy -D warnings` (all + no-default features) · CodeQL SAST | `ci.yml` · `check` · `codeql.yml` |
+| **Supply chain** | `cargo-deny`, `cargo-audit`, `cargo-machete`, `cargo-udeps` | `ci.yml` · `security` |
+| **Security posture** | OSSF Scorecard | `scorecard.yml` |
+| **API stability** | `cargo-semver-checks` + `cargo-public-api` baseline diff | `ci.yml` · `semver_checks`, `public_api` |
+| **Releases & semver** | release-plz (version + changelog + publish) · signed build provenance & SBOM attestation | `release-plz.yml` · `release-attestations.yml` |
+| **Licensing** | REUSE / SPDX compliance | `ci.yml` · `reuse` |
+| **Performance budgets** | criterion benches · WASM size budget · Lighthouse assertions | `ci.yml` · `benchmarks`, `wasm-build`, `lighthouse` |
+| **Formatting & workflows** | `cargo +nightly fmt --check` · actionlint | `ci.yml` · `fmt`, `actionlint` |
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -339,6 +368,8 @@ Define your own `nav-link` and `active` styles:
 ---
 
 ## Architecture
+
+<img src="docs/assets/architecture.svg" alt="Layered module architecture: lib.rs on top; hooks and components in the middle; active_link and nav render primitives below; utils, attrs and errors as the Yew-free leaf. Each layer depends only on the layers beneath it." width="820">
 
 ```
 yew-nav-link

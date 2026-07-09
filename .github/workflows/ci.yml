@@ -247,18 +247,6 @@ jobs:
           echo "::error::Public API surface changed. Run 'cargo public-api -sss > docs/public-api.txt' and commit."
           exit 1
 
-  no_std:
-    name: no-std
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v6
-
-      - name: Check no_std feasibility
-        run: |
-          echo "This crate requires Yew which does not support no_std"
-          exit 0
-
   security:
     name: Security
     runs-on: ubuntu-latest
@@ -671,7 +659,7 @@ jobs:
   ci-success:
     name: CI Success
     runs-on: ubuntu-latest
-    needs: [msrv, check, fmt, docs, semver_checks, public_api, book, no_std, security, reuse, test, wasm_tests, coverage, benchmarks, wasm-build, e2e, lighthouse, changelog, actionlint]
+    needs: [msrv, check, fmt, docs, semver_checks, public_api, book, security, reuse, test, wasm_tests, coverage, benchmarks, wasm-build, e2e, lighthouse, changelog, actionlint]
     if: always()
     steps:
       - name: Check job status
@@ -685,7 +673,6 @@ jobs:
           echo "  Semver Checks: ${{ needs.semver_checks.result }}"
           echo "  Public API: ${{ needs.public_api.result }}"
           echo "  Book: ${{ needs.book.result }}"
-          echo "  no-std: ${{ needs.no_std.result }}"
           echo "  Security: ${{ needs.security.result }}"
           echo "  REUSE: ${{ needs.reuse.result }}"
           echo "  Test: ${{ needs.test.result }}"
@@ -698,7 +685,7 @@ jobs:
           echo "  Changelog: ${{ needs.changelog.result }}"
           echo "  Actionlint: ${{ needs.actionlint.result }}"
 
-          if [[ "${{ needs.msrv.result }}" != "success" || "${{ needs.check.result }}" != "success" || "${{ needs.fmt.result }}" != "success" || "${{ needs.docs.result }}" != "success" || "${{ needs.semver_checks.result }}" != "success" || "${{ needs.public_api.result }}" != "success" || "${{ needs.book.result }}" != "success" || "${{ needs.no_std.result }}" != "success" || "${{ needs.security.result }}" != "success" || "${{ needs.reuse.result }}" != "success" || ("${{ needs.test.result }}" != "success" && "${{ needs.test.result }}" != "skipped") || "${{ needs.wasm_tests.result }}" != "success" || ("${{ needs.coverage.result }}" != "success" && "${{ needs.coverage.result }}" != "skipped") || ("${{ needs.benchmarks.result }}" != "success" && "${{ needs.benchmarks.result }}" != "skipped") || "${{ needs.wasm-build.result }}" != "success" || "${{ needs.e2e.result }}" != "success" || "${{ needs.lighthouse.result }}" != "success" || ("${{ needs.changelog.result }}" != "success" && "${{ needs.changelog.result }}" != "skipped") || "${{ needs.actionlint.result }}" != "success" ]]; then
+          if [[ "${{ needs.msrv.result }}" != "success" || "${{ needs.check.result }}" != "success" || "${{ needs.fmt.result }}" != "success" || "${{ needs.docs.result }}" != "success" || "${{ needs.semver_checks.result }}" != "success" || "${{ needs.public_api.result }}" != "success" || "${{ needs.book.result }}" != "success" || "${{ needs.security.result }}" != "success" || "${{ needs.reuse.result }}" != "success" || ("${{ needs.test.result }}" != "success" && "${{ needs.test.result }}" != "skipped") || "${{ needs.wasm_tests.result }}" != "success" || ("${{ needs.coverage.result }}" != "success" && "${{ needs.coverage.result }}" != "skipped") || ("${{ needs.benchmarks.result }}" != "success" && "${{ needs.benchmarks.result }}" != "skipped") || "${{ needs.wasm-build.result }}" != "success" || "${{ needs.e2e.result }}" != "success" || "${{ needs.lighthouse.result }}" != "success" || ("${{ needs.changelog.result }}" != "success" && "${{ needs.changelog.result }}" != "skipped") || "${{ needs.actionlint.result }}" != "success" ]]; then
             echo "❌ CI failed"
             exit 1
           fi
