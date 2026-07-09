@@ -128,8 +128,7 @@ props.
 - **No `unsafe`.** There is no FFI surface and no performance hot-path that
   would justify it.
 - **No `no_std`.** Yew requires `std` (allocations, `Rc`, threading
-  primitives behind WASM); the CI `no_std` job documents this and exits
-  successfully so a no-std intention is impossible to merge by accident.
+  primitives behind WASM), so the crate is `std`-only by necessity.
 - **No async.** The hooks are synchronous; `use_navigation` returns
   callbacks and yew-router does the rest.
 - **No internal `RefCell` / `Rc` mutability** beyond the breadcrumb
