@@ -30,12 +30,7 @@ default = []
 [dependencies]
 yew = { version = "0.23", features = ["csr"] }
 yew-router = "0.20"
-
-[dev-dependencies]
 wasm-bindgen = "0.2"
-wasm-bindgen-test = "0.3"
-wasm-bindgen-futures = "0.4"
-js-sys = "0.3"
 web-sys = { version = "0.3", features = [
   "Window",
   "Document",
@@ -43,7 +38,17 @@ web-sys = { version = "0.3", features = [
   "HtmlElement",
   "HtmlCollection",
   "History",
+  "Node",
+  "NodeList",
+  "EventTarget",
+  "KeyboardEvent",
+  "KeyboardEventInit",
 ] }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
 
 # Native-only dev-deps. `criterion` pulls in non-wasm runtime crates and
 # `proptest`'s default features pull `rusty-fork` -> `wait-timeout`, which

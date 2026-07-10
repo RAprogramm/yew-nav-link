@@ -29,9 +29,22 @@ pub fn body() -> HtmlElement {
     document().body().unwrap()
 }
 
-/// Allocates a fresh `<div>` under `<body>` for the next render.
+/// Allocates a fresh `<div>` under `<body>` for the next render. Any root left
+/// by a previous test is removed first (matched by the `__test_root` marker
+/// class, so the test-runner's own DOM is untouched) to keep global
+/// `query_selector` calls isolated between tests.
 pub fn fresh_root() -> Element {
-    let root = document().create_element("div").unwrap();
+    let document = document();
+    let stale = document.query_selector_all(".__test_root").unwrap();
+    for index in 0..stale.length() {
+        if let Some(node) = stale.item(index)
+            && let Some(parent) = node.parent_node()
+        {
+            let _ = parent.remove_child(&node);
+        }
+    }
+    let root = document.create_element("div").unwrap();
+    root.set_class_name("__test_root");
     body().append_child(&root).unwrap();
     root
 }
