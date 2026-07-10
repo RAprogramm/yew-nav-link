@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.2](https://github.com/RAprogramm/yew-nav-link/compare/v0.11.1...v0.11.2) - 2026-07-10
+
+### CI
+
+- self-sync sub-crate lockfiles in release PRs and add yank workflow ([#232](https://github.com/RAprogramm/yew-nav-link/issues/232))
+
 ## [0.11.1](https://github.com/RAprogramm/yew-nav-link/compare/v0.11.0...v0.11.1) - 2026-07-10
 
 ### Bug Fixes
