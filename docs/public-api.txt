@@ -270,7 +270,6 @@ pub type yew_nav_link::errors::NavResult<T> = core::result::Result<T, yew_nav_li
 pub mod yew_nav_link::hooks
 pub mod yew_nav_link::hooks::use_navigation
 pub struct yew_nav_link::hooks::use_navigation::Navigation<R> where R: yew_router::routable::Routable + core::clone::Clone + 'static
-pub yew_nav_link::hooks::use_navigation::Navigation::_marker: core::marker::PhantomData<R>
 pub yew_nav_link::hooks::use_navigation::Navigation::go_back: yew::callback::Callback<()>
 pub yew_nav_link::hooks::use_navigation::Navigation::go_forward: yew::callback::Callback<()>
 impl<R> yew_nav_link::Navigation<R> where R: yew_router::routable::Routable + core::clone::Clone + 'static
@@ -289,7 +288,6 @@ pub fn yew_nav_link::BreadcrumbLabelProviderContext::provider(&self) -> alloc::r
 impl core::cmp::PartialEq for yew_nav_link::BreadcrumbLabelProviderContext
 pub fn yew_nav_link::BreadcrumbLabelProviderContext::eq(&self, &Self) -> bool
 pub struct yew_nav_link::hooks::Navigation<R> where R: yew_router::routable::Routable + core::clone::Clone + 'static
-pub yew_nav_link::hooks::Navigation::_marker: core::marker::PhantomData<R>
 pub yew_nav_link::hooks::Navigation::go_back: yew::callback::Callback<()>
 pub yew_nav_link::hooks::Navigation::go_forward: yew::callback::Callback<()>
 impl<R> yew_nav_link::Navigation<R> where R: yew_router::routable::Routable + core::clone::Clone + 'static
@@ -348,7 +346,6 @@ pub fn yew_nav_link::active_link::nav_link::NavLink<R>::run(&mut yew::functional
 pub fn yew_nav_link::nav_link::nav_link<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>(R, &str, yew_nav_link::active_link::mode::Match) -> yew::html::Html
 pub mod yew_nav_link::use_navigation
 pub struct yew_nav_link::use_navigation::Navigation<R> where R: yew_router::routable::Routable + core::clone::Clone + 'static
-pub yew_nav_link::use_navigation::Navigation::_marker: core::marker::PhantomData<R>
 pub yew_nav_link::use_navigation::Navigation::go_back: yew::callback::Callback<()>
 pub yew_nav_link::use_navigation::Navigation::go_forward: yew::callback::Callback<()>
 impl<R> yew_nav_link::Navigation<R> where R: yew_router::routable::Routable + core::clone::Clone + 'static
@@ -638,7 +635,6 @@ impl yew::html::component::properties::Properties for yew_nav_link::NavTextProps
 pub type yew_nav_link::NavTextProps::Builder = NavTextPropsBuilder
 pub fn yew_nav_link::NavTextProps::builder() -> Self::Builder
 pub struct yew_nav_link::Navigation<R> where R: yew_router::routable::Routable + core::clone::Clone + 'static
-pub yew_nav_link::Navigation::_marker: core::marker::PhantomData<R>
 pub yew_nav_link::Navigation::go_back: yew::callback::Callback<()>
 pub yew_nav_link::Navigation::go_forward: yew::callback::Callback<()>
 impl<R> yew_nav_link::Navigation<R> where R: yew_router::routable::Routable + core::clone::Clone + 'static

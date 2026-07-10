@@ -264,7 +264,7 @@ fn HomePage() -> Html {
                     code={r#"[dependencies]
 yew         = { version = "0.23", features = ["csr"] }
 yew-router  = "0.20"
-yew-nav-link = "0.10""#}
+yew-nav-link = "0.11""#}
                 >
                     <p>{ "These are the only dependencies you need." }</p>
                 </DemoCard>

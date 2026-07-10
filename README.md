@@ -106,7 +106,7 @@ maps to the tool that enforces it and the workflow that runs it.
 
 ```toml
 [dependencies]
-yew-nav-link = "0.10"
+yew-nav-link = "0.11"
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -479,6 +479,7 @@ For a full release-by-release log, see [CHANGELOG.md](CHANGELOG.md).
 | 0.8.x | 0.9.x | Macro feature removed; component/function APIs unchanged. See [CHANGELOG `[0.9.0]`](CHANGELOG.md). |
 | 0.9.0 | 0.9.1 | Single-file SPA demo replaces the multi-page docs site under `example/`; library API unchanged. |
 | 0.9.1 | 0.9.2 | `BreadcrumbLabelProvider` now re-exported at the crate root. Drop-in upgrade. |
+| 0.10.x | 0.11.0 | `use_navigation` now routes `push`/`replace`/`go`/`go_back`/`go_forward` through the router's `Navigator`, so a configured basename is honored (previously ignored). `Navigation<R>`'s internal `_marker` field is no longer public — construct the handle via `use_navigation::<R>()`, not a struct literal. The `go_back`/`go_forward` fields and all `*_callback` methods keep the same signatures. |
 
 ---
 

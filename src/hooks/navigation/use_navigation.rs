@@ -3,66 +3,75 @@
 
 //! Programmatic navigation built on top of yew-router's `Navigator`.
 //!
-//! [`use_navigation`] returns a [`Navigation<R>`] handle exposing pre-built
-//! `Callback<()>` values for `push`, `replace`, `go`, `go_back`, and
-//! `go_forward` so consumers can plug them into `onclick` without writing
-//! `Callback::from(move |_| ...)` boilerplate themselves.
+//! [`use_navigation`] returns a [`Navigation<R>`] handle. `go_back` and
+//! `go_forward` are ready-made `Callback<()>` values; `push_callback`,
+//! `replace_callback`, and `go_callback` build a `Callback<()>` from an
+//! argument. Every one routes through the router's [`Navigator`], so the
+//! configured basename is honored — the same path [`NavLink`](crate::NavLink)
+//! takes.
 
 use std::marker::PhantomData;
 
 use yew::prelude::*;
-use yew_router::{
-    history::{BrowserHistory, History},
-    prelude::*
-};
+use yew_router::prelude::*;
 
-/// Navigation callbacks for programmatic route manipulation.
+/// Handle for programmatic route manipulation, created by [`use_navigation`].
 ///
-/// Provides pre-built callbacks for:
-/// - Pushing new routes onto history
-/// - Replacing current route
-/// - Navigating back/forward
-///
-/// This struct is created by [`use_navigation`] and contains all the
-/// callbacks needed for navigation without storing state.
+/// `go_back` and `go_forward` are ready-made callbacks. `push_callback`,
+/// `replace_callback`, and `go_callback` build a callback from an argument.
+/// All of them route through the captured [`Navigator`], so the router
+/// basename is honored.
 #[derive(Clone, Debug)]
 pub struct Navigation<R>
 where
     R: Routable + Clone + 'static
 {
+    navigator:      Option<Navigator>,
     /// Callback to navigate back in history.
     pub go_back:    Callback<()>,
     /// Callback to navigate forward in history.
     pub go_forward: Callback<()>,
-    /// Phantom marker for the route type.
-    pub _marker:    PhantomData<R>
+    marker:         PhantomData<R>
 }
 
 impl<R> Navigation<R>
 where
     R: Routable + Clone + 'static
 {
-    /// Create a callback for pushing a route onto history.
+    /// Create a callback that pushes `route` onto the history stack.
+    ///
+    /// The push goes through the router's [`Navigator`], so the configured
+    /// basename is prepended.
     pub fn push_callback(&self, route: R) -> Callback<()> {
+        let navigator = self.navigator.clone();
         Callback::from(move |()| {
-            let path = route.to_path();
-            BrowserHistory::new().push(&path);
+            if let Some(navigator) = &navigator {
+                navigator.push(&route);
+            }
         })
     }
 
-    /// Create a callback for replacing the current route.
+    /// Create a callback that replaces the current history entry with `route`.
+    ///
+    /// The replace goes through the router's [`Navigator`], so the configured
+    /// basename is prepended.
     pub fn replace_callback(&self, route: R) -> Callback<()> {
+        let navigator = self.navigator.clone();
         Callback::from(move |()| {
-            let path = route.to_path();
-            BrowserHistory::new().replace(&path);
+            if let Some(navigator) = &navigator {
+                navigator.replace(&route);
+            }
         })
     }
 
+    /// Create a callback that moves `delta` entries through history.
     #[must_use]
-    /// Create a callback for navigating with a delta.
     pub fn go_callback(&self, delta: isize) -> Callback<()> {
+        let navigator = self.navigator.clone();
         Callback::from(move |()| {
-            BrowserHistory::new().go(delta);
+            if let Some(navigator) = &navigator {
+                navigator.go(delta);
+            }
         })
     }
 }
@@ -100,18 +109,31 @@ pub fn use_navigation<R>() -> Navigation<R>
 where
     R: Routable + Clone + 'static
 {
-    let go_back = Callback::from(|()| {
-        BrowserHistory::new().back();
-    });
+    let navigator = use_navigator();
 
-    let go_forward = Callback::from(|()| {
-        BrowserHistory::new().forward();
-    });
+    let go_back = {
+        let navigator = navigator.clone();
+        Callback::from(move |()| {
+            if let Some(navigator) = &navigator {
+                navigator.back();
+            }
+        })
+    };
+
+    let go_forward = {
+        let navigator = navigator.clone();
+        Callback::from(move |()| {
+            if let Some(navigator) = &navigator {
+                navigator.forward();
+            }
+        })
+    };
 
     Navigation {
+        navigator,
         go_back,
         go_forward,
-        _marker: PhantomData
+        marker: PhantomData
     }
 }
 
@@ -134,7 +156,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let _ = nav.go_back;
@@ -152,7 +175,8 @@ mod tests {
         let nav1 = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let nav2 = nav1;
@@ -171,7 +195,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let debug_str = format!("{nav:?}");
@@ -189,7 +214,8 @@ mod tests {
         let nav1 = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
         let nav2 = nav1;
         let _ = nav1.go_back;
@@ -207,7 +233,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
         let _ = nav.push_callback(TestRoute::Home);
     }
@@ -223,7 +250,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
         let _ = nav.replace_callback(TestRoute::Home);
     }
@@ -239,7 +267,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
         let _ = nav.go_callback(-1);
     }
@@ -255,7 +284,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
         let callback = nav.go_callback(1);
         let _ = callback;
@@ -272,7 +302,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
         let callback = nav.go_callback(0);
         let _ = callback;
@@ -289,7 +320,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
         let callback = nav.go_callback(-10);
         let _ = callback;
@@ -306,7 +338,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
         let callback = nav.go_callback(10);
         let _ = callback;
@@ -323,7 +356,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let route = TestRoute::User {
@@ -344,7 +378,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let route = TestRoute::Post {
@@ -365,7 +400,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let route = TestRoute::Settings {
@@ -386,7 +422,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let route = TestRoute::Api {
@@ -409,7 +446,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let push_callback = nav.push_callback(TestRoute::Home);
@@ -432,7 +470,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let callback1 = nav.push_callback(TestRoute::Home);
@@ -461,7 +500,8 @@ mod tests {
         let nav = Navigation::<ComplexRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let _ = nav.push_callback(ComplexRoute::Home);
@@ -481,7 +521,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let query = "rust programming".to_string();
@@ -504,7 +545,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let _ = nav.go_back;
@@ -521,7 +563,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let _ = nav.go_forward;
@@ -550,7 +593,8 @@ mod tests {
         let nav = Navigation::<MultiVariantRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let _ = nav.push_callback(MultiVariantRoute::Home);
@@ -573,7 +617,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let min_delta = nav.go_callback(isize::MIN);
@@ -598,7 +643,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let route = TestRoute::Item {
@@ -619,7 +665,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let route = TestRoute::Tag {
@@ -640,7 +687,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let route = TestRoute::Emoji {
@@ -661,7 +709,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let route = TestRoute::Number {
@@ -688,7 +737,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let debug_str = format!("{nav:?}");
@@ -714,7 +764,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let step1_callback = nav.push_callback(TestRoute::Step1);
@@ -739,7 +790,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let push_cb = nav.push_callback(TestRoute::Home);
@@ -764,7 +816,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let route = TestRoute::Member {
@@ -787,7 +840,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let route = TestRoute::Filter {
@@ -808,7 +862,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let callback = nav.go_callback(-5);
@@ -826,12 +881,13 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let _nav_back = &nav.go_back;
         let _nav_forward = &nav.go_forward;
-        let _ = nav._marker;
+        let _ = nav.marker;
     }
 
     #[test]
@@ -851,13 +907,15 @@ mod tests {
         let nav1 = Navigation::<Route1> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let nav2 = Navigation::<Route2> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let _ = nav1.push_callback(Route1::Home);
@@ -875,7 +933,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let _ = nav.push_callback(TestRoute::Home);
@@ -894,7 +953,8 @@ mod tests {
         let nav = Navigation::<TestRoute> {
             go_back:    Callback::from(|()| {}),
             go_forward: Callback::from(|()| {}),
-            _marker:    PhantomData
+            navigator:  None,
+            marker:     PhantomData
         };
 
         let _ = nav.replace_callback(TestRoute::Home);
