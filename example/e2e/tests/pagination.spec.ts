@@ -18,4 +18,20 @@ test.describe('Pagination', () => {
     const active = pagination.locator('button[aria-current="page"]');
     await expect(active).toHaveCount(1);
   });
+
+  test('prev/next buttons expose an accessible name', async ({ page }) => {
+    await page.goto('/components');
+
+    const pagination = page.locator('nav[aria-label="pagination"]').first();
+    await expect(pagination).toBeVisible();
+
+    // The glyph-only prev/next controls must announce a real name to
+    // assistive tech, not the raw "‹"/"›" characters.
+    await expect(
+      pagination.getByRole('button', { name: 'Previous page' })
+    ).toHaveCount(1);
+    await expect(
+      pagination.getByRole('button', { name: 'Next page' })
+    ).toHaveCount(1);
+  });
 });
