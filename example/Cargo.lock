@@ -936,7 +936,7 @@ dependencies = [
 
 [[package]]
 name = "yew-nav-link"
-version = "0.11.0"
+version = "0.11.1"
 dependencies = [
  "wasm-bindgen",
  "web-sys",
