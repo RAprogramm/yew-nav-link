@@ -265,8 +265,8 @@ mod tests {
         // usize` on wasm32 (32-bit usize) without saturating arithmetic.
         // We only assert the call does not panic and the output is sane.
         let pages = generate_pages(5, 10, u32::MAX);
-        assert!(pages.first() == Some(&1));
-        assert!(pages.last() == Some(&10));
+        assert_eq!(pages.first(), Some(&1));
+        assert_eq!(pages.last(), Some(&10));
         // When siblings >= total - 1, every page from 2..=total-1 is in
         // the window — no ellipses anywhere.
         assert_eq!(pages, vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
