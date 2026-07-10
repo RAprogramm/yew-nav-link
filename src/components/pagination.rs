@@ -141,6 +141,7 @@ pub fn Pagination(props: &PaginationProps) -> Html {
                     <li class="pagination-item">
                         <button
                             type="button"
+                            aria-label="Previous page"
                             disabled={current_page <= 1}
                             onclick={on_page_change.clone().map(move |cb| {
                                 let cb = cb.clone();
@@ -210,6 +211,7 @@ pub fn Pagination(props: &PaginationProps) -> Html {
                     <li class="pagination-item">
                         <button
                             type="button"
+                            aria-label="Next page"
                             disabled={current_page >= total_pages}
                             onclick={on_page_change.clone().map(move |cb| {
                                 let cb = cb.clone();
