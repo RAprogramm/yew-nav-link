@@ -52,6 +52,10 @@ sync_file example/src/lib.rs "$snippet"
 sync_file README.md "s/\\| Rust \\| [0-9]+\\.[0-9]+\\+ \\|/| Rust | ${msrv}+ |/"
 sync_file docs/REQUIREMENTS.md "s/Rust \\*\\*[0-9]+\\.[0-9]+\\+\\*\\*/Rust **${msrv}+**/"
 
+lock_expr="/^name = \"yew-nav-link\"\$/{n;s/^version = \"[0-9]+\\.[0-9]+\\.[0-9]+\"/version = \"${version}\"/}"
+sync_file example/Cargo.lock "$lock_expr"
+sync_file fuzz/Cargo.lock "$lock_expr"
+
 if [ "$STALE" = "1" ]; then
   exit 1
 fi
