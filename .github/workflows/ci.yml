@@ -99,10 +99,11 @@ jobs:
           cargo clippy --no-default-features -- --deny warnings
 
       # `pedantic` and `nursery` lints shift between clippy versions, so gate
-      # them to the stable toolchain (the environment the pre-commit hook
-      # enforces) rather than the MSRV/nightly matrix legs.
-      - name: Clippy pedantic and nursery (stable only)
-        if: matrix.rust == 'stable'
+      # them to the pinned MSRV toolchain for reproducible results. A floating
+      # `stable`/`nightly` clippy would surface new lints and break green
+      # builds on unrelated PRs.
+      - name: Clippy pedantic and nursery (MSRV pin)
+        if: matrix.rust == needs.msrv.outputs.msrv
         run: |
           cargo clippy --all-targets --all-features -- --deny warnings -W clippy::pedantic -W clippy::nursery
           cargo clippy --no-default-features -- --deny warnings -W clippy::pedantic -W clippy::nursery
