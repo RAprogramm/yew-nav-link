@@ -22,3 +22,6 @@ mod nav_link;
 
 #[path = "wasm/components.rs"]
 mod components;
+
+#[path = "wasm/navigation.rs"]
+mod navigation;

@@ -52,6 +52,11 @@ coverage:
     - "**/*_test.rs"
     - ".github/**/*"
     - "target/**/*"
+    # Browser-only glue over yew-router's `Navigator`: its runtime paths
+    # only execute under a real router in a browser, so native `llvm-cov`
+    # cannot reach them. Behavior is covered by the wasm suite
+    # (`tests/wasm/navigation.rs`) and Playwright e2e instead.
+    - "src/hooks/navigation/use_navigation.rs"
 
 comment:
   layout: "condensed_header, condensed_files, condensed_footer"
