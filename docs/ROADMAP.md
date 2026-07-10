@@ -43,9 +43,8 @@ upgrade through in one hop:
 - Active `NavLink` emits `aria-current="page"` on the rendered `<a>` for
   screen-reader-correct active state.
 
-MSRV review for the line completed with no bump: stable Rust 1.95 was
-the latest stable when 0.10 was cut and remained so through the window
-(see closed issue #71).
+The line's MSRV is Rust 1.96 (`rust-version` in `Cargo.toml`), enforced by
+CI's MSRV matrix on Linux/macOS/Windows.
 
 Subsequent 0.10.x patches address CI, dependency bumps, and
 documentation only — no public API changes.

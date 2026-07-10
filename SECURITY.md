@@ -11,9 +11,9 @@ Only the two most recent minor versions receive security updates.
 
 | Version | Supported          |
 |---------|--------------------|
+| 0.11.x  | :white_check_mark: |
 | 0.10.x  | :white_check_mark: |
-| 0.9.x   | :white_check_mark: |
-| < 0.9   | :x:                |
+| < 0.10  | :x:                |
 
 ## Reporting a Vulnerability
 

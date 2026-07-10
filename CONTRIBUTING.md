@@ -19,7 +19,7 @@ Report unacceptable behaviour via the contact in that file.
 
 You need:
 
-- Rust **stable 1.95+** plus a `nightly` toolchain (used only for `rustfmt`):
+- Rust **stable 1.96+** plus a `nightly` toolchain (used only for `rustfmt`):
   ```bash
   rustup default stable
   rustup toolchain install nightly --component rustfmt
@@ -86,11 +86,12 @@ git checkout -b 123
 ### 3. Commit format
 
 ```bash
-git commit -m "#123 feat add custom class support"
+git commit -m "#123 feat: add custom class support"
 ```
 
-Format is `#<issue> <type> <description>` — no colon after the type, no
-`(scope)`. Breaking changes carry a `!` on the type (`feat!`, `refactor!`).
+Format is `#<issue> <type>: <description>` — conventional-commit type with a
+colon, no `(scope)`. Breaking changes carry a `!` on the type (`feat!`,
+`fix!`, `refactor!`).
 
 | Type | Use for | Triggers in CHANGELOG |
 |---|---|---|
@@ -102,13 +103,16 @@ Format is `#<issue> <type> <description>` — no colon after the type, no
 | `test` | Test additions or modifications | no |
 | `chore` | Maintenance, dependency bumps, tooling | no |
 
-`git-cliff` reads these prefixes (`cliff.toml`), normalising the
-`#<N> <type> <desc>` form into a conventional-commit subject for the
-CHANGELOG.
+`git-cliff` and release-plz read these prefixes (`cliff.toml`,
+`release-plz.toml`), normalising the `#<N> <type>: <desc>` form into a
+conventional-commit subject for the CHANGELOG and the version bump.
 
 ### 4. Open a pull request
 
-- **Title:** issue number only (e.g. `123`).
+- **Title:** conventional-commit form matching the commit, e.g.
+  `#123 feat: add custom class support`. The squash-merge uses the PR title
+  as the subject on `main`, and release-plz parses it for the changelog and
+  version bump — a bare issue number would be dropped.
 - **Body:** must include `Closes #123` so the issue auto-closes on merge.
 - **Reviews:** there is no required-reviewer rule on `main`, but every PR
   must pass the `CI Success` aggregate status check before merge — that's
@@ -131,7 +135,7 @@ CHANGELOG.
 | Line width | 99 characters (`max_width` in `.rustfmt.toml`). |
 | Trailing commas | Never (`trailing_comma = "Never"` in `.rustfmt.toml`). |
 | Edition | Rust 2024. |
-| MSRV | 1.95. |
+| MSRV | 1.96. |
 
 ## CI overview
 
@@ -142,13 +146,12 @@ merge.
 | Job | Required | Notes |
 |---|---|---|
 | `Extract MSRV` | yes | reads `rust-version` from `Cargo.toml` |
-| `Check` | yes | matrix: 3 toolchains × 3 OSes |
+| `Check` | yes | matrix: 3 toolchains × 3 OSes; also runs `clippy` (all + no-default features) |
 | `Format` | yes | nightly `rustfmt --check` |
-| `Lint (clippy)` | yes | pedantic + nursery |
 | `Documentation` | yes | `cargo doc --all-features` with `RUSTDOCFLAGS=-D warnings` |
 | `Public API` | yes | `cargo public-api -sss` must match `docs/public-api.txt` |
+| `Semver Checks` | yes | `cargo semver-checks check-release` against the last crates.io release |
 | `Book` | yes | `mdbook build docs` against `docs/book.toml` |
-| `no-std` | yes | informational stub (Yew is std-only) |
 | `Security` | yes | `cargo deny check` + `cargo audit` |
 | `REUSE Compliance` | yes | `reuse lint` |
 | `Test` | yes (skip allowed) | `cargo nextest` + doctests |
