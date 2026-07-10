@@ -140,6 +140,13 @@ pub mod active_link;
 /// Path, URL, query string, and keyboard navigation utilities.
 pub mod utils;
 
+/// Compiles the `rust` code blocks in `README.md` as part of
+/// `cargo test --doc`, so the README's examples cannot silently drift from the
+/// public API. Only present during doctest builds.
+#[cfg(doctest)]
+#[doc = include_str!("../README.md")]
+pub struct ReadmeDoctests;
+
 pub use active_link::{Match, NavLink, NavLinkProps, nav_link};
 pub use attrs::{NavItemAttrs, NavLinkAttrs, NavListAttrs};
 pub use components::{

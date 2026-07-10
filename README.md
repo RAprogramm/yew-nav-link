@@ -156,7 +156,7 @@ When the user visits `/about`, the second link automatically receives `class="na
 
 ### Function Syntax
 
-```rust
+```rust,ignore
 use yew::prelude::*;
 use yew_nav_link::{nav_link, Match};
 use yew_router::prelude::*;
@@ -176,7 +176,7 @@ fn Menu() -> Html {
 
 Keep parent links highlighted on nested routes:
 
-```rust
+```rust,ignore
 html! {
     <nav>
         // Active on /docs, /docs/api, /docs/anything
@@ -191,7 +191,7 @@ Partial matching is segment-aware: `/docs` matches `/docs/api` but **not** `/doc
 
 Customize the default `nav-link` and `active` classes:
 
-```rust
+```rust,ignore
 html! {
     <nav>
         // Custom base class
@@ -210,7 +210,7 @@ html! {
 
 `use_navigation::<R>()` returns a [`Navigation<R>`] handle exposing pre-built `Callback`s — no manual `Callback::from(...)` boilerplate.
 
-```rust
+```rust,ignore
 use yew::prelude::*;
 use yew_nav_link::use_navigation;
 
@@ -242,7 +242,7 @@ fn MyComponent() -> Html {
 
 Implement [`BreadcrumbLabelProvider`] to control how each path segment is rendered. The provider operates on **paths** (e.g. `/docs/api`), not on `Routable` enum variants — it works the same for static and parameterised routes.
 
-```rust
+```rust,ignore
 use std::rc::Rc;
 use yew_nav_link::{BreadcrumbLabelProvider, use_breadcrumbs};
 
@@ -374,7 +374,7 @@ Define your own `nav-link` and `active` styles:
 
 <img src="docs/assets/architecture.svg" alt="Layered module architecture: lib.rs on top; hooks and components in the middle; active_link and nav render primitives below; utils, attrs and errors as the Yew-free leaf. Each layer depends only on the layers beneath it." width="820">
 
-```
+```text
 yew-nav-link
 ├── active_link       # Core NavLink component + Match enum
 ├── nav               # Primitives: NavList, NavItem, NavDivider
@@ -435,7 +435,7 @@ Open <http://127.0.0.1:3000> (port set in [`example/trunk.toml`](example/trunk.t
 
 ### `nav_link<R>` Function
 
-```rust
+```rust,ignore
 fn nav_link<R: Routable + PartialEq + Clone + 'static>(
     to: R,
     children: &str,
@@ -445,7 +445,7 @@ fn nav_link<R: Routable + PartialEq + Clone + 'static>(
 
 ### `BreadcrumbItem`
 
-```rust
+```rust,ignore
 pub struct BreadcrumbItem<R> {
     /// The route this breadcrumb points to.
     pub route: R,

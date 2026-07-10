@@ -98,6 +98,15 @@ jobs:
         run: |
           cargo clippy --no-default-features -- --deny warnings
 
+      # `pedantic` and `nursery` lints shift between clippy versions, so gate
+      # them to the stable toolchain (the environment the pre-commit hook
+      # enforces) rather than the MSRV/nightly matrix legs.
+      - name: Clippy pedantic and nursery (stable only)
+        if: matrix.rust == 'stable'
+        run: |
+          cargo clippy --all-targets --all-features -- --deny warnings -W clippy::pedantic -W clippy::nursery
+          cargo clippy --no-default-features -- --deny warnings -W clippy::pedantic -W clippy::nursery
+
   fmt:
     name: Format
     runs-on: ubuntu-latest
