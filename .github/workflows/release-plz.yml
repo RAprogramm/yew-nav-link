@@ -96,3 +96,29 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.app_token.outputs.token }}
           CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+
+      # release-plz bumps the root crate but not the separate example/ and
+      # fuzz/ workspaces, so their lockfile pins lag the new version and the
+      # release PR would fail `sync-versions.sh --check`. Reconcile them (and
+      # any doc-snippet minor bump) on the release branch automatically.
+      - name: Sync sub-crate lockfiles into the release PR
+        env:
+          GH_TOKEN: ${{ steps.app_token.outputs.token }}
+        run: |
+          branch="$(gh pr list --state open --json headRefName,title \
+            --jq 'map(select(.title | startswith("chore: release"))) | .[0].headRefName // ""')"
+          if [ -z "$branch" ]; then
+            echo "No open release PR; nothing to sync."
+            exit 0
+          fi
+          git fetch origin "$branch"
+          git checkout "$branch"
+          ./scripts/sync-versions.sh
+          if git diff --quiet; then
+            echo "Sub-crate lockfiles already in sync."
+            exit 0
+          fi
+          git config user.name "release-plz[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore: sync sub-crate lockfiles to release version"
+          git push origin "HEAD:$branch"
