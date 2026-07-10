@@ -25,48 +25,49 @@ pub struct UrlParts {
 impl UrlParts {
     /// Parses a URL string into its component parts.
     ///
-    /// Supports both absolute URLs (`scheme://host/path`) and
-    /// path-only strings (`/path?query#fragment`).
+    /// Supports both absolute URLs (`scheme://host[:port]/path?query#fragment`)
+    /// and path-only strings (`/path?query#fragment`). A `host` is only set
+    /// when an authority is present (i.e. the input has a `scheme://`); a
+    /// path-only input leaves `host` as `None`. `query` and `fragment` are
+    /// parsed even when the authority carries no path
+    /// (e.g. `https://example.com?a=1`).
     #[must_use]
     pub fn parse(url: &str) -> Self {
         let mut parts = Self::default();
 
-        let mut remaining = url;
-
-        if let Some((scheme, rest)) = remaining.split_once("://") {
+        let after_authority = if let Some((scheme, rest)) = url.split_once("://") {
             parts.scheme = Some(scheme.to_string());
-            remaining = rest;
-        }
-
-        if let Some((host_port, rest)) = remaining.split_once('/') {
-            if let Some((host, port)) = host_port.split_once(':') {
+            let authority_end = rest.find(['/', '?', '#']).unwrap_or(rest.len());
+            let (authority, remainder) = rest.split_at(authority_end);
+            if let Some((host, port)) = authority.split_once(':') {
                 parts.host = Some(host.to_string());
                 parts.port = Some(port.to_string());
             } else {
-                parts.host = Some(host_port.to_string());
+                parts.host = Some(authority.to_string());
             }
-            remaining = rest;
+            remainder
         } else {
-            if let Some((host, port)) = remaining.split_once(':') {
-                parts.host = Some(host.to_string());
-                parts.port = Some(port.to_string());
-            } else {
-                parts.host = Some(remaining.to_string());
-            }
-            return parts;
-        }
+            url
+        };
 
-        if let Some((path_query, fragment)) = remaining.split_once('#') {
+        let mut rest = after_authority;
+        if let Some((before, fragment)) = rest.split_once('#') {
             parts.fragment = Some(fragment.to_string());
-            remaining = path_query;
+            rest = before;
         }
 
-        if let Some((path, query)) = remaining.split_once('?') {
-            parts.path = format!("/{path}");
+        let path = if let Some((path, query)) = rest.split_once('?') {
             parts.query = Some(query.to_string());
+            path
         } else {
-            parts.path = format!("/{remaining}");
-        }
+            rest
+        };
+
+        parts.path = if path.is_empty() || path.starts_with('/') {
+            path.to_string()
+        } else {
+            format!("/{path}")
+        };
 
         parts
     }
@@ -141,12 +142,40 @@ mod tests {
 
     #[test]
     fn url_parts_parse_path_only() {
-        // When URL starts with '/' and has more '/', the part before first '/' becomes
-        // host
+        // A path-only input has no authority, so `host` stays `None`.
         let parts = UrlParts::parse("/api/v1/users");
         assert_eq!(parts.path, "/api/v1/users");
         assert!(parts.scheme.is_none());
-        assert_eq!(parts.host, Some(String::new()));
+        assert_eq!(parts.host, None);
+    }
+
+    #[test]
+    fn url_parts_parse_host_only_with_query() {
+        let parts = UrlParts::parse("https://example.com?foo=bar");
+        assert_eq!(parts.scheme, Some("https".to_string()));
+        assert_eq!(parts.host, Some("example.com".to_string()));
+        assert_eq!(parts.path, "");
+        assert_eq!(parts.query, Some("foo=bar".to_string()));
+        assert_eq!(parts.query_params().unwrap().get("foo"), Some("bar"));
+    }
+
+    #[test]
+    fn url_parts_parse_host_only_with_fragment() {
+        let parts = UrlParts::parse("https://example.com#top");
+        assert_eq!(parts.host, Some("example.com".to_string()));
+        assert_eq!(parts.path, "");
+        assert_eq!(parts.fragment, Some("top".to_string()));
+        assert!(parts.query.is_none());
+    }
+
+    #[test]
+    fn url_parts_parse_host_only_with_query_and_fragment() {
+        let parts = UrlParts::parse("https://example.com:8080?a=1#frag");
+        assert_eq!(parts.host, Some("example.com".to_string()));
+        assert_eq!(parts.port, Some("8080".to_string()));
+        assert_eq!(parts.path, "");
+        assert_eq!(parts.query, Some("a=1".to_string()));
+        assert_eq!(parts.fragment, Some("frag".to_string()));
     }
 
     #[test]
