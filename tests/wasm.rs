@@ -19,3 +19,6 @@ mod common;
 
 #[path = "wasm/nav_link.rs"]
 mod nav_link;
+
+#[path = "wasm/components.rs"]
+mod components;

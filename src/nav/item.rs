@@ -89,13 +89,13 @@ pub fn NavItem(props: &NavItemProps) -> Html {
     if props.disabled {
         classes.push("disabled");
         html! {
-            <li {classes} role="listitem" aria-disabled="true">
+            <li class={classes} role="listitem" aria-disabled="true">
                 { for props.children.iter() }
             </li>
         }
     } else {
         html! {
-            <li {classes} role="listitem">
+            <li class={classes} role="listitem">
                 { for props.children.iter() }
             </li>
         }

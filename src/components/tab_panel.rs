@@ -89,7 +89,7 @@ pub fn NavTabPanel(props: &NavTabPanelProps) -> Html {
 
     html! {
         <div
-            {classes}
+            class={classes}
             id={props.id}
             role="tabpanel"
             aria-labelledby={props.labelled_by}

@@ -103,7 +103,7 @@ pub fn NavBadge(props: &NavBadgeProps) -> Html {
     classes.push(variant_class(props.variant));
 
     html! {
-        <span {classes}>
+        <span class={classes}>
             { for props.children.iter() }
         </span>
     }

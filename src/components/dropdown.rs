@@ -138,7 +138,7 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
     };
 
     html! {
-        <li {classes} role="presentation">
+        <li class={classes} role="presentation">
             <button
                 type="button"
                 class="nav-dropdown-toggle"

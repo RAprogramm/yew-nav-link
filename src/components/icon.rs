@@ -177,7 +177,7 @@ pub fn NavLinkWithIcon(props: &NavLinkWithIconProps) -> Html {
     classes.push("nav-link-with-icon");
 
     html! {
-        <span {classes}>
+        <span class={classes}>
             { for props.children.iter() }
         </span>
     }

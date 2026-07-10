@@ -82,13 +82,13 @@ pub fn NavHeader(props: &NavHeaderProps) -> Html {
 
     if let Some(text) = props.text {
         html! {
-            <li {classes} role="presentation">
+            <li class={classes} role="presentation">
                 <span class="nav-header-text">{ text }</span>
             </li>
         }
     } else {
         html! {
-            <li {classes} role="presentation">
+            <li class={classes} role="presentation">
                 { for props.children.iter() }
             </li>
         }
