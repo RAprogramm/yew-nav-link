@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.10...v0.11.0) - 2026-07-10
+
+### Bug Fixes
+
+- [**breaking**] route programmatic navigation through the router Navigator ([#223](https://github.com/RAprogramm/yew-nav-link/issues/223))
+- render class attribute instead of classes shorthand ([#220](https://github.com/RAprogramm/yew-nav-link/issues/220))
+- give pagination prev/next buttons an accessible name ([#226](https://github.com/RAprogramm/yew-nav-link/issues/226))
+- parse host-only and path-only URLs correctly ([#224](https://github.com/RAprogramm/yew-nav-link/issues/224))
+
+### CI
+
+- gate clippy pedantic/nursery and compile README examples ([#228](https://github.com/RAprogramm/yew-nav-link/issues/228))
+
+### Documentation
+
+- sync README and docs with the actual public API ([#225](https://github.com/RAprogramm/yew-nav-link/issues/225))
+
+### Features
+
+- keyboard navigation for NavDropdown ([#227](https://github.com/RAprogramm/yew-nav-link/issues/227))
+
 ## [0.10.10](https://github.com/RAprogramm/yew-nav-link/compare/v0.10.9...v0.10.10) - 2026-07-09
 
 ### Documentation
