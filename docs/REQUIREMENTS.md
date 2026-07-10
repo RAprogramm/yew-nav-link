@@ -62,13 +62,16 @@ alias return `true` iff the current route equals `route`.
 `route.to_path()` is a path-segment prefix of the current path.
 
 **FR-HK-4.** `use_navigation::<R>() -> Navigation<R>` returns a value-type
-struct exposing pre-built callbacks: `push_callback`, `replace_callback`,
-`go_callback`, `go_back`, `go_forward`. Each callback is `Callback<()>`
-(or `Callback<i32>` for `go_callback`) so consumers can adapt with
-`.reform(...)` for `onclick` handlers.
+struct. `go_back` and `go_forward` are ready-made `Callback<()>` fields;
+`push_callback(route)`, `replace_callback(route)`, and `go_callback(delta:
+isize)` are methods that build a `Callback<()>` from an argument. Every
+callback routes through the router's `Navigator`, so a configured basename
+is honored. Consumers adapt them with `.reform(...)` for `onclick` handlers.
 
-**FR-HK-5.** `use_query_params() -> HashMap<String, String>` parses the
-current URL's query string into a flat map; reactive on every URL change.
+**FR-HK-5.** `use_query_params() -> QueryParams` parses the current URL's
+query string into a multi-value map (`utils::QueryParams`, backed by
+`Vec<(String, Vec<String>)>` so repeated keys are preserved); reactive on
+every URL change.
 
 **FR-HK-6.** `use_breadcrumbs::<R>() -> Vec<BreadcrumbItem<R>>` builds a
 breadcrumb trail from the current path. The label of each item comes from a

@@ -311,25 +311,28 @@ fn Crumbs() -> Html {
 
 | Hook | Returns | Description |
 |------|---------|-------------|
-| `use_route_info()` | `RouteInfo<R>` | Current route, path, and query parameters |
+| `use_route_info::<R>()` | `Option<R>` | Currently matched route, or `None` when nothing matches |
 | `use_is_active(route)` | `bool` | Whether the given route is currently active |
 | `use_is_exact_active(route)` | `bool` | Whether the route matches exactly |
 | `use_is_partial_active(route)` | `bool` | Whether the route is a prefix of the current path |
-| `use_breadcrumbs()` | `Vec<BreadcrumbItem<R>>` | Auto-generated breadcrumb trail from current route |
-| `use_navigation<R>()` | `Navigation<R>` | Programmatic navigation (push, replace, go back/forward) |
-| `use_query_params()` | `HashMap<String, String>` | URL query string parameters |
+| `use_breadcrumbs::<R>()` | `Vec<BreadcrumbItem<R>>` | Auto-generated breadcrumb trail from current route |
+| `use_navigation::<R>()` | `Navigation<R>` | Programmatic navigation (push, replace, go back/forward) |
+| `use_query_params()` | `QueryParams` | URL query parameters (multi-value `utils::QueryParams`) |
 
 ### Utilities
 
-| Function | Description |
-|----------|-------------|
-| `is_absolute(path)` | Check if a path starts with `/` |
-| `join_paths(a, b)` | Join two path segments safely |
-| `normalize_path(path)` | Remove duplicate slashes and trailing slashes |
-| `urlencoding_encode(s)` | Percent-encode a string for URLs |
-| `urlencoding_decode(s)` | Decode a percent-encoded string |
-| `handle_arrow_key(config, key)` | Keyboard navigation handler |
-| `handle_home_end(config, key)` | Home/End key handler for navigation |
+Path helpers are re-exported at the crate root; the URL and keyboard helpers
+live under the `utils` module (`yew_nav_link::utils::…`).
+
+| Function | Path | Description |
+|----------|------|-------------|
+| `is_absolute(path)` | crate root | Check if a path starts with `/` |
+| `join_paths(a, b)` | crate root | Join two path segments safely |
+| `normalize_path(path)` | crate root | Collapse duplicate slashes and resolve `.`/`..`; a single trailing slash is preserved |
+| `urlencoding_encode(s)` | `utils::` | Percent-encode a string for URLs |
+| `urlencoding_decode(s)` | `utils::` | Decode a percent-encoded string (`None` on invalid UTF-8) |
+| `handle_arrow_key(config, key)` | `utils::` | Keyboard navigation handler |
+| `handle_home_end(config, key)` | `utils::` | Home/End key handler for navigation |
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -443,10 +446,13 @@ fn nav_link<R: Routable + PartialEq + Clone + 'static>(
 ### `BreadcrumbItem`
 
 ```rust
-pub struct BreadcrumbItem {
+pub struct BreadcrumbItem<R> {
+    /// The route this breadcrumb points to.
+    pub route: R,
+    /// Human-readable label for the breadcrumb.
     pub label: String,
-    pub route: Option<String>,
-    pub is_current: bool,
+    /// Whether this breadcrumb is the current route.
+    pub is_active: bool,
 }
 ```
 

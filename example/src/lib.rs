@@ -839,7 +839,7 @@ let forward  = nav.go_forward.clone().reform(|_: MouseEvent| ());"#}
                 <DemoCard
                     title="Reactive query string"
                     description="Append ?foo=bar&page=2 to the URL bar and watch this map update without a reload."
-                    code={r#"let query: HashMap<String, String> = use_query_params();
+                    code={r#"let query: QueryParams = use_query_params();
 let page = query.get("page");"#}
                 >
                     <pre class="inline-pre">{ format!("{:#?}", query) }</pre>
