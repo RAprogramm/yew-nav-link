@@ -136,7 +136,7 @@ pub fn Pagination(props: &PaginationProps) -> Html {
 
     html! {
         <nav aria-label="pagination">
-            <ul {classes}>
+            <ul class={classes}>
                 if show_prev_next {
                     <li class="pagination-item">
                         <button

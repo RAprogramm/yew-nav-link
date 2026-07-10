@@ -99,7 +99,7 @@ pub fn PageItem(props: &PageItemProps) -> Html {
     }
 
     html! {
-        <li {classes}>
+        <li class={classes}>
             <span class="page-link">
                 { for props.children.iter() }
             </span>

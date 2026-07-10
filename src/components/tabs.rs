@@ -92,7 +92,7 @@ pub fn NavTabs(props: &NavTabsProps) -> Html {
 
     html! {
         <ul
-            {classes}
+            class={classes}
             id={props.id}
             role={props.role}
         >

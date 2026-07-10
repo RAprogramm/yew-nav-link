@@ -69,7 +69,7 @@ pub fn NavText(props: &NavTextProps) -> Html {
     classes.push("nav-text");
 
     html! {
-        <span {classes}>
+        <span class={classes}>
             { props.text }
         </span>
     }

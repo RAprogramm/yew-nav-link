@@ -79,13 +79,13 @@ pub fn PageLink(props: &PageLinkProps) -> Html {
 
     if let Some(href) = props.href {
         html! {
-            <a {href} {classes}>
+            <a {href} class={classes}>
                 { for props.children.iter() }
             </a>
         }
     } else {
         html! {
-            <span {classes}>
+            <span class={classes}>
                 { for props.children.iter() }
             </span>
         }

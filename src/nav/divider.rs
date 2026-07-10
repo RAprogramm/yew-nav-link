@@ -92,13 +92,13 @@ pub fn NavDivider(props: &NavDividerProps) -> Html {
 
     if let Some(text) = props.text {
         html! {
-            <li {classes} role="separator">
+            <li class={classes} role="separator">
                 <span class="nav-divider-text">{ text }</span>
             </li>
         }
     } else {
         html! {
-            <li {classes} role="separator" />
+            <li class={classes} role="separator" />
         }
     }
 }

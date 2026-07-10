@@ -122,7 +122,7 @@ pub fn NavTab(props: &NavTabProps) -> Html {
     });
 
     html! {
-        <li {classes} role="presentation">
+        <li class={classes} role="presentation">
             <button
                 type="button"
                 role="tab"
