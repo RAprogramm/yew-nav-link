@@ -1,0 +1,51 @@
+# SPDX-FileCopyrightText: RAprogramm <andrey.rozanov.vl@gmail.com>
+# SPDX-License-Identifier: MIT
+
+# Manually yank (or un-yank) a published crates.io version. Yanking keeps the
+# version downloadable for existing lockfiles but stops new dependencies from
+# selecting it — use it for a release published with incomplete or broken
+# contents. Runs on demand with the same CRATES_IO_TOKEN the release pipeline
+# uses, so no local credentials are needed.
+
+name: Yank
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to (un)yank, e.g. 0.11.0"
+        required: true
+        type: string
+      undo:
+        description: "Un-yank instead of yank"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  yank:
+    name: Yank
+    runs-on: ubuntu-latest
+    if: ${{ github.repository_owner == 'RAprogramm' }}
+    steps:
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88 # stable
+        with:
+          toolchain: stable
+
+      - name: Yank or un-yank
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_IO_TOKEN }}
+          VERSION: ${{ inputs.version }}
+          UNDO: ${{ inputs.undo }}
+        run: |
+          if [ "$UNDO" = "true" ]; then
+            echo "Un-yanking yew-nav-link@$VERSION"
+            cargo yank --undo --version "$VERSION" yew-nav-link
+          else
+            echo "Yanking yew-nav-link@$VERSION"
+            cargo yank --version "$VERSION" yew-nav-link
+          fi
