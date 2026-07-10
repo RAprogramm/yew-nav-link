@@ -57,6 +57,10 @@ coverage:
     # cannot reach them. Behavior is covered by the wasm suite
     # (`tests/wasm/navigation.rs`) and Playwright e2e instead.
     - "src/hooks/navigation/use_navigation.rs"
+    # Browser-only keyboard/focus interaction (DOM focus, event dispatch):
+    # unreachable by native `llvm-cov`. Covered by the wasm suite
+    # (`tests/wasm/dropdown.rs`) instead.
+    - "src/components/dropdown.rs"
 
 comment:
   layout: "condensed_header, condensed_files, condensed_footer"

@@ -25,3 +25,6 @@ mod components;
 
 #[path = "wasm/navigation.rs"]
 mod navigation;
+
+#[path = "wasm/dropdown.rs"]
+mod dropdown;

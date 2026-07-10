@@ -79,7 +79,29 @@
 //! |------|------|---------|-------------|
 //! | `classes` | `Classes` | — | Additional CSS classes |
 
+use wasm_bindgen::JsCast;
+use web_sys::{Element, HtmlElement, Node};
 use yew::prelude::*;
+
+use crate::utils::{KeyboardNavConfig, handle_arrow_key, handle_home_end};
+
+/// Collects the focusable elements (links and enabled buttons) inside the
+/// dropdown menu, in DOM order.
+fn menu_items(menu_ref: &NodeRef) -> Vec<HtmlElement> {
+    menu_ref
+        .cast::<Element>()
+        .and_then(|menu| {
+            menu.query_selector_all("a[href], button:not([disabled])")
+                .ok()
+        })
+        .map(|list| {
+            (0..list.length())
+                .filter_map(|index| list.item(index))
+                .filter_map(|node| node.dyn_into::<HtmlElement>().ok())
+                .collect()
+        })
+        .unwrap_or_default()
+}
 
 /// Properties for the [`NavDropdown`] component.
 ///
@@ -110,6 +132,15 @@ pub struct NavDropdownProps {
 
 /// Collapsible dropdown menu for grouping navigation links.
 ///
+/// # Keyboard & accessibility
+///
+/// The toggle carries `aria-expanded` / `aria-haspopup` and the menu
+/// `role="menu"`. When the menu opens, focus moves to the first item.
+/// `ArrowDown`/`ArrowUp` (wrapping) and `Home`/`End` move a roving focus over
+/// the menu's links; `Escape` closes the menu and returns focus to the
+/// toggle; moving focus out of the dropdown (tabbing away or clicking
+/// elsewhere) dismisses it.
+///
 /// # CSS Classes
 ///
 /// - `nav-dropdown` - Container `<li>` element
@@ -122,6 +153,9 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
     classes.push("nav-dropdown");
 
     let open = use_state(|| false);
+    let container_ref = use_node_ref();
+    let toggle_ref = use_node_ref();
+    let menu_ref = use_node_ref();
 
     let on_toggle = {
         let open = open.clone();
@@ -131,6 +165,91 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
         })
     };
 
+    let on_keydown = {
+        let open = open.clone();
+        let toggle_ref = toggle_ref.clone();
+        let menu_ref = menu_ref.clone();
+        Callback::from(move |event: KeyboardEvent| {
+            let key = event.key();
+
+            if key == "Escape" && *open {
+                event.prevent_default();
+                open.set(false);
+                if let Some(toggle) = toggle_ref.cast::<HtmlElement>() {
+                    let _ = toggle.focus();
+                }
+                return;
+            }
+
+            if !matches!(key.as_str(), "ArrowDown" | "ArrowUp" | "Home" | "End") {
+                return;
+            }
+
+            let items = menu_items(&menu_ref);
+            if items.is_empty() {
+                return;
+            }
+
+            event.prevent_default();
+            if !*open {
+                open.set(true);
+                return;
+            }
+
+            let active = web_sys::window()
+                .and_then(|window| window.document())
+                .and_then(|document| document.active_element())
+                .map(JsCast::unchecked_into::<Node>);
+            let current = active
+                .as_ref()
+                .and_then(|node| items.iter().position(|item| item.is_same_node(Some(node))))
+                .unwrap_or(0);
+
+            let config = KeyboardNavConfig {
+                wrap:     true,
+                vertical: true
+            };
+            let next = if matches!(key.as_str(), "Home" | "End") {
+                handle_home_end(&key, current, items.len())
+            } else {
+                handle_arrow_key(&key, current, items.len(), &config)
+            };
+
+            if let Some(item) = next.and_then(|index| items.get(index)) {
+                let _ = item.focus();
+            }
+        })
+    };
+
+    let on_focusout = {
+        let open = open.clone();
+        let container_ref = container_ref.clone();
+        Callback::from(move |event: FocusEvent| {
+            if !*open {
+                return;
+            }
+            let stays_inside = match (container_ref.cast::<Node>(), event.related_target()) {
+                (Some(container), Some(related)) => related
+                    .dyn_into::<Node>()
+                    .is_ok_and(|node| container.contains(Some(&node))),
+                _ => false
+            };
+            if !stays_inside {
+                open.set(false);
+            }
+        })
+    };
+
+    {
+        let menu_ref = menu_ref.clone();
+        use_effect_with(*open, move |is_open| {
+            if *is_open && let Some(first) = menu_items(&menu_ref).first() {
+                let _ = first.focus();
+            }
+            || ()
+        });
+    }
+
     let menu_class = if *open {
         "nav-dropdown-menu open"
     } else {
@@ -138,8 +257,15 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
     };
 
     html! {
-        <li class={classes} role="presentation">
+        <li
+            ref={container_ref}
+            class={classes}
+            role="presentation"
+            onkeydown={on_keydown}
+            onfocusout={on_focusout}
+        >
             <button
+                ref={toggle_ref}
                 type="button"
                 class="nav-dropdown-toggle"
                 aria-expanded={if *open { "true" } else { "false" }}
@@ -149,7 +275,7 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
                 { props.toggle_text }
                 <span class="nav-dropdown-caret">{" ▼"}</span>
             </button>
-            <ul class={menu_class} role="menu">
+            <ul ref={menu_ref} class={menu_class} role="menu">
                 { for props.children.iter() }
             </ul>
         </li>
