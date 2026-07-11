@@ -406,6 +406,8 @@ jobs:
 
       - name: Install geckodriver
         uses: browser-actions/setup-geckodriver@fac5b0424c584257f32cf12c5eb4ba86014c34f8 # latest
+        with:
+          token: ${{ github.token }}
 
       - name: Run browser tests on Chrome
         run: wasm-pack test --headless --chrome --test wasm
