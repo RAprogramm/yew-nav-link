@@ -33,14 +33,23 @@ proptest! {
         }
     }
 
-    /// `..` and `.` segments must not appear in the normalized output —
-    /// they should have been resolved away.
+    /// `.` segments never survive normalization. `..` segments are fully
+    /// resolved in absolute paths; in relative paths only an unresolvable
+    /// leading `..` run may remain, never one after a named segment.
     #[test]
     fn normalize_path_resolves_dot_segments(input in "[/a-zA-Z0-9./]{0,64}") {
         let normalized = normalize_path(&input);
+        let mut named_seen = false;
         for segment in normalized.split('/').filter(|s| !s.is_empty()) {
             prop_assert_ne!(segment, ".");
-            prop_assert_ne!(segment, "..");
+            if segment == ".." {
+                prop_assert!(
+                    !is_absolute(&normalized) && !named_seen,
+                    "unexpected `..` in {normalized:?} from {input:?}",
+                );
+            } else {
+                named_seen = true;
+            }
         }
     }
 
@@ -77,10 +86,11 @@ proptest! {
         prop_assert_eq!(joined, normalized_child);
     }
 
-    /// `join_paths` output is normalised (no `..`/`.` segments left).
+    /// `join_paths` with an absolute base yields fully resolved output —
+    /// no `.` or `..` segments survive.
     #[test]
     fn join_paths_output_is_normalised(
-        base in "[/a-zA-Z0-9.]{0,32}",
+        base in "/[/a-zA-Z0-9.]{0,32}",
         child in "[/a-zA-Z0-9.]{0,32}",
     ) {
         let joined = join_paths(&base, &child);
