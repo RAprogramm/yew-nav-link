@@ -11,8 +11,17 @@ that bumps `Cargo.toml` and prepends a section to `CHANGELOG.md`, and
 when that PR is squash-merged it tags the commit, publishes to
 crates.io, and creates the GitHub release.
 
-There is no manual version-bump path. The maintainer's only release
-action is to review and merge the release PR.
+Publishing has exactly one path: merging the release PR.
+`release_always = false` in `release-plz.toml` makes the `release`
+command act only on commits that belong to a `release-plz-*` branch, so
+nothing reaches crates.io without a reviewed changelog.
+
+One kind of PR bumps the version outside a release PR: a **breaking
+change** must raise `Cargo.toml` to the next minor so the
+`cargo semver-checks` gate can classify the API diff. Merging such a PR
+does **not** publish — the bumped, unpublished version simply flows
+into the next release PR, which carries the curated `CHANGELOG.md`
+section and publishes on merge.
 
 [rplz]: https://release-plz.dev
 
@@ -32,7 +41,9 @@ After 1.0 the standard major/minor/patch rules apply.
 `Semver Checks` (`cargo semver-checks`) runs on every PR and blocks a
 release whose API change exceeds the version bump. release-plz reads
 the same conventional commits to decide the bump, so by the time a
-release PR exists the version and the diff already agree.
+release PR exists the version and the diff already agree. If a publish
+fails on a release commit, re-run it via the workflow's
+`workflow_dispatch` — `release-plz release` is idempotent.
 
 ## How a release happens
 

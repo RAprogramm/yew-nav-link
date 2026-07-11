@@ -19,6 +19,15 @@ git_tag_enable = true
 publish = true
 publish_allow_dirty = false
 release = true
+# Publish only when the merged commit belongs to a release PR (a branch
+# named `release-plz-*`). Without this, `release-plz release` publishes on
+# ANY push where Cargo.toml is ahead of crates.io — a feature PR that bumps
+# the version manually (breaking changes must, to satisfy
+# cargo-semver-checks) would ship straight to crates.io with no curated
+# CHANGELOG section and wrong release notes (this is how 0.11.0 and 0.12.0
+# escaped). With `release_always = false` such a merge instead flows into
+# the next release PR, and publishing happens only when that PR merges.
+release_always = false
 
 [[package]]
 name = "yew-nav-link"
