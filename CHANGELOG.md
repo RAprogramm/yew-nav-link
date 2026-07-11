@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.0](https://github.com/RAprogramm/yew-nav-link/compare/v0.11.2...v0.12.0) - 2026-07-11
+
+### Fixed
+
+- Restore canonical MIT license text so GitHub detects the license again ([#235](https://github.com/RAprogramm/yew-nav-link/pull/235))
+- Breadcrumbs no longer link intermediate crumbs to the `#[not_found]` route; labels and provider paths are percent-decoded ([#238](https://github.com/RAprogramm/yew-nav-link/pull/238))
+- Partial matching treats a root route as matching only the root path, so a Home link is not active everywhere ([#238](https://github.com/RAprogramm/yew-nav-link/pull/238))
+- `NavLink` without a `Navigator` degrades to a plain anchor instead of a dead click ([#238](https://github.com/RAprogramm/yew-nav-link/pull/238))
+- `UrlParts::parse` handles IPv6 and userinfo authorities; `normalize_path` preserves unresolvable leading `..` in relative paths ([#238](https://github.com/RAprogramm/yew-nav-link/pull/238))
+- `KeyboardNavConfig::default()` now equals `new()`; `handle_home_end` returns `None` for empty lists ([#238](https://github.com/RAprogramm/yew-nav-link/pull/238))
+- Pagination first/last controls render as `«`/`»` jump buttons instead of duplicating page numbers; the active page stays focusable with `aria-current="page"` and ellipsis gaps are non-interactive ([#238](https://github.com/RAprogramm/yew-nav-link/pull/238))
+
+### Changed
+
+- **Breaking:** all string props take `AttrValue` (`Option<AttrValue>` when optional); see ADR 0006 ([#238](https://github.com/RAprogramm/yew-nav-link/pull/238))
+- **Breaking:** removed the unused `attrs` module and the unused `PageItemProps::page` prop; `NavTab::onclick` gained a default ([#238](https://github.com/RAprogramm/yew-nav-link/pull/238))
+- `NavDropdown` follows the WAI-ARIA disclosure-navigation pattern (no `menu`/`menuitem` roles; `aria-controls` wired to the `id` prop, which is now rendered) ([#238](https://github.com/RAprogramm/yew-nav-link/pull/238))
+
+### Added
+
+- `NavTabs`/`NavTab` implement the ARIA tabs keyboard pattern: roving tabindex, wrapping arrow keys that skip disabled tabs, `Home`/`End`, optional `vertical` orientation ([#238](https://github.com/RAprogramm/yew-nav-link/pull/238))
+- `utils::percent_decode` for path components (no `+`-to-space rule) ([#238](https://github.com/RAprogramm/yew-nav-link/pull/238))
+- Browser test suite grew from 9 to 29 tests; e2e from 12 to 22 scenarios; two new fuzz targets for the query and URL parsers ([#238](https://github.com/RAprogramm/yew-nav-link/pull/238))
+
 ## [0.11.2](https://github.com/RAprogramm/yew-nav-link/compare/v0.11.1...v0.11.2) - 2026-07-10
 
 ### CI
