@@ -59,6 +59,22 @@ pub struct BreadcrumbItem<R> {
     pub is_active: bool
 }
 
+/// Resolves `path` to its actual route, falling back to `fallback` when no
+/// real route matches.
+///
+/// [`Routable::recognize`] substitutes the `#[not_found]` route itself
+/// instead of returning `None`, so the result is accepted only when it
+/// round-trips back to the requested path. Without this check an intermediate
+/// breadcrumb for an unrouted prefix would link to the 404 page.
+fn recognized_or<R>(path: &str, fallback: &R) -> R
+where
+    R: Routable + Clone
+{
+    R::recognize(path)
+        .filter(|route| route.to_path() == path)
+        .unwrap_or_else(|| fallback.clone())
+}
+
 /// Returns a list of [`BreadcrumbItem`]s representing the current navigation
 /// path.
 ///
@@ -66,7 +82,7 @@ pub struct BreadcrumbItem<R> {
 /// [`Routable::recognize`], so parent breadcrumbs navigate to their actual
 /// routes. When a prefix does not correspond to any route in `R` (e.g.
 /// `/users` when only `/users/:id` exists), the item falls back to the
-/// current route.
+/// current route, even when `R` declares a `#[not_found]` route.
 #[hook]
 pub fn use_breadcrumbs<R>() -> Vec<BreadcrumbItem<R>>
 where
@@ -84,7 +100,7 @@ where
             .as_ref()
             .map_or_else(|| "/".to_string(), |p| p.0.label_for_path("/"));
         items.push(BreadcrumbItem {
-            route:     R::recognize("/").unwrap_or_else(|| route.clone()),
+            route:     recognized_or("/", &route),
             label:     root_label,
             is_active: segments.is_empty()
         });
@@ -97,7 +113,7 @@ where
                 .as_ref()
                 .map_or_else(|| built.clone(), |p| p.0.label_for_path(&built));
             items.push(BreadcrumbItem {
-                route: R::recognize(&built).unwrap_or_else(|| route.clone()),
+                route: recognized_or(&built, &route),
                 label,
                 is_active: is_last
             });
@@ -136,6 +152,17 @@ mod tests {
     enum RootOnlyRoute {
         #[at("/")]
         Root
+    }
+
+    #[derive(Clone, PartialEq, Debug, Routable)]
+    enum NotFoundRoute {
+        #[at("/")]
+        Home,
+        #[at("/users/:id")]
+        User { id: String },
+        #[not_found]
+        #[at("/404")]
+        NotFound
     }
 
     struct TestLabelProvider;
@@ -408,6 +435,52 @@ mod tests {
         let _simple = use_breadcrumbs::<SimpleRoute>();
         let _param = use_breadcrumbs::<ParamRoute>();
         let _root = use_breadcrumbs::<RootOnlyRoute>();
+    }
+
+    // ===== recognized_or tests =====
+
+    #[test]
+    fn recognized_or_returns_matching_route() {
+        let fallback = NotFoundRoute::Home;
+        let resolved = recognized_or::<NotFoundRoute>("/users/42", &fallback);
+        assert_eq!(
+            resolved,
+            NotFoundRoute::User {
+                id: "42".to_string()
+            }
+        );
+    }
+
+    #[test]
+    fn recognized_or_falls_back_for_unrouted_prefix_with_not_found_route() {
+        let fallback = NotFoundRoute::User {
+            id: "42".to_string()
+        };
+        let resolved = recognized_or::<NotFoundRoute>("/users", &fallback);
+        assert_eq!(resolved, fallback);
+    }
+
+    #[test]
+    fn recognized_or_resolves_explicit_not_found_path() {
+        let fallback = NotFoundRoute::Home;
+        let resolved = recognized_or::<NotFoundRoute>("/404", &fallback);
+        assert_eq!(resolved, NotFoundRoute::NotFound);
+    }
+
+    #[test]
+    fn recognized_or_resolves_root() {
+        let fallback = NotFoundRoute::NotFound;
+        let resolved = recognized_or::<NotFoundRoute>("/", &fallback);
+        assert_eq!(resolved, NotFoundRoute::Home);
+    }
+
+    #[test]
+    fn recognized_or_falls_back_without_not_found_route() {
+        let fallback = ParamRoute::User {
+            id: "7".to_string()
+        };
+        let resolved = recognized_or::<ParamRoute>("/users", &fallback);
+        assert_eq!(resolved, fallback);
     }
 
     // ===== Negative tests =====
