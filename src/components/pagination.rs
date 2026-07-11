@@ -47,8 +47,8 @@
 //! | `current_page` | `u32` | `1` | Currently active page (1-indexed) |
 //! | `total_pages` | `u32` | `10` | Total number of pages |
 //! | `siblings` | `u32` | `1` | Pages shown on each side of current |
-//! | `show_prev_next` | `bool` | `true` | Show prev/next buttons |
-//! | `show_first_last` | `bool` | `false` | Show first/last page buttons |
+//! | `show_prev_next` | `bool` | `true` | Show prev/next (`‹`/`›`) buttons |
+//! | `show_first_last` | `bool` | `false` | Show first/last (`«`/`»`) jump buttons |
 //! | `on_page_change` | `Option<Callback<u32>>` | `None` | Page change callback |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 
@@ -63,8 +63,8 @@ use super::pagination_page::generate_pages;
 /// | `current_page` | `u32` | `1` | Currently active page (1-indexed) |
 /// | `total_pages` | `u32` | `10` | Total number of pages |
 /// | `siblings` | `u32` | `1` | Pages shown on each side of current |
-/// | `show_prev_next` | `bool` | `true` | Show prev/next buttons |
-/// | `show_first_last` | `bool` | `false` | Show first/last page buttons |
+/// | `show_prev_next` | `bool` | `true` | Show prev/next (`‹`/`›`) buttons |
+/// | `show_first_last` | `bool` | `false` | Show first/last (`«`/`»`) jump buttons |
 /// | `on_page_change` | `Option<Callback<u32>>` | `None` | Page change callback |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 #[derive(Properties, Clone, PartialEq, Debug)]
@@ -85,7 +85,11 @@ pub struct PaginationProps {
     #[prop_or(1)]
     pub siblings: u32,
 
-    /// Whether to show first and last page buttons.
+    /// Whether to show first/last (`«`/`»`) jump buttons.
+    ///
+    /// Rendered as glyph buttons with `aria-label`s, since the numbered
+    /// window from page generation already contains the first and last page
+    /// numbers.
     #[prop_or(false)]
     pub show_first_last: bool,
 
@@ -157,13 +161,14 @@ pub fn Pagination(props: &PaginationProps) -> Html {
                     <li class="pagination-item">
                         <button
                             type="button"
+                            aria-label="First page"
                             disabled={current_page == 1}
                             onclick={on_page_change.clone().map(move |cb| {
                                 let cb = cb.clone();
                                 move |_: MouseEvent| cb.emit(1)
                             })}
                         >
-                            {"1"}
+                            {"«"}
                         </button>
                     </li>
                 }
@@ -196,13 +201,14 @@ pub fn Pagination(props: &PaginationProps) -> Html {
                     <li class="pagination-item">
                         <button
                             type="button"
+                            aria-label="Last page"
                             disabled={current_page == total_pages}
                             onclick={on_page_change.clone().map(move |cb| {
                                 let cb = cb.clone();
                                 move |_: MouseEvent| cb.emit(total_pages)
                             })}
                         >
-                            { total_pages.to_string() }
+                            {"»"}
                         </button>
                     </li>
                 }
