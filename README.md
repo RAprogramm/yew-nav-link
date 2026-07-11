@@ -86,17 +86,17 @@ maps to the tool that enforces it and the workflow that runs it.
 | **Browser tests** | `wasm-bindgen-test` headless on Chrome **and** Firefox | `ci.yml` · `wasm_tests` |
 | **End-to-end tests** | Playwright against the trunk-built demo (Chromium + Firefox) | `ci.yml` · `e2e` |
 | **Property testing** | `proptest` over path / URL / query invariants | `ci.yml` · `test` |
-| **Fuzzing** | `cargo-fuzz`, 3 targets (path join, path normalize, URL round-trip) | `fuzz.yml` |
-| **Mutation testing** | `cargo-mutants` over library logic | `mutants.yml` |
+| **Fuzzing** | `cargo-fuzz`, 5 targets (path join/normalize, URL round-trip, query params, URL parts) | `fuzz.yml` |
+| **Mutation testing** | `cargo-mutants`: full run nightly + diff-scoped pass per PR | `mutants.yml` |
 | **Coverage control** | `cargo-llvm-cov` → Codecov, **95 % project + patch gate** | `ci.yml` · `coverage` |
-| **Static analysis** | `clippy -D warnings` (all + no-default features) · CodeQL SAST | `ci.yml` · `check` · `codeql.yml` |
+| **Static analysis** | `clippy -D warnings` (all + no-default features) · CodeQL SAST · zizmor over the workflows themselves | `ci.yml` · `check` · `codeql.yml` · `zizmor.yml` |
 | **Supply chain** | `cargo-deny`, `cargo-audit`, `cargo-machete`, `cargo-udeps` | `ci.yml` · `security` |
 | **Security posture** | OSSF Scorecard | `scorecard.yml` |
 | **API stability** | `cargo-semver-checks` + `cargo-public-api` baseline diff | `ci.yml` · `semver_checks`, `public_api` |
 | **Releases & semver** | release-plz (version + changelog + publish) · signed build provenance & SBOM attestation | `release-plz.yml` · `release-attestations.yml` |
 | **Licensing** | REUSE / SPDX compliance | `ci.yml` · `reuse` |
 | **Performance budgets** | criterion benches · WASM size budget · Lighthouse assertions | `ci.yml` · `benchmarks`, `wasm-build`, `lighthouse` |
-| **Formatting & workflows** | `cargo +nightly fmt --check` · actionlint | `ci.yml` · `fmt`, `actionlint` |
+| **Formatting & workflows** | `cargo +nightly fmt --check` · actionlint · PR-title format gate | `ci.yml` · `fmt`, `actionlint`, `pr_title` |
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

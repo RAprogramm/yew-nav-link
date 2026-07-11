@@ -170,6 +170,8 @@ the following gates:
 - `cargo audit`
 - `reuse lint`
 - `actionlint`
+- `zizmor` (GitHub Actions security audits, SARIF to code scanning)
+- PR-title format check (`#<issue> <type>: <description>`)
 - `trunk build --release` against `example/`
 - Lighthouse CI thresholds (perf 0.85, a11y 0.9, best-practices 0.9, SEO 0.9)
 
