@@ -98,7 +98,6 @@
 //! fn Navigation() -> Html {
 //!     html! {
 //!         <nav>
-//!             // Active on /docs, /docs/api, /docs/*
 //!             <NavLink<Route> to={Route::Docs} partial=true>{ "Docs" }</NavLink<Route>>
 //!         </nav>
 //!     }

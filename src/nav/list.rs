@@ -12,7 +12,7 @@
 //!
 //! ```rust
 //! use yew::prelude::*;
-//! use yew_nav_link::{NavLink, NavList};
+//! use yew_nav_link::{NavItem, NavLink, NavList};
 //! use yew_router::prelude::*;
 //!
 //! # #[derive(Clone, PartialEq, Routable)]
@@ -26,8 +26,12 @@
 //! fn Nav() -> Html {
 //!     html! {
 //!         <NavList aria_label="Main Navigation">
-//!             <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-//!             <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
+//!             <NavItem>
+//!                 <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+//!             </NavItem>
+//!             <NavItem>
+//!                 <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
+//!             </NavItem>
 //!         </NavList>
 //!     }
 //! }
@@ -50,10 +54,11 @@
 //!
 //! # How It Works
 //!
-//! `NavList` renders a `<ul>` with `role="list"`. You place `<NavLink>` or
-//! `<NavItem>` children inside — each one renders as an `<li>` with
-//! `role="listitem"`. The `aria-label` is set automatically (defaults to
-//! `"navigation"`).
+//! `NavList` renders a `<ul>` with `role="list"`. Wrap each link in a
+//! `<NavItem>` (or use `<NavDropdown>`), since a `<ul>` may only contain
+//! `<li>` children: `NavItem` renders the `<li>` with `role="listitem"`,
+//! while `NavLink` itself renders the inner `<a>`. The `aria-label` is set
+//! automatically (defaults to `"navigation"`).
 //!
 //! # Memory & Performance
 //!

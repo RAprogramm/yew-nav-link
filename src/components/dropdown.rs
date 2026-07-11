@@ -27,7 +27,9 @@
 //! fn Nav() -> Html {
 //!     html! {
 //!         <NavList>
-//!             <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+//!             <NavItem>
+//!                 <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+//!             </NavItem>
 //!             <NavDropdown toggle_text="Settings">
 //!                 <NavDropdownItem>
 //!                     <NavLink<Route> to={Route::Settings}>{ "Profile" }</NavLink<Route>>
