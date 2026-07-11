@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.1](https://github.com/RAprogramm/yew-nav-link/compare/v0.12.0...v0.12.1) - 2026-07-11
+
+### CI
+
+- publish releases only from release-PR merges ([#242](https://github.com/RAprogramm/yew-nav-link/issues/242))
+
+### Documentation
+
+- add the curated 0.12.0 changelog section ([#240](https://github.com/RAprogramm/yew-nav-link/issues/240))
+
 ## [0.12.0](https://github.com/RAprogramm/yew-nav-link/compare/v0.11.2...v0.12.0) - 2026-07-11
 
 ### Fixed
