@@ -45,8 +45,8 @@ fn keyboard_nav_config_new() {
 #[test]
 fn keyboard_nav_config_default() {
     let config = KeyboardNavConfig::default();
-    // Default derived values for bool are false
-    assert!(!config.wrap);
+    assert_eq!(config, KeyboardNavConfig::new());
+    assert!(config.wrap);
     assert!(!config.vertical);
 }
 
