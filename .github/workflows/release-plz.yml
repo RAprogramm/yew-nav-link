@@ -5,8 +5,20 @@
 #   `release-pr` keeps a single release PR open against `main`, bumping
 #   the version and prepending a CHANGELOG section as conventional
 #   commits land;
-#   `release` runs after the release PR is merged — it tags the commit,
-#   publishes to crates.io, and creates the matching GitHub release.
+#   `release` runs ONLY after the release PR is merged — it tags the
+#   commit, publishes to crates.io, and creates the matching GitHub
+#   release.
+#
+# Publishing is gated by `release_always = false` in release-plz.toml:
+# the `release` command only acts when the pushed commit belongs to a
+# release PR (branch `release-plz-*`). A feature PR that bumps the
+# version manually (breaking changes must, to satisfy
+# cargo-semver-checks) therefore never publishes on merge: the
+# release-pr job picks the unpublished version up and opens the curated
+# release PR instead, so the changelog and release notes always exist
+# before anything reaches crates.io. `workflow_dispatch` is the escape
+# hatch for re-running a failed publish on a release commit; `release`
+# is idempotent.
 #
 # Authentication is via a dedicated GitHub App (see
 # `docs/RELEASE_PLZ_APP_SETUP.md`). The App identity is required, not
@@ -25,6 +37,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
