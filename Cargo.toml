@@ -43,6 +43,8 @@ web-sys = { version = "0.3", features = [
   "EventTarget",
   "KeyboardEvent",
   "KeyboardEventInit",
+  "MouseEvent",
+  "MouseEventInit",
 ] }
 
 [dev-dependencies]

@@ -164,3 +164,79 @@ async fn href_includes_router_basename() {
     navigate("/");
     root.remove();
 }
+
+/// Dispatches an untrusted `click` carrying the given modifier flags on
+/// `target`, with a window-level guard that always cancels the browser's
+/// default action last so the test page never actually navigates away.
+///
+/// Returns `true` when some earlier handler (i.e. `NavLink`'s onclick) had
+/// already called `prevent_default` by the time the event bubbled to
+/// `window`.
+fn click_with_modifiers(target: &web_sys::Element, ctrl: bool, meta: bool) -> bool {
+    use std::{cell::Cell, rc::Rc};
+
+    use wasm_bindgen::{JsCast, prelude::Closure};
+
+    let window = web_sys::window().unwrap();
+    let seen_prevented = Rc::new(Cell::new(false));
+    let guard = {
+        let seen_prevented = Rc::clone(&seen_prevented);
+        Closure::<dyn FnMut(web_sys::MouseEvent)>::new(move |event: web_sys::MouseEvent| {
+            seen_prevented.set(event.default_prevented());
+            event.prevent_default();
+        })
+    };
+    window
+        .add_event_listener_with_callback("click", guard.as_ref().unchecked_ref())
+        .unwrap();
+
+    let init = web_sys::MouseEventInit::new();
+    init.set_bubbles(true);
+    init.set_cancelable(true);
+    init.set_ctrl_key(ctrl);
+    init.set_meta_key(meta);
+    let event = web_sys::MouseEvent::new_with_mouse_event_init_dict("click", &init).unwrap();
+    target.dispatch_event(&event).unwrap();
+
+    window
+        .remove_event_listener_with_callback("click", guard.as_ref().unchecked_ref())
+        .unwrap();
+    seen_prevented.get()
+}
+
+#[wasm_bindgen_test]
+async fn plain_click_navigates_through_the_router() {
+    navigate("/");
+    let root = fresh_root();
+    yew::Renderer::<TwoLinkApp>::with_root(root.clone()).render();
+    wait_for_render().await;
+
+    let about = root.get_elements_by_tag_name("a").item(1).unwrap();
+    let prevented = click_with_modifiers(&about, false, false);
+    wait_for_render().await;
+
+    assert!(prevented, "plain click must be intercepted by NavLink");
+    let path = web_sys::window().unwrap().location().pathname().unwrap();
+    assert_eq!(path, "/about", "plain click must push the target route");
+}
+
+#[wasm_bindgen_test]
+async fn modifier_clicks_fall_through_to_the_browser() {
+    navigate("/");
+    let root = fresh_root();
+    yew::Renderer::<TwoLinkApp>::with_root(root.clone()).render();
+    wait_for_render().await;
+
+    let about = root.get_elements_by_tag_name("a").item(1).unwrap();
+    let ctrl_prevented = click_with_modifiers(&about, true, false);
+    wait_for_render().await;
+    let meta_prevented = click_with_modifiers(&about, false, true);
+    wait_for_render().await;
+
+    assert!(
+        !ctrl_prevented && !meta_prevented,
+        "ctrl/meta clicks must keep the browser default (open in new tab)"
+    );
+    let path = web_sys::window().unwrap().location().pathname().unwrap();
+    assert_eq!(path, "/", "ctrl/meta clicks must not be routed by NavLink");
+}

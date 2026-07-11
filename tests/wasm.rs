@@ -28,3 +28,12 @@ mod navigation;
 
 #[path = "wasm/dropdown.rs"]
 mod dropdown;
+
+#[path = "wasm/pagination.rs"]
+mod pagination;
+
+#[path = "wasm/tabs.rs"]
+mod tabs;
+
+#[path = "wasm/hooks.rs"]
+mod hooks;

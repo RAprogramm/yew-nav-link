@@ -59,3 +59,92 @@ async fn push_callback_prepends_router_basename() {
         "push_callback must prepend the router basename `/app`"
     );
 }
+
+#[function_component]
+fn HistoryButtons() -> Html {
+    let nav = use_navigation::<TestRoute>();
+    let push = nav
+        .push_callback(TestRoute::Docs)
+        .reform(|_: MouseEvent| ());
+    let replace = nav
+        .replace_callback(TestRoute::About)
+        .reform(|_: MouseEvent| ());
+    let go_minus_one = nav.go_callback(-1).reform(|_: MouseEvent| ());
+    let back = nav.go_back.clone().reform(|_: MouseEvent| ());
+    let forward = nav.go_forward.clone().reform(|_: MouseEvent| ());
+    html! {
+        <>
+            <button id="push" onclick={push}>{ "push" }</button>
+            <button id="replace" onclick={replace}>{ "replace" }</button>
+            <button id="go" onclick={go_minus_one}>{ "go" }</button>
+            <button id="back" onclick={back}>{ "back" }</button>
+            <button id="forward" onclick={forward}>{ "forward" }</button>
+        </>
+    }
+}
+
+#[function_component]
+fn HistoryApp() -> Html {
+    html! {
+        <BrowserRouter>
+            <HistoryButtons />
+        </BrowserRouter>
+    }
+}
+
+fn click_by_id(id: &str) {
+    document()
+        .get_element_by_id(id)
+        .unwrap_or_else(|| panic!("button {id} should render"))
+        .dyn_into::<HtmlElement>()
+        .unwrap()
+        .click();
+}
+
+#[wasm_bindgen_test]
+async fn replace_callback_rewrites_the_current_entry() {
+    navigate("/");
+    let root = fresh_root();
+    yew::Renderer::<HistoryApp>::with_root(root).render();
+    wait_for_render().await;
+
+    click_by_id("push");
+    wait_for_render().await;
+    assert_eq!(location_path(), "/docs");
+
+    click_by_id("replace");
+    wait_for_render().await;
+    assert_eq!(location_path(), "/about");
+
+    click_by_id("back");
+    wait_for_render().await;
+    assert_eq!(
+        location_path(),
+        "/",
+        "replace must not add a history entry, so back skips /docs"
+    );
+}
+
+#[wasm_bindgen_test]
+async fn go_back_and_forward_walk_the_history_stack() {
+    navigate("/");
+    let root = fresh_root();
+    yew::Renderer::<HistoryApp>::with_root(root).render();
+    wait_for_render().await;
+
+    click_by_id("push");
+    wait_for_render().await;
+    assert_eq!(location_path(), "/docs");
+
+    click_by_id("back");
+    wait_for_render().await;
+    assert_eq!(location_path(), "/");
+
+    click_by_id("forward");
+    wait_for_render().await;
+    assert_eq!(location_path(), "/docs");
+
+    click_by_id("go");
+    wait_for_render().await;
+    assert_eq!(location_path(), "/", "go(-1) behaves like back");
+}
