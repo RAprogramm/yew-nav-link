@@ -60,10 +60,10 @@ coverage:
     # Browser-only keyboard/focus interaction (DOM focus, event dispatch):
     # unreachable by native `llvm-cov`. Covered by the wasm suite
     # (`tests/wasm/dropdown.rs`, `tests/wasm/tabs.rs`,
-    # `tests/wasm/pagination.rs`) and Playwright e2e instead. The
-    # natively-testable logic these components delegate to
-    # (`utils/keyboard`, `components/pagination_page.rs`,
-    # `next_focus_index`) stays measured.
+    # `tests/wasm/pagination.rs`) and Playwright e2e instead. The pure
+    # logic these components delegate to (`utils/keyboard`,
+    # `components/pagination_page.rs`) stays measured; `focus.rs` also has
+    # native unit tests for its index math even though it is not counted.
     - "src/components/dropdown.rs"
     - "src/components/focus.rs"
     - "src/components/tabs.rs"
