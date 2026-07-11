@@ -185,7 +185,7 @@ fn handle_home_end_end() {
 #[test]
 fn handle_home_end_empty_list() {
     let result = yew_nav_link::utils::handle_home_end("End", 0, 0);
-    assert_eq!(result, Some(0));
+    assert_eq!(result, None);
 }
 
 #[test]

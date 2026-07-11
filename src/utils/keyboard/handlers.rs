@@ -56,12 +56,16 @@ pub fn handle_arrow_key(
 /// Returns the target index for `Home` (first item) or `End` (last item) key
 /// presses.
 ///
-/// Returns `None` for any other key.
+/// Returns `None` for any other key, or when there are no items to focus,
+/// mirroring [`handle_arrow_key`].
 #[must_use]
 pub fn handle_home_end(key: &str, _current_index: usize, total_items: usize) -> Option<usize> {
+    if total_items == 0 {
+        return None;
+    }
     match key {
         "Home" => Some(0),
-        "End" => Some(total_items.saturating_sub(1)),
+        "End" => Some(total_items - 1),
         _ => None
     }
 }
@@ -244,7 +248,13 @@ mod tests {
     #[test]
     fn handle_home_end_end_empty_list() {
         let result = handle_home_end("End", 5, 0);
-        assert_eq!(result, Some(0));
+        assert_eq!(result, None);
+    }
+
+    #[test]
+    fn handle_home_end_home_empty_list() {
+        let result = handle_home_end("Home", 5, 0);
+        assert_eq!(result, None);
     }
 
     #[test]
