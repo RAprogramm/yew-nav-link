@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: RAprogramm <andrey.rozanov.vl@gmail.com>
+# SPDX-License-Identifier: MIT
+
+# zizmor configuration. Each ignore below is a reviewed, deliberate
+# exception — not a suppression of an unread finding.
+
+rules:
+  # ci.yml restores Swatinem/rust-cache in jobs that also run on tag
+  # pushes, which zizmor models as a cache-poisoning risk for release
+  # artifacts. CI publishes nothing: crates.io publishing happens in
+  # release-plz.yml (cache-free) and release assets are produced by
+  # release-attestations.yml, whose cache step is restore-only
+  # (save-if: false).
+  cache-poisoning:
+    ignore:
+      - ci.yml
+      - release-attestations.yml
+
+  # release-plz mints a GitHub App token on purpose: GITHUB_TOKEN-created
+  # commits and PRs cannot retrigger CI, which would leave release PRs
+  # permanently unchecked.
+  github-app:
+    ignore:
+      - release-plz.yml
+
+  # The release-plz checkout keeps its credentials because release-plz
+  # itself pushes the release branch and tags with them.
+  artipacked:
+    ignore:
+      - release-plz.yml

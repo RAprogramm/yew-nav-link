@@ -22,7 +22,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! yew-nav-link = "0.11"
+//! yew-nav-link = "0.12"
 //! ```
 //!
 //! ## Component Syntax
@@ -98,7 +98,6 @@
 //! fn Navigation() -> Html {
 //!     html! {
 //!         <nav>
-//!             // Active on /docs, /docs/api, /docs/*
 //!             <NavLink<Route> to={Route::Docs} partial=true>{ "Docs" }</NavLink<Route>>
 //!         </nav>
 //!     }
@@ -118,9 +117,6 @@
 //!
 //! - Yew 0.23+
 //! - yew-router 0.20+
-
-/// HTML attribute builders for navigation components.
-pub mod attrs;
 
 /// Reusable navigation UI components (badges, dropdowns, tabs, pagination).
 pub mod components;
@@ -148,7 +144,6 @@ pub mod utils;
 pub struct ReadmeDoctests;
 
 pub use active_link::{Match, NavLink, NavLinkProps, nav_link};
-pub use attrs::{NavItemAttrs, NavLinkAttrs, NavListAttrs};
 pub use components::{
     NavBadge, NavBadgeProps, NavDropdown, NavDropdownDivider, NavDropdownItem, NavDropdownProps,
     NavHeader, NavHeaderProps, NavIcon, NavIconProps, NavIconSize, NavLinkWithIcon,

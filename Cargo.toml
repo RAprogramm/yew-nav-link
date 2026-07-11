@@ -1,6 +1,6 @@
 [package]
 name = "yew-nav-link"
-version = "0.11.2"
+version = "0.12.0"
 authors = ["RAprogramm <andrey.rozanov.vl@gmail.com>"]
 edition = "2024"
 rust-version = "1.96"
@@ -43,6 +43,8 @@ web-sys = { version = "0.3", features = [
   "EventTarget",
   "KeyboardEvent",
   "KeyboardEventInit",
+  "MouseEvent",
+  "MouseEventInit",
 ] }
 
 [dev-dependencies]
@@ -65,3 +67,12 @@ harness = false
 
 [lib]
 crate-type = ["rlib"]
+
+# Mirror of CI's clippy invocation so `cargo clippy` reproduces the gate
+# locally; CI escalates these to errors with `-D warnings`.
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+
+[lints.rust]
+missing_docs = "warn"

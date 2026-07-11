@@ -26,12 +26,12 @@ fn nav_list_can_be_created() {
 fn nav_list_with_custom_id() {
     let props = yew_nav_link::NavListProps {
         classes:    Classes::default(),
-        id:         Some("main-nav"),
+        id:         Some(AttrValue::Static("main-nav")),
         aria_label: None,
         children:   Children::new(vec![])
     };
 
-    assert_eq!(props.id, Some("main-nav"));
+    assert_eq!(props.id.as_deref(), Some("main-nav"));
 }
 
 #[test]
@@ -39,11 +39,11 @@ fn nav_list_with_custom_aria_label() {
     let props = yew_nav_link::NavListProps {
         classes:    Classes::default(),
         id:         None,
-        aria_label: Some("primary-navigation"),
+        aria_label: Some(AttrValue::Static("primary-navigation")),
         children:   Children::new(vec![])
     };
 
-    assert_eq!(props.aria_label, Some("primary-navigation"));
+    assert_eq!(props.aria_label.as_deref(), Some("primary-navigation"));
 }
 
 #[test]

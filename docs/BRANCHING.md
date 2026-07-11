@@ -17,17 +17,16 @@ Protection rules (set by `.github/settings.yml`):
 
 | Rule | Value |
 |---|---|
-| Required status check | `CI Success` (aggregate of every job in `.github/workflows/ci.yml`) |
+| Required status checks | `CI Success` (aggregate of every job in `.github/workflows/ci.yml`), `codecov/project`, `codecov/patch` |
 | Strict status checks | yes — PR must be up to date with `main` |
 | Linear history | yes — no merge commits |
 | Force pushes | blocked |
 | Branch deletion | blocked |
 | Approving reviews required | 1 (CODEOWNERS) |
 | Stale review dismissal | yes |
+| Admin enforcement | yes — the rules above bind administrators too |
 
-There is no `develop`, no `release/*`, no `hotfix/*`. Earlier versions of
-`settings.yml` mention a `develop` branch; that is legacy configuration and
-is not used in practice.
+There is no `develop`, no `release/*`, no `hotfix/*`.
 
 ## 2. Feature branches
 
@@ -98,7 +97,7 @@ convention, it is a hard wall.
 
 | Field | Requirement |
 |---|---|
-| Title | Issue number only (e.g. `123`). The squash commit subject inherits this. |
+| Title | `#<issue> <type>: <description>` (e.g. `#123 fix: handle empty path`), enforced by the `PR title` CI job. The squash commit subject inherits this. |
 | Body | Must include `Closes #123` so the issue auto-closes on merge. |
 | Status checks | `CI Success` must be green. |
 | Reviews | 1 approving review from a `CODEOWNERS` entry (currently `@RAprogramm`). |

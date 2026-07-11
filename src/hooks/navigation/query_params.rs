@@ -46,13 +46,10 @@ mod tests {
     use super::*;
 
     #[test]
-    fn use_query_params_returns_query_params() {
-        // Cannot test actual hook behavior in non-WASM
-    }
+    fn use_query_params_returns_query_params() {}
 
     #[test]
     fn query_params_type_alias() {
-        // Verify type alias resolves correctly
         let _params: crate::utils::QueryParams = QueryParams::parse("a=1");
         let _params: QueryParams = QueryParams::parse("a=1");
     }

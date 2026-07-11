@@ -14,7 +14,7 @@ test.describe('Pagination', () => {
     await expect(pagination).toBeVisible();
 
     // The active page button is the only descendant carrying
-    // aria-current="page" (Pagination emits "page" / "false" per item).
+    // aria-current="page" (inactive items omit the attribute entirely).
     const active = pagination.locator('button[aria-current="page"]');
     await expect(active).toHaveCount(1);
   });
@@ -33,5 +33,36 @@ test.describe('Pagination', () => {
     await expect(
       pagination.getByRole('button', { name: 'Next page' })
     ).toHaveCount(1);
+  });
+
+  test('clicking next advances the active page', async ({ page }) => {
+    await page.goto('/components');
+
+    const pagination = page.locator('nav[aria-label="pagination"]').first();
+    await expect(
+      pagination.locator('button[aria-current="page"]')
+    ).toHaveText('1');
+
+    await pagination.getByRole('button', { name: 'Next page' }).click();
+    await expect(
+      pagination.locator('button[aria-current="page"]')
+    ).toHaveText('2');
+
+    await pagination.getByRole('button', { name: 'Last page' }).click();
+    await expect(
+      pagination.locator('button[aria-current="page"]')
+    ).toHaveText('20');
+  });
+
+  test('ellipsis gaps are not interactive', async ({ page }) => {
+    await page.goto('/components');
+
+    const pagination = page.locator('nav[aria-label="pagination"]').first();
+    await expect(
+      pagination.locator('.pagination-ellipsis').first()
+    ).toBeVisible();
+    await expect(
+      pagination.locator('.pagination-ellipsis button')
+    ).toHaveCount(0);
   });
 });

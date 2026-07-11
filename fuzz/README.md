@@ -18,6 +18,8 @@ input generator.
 | `fuzz_normalize_path` | `normalize_path` is idempotent and preserves absoluteness for absolute inputs. |
 | `fuzz_join_paths` | `join_paths(base, segment)` does not panic on arbitrary UTF-8 inputs. |
 | `fuzz_urlencoding_roundtrip` | `urlencoding_decode(urlencoding_encode(s)) == s` for any UTF-8 input. |
+| `fuzz_query_params` | `QueryParams::parse` → `to_query_string` → `parse` is a fixed point; every reported key resolves. |
+| `fuzz_url_parts` | `UrlParts::parse` roots non-empty paths, splits the fragment before the query, and never panics (also drives `percent_decode`). |
 
 ## Running locally
 
@@ -27,6 +29,8 @@ cd fuzz
 cargo +nightly fuzz run --target x86_64-unknown-linux-gnu fuzz_normalize_path -- -max_total_time=60
 cargo +nightly fuzz run --target x86_64-unknown-linux-gnu fuzz_join_paths -- -max_total_time=60
 cargo +nightly fuzz run --target x86_64-unknown-linux-gnu fuzz_urlencoding_roundtrip -- -max_total_time=60
+cargo +nightly fuzz run --target x86_64-unknown-linux-gnu fuzz_query_params -- -max_total_time=60
+cargo +nightly fuzz run --target x86_64-unknown-linux-gnu fuzz_url_parts -- -max_total_time=60
 ```
 
 `cargo fuzz` requires a nightly toolchain — the macro it expands to

@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: RAprogramm <andrey.rozanov.vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
+//! Native tests for `BreadcrumbItem` value semantics.
+
 #![cfg(all(test, not(target_arch = "wasm32")))]
 
 mod hooks_route_test {
@@ -75,7 +77,6 @@ mod hooks_route_test {
     #[test]
     fn hook_types_are_send() {
         fn assert_send<T: Send>() {}
-        // Hooks return types should be Send
         assert_send::<Option<String>>();
     }
 }

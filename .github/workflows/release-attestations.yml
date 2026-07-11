@@ -3,8 +3,10 @@
 
 # On every published GitHub release, generate a CycloneDX SBOM and a
 # signed SLSA build-provenance attestation for the `.crate` artefact
-# that release-plz published to crates.io, then attach both to the
-# release so consumers can run `gh attestation verify` against them.
+# that release-plz published to crates.io, then attach the SBOM, the
+# Sigstore provenance bundle, and the crate itself to the release so
+# consumers can run `gh attestation verify` against them and supply-chain
+# scanners (e.g. OpenSSF Scorecard Signed-Releases) can see the signature.
 
 name: Release attestations
 
@@ -36,10 +38,11 @@ jobs:
       attestations: write
     steps:
       - name: Checkout tagged commit
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           ref: ${{ github.event.release.tag_name || inputs.tag }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88 # master
@@ -77,16 +80,24 @@ jobs:
           upload-release-assets: false
 
       - name: Generate build provenance attestation
+        id: attest
         uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373 # v4.1.1
         with:
           subject-path: |
             ${{ steps.artefact.outputs.path }}
             yew-nav-link-sbom.cdx.json
 
-      - name: Attach SBOM to GitHub release
+      - name: Attach SBOM, provenance bundle, and crate to GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.event.release.tag_name || inputs.tag }}
+          BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+          CRATE: ${{ steps.artefact.outputs.path }}
         run: |
           set -euo pipefail
-          gh release upload "$TAG" yew-nav-link-sbom.cdx.json --clobber
+          cp "$BUNDLE" yew-nav-link-provenance.sigstore.json
+          gh release upload "$TAG" \
+            yew-nav-link-sbom.cdx.json \
+            yew-nav-link-provenance.sigstore.json \
+            "$CRATE" \
+            --clobber

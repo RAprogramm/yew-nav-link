@@ -12,7 +12,7 @@
 //!
 //! ```rust
 //! use yew::prelude::*;
-//! use yew_nav_link::{NavLink, NavList};
+//! use yew_nav_link::{NavItem, NavLink, NavList};
 //! use yew_router::prelude::*;
 //!
 //! # #[derive(Clone, PartialEq, Routable)]
@@ -26,8 +26,12 @@
 //! fn Nav() -> Html {
 //!     html! {
 //!         <NavList aria_label="Main Navigation">
-//!             <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
-//!             <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
+//!             <NavItem>
+//!                 <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+//!             </NavItem>
+//!             <NavItem>
+//!                 <NavLink<Route> to={Route::About}>{ "About" }</NavLink<Route>>
+//!             </NavItem>
 //!         </NavList>
 //!     }
 //! }
@@ -43,17 +47,18 @@
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
-//! | `aria_label` | `Option<&'static str>` | `"navigation"` | Screen reader label |
-//! | `id` | `Option<&'static str>` | `None` | Element id |
+//! | `aria_label` | `Option<AttrValue>` | `"navigation"` | Screen reader label |
+//! | `id` | `Option<AttrValue>` | `None` | Element id |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 //! | `children` | `Children` | — | List items |
 //!
 //! # How It Works
 //!
-//! `NavList` renders a `<ul>` with `role="list"`. You place `<NavLink>` or
-//! `<NavItem>` children inside — each one renders as an `<li>` with
-//! `role="listitem"`. The `aria-label` is set automatically (defaults to
-//! `"navigation"`).
+//! `NavList` renders a `<ul>` with `role="list"`. Wrap each link in a
+//! `<NavItem>` (or use `<NavDropdown>`), since a `<ul>` may only contain
+//! `<li>` children: `NavItem` renders the `<li>` with `role="listitem"`,
+//! while `NavLink` itself renders the inner `<a>`. The `aria-label` is set
+//! automatically (defaults to `"navigation"`).
 //!
 //! # Memory & Performance
 //!
@@ -66,8 +71,8 @@ use yew::prelude::*;
 ///
 /// | Prop | Type | Default | Description |
 /// |------|------|---------|-------------|
-/// | `aria_label` | `Option<&'static str>` | `"navigation"` | ARIA label |
-/// | `id` | `Option<&'static str>` | `None` | Element id |
+/// | `aria_label` | `Option<AttrValue>` | `"navigation"` | ARIA label |
+/// | `id` | `Option<AttrValue>` | `None` | Element id |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 /// | `children` | `Children` | — | Navigation items |
 #[derive(Properties, Clone, PartialEq, Debug)]
@@ -78,11 +83,11 @@ pub struct NavListProps {
 
     /// Optional `id` attribute for the list element.
     #[prop_or_default]
-    pub id: Option<&'static str>,
+    pub id: Option<AttrValue>,
 
     /// `aria-label` for screen readers. Defaults to `"navigation"`.
     #[prop_or_default]
-    pub aria_label: Option<&'static str>,
+    pub aria_label: Option<AttrValue>,
 
     /// Navigation items rendered inside the list.
     pub children: Children
@@ -100,11 +105,14 @@ pub fn NavList(props: &NavListProps) -> Html {
     let mut classes = props.classes.clone();
     classes.push("nav-list");
 
-    let aria_label = props.aria_label.unwrap_or("navigation");
+    let aria_label = props
+        .aria_label
+        .clone()
+        .unwrap_or(AttrValue::Static("navigation"));
 
     html! {
         <ul
-            id={props.id}
+            id={props.id.clone()}
             class={classes}
             role="list"
             aria-label={aria_label}
@@ -136,22 +144,22 @@ mod tests {
     fn nav_list_props_with_values() {
         let props = NavListProps {
             classes:    Classes::from("custom-class"),
-            id:         Some("nav-id"),
-            aria_label: Some("navigation"),
+            id:         Some(AttrValue::Static("nav-id")),
+            aria_label: Some(AttrValue::Static("navigation")),
             children:   Children::new(vec![])
         };
 
         assert!(props.classes.contains("custom-class"));
-        assert_eq!(props.id, Some("nav-id"));
-        assert_eq!(props.aria_label, Some("navigation"));
+        assert_eq!(props.id.as_deref(), Some("nav-id"));
+        assert_eq!(props.aria_label.as_deref(), Some("navigation"));
     }
 
     #[test]
     fn nav_list_props_clone() {
         let props1 = NavListProps {
             classes:    Classes::from("test"),
-            id:         Some("id"),
-            aria_label: Some("label"),
+            id:         Some(AttrValue::Static("id")),
+            aria_label: Some(AttrValue::Static("label")),
             children:   Children::new(vec![])
         };
 

@@ -10,7 +10,7 @@ This is a design rationale, not a tutorial. For the *what*, read the
 
 ## 1. Crate layout
 
-![Layered module architecture: lib.rs on top; hooks (route_info, navigation) and components in the middle; active_link and nav render primitives below; utils, attrs and errors as the Yew-free leaf. Each layer depends only on the layers beneath it.](assets/architecture.svg)
+![Layered module architecture: lib.rs on top; hooks (route_info, navigation) and components in the middle; active_link and nav render primitives below; utils and errors as the Yew-free leaf. Each layer depends only on the layers beneath it.](assets/architecture.svg)
 
 ```text
 src/
@@ -32,8 +32,6 @@ src/
 │                     state) and navigation/ (effects + query params).
 ├── utils/            Pure functions (paths, URL codec, keyboard helpers).
 │                     No yew dependency.
-├── attrs.rs          Type-safe attribute builders for consumers who roll
-│                     their own elements.
 └── errors.rs         NavError + NavResult<T>.
 ```
 
@@ -168,7 +166,7 @@ non-trivial design choice lives in the
 
 | Decision | ADR |
 |---|---|
-| `class` / `active_class` use `&'static str`, not `AttrValue` | [0001](adr/0001-static-str-classes.md) |
+| String props use `AttrValue` (supersedes the `&'static str` era) | [0006](adr/0006-attrvalue-string-props.md) |
 | The `macros` feature was dropped in 0.9.0 | [0002](adr/0002-drop-macros-feature.md) |
 | `NavError` is `#[non_exhaustive]` from 0.10.0 | [0003](adr/0003-non-exhaustive-nav-error.md) |
 | `NavLink` renders a manual `<a>` instead of wrapping `yew_router::Link` | [0004](adr/0004-manual-anchor-over-yew-router-link.md) |

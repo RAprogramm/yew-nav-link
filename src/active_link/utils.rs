@@ -5,20 +5,26 @@
 //! path-prefix matching and the active-class string builder.
 
 /// Checks if `target` path is a segment-wise prefix of `current` path.
+///
+/// A root or empty `target` (zero non-empty segments) matches only a root or
+/// empty `current`. Without this rule `"/"` would prefix every path and a
+/// partial-matching Home link would be active on every page; React Router
+/// defaults its root links to exact matching for the same reason.
 #[inline]
 #[must_use]
 pub fn is_path_prefix(target: &str, current: &str) -> bool {
-    let target_iter = target.split('/').filter(|s| !s.is_empty());
+    let mut target_iter = target.split('/').filter(|s| !s.is_empty());
     let mut current_iter = current.split('/').filter(|s| !s.is_empty());
 
-    for t in target_iter {
+    let mut matched_any = false;
+    for t in target_iter.by_ref() {
         match current_iter.next() {
-            Some(c) if t == c => {}
+            Some(c) if t == c => matched_any = true,
             _ => return false
         }
     }
 
-    true
+    matched_any || current_iter.next().is_none()
 }
 
 /// Combines a base CSS class name with an active class name when selected.
@@ -77,5 +83,13 @@ mod tests {
     #[test]
     fn prefix_segment_boundary() {
         assert!(!is_path_prefix("/doc", "/documents"));
+    }
+
+    #[test]
+    fn prefix_root_target_matches_only_root() {
+        assert!(!is_path_prefix("/", "/docs"));
+        assert!(!is_path_prefix("", "/docs"));
+        assert!(is_path_prefix("", ""));
+        assert!(is_path_prefix("/", "//"));
     }
 }

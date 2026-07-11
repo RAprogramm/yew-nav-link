@@ -17,13 +17,13 @@
 //! fn TabBar() -> Html {
 //!     html! {
 //!         <NavTabs id="my-tabs">
-//!             <NavTab active=true id="tab-1" panel_id="panel-1" onclick={None}>
+//!             <NavTab active=true id="tab-1" panel_id="panel-1">
 //!                 { "Overview" }
 //!             </NavTab>
-//!             <NavTab active=false id="tab-2" panel_id="panel-2" onclick={None}>
+//!             <NavTab active=false id="tab-2" panel_id="panel-2">
 //!                 { "Details" }
 //!             </NavTab>
-//!             <NavTab active=false disabled=true onclick={None}>
+//!             <NavTab active=false disabled=true>
 //!                 { "Disabled" }
 //!             </NavTab>
 //!         </NavTabs>
@@ -45,9 +45,9 @@
 //! |------|------|---------|-------------|
 //! | `active` | `bool` | — | Whether this tab is selected (required) |
 //! | `disabled` | `bool` | `false` | Whether this tab is disabled |
-//! | `id` | `Option<&'static str>` | `None` | Tab button id |
-//! | `panel_id` | `Option<&'static str>` | `None` | aria-controls target |
-//! | `onclick` | `Option<Callback<MouseEvent>>` | — | Click handler (required) |
+//! | `id` | `Option<AttrValue>` | `None` | Tab button id |
+//! | `panel_id` | `Option<AttrValue>` | `None` | aria-controls target |
+//! | `onclick` | `Option<Callback<MouseEvent>>` | `None` | Click handler |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 //! | `children` | `Children` | — | Tab content |
 
@@ -59,9 +59,9 @@ use yew::prelude::*;
 /// |------|------|---------|-------------|
 /// | `active` | `bool` | — | Whether this tab is selected (required) |
 /// | `disabled` | `bool` | `false` | Whether this tab is disabled |
-/// | `id` | `Option<&'static str>` | `None` | Tab button id |
-/// | `panel_id` | `Option<&'static str>` | `None` | aria-controls target |
-/// | `onclick` | `Option<Callback<MouseEvent>>` | — | Click handler (required) |
+/// | `id` | `Option<AttrValue>` | `None` | Tab button id |
+/// | `panel_id` | `Option<AttrValue>` | `None` | aria-controls target |
+/// | `onclick` | `Option<Callback<MouseEvent>>` | `None` | Click handler |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 /// | `children` | `Children` | — | Tab content |
 #[derive(Properties, Clone, PartialEq, Debug)]
@@ -79,21 +79,27 @@ pub struct NavTabProps {
 
     /// Optional `id` attribute for the tab button.
     #[prop_or_default]
-    pub id: Option<&'static str>,
+    pub id: Option<AttrValue>,
 
     /// Optional `aria-controls` referencing the associated panel `id`.
     #[prop_or_default]
-    pub panel_id: Option<&'static str>,
+    pub panel_id: Option<AttrValue>,
 
     /// Content rendered inside the tab button.
     #[prop_or_default]
     pub children: Children,
 
     /// Click handler invoked when the tab is selected.
+    #[prop_or_default]
     pub onclick: Option<Callback<MouseEvent>>
 }
 
 /// A single tab button within a [`NavTabs`](super::NavTabs) container.
+///
+/// The rendered button participates in the tabs-pattern roving tabindex:
+/// the active tab carries `tabindex="0"` and every other tab `tabindex="-1"`,
+/// so `Tab` enters the tablist on the selected tab and arrow keys (handled
+/// by [`NavTabs`](super::NavTabs)) move within it.
 ///
 /// # CSS Classes
 ///
@@ -126,9 +132,10 @@ pub fn NavTab(props: &NavTabProps) -> Html {
             <button
                 type="button"
                 role="tab"
-                id={props.id}
-                aria-selected={props.active.to_string()}
-                aria-controls={props.panel_id}
+                id={props.id.clone()}
+                aria-selected={if props.active { "true" } else { "false" }}
+                tabindex={if props.active { "0" } else { "-1" }}
+                aria-controls={props.panel_id.clone()}
                 disabled={props.disabled}
                 onclick={onclick}
             >
@@ -180,14 +187,14 @@ mod tests {
             classes:  Classes::default(),
             active:   true,
             disabled: false,
-            id:       Some("tab-1"),
-            panel_id: Some("panel-1"),
+            id:       Some(AttrValue::Static("tab-1")),
+            panel_id: Some(AttrValue::Static("panel-1")),
             children: Children::new(vec![]),
             onclick:  None
         };
 
-        assert_eq!(props.id, Some("tab-1"));
-        assert_eq!(props.panel_id, Some("panel-1"));
+        assert_eq!(props.id.as_deref(), Some("tab-1"));
+        assert_eq!(props.panel_id.as_deref(), Some("panel-1"));
     }
 
     #[test]

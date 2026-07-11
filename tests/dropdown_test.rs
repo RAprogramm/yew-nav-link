@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: RAprogramm <andrey.rozanov.vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
+//! Native tests for the dropdown prop types.
+
 #![cfg(all(test, not(target_arch = "wasm32")))]
 
 use yew::prelude::*;
@@ -8,11 +10,9 @@ use yew_nav_link::components::{NavDropdownDividerProps, NavDropdownItemProps, Na
 
 #[test]
 fn nav_dropdown_props_default_values() {
-    // With prop_or_default, need to test manually since Default doesn't work with
-    // prop_or
     let props = NavDropdownProps {
         classes:     Classes::default(),
-        toggle_text: "dropdown",
+        toggle_text: AttrValue::Static("dropdown"),
         id:          None,
         children:    Children::default()
     };
@@ -25,20 +25,20 @@ fn nav_dropdown_props_default_values() {
 fn nav_dropdown_props_custom() {
     let props = NavDropdownProps {
         classes:     Classes::from("custom-dropdown"),
-        toggle_text: "Menu",
-        id:          Some("my-dropdown"),
+        toggle_text: AttrValue::Static("Menu"),
+        id:          Some(AttrValue::Static("my-dropdown")),
         children:    Children::new(vec![])
     };
     assert!(props.classes.contains("custom-dropdown"));
     assert_eq!(props.toggle_text, "Menu");
-    assert_eq!(props.id, Some("my-dropdown"));
+    assert_eq!(props.id.as_deref(), Some("my-dropdown"));
 }
 
 #[test]
 fn nav_dropdown_props_clone() {
     let props1 = NavDropdownProps {
         classes:     Classes::from("clone"),
-        toggle_text: "Test",
+        toggle_text: AttrValue::Static("Test"),
         id:          None,
         children:    Children::new(vec![])
     };
@@ -100,7 +100,7 @@ fn nav_dropdown_divider_props_custom() {
 fn nav_dropdown_debug() {
     let props = NavDropdownProps {
         classes:     Classes::default(),
-        toggle_text: "dropdown",
+        toggle_text: AttrValue::Static("dropdown"),
         id:          None,
         children:    Children::default()
     };

@@ -9,7 +9,17 @@ use yew_router::prelude::*;
 /// A trait for providing custom breadcrumb labels.
 pub trait BreadcrumbLabelProvider: Send + Sync {
     /// Returns a human-readable label for the given path.
+    ///
+    /// The path arrives percent-decoded (`/users/hello world`, not
+    /// `/users/hello%20world`), so implementations match against the
+    /// human-readable form.
     fn label_for_path(&self, path: &str) -> String;
+}
+
+/// Percent-decodes a path for display, keeping the raw text when the decoded
+/// bytes are not valid UTF-8.
+fn display_path(path: &str) -> String {
+    crate::utils::percent_decode(path).unwrap_or_else(|| path.to_string())
 }
 
 /// Yew context wrapper around a [`BreadcrumbLabelProvider`].
@@ -59,6 +69,22 @@ pub struct BreadcrumbItem<R> {
     pub is_active: bool
 }
 
+/// Resolves `path` to its actual route, falling back to `fallback` when no
+/// real route matches.
+///
+/// [`Routable::recognize`] substitutes the `#[not_found]` route itself
+/// instead of returning `None`, so the result is accepted only when it
+/// round-trips back to the requested path. Without this check an intermediate
+/// breadcrumb for an unrouted prefix would link to the 404 page.
+fn recognized_or<R>(path: &str, fallback: &R) -> R
+where
+    R: Routable + Clone
+{
+    R::recognize(path)
+        .filter(|route| route.to_path() == path)
+        .unwrap_or_else(|| fallback.clone())
+}
+
 /// Returns a list of [`BreadcrumbItem`]s representing the current navigation
 /// path.
 ///
@@ -66,7 +92,11 @@ pub struct BreadcrumbItem<R> {
 /// [`Routable::recognize`], so parent breadcrumbs navigate to their actual
 /// routes. When a prefix does not correspond to any route in `R` (e.g.
 /// `/users` when only `/users/:id` exists), the item falls back to the
-/// current route.
+/// current route, even when `R` declares a `#[not_found]` route.
+///
+/// Labels are percent-decoded: a route serialized as `/users/hello%20world`
+/// yields the default label `/users/hello world`, and a
+/// [`BreadcrumbLabelProvider`] receives the decoded path as well.
 #[hook]
 pub fn use_breadcrumbs<R>() -> Vec<BreadcrumbItem<R>>
 where
@@ -84,7 +114,7 @@ where
             .as_ref()
             .map_or_else(|| "/".to_string(), |p| p.0.label_for_path("/"));
         items.push(BreadcrumbItem {
-            route:     R::recognize("/").unwrap_or_else(|| route.clone()),
+            route:     recognized_or("/", &route),
             label:     root_label,
             is_active: segments.is_empty()
         });
@@ -93,11 +123,12 @@ where
             built.push('/');
             built.push_str(segment);
             let is_last = i + 1 == total;
+            let readable = display_path(&built);
             let label = provider
                 .as_ref()
-                .map_or_else(|| built.clone(), |p| p.0.label_for_path(&built));
+                .map_or_else(|| readable.clone(), |p| p.0.label_for_path(&readable));
             items.push(BreadcrumbItem {
-                route: R::recognize(&built).unwrap_or_else(|| route.clone()),
+                route: recognized_or(&built, &route),
                 label,
                 is_active: is_last
             });
@@ -138,6 +169,17 @@ mod tests {
         Root
     }
 
+    #[derive(Clone, PartialEq, Debug, Routable)]
+    enum NotFoundRoute {
+        #[at("/")]
+        Home,
+        #[at("/users/:id")]
+        User { id: String },
+        #[not_found]
+        #[at("/404")]
+        NotFound
+    }
+
     struct TestLabelProvider;
 
     impl BreadcrumbLabelProvider for TestLabelProvider {
@@ -153,8 +195,6 @@ mod tests {
             }
         }
     }
-
-    // ===== BreadcrumbItem tests =====
 
     #[test]
     fn breadcrumb_item_new() {
@@ -319,8 +359,6 @@ mod tests {
         assert_eq!(item.route.to_path(), "/docs/api/v1");
     }
 
-    // ===== BreadcrumbLabelProvider tests =====
-
     #[test]
     fn breadcrumb_label_provider_returns_custom_labels() {
         let provider = TestLabelProvider;
@@ -354,8 +392,6 @@ mod tests {
         assert_eq!(provider.label_for_path("@#$%"), "@#$%");
     }
 
-    // ===== BreadcrumbLabelProviderContext tests =====
-
     #[test]
     fn context_eq_same_rc() {
         let rc = Rc::new(TestLabelProvider);
@@ -378,8 +414,6 @@ mod tests {
         let ctx2 = ctx1.clone();
         assert!(ctx1 == ctx2);
     }
-
-    // ===== use_breadcrumbs tests =====
 
     #[test]
     fn use_breadcrumbs_simple_route() {
@@ -410,7 +444,77 @@ mod tests {
         let _root = use_breadcrumbs::<RootOnlyRoute>();
     }
 
-    // ===== Negative tests =====
+    #[test]
+    fn context_new_and_provider_round_trip() {
+        let ctx = BreadcrumbLabelProviderContext::new(Rc::new(TestLabelProvider));
+        let provider = ctx.provider();
+        assert_eq!(provider.label_for_path("/docs"), "Docs");
+    }
+
+    #[test]
+    fn context_provider_clones_share_the_same_rc() {
+        let ctx = BreadcrumbLabelProviderContext::new(Rc::new(TestLabelProvider));
+        assert!(Rc::ptr_eq(&ctx.provider(), &ctx.provider()));
+    }
+
+    #[test]
+    fn display_path_decodes_percent_sequences() {
+        assert_eq!(display_path("/users/hello%20world"), "/users/hello world");
+    }
+
+    #[test]
+    fn display_path_keeps_literal_plus() {
+        assert_eq!(display_path("/lang/c++"), "/lang/c++");
+    }
+
+    #[test]
+    fn display_path_keeps_raw_text_on_invalid_utf8() {
+        assert_eq!(display_path("/bad/%FF"), "/bad/%FF");
+    }
+
+    #[test]
+    fn recognized_or_returns_matching_route() {
+        let fallback = NotFoundRoute::Home;
+        let resolved = recognized_or::<NotFoundRoute>("/users/42", &fallback);
+        assert_eq!(
+            resolved,
+            NotFoundRoute::User {
+                id: "42".to_string()
+            }
+        );
+    }
+
+    #[test]
+    fn recognized_or_falls_back_for_unrouted_prefix_with_not_found_route() {
+        let fallback = NotFoundRoute::User {
+            id: "42".to_string()
+        };
+        let resolved = recognized_or::<NotFoundRoute>("/users", &fallback);
+        assert_eq!(resolved, fallback);
+    }
+
+    #[test]
+    fn recognized_or_resolves_explicit_not_found_path() {
+        let fallback = NotFoundRoute::Home;
+        let resolved = recognized_or::<NotFoundRoute>("/404", &fallback);
+        assert_eq!(resolved, NotFoundRoute::NotFound);
+    }
+
+    #[test]
+    fn recognized_or_resolves_root() {
+        let fallback = NotFoundRoute::NotFound;
+        let resolved = recognized_or::<NotFoundRoute>("/", &fallback);
+        assert_eq!(resolved, NotFoundRoute::Home);
+    }
+
+    #[test]
+    fn recognized_or_falls_back_without_not_found_route() {
+        let fallback = ParamRoute::User {
+            id: "7".to_string()
+        };
+        let resolved = recognized_or::<ParamRoute>("/users", &fallback);
+        assert_eq!(resolved, fallback);
+    }
 
     #[test]
     fn breadcrumb_item_neq_negatives() {

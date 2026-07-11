@@ -42,6 +42,41 @@ pub fn urlencoding_decode(input: &str) -> Option<String> {
     String::from_utf8(bytes).ok()
 }
 
+/// Decodes `%XX` escape sequences without treating `+` as a space.
+///
+/// Use this for path components, where `+` is a literal character; the
+/// `+`-to-space rule of [`urlencoding_decode`] applies only to
+/// `application/x-www-form-urlencoded` query strings. Malformed `%XX`
+/// triplets are left in the output verbatim. Returns `None` if the resulting
+/// bytes are not valid UTF-8.
+#[must_use]
+pub fn percent_decode(input: &str) -> Option<String> {
+    let mut bytes: Vec<u8> = Vec::with_capacity(input.len());
+    let mut chars = input.chars();
+
+    while let Some(c) = chars.next() {
+        match c {
+            '%' => {
+                let hi = chars.next();
+                let lo = chars.next();
+                if let Some(byte) = hex_pair_to_byte(hi, lo) {
+                    bytes.push(byte);
+                } else {
+                    bytes.push(b'%');
+                    push_utf8(&mut bytes, hi);
+                    push_utf8(&mut bytes, lo);
+                }
+            }
+            other => {
+                let mut buf = [0u8; 4];
+                bytes.extend_from_slice(other.encode_utf8(&mut buf).as_bytes());
+            }
+        }
+    }
+
+    String::from_utf8(bytes).ok()
+}
+
 /// Combines two hex-digit characters into the byte they encode.
 ///
 /// Returns `None` unless both characters are present and are hex digits,
@@ -103,6 +138,29 @@ mod tests {
     }
 
     #[test]
+    fn percent_decode_keeps_literal_plus() {
+        assert_eq!(percent_decode("c++"), Some("c++".to_string()));
+    }
+
+    #[test]
+    fn percent_decode_decodes_percent_sequences() {
+        assert_eq!(
+            percent_decode("hello%20world%E2%9C%93"),
+            Some("hello world✓".to_string())
+        );
+    }
+
+    #[test]
+    fn percent_decode_keeps_malformed_triplets_verbatim() {
+        assert_eq!(percent_decode("100%zz"), Some("100%zz".to_string()));
+    }
+
+    #[test]
+    fn percent_decode_returns_none_for_invalid_utf8() {
+        assert_eq!(percent_decode("%FF"), None);
+    }
+
+    #[test]
     fn urlencoding_decode_mixed() {
         let result = urlencoding_decode("hello%20world");
         assert_eq!(result, Some("hello world".to_string()));
@@ -126,22 +184,22 @@ mod tests {
         assert_eq!(result, Some(" !".to_string()));
     }
 
+    /// `%E2%9C%93` is the UTF-8 percent-encoding of U+2713 CHECK MARK (✓).
     #[test]
     fn urlencoding_decode_unicode() {
-        // E2 9C 93 is the UTF-8 encoding of U+2713 CHECK MARK (✓).
         assert_eq!(urlencoding_decode("%E2%9C%93"), Some("✓".to_string()));
     }
 
+    /// The encoded input is the UTF-8 percent-encoding of "Привет".
     #[test]
     fn urlencoding_decode_cyrillic() {
-        // "%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82" is "Привет".
         let encoded = "%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82";
         assert_eq!(urlencoding_decode(encoded), Some("Привет".to_string()));
     }
 
+    /// A lone `0xFF` byte is not valid UTF-8.
     #[test]
     fn urlencoding_decode_invalid_utf8_returns_none() {
-        // A lone 0xFF byte is not valid UTF-8.
         assert_eq!(urlencoding_decode("%FF"), None);
     }
 

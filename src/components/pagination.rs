@@ -38,7 +38,8 @@
 //! |-------|-----------|
 //! | `pagination` | Container `<ul>` element |
 //! | `pagination-item` | Each `<li>` page button wrapper |
-//! | `active` | Applied to the current page button |
+//! | `pagination-ellipsis` | `<li>` holding a non-interactive `…` gap |
+//! | `active` | Applied to the current page item |
 //!
 //! # Props
 //!
@@ -47,8 +48,8 @@
 //! | `current_page` | `u32` | `1` | Currently active page (1-indexed) |
 //! | `total_pages` | `u32` | `10` | Total number of pages |
 //! | `siblings` | `u32` | `1` | Pages shown on each side of current |
-//! | `show_prev_next` | `bool` | `true` | Show prev/next buttons |
-//! | `show_first_last` | `bool` | `false` | Show first/last page buttons |
+//! | `show_prev_next` | `bool` | `true` | Show prev/next (`‹`/`›`) buttons |
+//! | `show_first_last` | `bool` | `false` | Show first/last (`«`/`»`) jump buttons |
 //! | `on_page_change` | `Option<Callback<u32>>` | `None` | Page change callback |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 
@@ -63,8 +64,8 @@ use super::pagination_page::generate_pages;
 /// | `current_page` | `u32` | `1` | Currently active page (1-indexed) |
 /// | `total_pages` | `u32` | `10` | Total number of pages |
 /// | `siblings` | `u32` | `1` | Pages shown on each side of current |
-/// | `show_prev_next` | `bool` | `true` | Show prev/next buttons |
-/// | `show_first_last` | `bool` | `false` | Show first/last page buttons |
+/// | `show_prev_next` | `bool` | `true` | Show prev/next (`‹`/`›`) buttons |
+/// | `show_first_last` | `bool` | `false` | Show first/last (`«`/`»`) jump buttons |
 /// | `on_page_change` | `Option<Callback<u32>>` | `None` | Page change callback |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 #[derive(Properties, Clone, PartialEq, Debug)]
@@ -85,7 +86,11 @@ pub struct PaginationProps {
     #[prop_or(1)]
     pub siblings: u32,
 
-    /// Whether to show first and last page buttons.
+    /// Whether to show first/last (`«`/`»`) jump buttons.
+    ///
+    /// Rendered as glyph buttons with `aria-label`s, since the numbered
+    /// window from page generation already contains the first and last page
+    /// numbers.
     #[prop_or(false)]
     pub show_first_last: bool,
 
@@ -115,13 +120,16 @@ impl Default for PaginationProps {
 /// Pagination component for navigating between pages of content.
 ///
 /// Renders a `<nav>` with page buttons and optional prev/next and
-/// first/last navigation controls.
+/// first/last navigation controls. The current page stays focusable and is
+/// marked with `aria-current="page"`; ellipsis gaps render as
+/// non-interactive text, not buttons.
 ///
 /// # CSS Classes
 ///
 /// - `pagination` - Container `<ul>` element
 /// - `pagination-item` - Each `<li>` page button wrapper
-/// - `active` - Applied to the current page button
+/// - `pagination-ellipsis` - `<li>` holding a non-interactive `…` gap
+/// - `active` - Applied to the current page item
 #[function_component]
 pub fn Pagination(props: &PaginationProps) -> Html {
     let mut classes = props.classes.clone();
@@ -157,18 +165,27 @@ pub fn Pagination(props: &PaginationProps) -> Html {
                     <li class="pagination-item">
                         <button
                             type="button"
+                            aria-label="First page"
                             disabled={current_page == 1}
                             onclick={on_page_change.clone().map(move |cb| {
                                 let cb = cb.clone();
                                 move |_: MouseEvent| cb.emit(1)
                             })}
                         >
-                            {"1"}
+                            {"«"}
                         </button>
                     </li>
                 }
 
                 { for pages.iter().map(|page| {
+                    if *page == 0 {
+                        return html! {
+                            <li class="pagination-item pagination-ellipsis">
+                                <span>{"…"}</span>
+                            </li>
+                        };
+                    }
+
                     let onclick = on_page_change.clone().map(move |cb| {
                         let cb = cb.clone();
                         let page_num = *page;
@@ -176,17 +193,16 @@ pub fn Pagination(props: &PaginationProps) -> Html {
                     });
 
                     let is_active = *page == current_page;
-                    let is_disabled = is_active || *page == 0;
+                    let aria_current = is_active.then_some("page");
 
                     html! {
                         <li class={classes!("pagination-item", if is_active { "active" } else { "" })}>
                             <button
                                 type="button"
-                                disabled={is_disabled}
-                                aria-current={if is_active { "page" } else { "false" }}
+                                aria-current={aria_current}
                                 {onclick}
                             >
-                                { page_to_string(*page) }
+                                { page.to_string() }
                             </button>
                         </li>
                     }
@@ -196,13 +212,14 @@ pub fn Pagination(props: &PaginationProps) -> Html {
                     <li class="pagination-item">
                         <button
                             type="button"
+                            aria-label="Last page"
                             disabled={current_page == total_pages}
                             onclick={on_page_change.clone().map(move |cb| {
                                 let cb = cb.clone();
                                 move |_: MouseEvent| cb.emit(total_pages)
                             })}
                         >
-                            { total_pages.to_string() }
+                            {"»"}
                         </button>
                     </li>
                 }
@@ -227,28 +244,9 @@ pub fn Pagination(props: &PaginationProps) -> Html {
     }
 }
 
-fn page_to_string(page: u32) -> String {
-    if page == 0 {
-        "...".to_string()
-    } else {
-        page.to_string()
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn page_to_string_normal() {
-        assert_eq!(page_to_string(1), "1");
-        assert_eq!(page_to_string(42), "42");
-    }
-
-    #[test]
-    fn page_to_string_ellipsis() {
-        assert_eq!(page_to_string(0), "...");
-    }
 
     #[test]
     fn pagination_props_default() {

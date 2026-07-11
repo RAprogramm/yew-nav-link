@@ -82,10 +82,10 @@ fn nav_divider_with_text() {
     let props = yew_nav_link::NavDividerProps {
         classes:  Classes::default(),
         vertical: false,
-        text:     Some("Or")
+        text:     Some(AttrValue::Static("Or"))
     };
 
-    assert_eq!(props.text, Some("Or"));
+    assert_eq!(props.text.as_deref(), Some("Or"));
 }
 
 #[test]
@@ -93,7 +93,7 @@ fn nav_divider_clone() {
     let props1 = yew_nav_link::NavDividerProps {
         classes:  Classes::from("custom"),
         vertical: true,
-        text:     Some("Divider")
+        text:     Some(AttrValue::Static("Divider"))
     };
 
     let props2 = props1.clone();

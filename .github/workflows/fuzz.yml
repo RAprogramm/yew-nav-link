@@ -34,12 +34,16 @@ jobs:
           - fuzz_normalize_path
           - fuzz_join_paths
           - fuzz_urlencoding_roundtrip
+          - fuzz_query_params
+          - fuzz_url_parts
     steps:
       - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: Setup nightly Rust toolchain
-        uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88 # nightly
+        uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88 # master
         with:
           toolchain: nightly
 
@@ -51,7 +55,7 @@ jobs:
           save-if: true
 
       - name: Install cargo-fuzz
-        uses: taiki-e/install-action@4684b8405694ae9dd42c9f39ba901a70ae83f4a3 # v2
+        uses: taiki-e/install-action@4684b8405694ae9dd42c9f39ba901a70ae83f4a3 # v2.82.9
         with:
           tool: cargo-fuzz
 

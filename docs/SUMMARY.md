@@ -26,3 +26,4 @@ SPDX-License-Identifier: MIT
 - [0003 — `NavError` is `#[non_exhaustive]` from 0.10.0](adr/0003-non-exhaustive-nav-error.md)
 - [0004 — Render a manual `<a>` instead of wrapping `yew_router::Link`](adr/0004-manual-anchor-over-yew-router-link.md)
 - [0005 — Active `NavLink` emits `aria-current="page"`](adr/0005-active-state-via-aria-current.md)
+- [0006 — String props use `AttrValue`](adr/0006-attrvalue-string-props.md)

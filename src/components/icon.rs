@@ -53,7 +53,7 @@
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
-//! | `name` | `Option<&'static str>` | `None` | Icon name |
+//! | `name` | `Option<AttrValue>` | `None` | Icon name |
 //! | `size` | `NavIconSize` | `Medium` | Size variant |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 //! | `children` | `Children` | — | Content when `name` is `None` |
@@ -72,7 +72,7 @@ use yew::prelude::*;
 ///
 /// | Prop | Type | Default | Description |
 /// |------|------|---------|-------------|
-/// | `name` | `Option<&'static str>` | `None` | Icon name |
+/// | `name` | `Option<AttrValue>` | `None` | Icon name |
 /// | `size` | `NavIconSize` | `Medium` | Size variant |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 /// | `children` | `Children` | — | Content when `name` is `None` |
@@ -84,7 +84,7 @@ pub struct NavIconProps {
 
     /// Optional icon name rendered as text content.
     #[prop_or_default]
-    pub name: Option<&'static str>,
+    pub name: Option<AttrValue>,
 
     /// Size variant of the icon.
     #[prop_or_default]
@@ -131,7 +131,7 @@ pub fn NavIcon(props: &NavIconProps) -> Html {
     classes.push("nav-icon");
     classes.push(props.size.as_class());
 
-    if let Some(name) = props.name {
+    if let Some(name) = props.name.clone() {
         html! {
             <i class={classes} aria-hidden="true">
                 { name }
@@ -204,12 +204,12 @@ mod tests {
     fn nav_icon_with_name() {
         let props = NavIconProps {
             classes:  Classes::default(),
-            name:     Some("home"),
+            name:     Some(AttrValue::Static("home")),
             size:     NavIconSize::Small,
             children: Children::new(vec![])
         };
 
-        assert_eq!(props.name, Some("home"));
+        assert_eq!(props.name.as_deref(), Some("home"));
         assert_eq!(props.size, NavIconSize::Small);
     }
 

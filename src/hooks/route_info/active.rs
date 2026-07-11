@@ -29,7 +29,8 @@ where
 /// Returns `true` when the current URL starts with the given route's path.
 ///
 /// Matches segment-wise, so `/docs` matches `/docs/api` but not
-/// `/documentation`.
+/// `/documentation`. A root route (`"/"`) matches only the root path, so a
+/// Home link is not reported active on every page.
 #[hook]
 pub fn use_is_partial_active<R>(route: R) -> bool
 where
@@ -293,7 +294,6 @@ mod tests {
         assert_eq!(ExtendedTestRoute::Docs.to_path(), "/docs");
         assert_eq!(ExtendedTestRoute::Api.to_path(), "/docs/api");
 
-        // Test that we can create instances
         let user_route = ExtendedTestRoute::User {
             id: "123".to_string()
         };

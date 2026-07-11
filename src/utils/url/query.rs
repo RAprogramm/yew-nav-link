@@ -565,7 +565,6 @@ mod tests {
     #[test]
     fn query_params_parse_multiple_empty() {
         let params = QueryParams::parse("=&=&=");
-        // empty and empty keys should be filtered out
         assert!(params.is_empty());
     }
 
@@ -605,9 +604,7 @@ mod tests {
 
         assert_eq!(parsed.get("page"), Some("1"));
 
-        // First value should match
         assert_eq!(parsed.get("name"), Some("hello"));
-        // All values should be present
         let all = parsed.get_all("name").unwrap();
         assert_eq!(all, &["hello".to_string(), "world".to_string()]);
     }

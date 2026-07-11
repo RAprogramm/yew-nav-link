@@ -27,7 +27,9 @@
 //! fn Nav() -> Html {
 //!     html! {
 //!         <NavList>
-//!             <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+//!             <NavItem>
+//!                 <NavLink<Route> to={Route::Home}>{ "Home" }</NavLink<Route>>
+//!             </NavItem>
 //!             <NavDropdown toggle_text="Settings">
 //!                 <NavDropdownItem>
 //!                     <NavLink<Route> to={Route::Settings}>{ "Profile" }</NavLink<Route>>
@@ -60,8 +62,8 @@
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
-//! | `toggle_text` | `&'static str` | `"dropdown"` | Toggle button label |
-//! | `id` | `Option<&'static str>` | `None` | Element id |
+//! | `toggle_text` | `AttrValue` | `"dropdown"` | Toggle button label |
+//! | `id` | `Option<AttrValue>` | `None` | Menu `<ul>` id, also wired to the toggle's `aria-controls` |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 //! | `children` | `Children` | — | Menu content |
 //!
@@ -80,35 +82,36 @@
 //! | `classes` | `Classes` | — | Additional CSS classes |
 
 use wasm_bindgen::JsCast;
-use web_sys::{Element, HtmlElement, Node};
+use web_sys::{HtmlElement, Node};
 use yew::prelude::*;
 
-use crate::utils::{KeyboardNavConfig, handle_arrow_key, handle_home_end};
+use super::focus::{focusable_elements, focused_position, next_focus_index};
 
 /// Collects the focusable elements (links and enabled buttons) inside the
 /// dropdown menu, in DOM order.
+///
+/// Elements nested in a disabled [`NavDropdownItem`] are excluded, so
+/// keyboard navigation never lands on a link the item's disabled state is
+/// supposed to neutralize.
 fn menu_items(menu_ref: &NodeRef) -> Vec<HtmlElement> {
-    menu_ref
-        .cast::<Element>()
-        .and_then(|menu| {
-            menu.query_selector_all("a[href], button:not([disabled])")
+    focusable_elements(menu_ref, "a[href], button:not([disabled])")
+        .into_iter()
+        .filter(|element| {
+            element
+                .closest(".nav-dropdown-item.disabled")
                 .ok()
+                .flatten()
+                .is_none()
         })
-        .map(|list| {
-            (0..list.length())
-                .filter_map(|index| list.item(index))
-                .filter_map(|node| node.dyn_into::<HtmlElement>().ok())
-                .collect()
-        })
-        .unwrap_or_default()
+        .collect()
 }
 
 /// Properties for the [`NavDropdown`] component.
 ///
 /// | Prop | Type | Default | Description |
 /// |------|------|---------|-------------|
-/// | `toggle_text` | `&'static str` | `"dropdown"` | Toggle button label |
-/// | `id` | `Option<&'static str>` | `None` | Element id |
+/// | `toggle_text` | `AttrValue` | `"dropdown"` | Toggle button label |
+/// | `id` | `Option<AttrValue>` | `None` | Menu `<ul>` id, also wired to the toggle's `aria-controls` |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 /// | `children` | `Children` | — | Menu content |
 #[derive(Properties, Clone, PartialEq, Debug, Default)]
@@ -118,12 +121,13 @@ pub struct NavDropdownProps {
     pub classes: Classes,
 
     /// Text displayed on the dropdown toggle button.
-    #[prop_or("dropdown")]
-    pub toggle_text: &'static str,
+    #[prop_or(AttrValue::Static("dropdown"))]
+    pub toggle_text: AttrValue,
 
-    /// Optional `id` attribute for the dropdown element.
+    /// Optional `id` for the menu `<ul>`; when set, the toggle references it
+    /// via `aria-controls`.
     #[prop_or_default]
-    pub id: Option<&'static str>,
+    pub id: Option<AttrValue>,
 
     /// Content rendered inside the dropdown menu.
     #[prop_or_default]
@@ -134,12 +138,18 @@ pub struct NavDropdownProps {
 ///
 /// # Keyboard & accessibility
 ///
-/// The toggle carries `aria-expanded` / `aria-haspopup` and the menu
-/// `role="menu"`. When the menu opens, focus moves to the first item.
-/// `ArrowDown`/`ArrowUp` (wrapping) and `Home`/`End` move a roving focus over
-/// the menu's links; `Escape` closes the menu and returns focus to the
-/// toggle; moving focus out of the dropdown (tabbing away or clicking
-/// elsewhere) dismisses it.
+/// Implements the WAI-ARIA disclosure-navigation pattern: the toggle carries
+/// `aria-expanded` (plus `aria-controls` when `id` is set) and the menu stays
+/// a plain list of links in the normal tab order — no `menu`/`menuitem`
+/// roles, which the APG reserves for application menus rather than site
+/// navigation.
+///
+/// Arrow-key support is layered on top as the optional enhancement the APG
+/// describes: opening the menu focuses the first item (`ArrowUp` on a closed
+/// toggle opens it and focuses the last), `ArrowDown`/`ArrowUp` (wrapping)
+/// and `Home`/`End` move focus over the menu's links, `Escape` closes the
+/// menu and returns focus to the toggle, and moving focus out of the
+/// dropdown (tabbing away or clicking elsewhere) dismisses it.
 ///
 /// # CSS Classes
 ///
@@ -153,20 +163,24 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
     classes.push("nav-dropdown");
 
     let open = use_state(|| false);
+    let open_focus_last = use_mut_ref(|| false);
     let container_ref = use_node_ref();
     let toggle_ref = use_node_ref();
     let menu_ref = use_node_ref();
 
     let on_toggle = {
         let open = open.clone();
+        let open_focus_last = open_focus_last.clone();
         Callback::from(move |e: MouseEvent| {
             e.stop_propagation();
+            *open_focus_last.borrow_mut() = false;
             open.set(!*open);
         })
     };
 
     let on_keydown = {
         let open = open.clone();
+        let open_focus_last = open_focus_last.clone();
         let toggle_ref = toggle_ref.clone();
         let menu_ref = menu_ref.clone();
         Callback::from(move |event: KeyboardEvent| {
@@ -192,30 +206,16 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
 
             event.prevent_default();
             if !*open {
+                *open_focus_last.borrow_mut() = key == "ArrowUp";
                 open.set(true);
                 return;
             }
 
-            let active = web_sys::window()
-                .and_then(|window| window.document())
-                .and_then(|document| document.active_element())
-                .map(JsCast::unchecked_into::<Node>);
-            let current = active
-                .as_ref()
-                .and_then(|node| items.iter().position(|item| item.is_same_node(Some(node))))
-                .unwrap_or(0);
+            let position = focused_position(&items);
 
-            let config = KeyboardNavConfig {
-                wrap:     true,
-                vertical: true
-            };
-            let next = if matches!(key.as_str(), "Home" | "End") {
-                handle_home_end(&key, current, items.len())
-            } else {
-                handle_arrow_key(&key, current, items.len(), &config)
-            };
-
-            if let Some(item) = next.and_then(|index| items.get(index)) {
+            if let Some(item) = next_focus_index(&key, position, items.len(), true)
+                .and_then(|index| items.get(index))
+            {
                 let _ = item.focus();
             }
         })
@@ -243,8 +243,17 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
     {
         let menu_ref = menu_ref.clone();
         use_effect_with(*open, move |is_open| {
-            if *is_open && let Some(first) = menu_items(&menu_ref).first() {
-                let _ = first.focus();
+            if *is_open {
+                let items = menu_items(&menu_ref);
+                let focus_last = std::mem::take(&mut *open_focus_last.borrow_mut());
+                let target = if focus_last {
+                    items.last()
+                } else {
+                    items.first()
+                };
+                if let Some(item) = target {
+                    let _ = item.focus();
+                }
             }
             || ()
         });
@@ -260,7 +269,6 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
         <li
             ref={container_ref}
             class={classes}
-            role="presentation"
             onkeydown={on_keydown}
             onfocusout={on_focusout}
         >
@@ -269,13 +277,13 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
                 type="button"
                 class="nav-dropdown-toggle"
                 aria-expanded={if *open { "true" } else { "false" }}
-                aria-haspopup="true"
+                aria-controls={props.id.clone()}
                 onclick={on_toggle}
             >
-                { props.toggle_text }
-                <span class="nav-dropdown-caret">{" ▼"}</span>
+                { props.toggle_text.clone() }
+                <span class="nav-dropdown-caret" aria-hidden="true">{" ▼"}</span>
             </button>
-            <ul ref={menu_ref} class={menu_class} role="menu">
+            <ul ref={menu_ref} id={props.id.clone()} class={menu_class}>
                 { for props.children.iter() }
             </ul>
         </li>
@@ -305,6 +313,10 @@ pub struct NavDropdownItemProps {
 
 /// A single item within a [`NavDropdown`] menu.
 ///
+/// Renders a plain `<li>`; a disabled item additionally carries
+/// `aria-disabled="true"` and its links are skipped by the dropdown's
+/// keyboard navigation.
+///
 /// # CSS Classes
 ///
 /// - `nav-dropdown-item` - Always applied
@@ -318,8 +330,10 @@ pub fn NavDropdownItem(props: &NavDropdownItemProps) -> Html {
         classes.push("disabled");
     }
 
+    let aria_disabled = props.disabled.then_some("true");
+
     html! {
-        <li class={classes} role="menuitem">
+        <li class={classes} aria-disabled={aria_disabled}>
             { for props.children.iter() }
         </li>
     }
@@ -358,7 +372,7 @@ mod tests {
     fn nav_dropdown_props_default() {
         let props = NavDropdownProps {
             classes:     Classes::default(),
-            toggle_text: "Menu",
+            toggle_text: AttrValue::Static("Menu"),
             id:          None,
             children:    Children::new(vec![])
         };
@@ -402,12 +416,12 @@ mod tests {
     fn nav_dropdown_with_custom_id() {
         let props = NavDropdownProps {
             classes:     Classes::default(),
-            toggle_text: "Menu",
-            id:          Some("my-dropdown"),
+            toggle_text: AttrValue::Static("Menu"),
+            id:          Some(AttrValue::Static("my-dropdown")),
             children:    Children::new(vec![])
         };
 
-        assert_eq!(props.id, Some("my-dropdown"));
+        assert_eq!(props.id.as_deref(), Some("my-dropdown"));
     }
 
     #[test]
@@ -439,7 +453,7 @@ mod tests {
         let children = Children::new(vec![html! { <div>{ "child" }</div> }]);
         let props = NavDropdownProps {
             classes: Classes::default(),
-            toggle_text: "Test",
+            toggle_text: AttrValue::Static("Test"),
             id: None,
             children
         };

@@ -4,12 +4,20 @@
 //! Keyboard navigation configuration.
 
 /// Configuration for keyboard-driven navigation behavior.
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct KeyboardNavConfig {
     /// Whether navigation wraps around when reaching the first or last item.
     pub wrap:     bool,
     /// Whether arrow keys map to vertical (`ArrowUp`/`ArrowDown`) movement.
     pub vertical: bool
+}
+
+impl Default for KeyboardNavConfig {
+    /// Matches [`KeyboardNavConfig::new`], so `..Default::default()` and
+    /// `new()` produce identical behavior.
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl KeyboardNavConfig {

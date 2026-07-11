@@ -25,21 +25,23 @@ target on every render:
 | `partial` | Match condition |
 |-----------|-----------------|
 | `false` (default) | exact equality between `current` and `to` |
-| `true` | `to.to_path()` is a path-segment prefix of `current.to_path()` |
+| `true` | `to.to_path()` is a path-segment prefix of `current.to_path()`; a root target (`"/"`) matches only the root path |
 
 **FR-NL-3.** Apply two CSS classes to the rendered anchor:
 
 - The base class — defaults to `"nav-link"`, overridable via the `class`
-  prop (`&'static str`).
+  prop (`AttrValue`).
 - The active class — defaults to `"active"`, overridable via the
-  `active_class` prop (`&'static str`). Only emitted when *active* per
+  `active_class` prop (`AttrValue`). Only emitted when *active* per
   FR-NL-2.
 
 **FR-NL-4.** A plain left-click is intercepted: the default browser
 navigation is prevented and `to` is pushed through the `Navigator`, so
 dependent hooks re-render. Modifier-clicks (Cmd/Ctrl/Shift/Alt) fall
-through to the browser, preserving "open in new tab" affordances. Active
-links additionally emit `aria-current="page"`.
+through to the browser, preserving "open in new tab" affordances. Without
+a `Navigator` in scope the click is not suppressed and the anchor's href
+drives default browser navigation. Active links additionally emit
+`aria-current="page"`.
 
 ### 1.2 `nav_link()` function
 
@@ -59,7 +61,8 @@ matched route, or `None` when no registered route matches.
 alias return `true` iff the current route equals `route`.
 
 **FR-HK-3.** `use_is_partial_active(route)` returns `true` iff
-`route.to_path()` is a path-segment prefix of the current path.
+`route.to_path()` is a path-segment prefix of the current path; a root
+target (`"/"`) matches only the root path.
 
 **FR-HK-4.** `use_navigation::<R>() -> Navigation<R>` returns a value-type
 struct. `go_back` and `go_forward` are ready-made `Callback<()>` fields;
@@ -123,7 +126,9 @@ collapsing duplicate separators.
 escaping the root.
 
 **FR-UT-4.** `urlencoding_encode` percent-encodes a string;
-`urlencoding_decode` returns `Option<String>` (`None` on malformed input).
+`urlencoding_decode` returns `Option<String>` (`None` on invalid UTF-8) and
+maps `+` to a space; `percent_decode` does the same without the `+` rule,
+for path components.
 
 ## 2. Non-functional requirements
 
@@ -167,6 +172,8 @@ the following gates:
 - `cargo audit`
 - `reuse lint`
 - `actionlint`
+- `zizmor` (GitHub Actions security audits, SARIF to code scanning)
+- PR-title format check (`#<issue> <type>: <description>`)
 - `trunk build --release` against `example/`
 - Lighthouse CI thresholds (perf 0.85, a11y 0.9, best-practices 0.9, SEO 0.9)
 
@@ -183,7 +190,12 @@ where it makes sense.
 
 **NFR-A-1.** Library components emit ARIA attributes appropriate to their
 role: `NavList` carries `role="navigation"` + `aria-label`, `NavTabs` set
-`role="tab"` / `aria-selected` / `aria-controls`, etc.
+`role="tab"` / `aria-selected` / `aria-controls` and implement the WAI-ARIA
+tabs keyboard pattern (roving tabindex, arrow keys with wrap, `Home`/`End`,
+`aria-orientation` when vertical). `NavDropdown` follows
+the WAI-ARIA disclosure-navigation pattern (toggle with `aria-expanded` /
+`aria-controls`, plain links without `menu` roles) with arrow-key focus
+movement as the optional enhancement.
 
 **NFR-A-2.** The bundled demo (`example/`) honours `prefers-color-scheme:
 dark`, `prefers-reduced-motion: reduce`, ships a skip-to-content link, and

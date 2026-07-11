@@ -1,22 +1,12 @@
 // SPDX-FileCopyrightText: RAprogramm <andrey.rozanov.vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
+//! Criterion benchmarks for the segment-wise `is_path_prefix` matcher.
+
 use std::hint::black_box;
 
 use criterion::{Criterion, criterion_group, criterion_main};
-
-fn is_path_prefix(target: &str, current: &str) -> bool {
-    let mut target_iter = target.split('/').filter(|s| !s.is_empty());
-    let mut current_iter = current.split('/').filter(|s| !s.is_empty());
-
-    loop {
-        match (target_iter.next(), current_iter.next()) {
-            (Some(t), Some(c)) if t == c => {}
-            (Some(_), _) => return false,
-            (None, _) => return true
-        }
-    }
-}
+use yew_nav_link::active_link::is_path_prefix;
 
 fn bench_is_path_prefix(c: &mut Criterion) {
     c.bench_function("path_prefix_exact_match", |b| {

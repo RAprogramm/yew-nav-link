@@ -86,17 +86,17 @@ maps to the tool that enforces it and the workflow that runs it.
 | **Browser tests** | `wasm-bindgen-test` headless on Chrome **and** Firefox | `ci.yml` · `wasm_tests` |
 | **End-to-end tests** | Playwright against the trunk-built demo (Chromium + Firefox) | `ci.yml` · `e2e` |
 | **Property testing** | `proptest` over path / URL / query invariants | `ci.yml` · `test` |
-| **Fuzzing** | `cargo-fuzz`, 3 targets (path join, path normalize, URL round-trip) | `fuzz.yml` |
-| **Mutation testing** | `cargo-mutants` over library logic | `mutants.yml` |
+| **Fuzzing** | `cargo-fuzz`, 5 targets (path join/normalize, URL round-trip, query params, URL parts) | `fuzz.yml` |
+| **Mutation testing** | `cargo-mutants`: full run nightly + diff-scoped pass per PR | `mutants.yml` |
 | **Coverage control** | `cargo-llvm-cov` → Codecov, **95 % project + patch gate** | `ci.yml` · `coverage` |
-| **Static analysis** | `clippy -D warnings` (all + no-default features) · CodeQL SAST | `ci.yml` · `check` · `codeql.yml` |
+| **Static analysis** | `clippy -D warnings` (all + no-default features) · CodeQL SAST · zizmor over the workflows themselves | `ci.yml` · `check` · `codeql.yml` · `zizmor.yml` |
 | **Supply chain** | `cargo-deny`, `cargo-audit`, `cargo-machete`, `cargo-udeps` | `ci.yml` · `security` |
 | **Security posture** | OSSF Scorecard | `scorecard.yml` |
 | **API stability** | `cargo-semver-checks` + `cargo-public-api` baseline diff | `ci.yml` · `semver_checks`, `public_api` |
 | **Releases & semver** | release-plz (version + changelog + publish) · signed build provenance & SBOM attestation | `release-plz.yml` · `release-attestations.yml` |
 | **Licensing** | REUSE / SPDX compliance | `ci.yml` · `reuse` |
 | **Performance budgets** | criterion benches · WASM size budget · Lighthouse assertions | `ci.yml` · `benchmarks`, `wasm-build`, `lighthouse` |
-| **Formatting & workflows** | `cargo +nightly fmt --check` · actionlint | `ci.yml` · `fmt`, `actionlint` |
+| **Formatting & workflows** | `cargo +nightly fmt --check` · actionlint · PR-title format gate | `ci.yml` · `fmt`, `actionlint`, `pr_title` |
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -106,7 +106,7 @@ maps to the tool that enforces it and the workflow that runs it.
 
 ```toml
 [dependencies]
-yew-nav-link = "0.11"
+yew-nav-link = "0.12"
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -330,7 +330,8 @@ live under the `utils` module (`yew_nav_link::utils::…`).
 | `join_paths(a, b)` | crate root | Join two path segments safely |
 | `normalize_path(path)` | crate root | Collapse duplicate slashes and resolve `.`/`..`; a single trailing slash is preserved |
 | `urlencoding_encode(s)` | `utils::` | Percent-encode a string for URLs |
-| `urlencoding_decode(s)` | `utils::` | Decode a percent-encoded string (`None` on invalid UTF-8) |
+| `urlencoding_decode(s)` | `utils::` | Decode a percent-encoded string, `+` becomes a space (`None` on invalid UTF-8) |
+| `percent_decode(s)` | `utils::` | Decode `%XX` sequences keeping `+` literal — for path components (`None` on invalid UTF-8) |
 | `handle_arrow_key(config, key)` | `utils::` | Keyboard navigation handler |
 | `handle_home_end(config, key)` | `utils::` | Home/End key handler for navigation |
 
@@ -372,7 +373,7 @@ Define your own `nav-link` and `active` styles:
 
 ## Architecture
 
-<img src="docs/assets/architecture.svg" alt="Layered module architecture: lib.rs on top; hooks and components in the middle; active_link and nav render primitives below; utils, attrs and errors as the Yew-free leaf. Each layer depends only on the layers beneath it." width="820">
+<img src="docs/assets/architecture.svg" alt="Layered module architecture: lib.rs on top; hooks and components in the middle; active_link and nav render primitives below; utils and errors as the Yew-free leaf. Each layer depends only on the layers beneath it." width="820">
 
 ```text
 yew-nav-link
@@ -381,7 +382,6 @@ yew-nav-link
 ├── components        # UI: Badge, Dropdown, Icon, Tabs, Pagination
 ├── hooks             # Reactive and programmatic route/navigation helpers
 ├── utils             # Path, URL, keyboard navigation utilities
-├── attrs             # Type-safe attribute builders
 └── errors            # NavError, NavResult types
 ```
 
@@ -422,9 +422,9 @@ Open <http://127.0.0.1:3000> (port set in [`example/trunk.toml`](example/trunk.t
 |------|------|---------|-------------|
 | `to` | `R: Routable` | required | Target route |
 | `children` | `Children` | required | Link content |
-| `partial` | `bool` | `false` | Enable prefix matching |
-| `class` | `&str` | `"nav-link"` | Custom CSS class (replaces default) |
-| `active_class` | `&str` | `"active"` | Custom active state class |
+| `partial` | `bool` | `false` | Enable prefix matching (a root route matches only the root path) |
+| `class` | `AttrValue` | `"nav-link"` | Custom CSS class (replaces default) |
+| `active_class` | `AttrValue` | `"active"` | Custom active state class |
 
 ### `Match`
 

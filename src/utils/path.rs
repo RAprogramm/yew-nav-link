@@ -30,8 +30,10 @@
 ///
 /// - Preserves the leading `/` for absolute paths and a single trailing `/` if
 ///   the input ended with one.
-/// - `..` segments pop the previous component; at the root they are a no-op
-///   (the path cannot escape `/`).
+/// - `..` segments pop the previous component. At the root of an absolute path
+///   they are a no-op (the path cannot escape `/`); in a relative path
+///   unresolvable leading `..` segments are preserved, since dropping them
+///   would change what the path resolves to against any base.
 /// - `.` segments are dropped.
 /// - The bare `/` and `""` inputs round-trip unchanged.
 ///
@@ -44,6 +46,8 @@
 /// assert_eq!(normalize_path("/foo/bar/../baz/"), "/foo/baz/");
 /// assert_eq!(normalize_path("/a/./b/c/../d"), "/a/b/d");
 /// assert_eq!(normalize_path("/../foo"), "/foo");
+/// assert_eq!(normalize_path("../foo"), "../foo");
+/// assert_eq!(normalize_path("a/../../b"), "../b");
 /// assert_eq!(normalize_path("/"), "/");
 /// ```
 #[must_use]
@@ -60,7 +64,13 @@ pub fn normalize_path(path: &str) -> String {
         match segment {
             "." => {}
             ".." => {
-                stack.pop();
+                if matches!(stack.last(), None | Some(&"..")) {
+                    if !absolute {
+                        stack.push("..");
+                    }
+                } else {
+                    stack.pop();
+                }
             }
             other => stack.push(other)
         }
@@ -151,6 +161,21 @@ mod tests {
     fn normalize_relative_paths() {
         assert_eq!(normalize_path("foo/../bar"), "bar");
         assert_eq!(normalize_path("foo/./bar"), "foo/bar");
+    }
+
+    #[test]
+    fn normalize_returns_empty_for_fully_resolved_relative_paths() {
+        assert_eq!(normalize_path("foo/.."), "");
+        assert_eq!(normalize_path("./."), "");
+    }
+
+    #[test]
+    fn normalize_preserves_leading_parent_segments_of_relative_paths() {
+        assert_eq!(normalize_path("../foo"), "../foo");
+        assert_eq!(normalize_path("../../foo"), "../../foo");
+        assert_eq!(normalize_path("a/../../b"), "../b");
+        assert_eq!(normalize_path(".."), "..");
+        assert_eq!(normalize_path("../"), "../");
     }
 
     #[test]
