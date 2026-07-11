@@ -34,6 +34,8 @@ jobs:
           - fuzz_normalize_path
           - fuzz_join_paths
           - fuzz_urlencoding_roundtrip
+          - fuzz_query_params
+          - fuzz_url_parts
     steps:
       - name: Checkout repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v6

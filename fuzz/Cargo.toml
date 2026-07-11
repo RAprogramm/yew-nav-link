@@ -41,3 +41,17 @@ path = "fuzz_targets/fuzz_urlencoding_roundtrip.rs"
 test = false
 doc = false
 bench = false
+
+[[bin]]
+name = "fuzz_query_params"
+path = "fuzz_targets/fuzz_query_params.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "fuzz_url_parts"
+path = "fuzz_targets/fuzz_url_parts.rs"
+test = false
+doc = false
+bench = false
