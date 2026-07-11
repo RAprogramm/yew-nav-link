@@ -126,7 +126,9 @@ collapsing duplicate separators.
 escaping the root.
 
 **FR-UT-4.** `urlencoding_encode` percent-encodes a string;
-`urlencoding_decode` returns `Option<String>` (`None` on malformed input).
+`urlencoding_decode` returns `Option<String>` (`None` on invalid UTF-8) and
+maps `+` to a space; `percent_decode` does the same without the `+` rule,
+for path components.
 
 ## 2. Non-functional requirements
 
