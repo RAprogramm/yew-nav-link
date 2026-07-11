@@ -10,8 +10,6 @@ use yew_nav_link::components::{NavDropdownDividerProps, NavDropdownItemProps, Na
 
 #[test]
 fn nav_dropdown_props_default_values() {
-    // With prop_or_default, need to test manually since Default doesn't work with
-    // prop_or
     let props = NavDropdownProps {
         classes:     Classes::default(),
         toggle_text: AttrValue::Static("dropdown"),

@@ -6,13 +6,12 @@
 //! Native test runs treat this target as empty — the `cfg(target_arch =
 //! "wasm32")` gate strips the body. The full suite runs under
 //! `wasm-pack test --headless --chrome --firefox --test wasm`.
+//!
+//! Cargo's default module resolution would look for `tests/common.rs` and
+//! `tests/nav_link.rs` next to this file; the `#[path]` attributes redirect
+//! the lookup so the wasm-specific submodules stay under `tests/wasm/`.
 
 #![cfg(target_arch = "wasm32")]
-
-// Cargo's default module resolution would look for `tests/common.rs` and
-// `tests/nav_link.rs` next to this file. We want the wasm-specific
-// submodules under `tests/wasm/` so the directory stays self-contained;
-// `#[path]` redirects the lookup accordingly.
 
 #[path = "wasm/common.rs"]
 mod common;

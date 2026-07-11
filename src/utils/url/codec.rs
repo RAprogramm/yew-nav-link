@@ -184,22 +184,22 @@ mod tests {
         assert_eq!(result, Some(" !".to_string()));
     }
 
+    /// `%E2%9C%93` is the UTF-8 percent-encoding of U+2713 CHECK MARK (✓).
     #[test]
     fn urlencoding_decode_unicode() {
-        // E2 9C 93 is the UTF-8 encoding of U+2713 CHECK MARK (✓).
         assert_eq!(urlencoding_decode("%E2%9C%93"), Some("✓".to_string()));
     }
 
+    /// The encoded input is the UTF-8 percent-encoding of "Привет".
     #[test]
     fn urlencoding_decode_cyrillic() {
-        // "%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82" is "Привет".
         let encoded = "%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82";
         assert_eq!(urlencoding_decode(encoded), Some("Привет".to_string()));
     }
 
+    /// A lone `0xFF` byte is not valid UTF-8.
     #[test]
     fn urlencoding_decode_invalid_utf8_returns_none() {
-        // A lone 0xFF byte is not valid UTF-8.
         assert_eq!(urlencoding_decode("%FF"), None);
     }
 

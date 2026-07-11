@@ -146,8 +146,6 @@ mod tests {
     #[test]
     fn nav_link_exact_returns_html() {
         let html = nav_link(TestRoute::Home, "Home", Match::Exact);
-        // The wrapper now is a function component itself; what matters is
-        // that we get back a renderable `Html` value.
         assert!(matches!(html, Html::VComp(_)));
     }
 

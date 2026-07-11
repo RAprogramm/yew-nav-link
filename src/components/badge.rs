@@ -161,8 +161,6 @@ mod tests {
 
     #[test]
     fn variant_class_unknown_falls_back_to_primary() {
-        // Unknown variant strings keep the historical behaviour of
-        // rendering the primary palette.
         assert_eq!(variant_class(""), "nav-badge-primary");
         assert_eq!(variant_class("unknown"), "nav-badge-primary");
         assert_eq!(variant_class("PRIMARY"), "nav-badge-primary");

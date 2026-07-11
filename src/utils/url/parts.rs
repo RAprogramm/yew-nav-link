@@ -162,9 +162,9 @@ mod tests {
         assert_eq!(parts.path, "");
     }
 
+    /// A path-only input has no authority, so `host` stays `None`.
     #[test]
     fn url_parts_parse_path_only() {
-        // A path-only input has no authority, so `host` stays `None`.
         let parts = UrlParts::parse("/api/v1/users");
         assert_eq!(parts.path, "/api/v1/users");
         assert!(parts.scheme.is_none());

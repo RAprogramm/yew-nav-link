@@ -294,7 +294,6 @@ mod tests {
         assert_eq!(ExtendedTestRoute::Docs.to_path(), "/docs");
         assert_eq!(ExtendedTestRoute::Api.to_path(), "/docs/api");
 
-        // Test that we can create instances
         let user_route = ExtendedTestRoute::User {
             id: "123".to_string()
         };

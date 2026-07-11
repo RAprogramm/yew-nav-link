@@ -10,7 +10,6 @@ use yew_nav_link::utils::{KeyboardDirection, KeyboardNavConfig};
 #[test]
 fn keyboard_direction_clone() {
     let forward = KeyboardDirection::Forward;
-    // KeyboardDirection implements Copy, so it's automatically copied
     let copied = forward;
     assert_eq!(forward, copied);
 }
@@ -95,8 +94,6 @@ fn keyboard_nav_config_debug() {
     assert!(debug_str.contains("KeyboardNavConfig"));
 }
 
-// Tests for handle_arrow_key
-
 #[test]
 fn handle_arrow_key_horizontal_forward() {
     let config = KeyboardNavConfig::new();
@@ -155,7 +152,6 @@ fn handle_arrow_key_invalid_key() {
 
 #[test]
 fn handle_arrow_key_empty_list() {
-    // Empty list should return None
     let config = KeyboardNavConfig::new();
     let next = yew_nav_link::utils::handle_arrow_key("ArrowRight", 0, 0, &config);
     assert_eq!(next, None);
@@ -167,8 +163,6 @@ fn handle_arrow_key_single_item() {
     let next = yew_nav_link::utils::handle_arrow_key("ArrowRight", 0, 1, &config);
     assert_eq!(next, Some(0));
 }
-
-// Tests for handle_home_end
 
 #[test]
 fn handle_home_end_home() {
@@ -194,8 +188,6 @@ fn handle_home_end_invalid_key() {
     assert_eq!(result, None);
 }
 
-// Tests for is_activation_key
-
 #[test]
 fn is_activation_key_enter() {
     assert!(yew_nav_link::utils::is_activation_key("Enter"));
@@ -215,8 +207,6 @@ fn is_activation_key_space_name() {
 fn is_activation_key_not_activation() {
     assert!(!yew_nav_link::utils::is_activation_key("ArrowRight"));
 }
-
-// Tests for is_navigation_key
 
 #[test]
 fn is_navigation_key_arrow() {

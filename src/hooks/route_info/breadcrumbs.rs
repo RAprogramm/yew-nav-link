@@ -196,8 +196,6 @@ mod tests {
         }
     }
 
-    // ===== BreadcrumbItem tests =====
-
     #[test]
     fn breadcrumb_item_new() {
         let item = BreadcrumbItem {
@@ -361,8 +359,6 @@ mod tests {
         assert_eq!(item.route.to_path(), "/docs/api/v1");
     }
 
-    // ===== BreadcrumbLabelProvider tests =====
-
     #[test]
     fn breadcrumb_label_provider_returns_custom_labels() {
         let provider = TestLabelProvider;
@@ -396,8 +392,6 @@ mod tests {
         assert_eq!(provider.label_for_path("@#$%"), "@#$%");
     }
 
-    // ===== BreadcrumbLabelProviderContext tests =====
-
     #[test]
     fn context_eq_same_rc() {
         let rc = Rc::new(TestLabelProvider);
@@ -420,8 +414,6 @@ mod tests {
         let ctx2 = ctx1.clone();
         assert!(ctx1 == ctx2);
     }
-
-    // ===== use_breadcrumbs tests =====
 
     #[test]
     fn use_breadcrumbs_simple_route() {
@@ -452,8 +444,6 @@ mod tests {
         let _root = use_breadcrumbs::<RootOnlyRoute>();
     }
 
-    // ===== BreadcrumbLabelProviderContext API tests =====
-
     #[test]
     fn context_new_and_provider_round_trip() {
         let ctx = BreadcrumbLabelProviderContext::new(Rc::new(TestLabelProvider));
@@ -466,8 +456,6 @@ mod tests {
         let ctx = BreadcrumbLabelProviderContext::new(Rc::new(TestLabelProvider));
         assert!(Rc::ptr_eq(&ctx.provider(), &ctx.provider()));
     }
-
-    // ===== display_path tests =====
 
     #[test]
     fn display_path_decodes_percent_sequences() {
@@ -483,8 +471,6 @@ mod tests {
     fn display_path_keeps_raw_text_on_invalid_utf8() {
         assert_eq!(display_path("/bad/%FF"), "/bad/%FF");
     }
-
-    // ===== recognized_or tests =====
 
     #[test]
     fn recognized_or_returns_matching_route() {
@@ -529,8 +515,6 @@ mod tests {
         let resolved = recognized_or::<ParamRoute>("/users", &fallback);
         assert_eq!(resolved, fallback);
     }
-
-    // ===== Negative tests =====
 
     #[test]
     fn breadcrumb_item_neq_negatives() {
