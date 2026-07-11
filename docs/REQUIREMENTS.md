@@ -186,7 +186,10 @@ where it makes sense.
 
 **NFR-A-1.** Library components emit ARIA attributes appropriate to their
 role: `NavList` carries `role="navigation"` + `aria-label`, `NavTabs` set
-`role="tab"` / `aria-selected` / `aria-controls`, etc.
+`role="tab"` / `aria-selected` / `aria-controls`, etc. `NavDropdown` follows
+the WAI-ARIA disclosure-navigation pattern (toggle with `aria-expanded` /
+`aria-controls`, plain links without `menu` roles) with arrow-key focus
+movement as the optional enhancement.
 
 **NFR-A-2.** The bundled demo (`example/`) honours `prefers-color-scheme:
 dark`, `prefers-reduced-motion: reduce`, ships a skip-to-content link, and

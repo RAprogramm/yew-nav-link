@@ -61,7 +61,7 @@
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
 //! | `toggle_text` | `&'static str` | `"dropdown"` | Toggle button label |
-//! | `id` | `Option<&'static str>` | `None` | Element id |
+//! | `id` | `Option<&'static str>` | `None` | Menu `<ul>` id, also wired to the toggle's `aria-controls` |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 //! | `children` | `Children` | — | Menu content |
 //!
@@ -87,6 +87,10 @@ use crate::utils::{KeyboardNavConfig, handle_arrow_key, handle_home_end};
 
 /// Collects the focusable elements (links and enabled buttons) inside the
 /// dropdown menu, in DOM order.
+///
+/// Elements nested in a disabled [`NavDropdownItem`] are excluded, so
+/// keyboard navigation never lands on a link the item's disabled state is
+/// supposed to neutralize.
 fn menu_items(menu_ref: &NodeRef) -> Vec<HtmlElement> {
     menu_ref
         .cast::<Element>()
@@ -98,6 +102,13 @@ fn menu_items(menu_ref: &NodeRef) -> Vec<HtmlElement> {
             (0..list.length())
                 .filter_map(|index| list.item(index))
                 .filter_map(|node| node.dyn_into::<HtmlElement>().ok())
+                .filter(|element| {
+                    element
+                        .closest(".nav-dropdown-item.disabled")
+                        .ok()
+                        .flatten()
+                        .is_none()
+                })
                 .collect()
         })
         .unwrap_or_default()
@@ -108,7 +119,7 @@ fn menu_items(menu_ref: &NodeRef) -> Vec<HtmlElement> {
 /// | Prop | Type | Default | Description |
 /// |------|------|---------|-------------|
 /// | `toggle_text` | `&'static str` | `"dropdown"` | Toggle button label |
-/// | `id` | `Option<&'static str>` | `None` | Element id |
+/// | `id` | `Option<&'static str>` | `None` | Menu `<ul>` id, also wired to the toggle's `aria-controls` |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 /// | `children` | `Children` | — | Menu content |
 #[derive(Properties, Clone, PartialEq, Debug, Default)]
@@ -121,7 +132,8 @@ pub struct NavDropdownProps {
     #[prop_or("dropdown")]
     pub toggle_text: &'static str,
 
-    /// Optional `id` attribute for the dropdown element.
+    /// Optional `id` for the menu `<ul>`; when set, the toggle references it
+    /// via `aria-controls`.
     #[prop_or_default]
     pub id: Option<&'static str>,
 
@@ -134,12 +146,18 @@ pub struct NavDropdownProps {
 ///
 /// # Keyboard & accessibility
 ///
-/// The toggle carries `aria-expanded` / `aria-haspopup` and the menu
-/// `role="menu"`. When the menu opens, focus moves to the first item.
-/// `ArrowDown`/`ArrowUp` (wrapping) and `Home`/`End` move a roving focus over
-/// the menu's links; `Escape` closes the menu and returns focus to the
-/// toggle; moving focus out of the dropdown (tabbing away or clicking
-/// elsewhere) dismisses it.
+/// Implements the WAI-ARIA disclosure-navigation pattern: the toggle carries
+/// `aria-expanded` (plus `aria-controls` when `id` is set) and the menu stays
+/// a plain list of links in the normal tab order — no `menu`/`menuitem`
+/// roles, which the APG reserves for application menus rather than site
+/// navigation.
+///
+/// Arrow-key support is layered on top as the optional enhancement the APG
+/// describes: opening the menu focuses the first item (`ArrowUp` on a closed
+/// toggle opens it and focuses the last), `ArrowDown`/`ArrowUp` (wrapping)
+/// and `Home`/`End` move focus over the menu's links, `Escape` closes the
+/// menu and returns focus to the toggle, and moving focus out of the
+/// dropdown (tabbing away or clicking elsewhere) dismisses it.
 ///
 /// # CSS Classes
 ///
@@ -153,20 +171,24 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
     classes.push("nav-dropdown");
 
     let open = use_state(|| false);
+    let open_focus_last = use_mut_ref(|| false);
     let container_ref = use_node_ref();
     let toggle_ref = use_node_ref();
     let menu_ref = use_node_ref();
 
     let on_toggle = {
         let open = open.clone();
+        let open_focus_last = open_focus_last.clone();
         Callback::from(move |e: MouseEvent| {
             e.stop_propagation();
+            *open_focus_last.borrow_mut() = false;
             open.set(!*open);
         })
     };
 
     let on_keydown = {
         let open = open.clone();
+        let open_focus_last = open_focus_last.clone();
         let toggle_ref = toggle_ref.clone();
         let menu_ref = menu_ref.clone();
         Callback::from(move |event: KeyboardEvent| {
@@ -192,6 +214,7 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
 
             event.prevent_default();
             if !*open {
+                *open_focus_last.borrow_mut() = key == "ArrowUp";
                 open.set(true);
                 return;
             }
@@ -200,22 +223,13 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
                 .and_then(|window| window.document())
                 .and_then(|document| document.active_element())
                 .map(JsCast::unchecked_into::<Node>);
-            let current = active
+            let position = active
                 .as_ref()
-                .and_then(|node| items.iter().position(|item| item.is_same_node(Some(node))))
-                .unwrap_or(0);
+                .and_then(|node| items.iter().position(|item| item.is_same_node(Some(node))));
 
-            let config = KeyboardNavConfig {
-                wrap:     true,
-                vertical: true
-            };
-            let next = if matches!(key.as_str(), "Home" | "End") {
-                handle_home_end(&key, current, items.len())
-            } else {
-                handle_arrow_key(&key, current, items.len(), &config)
-            };
-
-            if let Some(item) = next.and_then(|index| items.get(index)) {
+            if let Some(item) =
+                next_focus_index(&key, position, items.len()).and_then(|index| items.get(index))
+            {
                 let _ = item.focus();
             }
         })
@@ -243,8 +257,17 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
     {
         let menu_ref = menu_ref.clone();
         use_effect_with(*open, move |is_open| {
-            if *is_open && let Some(first) = menu_items(&menu_ref).first() {
-                let _ = first.focus();
+            if *is_open {
+                let items = menu_items(&menu_ref);
+                let focus_last = std::mem::take(&mut *open_focus_last.borrow_mut());
+                let target = if focus_last {
+                    items.last()
+                } else {
+                    items.first()
+                };
+                if let Some(item) = target {
+                    let _ = item.focus();
+                }
             }
             || ()
         });
@@ -260,7 +283,6 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
         <li
             ref={container_ref}
             class={classes}
-            role="presentation"
             onkeydown={on_keydown}
             onfocusout={on_focusout}
         >
@@ -269,16 +291,35 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
                 type="button"
                 class="nav-dropdown-toggle"
                 aria-expanded={if *open { "true" } else { "false" }}
-                aria-haspopup="true"
+                aria-controls={props.id}
                 onclick={on_toggle}
             >
                 { props.toggle_text }
-                <span class="nav-dropdown-caret">{" ▼"}</span>
+                <span class="nav-dropdown-caret" aria-hidden="true">{" ▼"}</span>
             </button>
-            <ul ref={menu_ref} class={menu_class} role="menu">
+            <ul ref={menu_ref} id={props.id} class={menu_class}>
                 { for props.children.iter() }
             </ul>
         </li>
+    }
+}
+
+/// Computes the next focus index for the optional arrow-key enhancement.
+///
+/// When focus is not currently on a menu item (`position` is `None`),
+/// `ArrowDown`/`Home` land on the first item and `ArrowUp`/`End` on the last,
+/// instead of skipping relative to a phantom index.
+fn next_focus_index(key: &str, position: Option<usize>, total: usize) -> Option<usize> {
+    let config = KeyboardNavConfig {
+        wrap:     true,
+        vertical: true
+    };
+    match (key, position) {
+        ("Home" | "End", _) => handle_home_end(key, position.unwrap_or(0), total),
+        ("ArrowDown", None) => Some(0),
+        ("ArrowUp", None) => total.checked_sub(1),
+        (_, Some(current)) => handle_arrow_key(key, current, total, &config),
+        _ => None
     }
 }
 
@@ -305,6 +346,10 @@ pub struct NavDropdownItemProps {
 
 /// A single item within a [`NavDropdown`] menu.
 ///
+/// Renders a plain `<li>`; a disabled item additionally carries
+/// `aria-disabled="true"` and its links are skipped by the dropdown's
+/// keyboard navigation.
+///
 /// # CSS Classes
 ///
 /// - `nav-dropdown-item` - Always applied
@@ -318,8 +363,10 @@ pub fn NavDropdownItem(props: &NavDropdownItemProps) -> Html {
         classes.push("disabled");
     }
 
+    let aria_disabled = props.disabled.then_some("true");
+
     html! {
-        <li class={classes} role="menuitem">
+        <li class={classes} aria-disabled={aria_disabled}>
             { for props.children.iter() }
         </li>
     }
@@ -432,6 +479,35 @@ mod tests {
         };
 
         assert!(props.disabled);
+    }
+
+    #[test]
+    fn next_focus_index_arrow_down_without_position_lands_on_first() {
+        assert_eq!(next_focus_index("ArrowDown", None, 3), Some(0));
+    }
+
+    #[test]
+    fn next_focus_index_arrow_up_without_position_lands_on_last() {
+        assert_eq!(next_focus_index("ArrowUp", None, 3), Some(2));
+    }
+
+    #[test]
+    fn next_focus_index_arrow_keys_move_relative_to_position() {
+        assert_eq!(next_focus_index("ArrowDown", Some(0), 3), Some(1));
+        assert_eq!(next_focus_index("ArrowUp", Some(0), 3), Some(2));
+        assert_eq!(next_focus_index("ArrowDown", Some(2), 3), Some(0));
+    }
+
+    #[test]
+    fn next_focus_index_home_end_ignore_position() {
+        assert_eq!(next_focus_index("Home", Some(2), 3), Some(0));
+        assert_eq!(next_focus_index("End", None, 3), Some(2));
+    }
+
+    #[test]
+    fn next_focus_index_other_keys_do_nothing() {
+        assert_eq!(next_focus_index("Enter", None, 3), None);
+        assert_eq!(next_focus_index("Tab", Some(1), 3), None);
     }
 
     #[test]
