@@ -1009,6 +1009,8 @@ dependencies = [
 name = "yew-nav-link"
 version = "0.11.2"
 dependencies = [
+ "wasm-bindgen",
+ "web-sys",
  "yew",
  "yew-router",
 ]
