@@ -186,7 +186,9 @@ where it makes sense.
 
 **NFR-A-1.** Library components emit ARIA attributes appropriate to their
 role: `NavList` carries `role="navigation"` + `aria-label`, `NavTabs` set
-`role="tab"` / `aria-selected` / `aria-controls`, etc. `NavDropdown` follows
+`role="tab"` / `aria-selected` / `aria-controls` and implement the WAI-ARIA
+tabs keyboard pattern (roving tabindex, arrow keys with wrap, `Home`/`End`,
+`aria-orientation` when vertical). `NavDropdown` follows
 the WAI-ARIA disclosure-navigation pattern (toggle with `aria-expanded` /
 `aria-controls`, plain links without `menu` roles) with arrow-key focus
 movement as the optional enhancement.

@@ -8,6 +8,7 @@
 
 mod badge;
 mod dropdown;
+mod focus;
 mod header;
 mod icon;
 mod page_item;

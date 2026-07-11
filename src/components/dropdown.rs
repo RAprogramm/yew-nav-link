@@ -82,10 +82,10 @@
 //! | `classes` | `Classes` | — | Additional CSS classes |
 
 use wasm_bindgen::JsCast;
-use web_sys::{Element, HtmlElement, Node};
+use web_sys::{HtmlElement, Node};
 use yew::prelude::*;
 
-use crate::utils::{KeyboardNavConfig, handle_arrow_key, handle_home_end};
+use super::focus::{focusable_elements, focused_position, next_focus_index};
 
 /// Collects the focusable elements (links and enabled buttons) inside the
 /// dropdown menu, in DOM order.
@@ -94,26 +94,16 @@ use crate::utils::{KeyboardNavConfig, handle_arrow_key, handle_home_end};
 /// keyboard navigation never lands on a link the item's disabled state is
 /// supposed to neutralize.
 fn menu_items(menu_ref: &NodeRef) -> Vec<HtmlElement> {
-    menu_ref
-        .cast::<Element>()
-        .and_then(|menu| {
-            menu.query_selector_all("a[href], button:not([disabled])")
+    focusable_elements(menu_ref, "a[href], button:not([disabled])")
+        .into_iter()
+        .filter(|element| {
+            element
+                .closest(".nav-dropdown-item.disabled")
                 .ok()
+                .flatten()
+                .is_none()
         })
-        .map(|list| {
-            (0..list.length())
-                .filter_map(|index| list.item(index))
-                .filter_map(|node| node.dyn_into::<HtmlElement>().ok())
-                .filter(|element| {
-                    element
-                        .closest(".nav-dropdown-item.disabled")
-                        .ok()
-                        .flatten()
-                        .is_none()
-                })
-                .collect()
-        })
-        .unwrap_or_default()
+        .collect()
 }
 
 /// Properties for the [`NavDropdown`] component.
@@ -221,16 +211,10 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
                 return;
             }
 
-            let active = web_sys::window()
-                .and_then(|window| window.document())
-                .and_then(|document| document.active_element())
-                .map(JsCast::unchecked_into::<Node>);
-            let position = active
-                .as_ref()
-                .and_then(|node| items.iter().position(|item| item.is_same_node(Some(node))));
+            let position = focused_position(&items);
 
-            if let Some(item) =
-                next_focus_index(&key, position, items.len()).and_then(|index| items.get(index))
+            if let Some(item) = next_focus_index(&key, position, items.len(), true)
+                .and_then(|index| items.get(index))
             {
                 let _ = item.focus();
             }
@@ -303,25 +287,6 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
                 { for props.children.iter() }
             </ul>
         </li>
-    }
-}
-
-/// Computes the next focus index for the optional arrow-key enhancement.
-///
-/// When focus is not currently on a menu item (`position` is `None`),
-/// `ArrowDown`/`Home` land on the first item and `ArrowUp`/`End` on the last,
-/// instead of skipping relative to a phantom index.
-fn next_focus_index(key: &str, position: Option<usize>, total: usize) -> Option<usize> {
-    let config = KeyboardNavConfig {
-        wrap:     true,
-        vertical: true
-    };
-    match (key, position) {
-        ("Home" | "End", _) => handle_home_end(key, position.unwrap_or(0), total),
-        ("ArrowDown", None) => Some(0),
-        ("ArrowUp", None) => total.checked_sub(1),
-        (_, Some(current)) => handle_arrow_key(key, current, total, &config),
-        _ => None
     }
 }
 
@@ -481,35 +446,6 @@ mod tests {
         };
 
         assert!(props.disabled);
-    }
-
-    #[test]
-    fn next_focus_index_arrow_down_without_position_lands_on_first() {
-        assert_eq!(next_focus_index("ArrowDown", None, 3), Some(0));
-    }
-
-    #[test]
-    fn next_focus_index_arrow_up_without_position_lands_on_last() {
-        assert_eq!(next_focus_index("ArrowUp", None, 3), Some(2));
-    }
-
-    #[test]
-    fn next_focus_index_arrow_keys_move_relative_to_position() {
-        assert_eq!(next_focus_index("ArrowDown", Some(0), 3), Some(1));
-        assert_eq!(next_focus_index("ArrowUp", Some(0), 3), Some(2));
-        assert_eq!(next_focus_index("ArrowDown", Some(2), 3), Some(0));
-    }
-
-    #[test]
-    fn next_focus_index_home_end_ignore_position() {
-        assert_eq!(next_focus_index("Home", Some(2), 3), Some(0));
-        assert_eq!(next_focus_index("End", None, 3), Some(2));
-    }
-
-    #[test]
-    fn next_focus_index_other_keys_do_nothing() {
-        assert_eq!(next_focus_index("Enter", None, 3), None);
-        assert_eq!(next_focus_index("Tab", Some(1), 3), None);
     }
 
     #[test]

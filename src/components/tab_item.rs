@@ -96,6 +96,11 @@ pub struct NavTabProps {
 
 /// A single tab button within a [`NavTabs`](super::NavTabs) container.
 ///
+/// The rendered button participates in the tabs-pattern roving tabindex:
+/// the active tab carries `tabindex="0"` and every other tab `tabindex="-1"`,
+/// so `Tab` enters the tablist on the selected tab and arrow keys (handled
+/// by [`NavTabs`](super::NavTabs)) move within it.
+///
 /// # CSS Classes
 ///
 /// - `nav-tab` - Always applied
@@ -128,7 +133,8 @@ pub fn NavTab(props: &NavTabProps) -> Html {
                 type="button"
                 role="tab"
                 id={props.id.clone()}
-                aria-selected={props.active.to_string()}
+                aria-selected={if props.active { "true" } else { "false" }}
+                tabindex={if props.active { "0" } else { "-1" }}
                 aria-controls={props.panel_id.clone()}
                 disabled={props.disabled}
                 onclick={onclick}

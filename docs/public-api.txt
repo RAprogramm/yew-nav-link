@@ -166,6 +166,7 @@ pub yew_nav_link::components::NavTabsProps::classes: yew::html::classes::Classes
 pub yew_nav_link::components::NavTabsProps::full_width: bool
 pub yew_nav_link::components::NavTabsProps::id: core::option::Option<yew::virtual_dom::AttrValue>
 pub yew_nav_link::components::NavTabsProps::role: yew::virtual_dom::AttrValue
+pub yew_nav_link::components::NavTabsProps::vertical: bool
 impl yew::html::component::properties::Properties for yew_nav_link::NavTabsProps
 pub type yew_nav_link::NavTabsProps::Builder = NavTabsPropsBuilder
 pub fn yew_nav_link::NavTabsProps::builder() -> Self::Builder
@@ -556,6 +557,7 @@ pub yew_nav_link::NavTabsProps::classes: yew::html::classes::Classes
 pub yew_nav_link::NavTabsProps::full_width: bool
 pub yew_nav_link::NavTabsProps::id: core::option::Option<yew::virtual_dom::AttrValue>
 pub yew_nav_link::NavTabsProps::role: yew::virtual_dom::AttrValue
+pub yew_nav_link::NavTabsProps::vertical: bool
 impl yew::html::component::properties::Properties for yew_nav_link::NavTabsProps
 pub type yew_nav_link::NavTabsProps::Builder = NavTabsPropsBuilder
 pub fn yew_nav_link::NavTabsProps::builder() -> Self::Builder
