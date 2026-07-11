@@ -38,8 +38,10 @@ target on every render:
 **FR-NL-4.** A plain left-click is intercepted: the default browser
 navigation is prevented and `to` is pushed through the `Navigator`, so
 dependent hooks re-render. Modifier-clicks (Cmd/Ctrl/Shift/Alt) fall
-through to the browser, preserving "open in new tab" affordances. Active
-links additionally emit `aria-current="page"`.
+through to the browser, preserving "open in new tab" affordances. Without
+a `Navigator` in scope the click is not suppressed and the anchor's href
+drives default browser navigation. Active links additionally emit
+`aria-current="page"`.
 
 ### 1.2 `nav_link()` function
 

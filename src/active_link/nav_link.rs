@@ -26,6 +26,10 @@ use super::{
 /// When the route matches, the rendered anchor gains:
 /// - the `active` class (or whatever `active_class` overrides it with), and
 /// - `aria-current="page"` so screen readers announce the current location.
+///
+/// Outside a router context (no [`Navigator`] in scope) the component
+/// degrades to a plain anchor: the href is the bare route path and clicks
+/// follow default browser navigation instead of being suppressed.
 #[component]
 pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R>) -> Html {
     let current_route = use_route::<R>();
@@ -38,30 +42,16 @@ pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R
         }
     });
 
-    // Build the displayed href so it includes any router basename
-    // (e.g. /yew-nav-link on GitHub Pages). Without a Navigator in scope we
-    // fall back to the bare route path; that path is still a valid relative
-    // anchor on standard hosting.
-    let path = props.to.to_path();
-    let href = navigator.as_ref().map_or_else(
-        || path.clone(),
-        |nav| match nav.basename() {
-            Some(base) if !base.is_empty() => format!("{base}{path}"),
-            _ => path.clone()
-        }
-    );
+    let href = resolved_href(navigator.as_ref(), props.to.to_path());
 
     let onclick = {
         let to = props.to.clone();
-        // `navigator` is moved into the closure; nothing else reads it after
-        // this point.
         Callback::from(move |event: MouseEvent| {
-            // Preserve "open in new tab / window" affordances.
-            if event.meta_key() || event.ctrl_key() || event.shift_key() || event.alt_key() {
+            if is_modified_click(&event) {
                 return;
             }
-            event.prevent_default();
             if let Some(nav) = &navigator {
+                event.prevent_default();
                 nav.push(&to);
             }
         })
@@ -75,6 +65,25 @@ pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R
             { for props.children.iter() }
         </a>
     }
+}
+
+/// Builds the displayed href, prefixing the router basename when one is set
+/// (e.g. `/yew-nav-link` on GitHub Pages).
+///
+/// Without a `Navigator` in scope the bare route path is returned; it stays a
+/// valid relative anchor, and the click handler then leaves default browser
+/// navigation intact so the link keeps working outside a router context.
+fn resolved_href(navigator: Option<&Navigator>, path: String) -> String {
+    match navigator.and_then(Navigator::basename) {
+        Some(base) if !base.is_empty() => format!("{base}{path}"),
+        _ => path
+    }
+}
+
+/// Returns `true` for clicks carrying a modifier key, which must fall through
+/// to the browser to preserve "open in new tab / window" affordances.
+fn is_modified_click(event: &MouseEvent) -> bool {
+    event.meta_key() || event.ctrl_key() || event.shift_key() || event.alt_key()
 }
 
 /// Creates a `NavLink` with the specified match mode for plain-text labels.
