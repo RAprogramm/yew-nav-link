@@ -166,7 +166,7 @@ non-trivial design choice lives in the
 
 | Decision | ADR |
 |---|---|
-| `class` / `active_class` use `&'static str`, not `AttrValue` | [0001](adr/0001-static-str-classes.md) |
+| String props use `AttrValue` (supersedes the `&'static str` era) | [0006](adr/0006-attrvalue-string-props.md) |
 | The `macros` feature was dropped in 0.9.0 | [0002](adr/0002-drop-macros-feature.md) |
 | `NavError` is `#[non_exhaustive]` from 0.10.0 | [0003](adr/0003-non-exhaustive-nav-error.md) |
 | `NavLink` renders a manual `<a>` instead of wrapping `yew_router::Link` | [0004](adr/0004-manual-anchor-over-yew-router-link.md) |

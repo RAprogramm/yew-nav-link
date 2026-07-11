@@ -44,7 +44,7 @@
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
-//! | `text` | `Option<&'static str>` | `None` | Header text label |
+//! | `text` | `Option<AttrValue>` | `None` | Header text label |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 //! | `children` | `Children` | — | Content when `text` is `None` |
 
@@ -54,7 +54,7 @@ use yew::prelude::*;
 ///
 /// | Prop | Type | Default | Description |
 /// |------|------|---------|-------------|
-/// | `text` | `Option<&'static str>` | `None` | Header text label |
+/// | `text` | `Option<AttrValue>` | `None` | Header text label |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 /// | `children` | `Children` | — | Content when `text` is `None` |
 #[derive(Properties, Clone, PartialEq, Debug)]
@@ -65,7 +65,7 @@ pub struct NavHeaderProps {
 
     /// Text label displayed in the header. If set, overrides `children`.
     #[prop_or_default]
-    pub text: Option<&'static str>,
+    pub text: Option<AttrValue>,
 
     /// Content rendered inside the header when `text` is `None`.
     #[prop_or_default]
@@ -80,7 +80,7 @@ pub fn NavHeader(props: &NavHeaderProps) -> Html {
     let mut classes = props.classes.clone();
     classes.push("nav-header");
 
-    if let Some(text) = props.text {
+    if let Some(text) = props.text.clone() {
         html! {
             <li class={classes} role="presentation">
                 <span class="nav-header-text">{ text }</span>
@@ -103,18 +103,18 @@ mod tests {
     fn nav_header_props_with_text() {
         let props = NavHeaderProps {
             classes:  Classes::default(),
-            text:     Some("Header"),
+            text:     Some(AttrValue::Static("Header")),
             children: Children::new(vec![])
         };
 
-        assert_eq!(props.text, Some("Header"));
+        assert_eq!(props.text.as_deref(), Some("Header"));
     }
 
     #[test]
     fn nav_header_clone() {
         let props1 = NavHeaderProps {
             classes:  Classes::default(),
-            text:     Some("Header"),
+            text:     Some(AttrValue::Static("Header")),
             children: Children::new(vec![])
         };
 

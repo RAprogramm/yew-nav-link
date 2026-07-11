@@ -39,7 +39,7 @@
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
-//! | `text` | `&'static str` | — | Static text content (required) |
+//! | `text` | `AttrValue` | — | Static text content (required) |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 
 use yew::prelude::*;
@@ -48,7 +48,7 @@ use yew::prelude::*;
 ///
 /// | Prop | Type | Default | Description |
 /// |------|------|---------|-------------|
-/// | `text` | `&'static str` | — | Static text content (required) |
+/// | `text` | `AttrValue` | — | Static text content (required) |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 #[derive(Properties, Clone, PartialEq, Eq, Debug)]
 pub struct NavTextProps {
@@ -57,7 +57,7 @@ pub struct NavTextProps {
     pub classes: Classes,
 
     /// Static text content to display.
-    pub text: &'static str
+    pub text: AttrValue
 }
 
 /// Text label component for navigation items.
@@ -70,7 +70,7 @@ pub fn NavText(props: &NavTextProps) -> Html {
 
     html! {
         <span class={classes}>
-            { props.text }
+            { props.text.clone() }
         </span>
     }
 }
@@ -83,7 +83,7 @@ mod tests {
     fn nav_text_props() {
         let props = NavTextProps {
             classes: Classes::default(),
-            text:    "Hello"
+            text:    AttrValue::Static("Hello")
         };
 
         assert_eq!(props.text, "Hello");
@@ -93,7 +93,7 @@ mod tests {
     fn nav_text_clone() {
         let props1 = NavTextProps {
             classes: Classes::from("custom"),
-            text:    "Text"
+            text:    AttrValue::Static("Text")
         };
 
         let props2 = props1.clone();

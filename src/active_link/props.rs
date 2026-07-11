@@ -3,8 +3,6 @@
 
 //! Type-checked properties for [`crate::NavLink`].
 
-use std::marker::PhantomData;
-
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -25,15 +23,12 @@ pub struct NavLinkProps<R: Routable + PartialEq + Clone + 'static> {
     pub partial: bool,
 
     /// Base CSS class applied to the link.
-    #[prop_or("nav-link")]
-    pub class: &'static str,
+    #[prop_or(AttrValue::Static("nav-link"))]
+    pub class: AttrValue,
 
     /// CSS class applied when the link is active.
-    #[prop_or("active")]
-    pub active_class: &'static str,
-
-    #[prop_or_default]
-    pub(crate) _marker: PhantomData<R>
+    #[prop_or(AttrValue::Static("active"))]
+    pub active_class: AttrValue
 }
 
 #[cfg(test)]
@@ -52,9 +47,8 @@ mod tests {
             to:           TestRoute::Home,
             children:     Children::default(),
             partial:      false,
-            class:        "nav-link",
-            active_class: "active",
-            _marker:      PhantomData
+            class:        AttrValue::Static("nav-link"),
+            active_class: AttrValue::Static("active")
         };
         let props2 = props1.clone();
         assert_eq!(props1, props2);

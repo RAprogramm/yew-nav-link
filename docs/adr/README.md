@@ -17,11 +17,12 @@ expressed as new ADRs that mark the prior record `superseded by NNNN`.
 | ID | Title | Status |
 |---|---|---|
 | [0000](0000-record-architecture-decisions.md) | Record architecture decisions | accepted |
-| [0001](0001-static-str-classes.md) | `class` and `active_class` are `&'static str` | accepted |
+| [0001](0001-static-str-classes.md) | `class` and `active_class` are `&'static str` | superseded by 0006 |
 | [0002](0002-drop-macros-feature.md) | Drop the `macros` feature in 0.9.0 | accepted |
 | [0003](0003-non-exhaustive-nav-error.md) | `NavError` is `#[non_exhaustive]` from 0.10.0 | accepted |
 | [0004](0004-manual-anchor-over-yew-router-link.md) | Render a manual `<a>` instead of wrapping `yew_router::Link` | accepted |
 | [0005](0005-active-state-via-aria-current.md) | Active `NavLink` emits `aria-current="page"` | accepted |
+| [0006](0006-attrvalue-string-props.md) | String props use `AttrValue` | accepted |
 
 ## When to write an ADR
 

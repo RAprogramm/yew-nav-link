@@ -62,8 +62,8 @@
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
-//! | `toggle_text` | `&'static str` | `"dropdown"` | Toggle button label |
-//! | `id` | `Option<&'static str>` | `None` | Menu `<ul>` id, also wired to the toggle's `aria-controls` |
+//! | `toggle_text` | `AttrValue` | `"dropdown"` | Toggle button label |
+//! | `id` | `Option<AttrValue>` | `None` | Menu `<ul>` id, also wired to the toggle's `aria-controls` |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 //! | `children` | `Children` | — | Menu content |
 //!
@@ -120,8 +120,8 @@ fn menu_items(menu_ref: &NodeRef) -> Vec<HtmlElement> {
 ///
 /// | Prop | Type | Default | Description |
 /// |------|------|---------|-------------|
-/// | `toggle_text` | `&'static str` | `"dropdown"` | Toggle button label |
-/// | `id` | `Option<&'static str>` | `None` | Menu `<ul>` id, also wired to the toggle's `aria-controls` |
+/// | `toggle_text` | `AttrValue` | `"dropdown"` | Toggle button label |
+/// | `id` | `Option<AttrValue>` | `None` | Menu `<ul>` id, also wired to the toggle's `aria-controls` |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 /// | `children` | `Children` | — | Menu content |
 #[derive(Properties, Clone, PartialEq, Debug, Default)]
@@ -131,13 +131,13 @@ pub struct NavDropdownProps {
     pub classes: Classes,
 
     /// Text displayed on the dropdown toggle button.
-    #[prop_or("dropdown")]
-    pub toggle_text: &'static str,
+    #[prop_or(AttrValue::Static("dropdown"))]
+    pub toggle_text: AttrValue,
 
     /// Optional `id` for the menu `<ul>`; when set, the toggle references it
     /// via `aria-controls`.
     #[prop_or_default]
-    pub id: Option<&'static str>,
+    pub id: Option<AttrValue>,
 
     /// Content rendered inside the dropdown menu.
     #[prop_or_default]
@@ -293,13 +293,13 @@ pub fn NavDropdown(props: &NavDropdownProps) -> Html {
                 type="button"
                 class="nav-dropdown-toggle"
                 aria-expanded={if *open { "true" } else { "false" }}
-                aria-controls={props.id}
+                aria-controls={props.id.clone()}
                 onclick={on_toggle}
             >
-                { props.toggle_text }
+                { props.toggle_text.clone() }
                 <span class="nav-dropdown-caret" aria-hidden="true">{" ▼"}</span>
             </button>
-            <ul ref={menu_ref} id={props.id} class={menu_class}>
+            <ul ref={menu_ref} id={props.id.clone()} class={menu_class}>
                 { for props.children.iter() }
             </ul>
         </li>
@@ -407,7 +407,7 @@ mod tests {
     fn nav_dropdown_props_default() {
         let props = NavDropdownProps {
             classes:     Classes::default(),
-            toggle_text: "Menu",
+            toggle_text: AttrValue::Static("Menu"),
             id:          None,
             children:    Children::new(vec![])
         };
@@ -451,12 +451,12 @@ mod tests {
     fn nav_dropdown_with_custom_id() {
         let props = NavDropdownProps {
             classes:     Classes::default(),
-            toggle_text: "Menu",
-            id:          Some("my-dropdown"),
+            toggle_text: AttrValue::Static("Menu"),
+            id:          Some(AttrValue::Static("my-dropdown")),
             children:    Children::new(vec![])
         };
 
-        assert_eq!(props.id, Some("my-dropdown"));
+        assert_eq!(props.id.as_deref(), Some("my-dropdown"));
     }
 
     #[test]
@@ -517,7 +517,7 @@ mod tests {
         let children = Children::new(vec![html! { <div>{ "child" }</div> }]);
         let props = NavDropdownProps {
             classes: Classes::default(),
-            toggle_text: "Test",
+            toggle_text: AttrValue::Static("Test"),
             id: None,
             children
         };

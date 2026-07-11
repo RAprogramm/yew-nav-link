@@ -38,8 +38,8 @@
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
 //! | `hidden` | `bool` | — | Whether the panel is hidden (required) |
-//! | `id` | `Option<&'static str>` | `None` | Panel element id |
-//! | `labelled_by` | `Option<&'static str>` | `None` | aria-labelledby target |
+//! | `id` | `Option<AttrValue>` | `None` | Panel element id |
+//! | `labelled_by` | `Option<AttrValue>` | `None` | aria-labelledby target |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 //! | `children` | `Children` | — | Panel content |
 
@@ -50,8 +50,8 @@ use yew::prelude::*;
 /// | Prop | Type | Default | Description |
 /// |------|------|---------|-------------|
 /// | `hidden` | `bool` | — | Whether the panel is hidden (required) |
-/// | `id` | `Option<&'static str>` | `None` | Panel element id |
-/// | `labelled_by` | `Option<&'static str>` | `None` | aria-labelledby target |
+/// | `id` | `Option<AttrValue>` | `None` | Panel element id |
+/// | `labelled_by` | `Option<AttrValue>` | `None` | aria-labelledby target |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 /// | `children` | `Children` | — | Panel content |
 #[derive(Properties, Clone, PartialEq, Debug)]
@@ -62,11 +62,11 @@ pub struct NavTabPanelProps {
 
     /// Optional `id` attribute for the panel element.
     #[prop_or_default]
-    pub id: Option<&'static str>,
+    pub id: Option<AttrValue>,
 
     /// Optional `aria-labelledby` referencing the tab button `id`.
     #[prop_or_default]
-    pub labelled_by: Option<&'static str>,
+    pub labelled_by: Option<AttrValue>,
 
     /// Whether the panel is hidden.
     pub hidden: bool,
@@ -90,9 +90,9 @@ pub fn NavTabPanel(props: &NavTabPanelProps) -> Html {
     html! {
         <div
             class={classes}
-            id={props.id}
+            id={props.id.clone()}
             role="tabpanel"
-            aria-labelledby={props.labelled_by}
+            aria-labelledby={props.labelled_by.clone()}
             hidden={props.hidden}
         >
             { for props.children.iter() }
@@ -108,22 +108,22 @@ mod tests {
     fn nav_tab_panel_hidden() {
         let props = NavTabPanelProps {
             classes:     Classes::default(),
-            id:          Some("panel-1"),
-            labelled_by: Some("tab-1"),
+            id:          Some(AttrValue::Static("panel-1")),
+            labelled_by: Some(AttrValue::Static("tab-1")),
             hidden:      true,
             children:    Children::new(vec![])
         };
 
         assert!(props.hidden);
-        assert_eq!(props.id, Some("panel-1"));
+        assert_eq!(props.id.as_deref(), Some("panel-1"));
     }
 
     #[test]
     fn nav_tab_panel_visible() {
         let props = NavTabPanelProps {
             classes:     Classes::default(),
-            id:          Some("panel-1"),
-            labelled_by: Some("tab-1"),
+            id:          Some(AttrValue::Static("panel-1")),
+            labelled_by: Some(AttrValue::Static("tab-1")),
             hidden:      false,
             children:    Children::new(vec![])
         };

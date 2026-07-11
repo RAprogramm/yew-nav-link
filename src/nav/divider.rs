@@ -44,7 +44,7 @@
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
-//! | `text` | `Option<&'static str>` | `None` | Optional text label |
+//! | `text` | `Option<AttrValue>` | `None` | Optional text label |
 //! | `vertical` | `bool` | `false` | Vertical divider style |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 
@@ -54,7 +54,7 @@ use yew::prelude::*;
 ///
 /// | Prop | Type | Default | Description |
 /// |------|------|---------|-------------|
-/// | `text` | `Option<&'static str>` | `None` | Optional text label |
+/// | `text` | `Option<AttrValue>` | `None` | Optional text label |
 /// | `vertical` | `bool` | `false` | Vertical divider style |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 #[derive(Properties, Clone, PartialEq, Eq, Debug, Default)]
@@ -69,7 +69,7 @@ pub struct NavDividerProps {
 
     /// Optional text label displayed in the center of the divider.
     #[prop_or_default]
-    pub text: Option<&'static str>
+    pub text: Option<AttrValue>
 }
 
 /// Semantic separator for dividing sections within a navigation list.
@@ -90,7 +90,7 @@ pub fn NavDivider(props: &NavDividerProps) -> Html {
         classes.push("nav-divider-vertical");
     }
 
-    if let Some(text) = props.text {
+    if let Some(text) = props.text.clone() {
         html! {
             <li class={classes} role="separator">
                 <span class="nav-divider-text">{ text }</span>
@@ -135,10 +135,10 @@ mod tests {
         let props = NavDividerProps {
             classes:  Classes::default(),
             vertical: false,
-            text:     Some("Or")
+            text:     Some(AttrValue::Static("Or"))
         };
 
-        assert_eq!(props.text, Some("Or"));
+        assert_eq!(props.text.as_deref(), Some("Or"));
     }
 
     #[test]
@@ -146,7 +146,7 @@ mod tests {
         let props1 = NavDividerProps {
             classes:  Classes::from("custom"),
             vertical: true,
-            text:     Some("Divider")
+            text:     Some(AttrValue::Static("Divider"))
         };
 
         let props2 = props1.clone();

@@ -11,7 +11,7 @@ use yew::prelude::*;
 fn nav_badge_default_props() {
     let props = yew_nav_link::NavBadgeProps {
         classes:  Classes::default(),
-        variant:  "primary",
+        variant:  AttrValue::Static("primary"),
         pill:     false,
         children: Children::new(vec![])
     };
@@ -24,7 +24,7 @@ fn nav_badge_default_props() {
 fn nav_badge_with_variant() {
     let props = yew_nav_link::NavBadgeProps {
         classes:  Classes::default(),
-        variant:  "success",
+        variant:  AttrValue::Static("success"),
         pill:     false,
         children: Children::new(vec![])
     };
@@ -36,7 +36,7 @@ fn nav_badge_with_variant() {
 fn nav_badge_pill_style() {
     let props = yew_nav_link::NavBadgeProps {
         classes:  Classes::default(),
-        variant:  "danger",
+        variant:  AttrValue::Static("danger"),
         pill:     true,
         children: Children::new(vec![])
     };
@@ -48,7 +48,7 @@ fn nav_badge_pill_style() {
 fn nav_badge_clone() {
     let props1 = yew_nav_link::NavBadgeProps {
         classes:  Classes::from("custom"),
-        variant:  "warning",
+        variant:  AttrValue::Static("warning"),
         pill:     true,
         children: Children::new(vec![])
     };
@@ -62,11 +62,11 @@ fn nav_badge_clone() {
 fn nav_header_with_text() {
     let props = yew_nav_link::NavHeaderProps {
         classes:  Classes::default(),
-        text:     Some("Settings"),
+        text:     Some(AttrValue::Static("Settings")),
         children: Children::new(vec![])
     };
 
-    assert_eq!(props.text, Some("Settings"));
+    assert_eq!(props.text.as_deref(), Some("Settings"));
 }
 
 #[test]
@@ -84,7 +84,7 @@ fn nav_header_without_text() {
 fn nav_header_clone() {
     let props1 = yew_nav_link::NavHeaderProps {
         classes:  Classes::from("nav-header-primary"),
-        text:     Some("Menu"),
+        text:     Some(AttrValue::Static("Menu")),
         children: Children::new(vec![])
     };
 
@@ -97,7 +97,7 @@ fn nav_header_clone() {
 fn nav_text_required_props() {
     let props = yew_nav_link::NavTextProps {
         classes: Classes::default(),
-        text:    "Hello World"
+        text:    AttrValue::Static("Hello World")
     };
 
     assert_eq!(props.text, "Hello World");
@@ -107,7 +107,7 @@ fn nav_text_required_props() {
 fn nav_text_with_class() {
     let props = yew_nav_link::NavTextProps {
         classes: Classes::from("nav-text-muted"),
-        text:    "Copyright"
+        text:    AttrValue::Static("Copyright")
     };
 
     assert!(props.classes.contains("nav-text-muted"));

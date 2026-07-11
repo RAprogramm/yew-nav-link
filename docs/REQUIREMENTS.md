@@ -30,9 +30,9 @@ target on every render:
 **FR-NL-3.** Apply two CSS classes to the rendered anchor:
 
 - The base class — defaults to `"nav-link"`, overridable via the `class`
-  prop (`&'static str`).
+  prop (`AttrValue`).
 - The active class — defaults to `"active"`, overridable via the
-  `active_class` prop (`&'static str`). Only emitted when *active* per
+  `active_class` prop (`AttrValue`). Only emitted when *active* per
   FR-NL-2.
 
 **FR-NL-4.** A plain left-click is intercepted: the default browser

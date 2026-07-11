@@ -35,8 +35,8 @@
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
 //! | `full_width` | `bool` | `false` | Stretch tabs to fill width |
-//! | `role` | `&'static str` | `"tablist"` | ARIA role |
-//! | `id` | `Option<&'static str>` | `None` | Container id |
+//! | `role` | `AttrValue` | `"tablist"` | ARIA role |
+//! | `id` | `Option<AttrValue>` | `None` | Container id |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 //! | `children` | `Children` | — | Tab items |
 
@@ -47,8 +47,8 @@ use yew::prelude::*;
 /// | Prop | Type | Default | Description |
 /// |------|------|---------|-------------|
 /// | `full_width` | `bool` | `false` | Stretch tabs to fill width |
-/// | `role` | `&'static str` | `"tablist"` | ARIA role |
-/// | `id` | `Option<&'static str>` | `None` | Container id |
+/// | `role` | `AttrValue` | `"tablist"` | ARIA role |
+/// | `id` | `Option<AttrValue>` | `None` | Container id |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 /// | `children` | `Children` | — | Tab items |
 #[derive(Properties, Clone, PartialEq, Debug)]
@@ -58,12 +58,12 @@ pub struct NavTabsProps {
     pub classes: Classes,
 
     /// ARIA role for the tab list. Defaults to `"tablist"`.
-    #[prop_or("tablist")]
-    pub role: &'static str,
+    #[prop_or(AttrValue::Static("tablist"))]
+    pub role: AttrValue,
 
     /// Optional `id` attribute for the tabs container.
     #[prop_or_default]
-    pub id: Option<&'static str>,
+    pub id: Option<AttrValue>,
 
     /// Whether tabs should stretch to fill the full width of the container.
     #[prop_or_default]
@@ -93,8 +93,8 @@ pub fn NavTabs(props: &NavTabsProps) -> Html {
     html! {
         <ul
             class={classes}
-            id={props.id}
-            role={props.role}
+            id={props.id.clone()}
+            role={props.role.clone()}
         >
             { for props.children.iter() }
         </ul>
@@ -109,7 +109,7 @@ mod tests {
     fn nav_tabs_props_default() {
         let props = NavTabsProps {
             classes:    Classes::default(),
-            role:       "tablist",
+            role:       AttrValue::Static("tablist"),
             id:         None,
             full_width: false,
             children:   Children::new(vec![])
@@ -123,13 +123,13 @@ mod tests {
     fn nav_tabs_full_width() {
         let props = NavTabsProps {
             classes:    Classes::default(),
-            role:       "tablist",
-            id:         Some("main-tabs"),
+            role:       AttrValue::Static("tablist"),
+            id:         Some(AttrValue::Static("main-tabs")),
             full_width: true,
             children:   Children::new(vec![])
         };
 
         assert!(props.full_width);
-        assert_eq!(props.id, Some("main-tabs"));
+        assert_eq!(props.id.as_deref(), Some("main-tabs"));
     }
 }

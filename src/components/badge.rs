@@ -49,7 +49,7 @@
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
-//! | `variant` | `&'static str` | `"primary"` | Color variant |
+//! | `variant` | `AttrValue` | `"primary"` | Color variant |
 //! | `pill` | `bool` | `false` | Rounded pill shape |
 //! | `classes` | `Classes` | — | Additional CSS classes |
 //! | `children` | `Children` | — | Badge content |
@@ -60,7 +60,7 @@ use yew::prelude::*;
 ///
 /// | Prop | Type | Default | Description |
 /// |------|------|---------|-------------|
-/// | `variant` | `&'static str` | `"primary"` | Visual variant name |
+/// | `variant` | `AttrValue` | `"primary"` | Visual variant name |
 /// | `pill` | `bool` | `false` | Pill-shaped corners |
 /// | `classes` | `Classes` | — | Additional CSS classes |
 /// | `children` | `Children` | — | Badge content |
@@ -71,8 +71,8 @@ pub struct NavBadgeProps {
     pub classes: Classes,
 
     /// Visual variant name, e.g. `"primary"`, `"success"`, `"danger"`.
-    #[prop_or("primary")]
-    pub variant: &'static str,
+    #[prop_or(AttrValue::Static("primary"))]
+    pub variant: AttrValue,
 
     /// Render the badge with pill-shaped (fully rounded) corners.
     #[prop_or_default]
@@ -100,7 +100,7 @@ pub fn NavBadge(props: &NavBadgeProps) -> Html {
         classes.push("nav-badge-pill");
     }
 
-    classes.push(variant_class(props.variant));
+    classes.push(variant_class(&props.variant));
 
     html! {
         <span class={classes}>
@@ -128,7 +128,7 @@ mod tests {
     fn nav_badge_props_default() {
         let props = NavBadgeProps {
             classes:  Classes::default(),
-            variant:  "primary",
+            variant:  AttrValue::Static("primary"),
             pill:     false,
             children: Children::new(vec![])
         };
@@ -141,7 +141,7 @@ mod tests {
     fn nav_badge_clone() {
         let props1 = NavBadgeProps {
             classes:  Classes::from("test"),
-            variant:  "success",
+            variant:  AttrValue::Static("success"),
             pill:     true,
             children: Children::new(vec![])
         };

@@ -16,10 +16,10 @@
 //! fn PaginationNav() -> Html {
 //!     html! {
 //!         <nav><ul class="pagination">
-//!             <PageItem page={1} active=true>
+//!             <PageItem active=true>
 //!                 <PageLink href={None}>{ "1" }</PageLink>
 //!             </PageItem>
-//!             <PageItem page={2}>
+//!             <PageItem>
 //!                 <PageLink href={Some("/page/2")}>{ "2" }</PageLink>
 //!             </PageItem>
 //!         </ul></nav>
@@ -39,7 +39,6 @@
 //!
 //! | Prop | Type | Default | Description |
 //! |------|------|---------|-------------|
-//! | `page` | `u32` | — | Page number (required) |
 //! | `active` | `bool` | `false` | Currently active page |
 //! | `disabled` | `bool` | `false` | Disabled state |
 //! | `classes` | `Classes` | — | Additional CSS classes |
@@ -51,7 +50,6 @@ use yew::prelude::*;
 ///
 /// | Prop | Type | Default | Description |
 /// |------|------|---------|-------------|
-/// | `page` | `u32` | — | Page number (required) |
 /// | `active` | `bool` | `false` | Currently active page |
 /// | `disabled` | `bool` | `false` | Disabled state |
 /// | `classes` | `Classes` | — | Additional CSS classes |
@@ -61,9 +59,6 @@ pub struct PageItemProps {
     /// Additional CSS classes applied to the page item.
     #[prop_or_default]
     pub classes: Classes,
-
-    /// Page number this item represents.
-    pub page: u32,
 
     /// Whether this page item is the currently active page.
     #[prop_or(false)]
@@ -115,13 +110,11 @@ mod tests {
     fn page_item_props() {
         let props = PageItemProps {
             classes:  Classes::default(),
-            page:     1,
             active:   false,
             disabled: false,
             children: Children::new(vec![])
         };
 
-        assert_eq!(props.page, 1);
         assert!(!props.active);
         assert!(!props.disabled);
     }

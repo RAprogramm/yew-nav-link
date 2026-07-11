@@ -14,9 +14,9 @@ pub fn yew_nav_link::active_link::nav_link::NavLink<R>::run(&mut yew::functional
 pub fn yew_nav_link::active_link::nav_link::nav_link<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>(R, &str, yew_nav_link::active_link::mode::Match) -> yew::html::Html
 pub mod yew_nav_link::active_link::props
 pub struct yew_nav_link::active_link::props::NavLinkProps<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>
-pub yew_nav_link::active_link::props::NavLinkProps::active_class: &'static str
+pub yew_nav_link::active_link::props::NavLinkProps::active_class: yew::virtual_dom::AttrValue
 pub yew_nav_link::active_link::props::NavLinkProps::children: yew::html::component::children::Children
-pub yew_nav_link::active_link::props::NavLinkProps::class: &'static str
+pub yew_nav_link::active_link::props::NavLinkProps::class: yew::virtual_dom::AttrValue
 pub yew_nav_link::active_link::props::NavLinkProps::partial: bool
 pub yew_nav_link::active_link::props::NavLinkProps::to: R
 impl<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static> yew::html::component::properties::Properties for yew_nav_link::active_link::props::NavLinkProps<R>
@@ -35,9 +35,9 @@ impl<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clo
 pub type yew_nav_link::active_link::nav_link::NavLink<R>::Properties = yew_nav_link::active_link::props::NavLinkProps<R>
 pub fn yew_nav_link::active_link::nav_link::NavLink<R>::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::active_link::NavLinkProps<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>
-pub yew_nav_link::active_link::NavLinkProps::active_class: &'static str
+pub yew_nav_link::active_link::NavLinkProps::active_class: yew::virtual_dom::AttrValue
 pub yew_nav_link::active_link::NavLinkProps::children: yew::html::component::children::Children
-pub yew_nav_link::active_link::NavLinkProps::class: &'static str
+pub yew_nav_link::active_link::NavLinkProps::class: yew::virtual_dom::AttrValue
 pub yew_nav_link::active_link::NavLinkProps::partial: bool
 pub yew_nav_link::active_link::NavLinkProps::to: R
 impl<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static> yew::html::component::properties::Properties for yew_nav_link::active_link::props::NavLinkProps<R>
@@ -58,7 +58,7 @@ pub struct yew_nav_link::components::NavBadgeProps
 pub yew_nav_link::components::NavBadgeProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::NavBadgeProps::classes: yew::html::classes::Classes
 pub yew_nav_link::components::NavBadgeProps::pill: bool
-pub yew_nav_link::components::NavBadgeProps::variant: &'static str
+pub yew_nav_link::components::NavBadgeProps::variant: yew::virtual_dom::AttrValue
 impl yew::html::component::properties::Properties for yew_nav_link::NavBadgeProps
 pub type yew_nav_link::NavBadgeProps::Builder = NavBadgePropsBuilder
 pub fn yew_nav_link::NavBadgeProps::builder() -> Self::Builder
@@ -89,8 +89,8 @@ pub fn yew_nav_link::components::NavDropdownItemProps::builder() -> Self::Builde
 pub struct yew_nav_link::components::NavDropdownProps
 pub yew_nav_link::components::NavDropdownProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::NavDropdownProps::classes: yew::html::classes::Classes
-pub yew_nav_link::components::NavDropdownProps::id: core::option::Option<&'static str>
-pub yew_nav_link::components::NavDropdownProps::toggle_text: &'static str
+pub yew_nav_link::components::NavDropdownProps::id: core::option::Option<yew::virtual_dom::AttrValue>
+pub yew_nav_link::components::NavDropdownProps::toggle_text: yew::virtual_dom::AttrValue
 impl yew::html::component::properties::Properties for yew_nav_link::NavDropdownProps
 pub type yew_nav_link::NavDropdownProps::Builder = NavDropdownPropsBuilder
 pub fn yew_nav_link::NavDropdownProps::builder() -> Self::Builder
@@ -101,7 +101,7 @@ pub fn yew_nav_link::NavHeader::run(&mut yew::functional::HookContext, &Self::Pr
 pub struct yew_nav_link::components::NavHeaderProps
 pub yew_nav_link::components::NavHeaderProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::NavHeaderProps::classes: yew::html::classes::Classes
-pub yew_nav_link::components::NavHeaderProps::text: core::option::Option<&'static str>
+pub yew_nav_link::components::NavHeaderProps::text: core::option::Option<yew::virtual_dom::AttrValue>
 impl yew::html::component::properties::Properties for yew_nav_link::NavHeaderProps
 pub type yew_nav_link::NavHeaderProps::Builder = NavHeaderPropsBuilder
 pub fn yew_nav_link::NavHeaderProps::builder() -> Self::Builder
@@ -112,7 +112,7 @@ pub fn yew_nav_link::NavIcon::run(&mut yew::functional::HookContext, &Self::Prop
 pub struct yew_nav_link::components::NavIconProps
 pub yew_nav_link::components::NavIconProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::NavIconProps::classes: yew::html::classes::Classes
-pub yew_nav_link::components::NavIconProps::name: core::option::Option<&'static str>
+pub yew_nav_link::components::NavIconProps::name: core::option::Option<yew::virtual_dom::AttrValue>
 pub yew_nav_link::components::NavIconProps::size: yew_nav_link::NavIconSize
 impl yew::html::component::properties::Properties for yew_nav_link::NavIconProps
 pub type yew_nav_link::NavIconProps::Builder = NavIconPropsBuilder
@@ -140,8 +140,8 @@ pub struct yew_nav_link::components::NavTabPanelProps
 pub yew_nav_link::components::NavTabPanelProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::NavTabPanelProps::classes: yew::html::classes::Classes
 pub yew_nav_link::components::NavTabPanelProps::hidden: bool
-pub yew_nav_link::components::NavTabPanelProps::id: core::option::Option<&'static str>
-pub yew_nav_link::components::NavTabPanelProps::labelled_by: core::option::Option<&'static str>
+pub yew_nav_link::components::NavTabPanelProps::id: core::option::Option<yew::virtual_dom::AttrValue>
+pub yew_nav_link::components::NavTabPanelProps::labelled_by: core::option::Option<yew::virtual_dom::AttrValue>
 impl yew::html::component::properties::Properties for yew_nav_link::NavTabPanelProps
 pub type yew_nav_link::NavTabPanelProps::Builder = NavTabPanelPropsBuilder
 pub fn yew_nav_link::NavTabPanelProps::builder() -> Self::Builder
@@ -150,9 +150,9 @@ pub yew_nav_link::components::NavTabProps::active: bool
 pub yew_nav_link::components::NavTabProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::NavTabProps::classes: yew::html::classes::Classes
 pub yew_nav_link::components::NavTabProps::disabled: bool
-pub yew_nav_link::components::NavTabProps::id: core::option::Option<&'static str>
+pub yew_nav_link::components::NavTabProps::id: core::option::Option<yew::virtual_dom::AttrValue>
 pub yew_nav_link::components::NavTabProps::onclick: core::option::Option<yew::callback::Callback<web_sys::features::gen_MouseEvent::MouseEvent>>
-pub yew_nav_link::components::NavTabProps::panel_id: core::option::Option<&'static str>
+pub yew_nav_link::components::NavTabProps::panel_id: core::option::Option<yew::virtual_dom::AttrValue>
 impl yew::html::component::properties::Properties for yew_nav_link::NavTabProps
 pub type yew_nav_link::NavTabProps::Builder = NavTabPropsBuilder
 pub fn yew_nav_link::NavTabProps::builder() -> Self::Builder
@@ -164,8 +164,8 @@ pub struct yew_nav_link::components::NavTabsProps
 pub yew_nav_link::components::NavTabsProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::NavTabsProps::classes: yew::html::classes::Classes
 pub yew_nav_link::components::NavTabsProps::full_width: bool
-pub yew_nav_link::components::NavTabsProps::id: core::option::Option<&'static str>
-pub yew_nav_link::components::NavTabsProps::role: &'static str
+pub yew_nav_link::components::NavTabsProps::id: core::option::Option<yew::virtual_dom::AttrValue>
+pub yew_nav_link::components::NavTabsProps::role: yew::virtual_dom::AttrValue
 impl yew::html::component::properties::Properties for yew_nav_link::NavTabsProps
 pub type yew_nav_link::NavTabsProps::Builder = NavTabsPropsBuilder
 pub fn yew_nav_link::NavTabsProps::builder() -> Self::Builder
@@ -175,7 +175,7 @@ pub type yew_nav_link::NavText::Properties = yew_nav_link::NavTextProps
 pub fn yew_nav_link::NavText::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::components::NavTextProps
 pub yew_nav_link::components::NavTextProps::classes: yew::html::classes::Classes
-pub yew_nav_link::components::NavTextProps::text: &'static str
+pub yew_nav_link::components::NavTextProps::text: yew::virtual_dom::AttrValue
 impl yew::html::component::properties::Properties for yew_nav_link::NavTextProps
 pub type yew_nav_link::NavTextProps::Builder = NavTextPropsBuilder
 pub fn yew_nav_link::NavTextProps::builder() -> Self::Builder
@@ -188,7 +188,6 @@ pub yew_nav_link::components::PageItemProps::active: bool
 pub yew_nav_link::components::PageItemProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::PageItemProps::classes: yew::html::classes::Classes
 pub yew_nav_link::components::PageItemProps::disabled: bool
-pub yew_nav_link::components::PageItemProps::page: u32
 impl yew::html::component::properties::Properties for yew_nav_link::PageItemProps
 pub type yew_nav_link::PageItemProps::Builder = PageItemPropsBuilder
 pub fn yew_nav_link::PageItemProps::builder() -> Self::Builder
@@ -199,7 +198,7 @@ pub fn yew_nav_link::PageLink::run(&mut yew::functional::HookContext, &Self::Pro
 pub struct yew_nav_link::components::PageLinkProps
 pub yew_nav_link::components::PageLinkProps::children: yew::html::component::children::Children
 pub yew_nav_link::components::PageLinkProps::classes: yew::html::classes::Classes
-pub yew_nav_link::components::PageLinkProps::href: core::option::Option<&'static str>
+pub yew_nav_link::components::PageLinkProps::href: core::option::Option<yew::virtual_dom::AttrValue>
 impl yew::html::component::properties::Properties for yew_nav_link::PageLinkProps
 pub type yew_nav_link::PageLinkProps::Builder = PageLinkPropsBuilder
 pub fn yew_nav_link::PageLinkProps::builder() -> Self::Builder
@@ -276,7 +275,7 @@ pub type yew_nav_link::NavDivider::Properties = yew_nav_link::NavDividerProps
 pub fn yew_nav_link::NavDivider::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::nav::NavDividerProps
 pub yew_nav_link::nav::NavDividerProps::classes: yew::html::classes::Classes
-pub yew_nav_link::nav::NavDividerProps::text: core::option::Option<&'static str>
+pub yew_nav_link::nav::NavDividerProps::text: core::option::Option<yew::virtual_dom::AttrValue>
 pub yew_nav_link::nav::NavDividerProps::vertical: bool
 impl yew::html::component::properties::Properties for yew_nav_link::NavDividerProps
 pub type yew_nav_link::NavDividerProps::Builder = NavDividerPropsBuilder
@@ -297,10 +296,10 @@ impl yew::functional::FunctionProvider for yew_nav_link::NavList
 pub type yew_nav_link::NavList::Properties = yew_nav_link::NavListProps
 pub fn yew_nav_link::NavList::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::nav::NavListProps
-pub yew_nav_link::nav::NavListProps::aria_label: core::option::Option<&'static str>
+pub yew_nav_link::nav::NavListProps::aria_label: core::option::Option<yew::virtual_dom::AttrValue>
 pub yew_nav_link::nav::NavListProps::children: yew::html::component::children::Children
 pub yew_nav_link::nav::NavListProps::classes: yew::html::classes::Classes
-pub yew_nav_link::nav::NavListProps::id: core::option::Option<&'static str>
+pub yew_nav_link::nav::NavListProps::id: core::option::Option<yew::virtual_dom::AttrValue>
 impl yew::html::component::properties::Properties for yew_nav_link::NavListProps
 pub type yew_nav_link::NavListProps::Builder = NavListPropsBuilder
 pub fn yew_nav_link::NavListProps::builder() -> Self::Builder
@@ -414,7 +413,7 @@ pub struct yew_nav_link::NavBadgeProps
 pub yew_nav_link::NavBadgeProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavBadgeProps::classes: yew::html::classes::Classes
 pub yew_nav_link::NavBadgeProps::pill: bool
-pub yew_nav_link::NavBadgeProps::variant: &'static str
+pub yew_nav_link::NavBadgeProps::variant: yew::virtual_dom::AttrValue
 impl yew::html::component::properties::Properties for yew_nav_link::NavBadgeProps
 pub type yew_nav_link::NavBadgeProps::Builder = NavBadgePropsBuilder
 pub fn yew_nav_link::NavBadgeProps::builder() -> Self::Builder
@@ -424,7 +423,7 @@ pub type yew_nav_link::NavDivider::Properties = yew_nav_link::NavDividerProps
 pub fn yew_nav_link::NavDivider::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavDividerProps
 pub yew_nav_link::NavDividerProps::classes: yew::html::classes::Classes
-pub yew_nav_link::NavDividerProps::text: core::option::Option<&'static str>
+pub yew_nav_link::NavDividerProps::text: core::option::Option<yew::virtual_dom::AttrValue>
 pub yew_nav_link::NavDividerProps::vertical: bool
 impl yew::html::component::properties::Properties for yew_nav_link::NavDividerProps
 pub type yew_nav_link::NavDividerProps::Builder = NavDividerPropsBuilder
@@ -444,8 +443,8 @@ pub fn yew_nav_link::NavDropdownItem::run(&mut yew::functional::HookContext, &Se
 pub struct yew_nav_link::NavDropdownProps
 pub yew_nav_link::NavDropdownProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavDropdownProps::classes: yew::html::classes::Classes
-pub yew_nav_link::NavDropdownProps::id: core::option::Option<&'static str>
-pub yew_nav_link::NavDropdownProps::toggle_text: &'static str
+pub yew_nav_link::NavDropdownProps::id: core::option::Option<yew::virtual_dom::AttrValue>
+pub yew_nav_link::NavDropdownProps::toggle_text: yew::virtual_dom::AttrValue
 impl yew::html::component::properties::Properties for yew_nav_link::NavDropdownProps
 pub type yew_nav_link::NavDropdownProps::Builder = NavDropdownPropsBuilder
 pub fn yew_nav_link::NavDropdownProps::builder() -> Self::Builder
@@ -456,7 +455,7 @@ pub fn yew_nav_link::NavHeader::run(&mut yew::functional::HookContext, &Self::Pr
 pub struct yew_nav_link::NavHeaderProps
 pub yew_nav_link::NavHeaderProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavHeaderProps::classes: yew::html::classes::Classes
-pub yew_nav_link::NavHeaderProps::text: core::option::Option<&'static str>
+pub yew_nav_link::NavHeaderProps::text: core::option::Option<yew::virtual_dom::AttrValue>
 impl yew::html::component::properties::Properties for yew_nav_link::NavHeaderProps
 pub type yew_nav_link::NavHeaderProps::Builder = NavHeaderPropsBuilder
 pub fn yew_nav_link::NavHeaderProps::builder() -> Self::Builder
@@ -467,7 +466,7 @@ pub fn yew_nav_link::NavIcon::run(&mut yew::functional::HookContext, &Self::Prop
 pub struct yew_nav_link::NavIconProps
 pub yew_nav_link::NavIconProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavIconProps::classes: yew::html::classes::Classes
-pub yew_nav_link::NavIconProps::name: core::option::Option<&'static str>
+pub yew_nav_link::NavIconProps::name: core::option::Option<yew::virtual_dom::AttrValue>
 pub yew_nav_link::NavIconProps::size: yew_nav_link::NavIconSize
 impl yew::html::component::properties::Properties for yew_nav_link::NavIconProps
 pub type yew_nav_link::NavIconProps::Builder = NavIconPropsBuilder
@@ -488,9 +487,9 @@ impl<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clo
 pub type yew_nav_link::active_link::nav_link::NavLink<R>::Properties = yew_nav_link::active_link::props::NavLinkProps<R>
 pub fn yew_nav_link::active_link::nav_link::NavLink<R>::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavLinkProps<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>
-pub yew_nav_link::NavLinkProps::active_class: &'static str
+pub yew_nav_link::NavLinkProps::active_class: yew::virtual_dom::AttrValue
 pub yew_nav_link::NavLinkProps::children: yew::html::component::children::Children
-pub yew_nav_link::NavLinkProps::class: &'static str
+pub yew_nav_link::NavLinkProps::class: yew::virtual_dom::AttrValue
 pub yew_nav_link::NavLinkProps::partial: bool
 pub yew_nav_link::NavLinkProps::to: R
 impl<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static> yew::html::component::properties::Properties for yew_nav_link::active_link::props::NavLinkProps<R>
@@ -512,10 +511,10 @@ impl yew::functional::FunctionProvider for yew_nav_link::NavList
 pub type yew_nav_link::NavList::Properties = yew_nav_link::NavListProps
 pub fn yew_nav_link::NavList::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavListProps
-pub yew_nav_link::NavListProps::aria_label: core::option::Option<&'static str>
+pub yew_nav_link::NavListProps::aria_label: core::option::Option<yew::virtual_dom::AttrValue>
 pub yew_nav_link::NavListProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavListProps::classes: yew::html::classes::Classes
-pub yew_nav_link::NavListProps::id: core::option::Option<&'static str>
+pub yew_nav_link::NavListProps::id: core::option::Option<yew::virtual_dom::AttrValue>
 impl yew::html::component::properties::Properties for yew_nav_link::NavListProps
 pub type yew_nav_link::NavListProps::Builder = NavListPropsBuilder
 pub fn yew_nav_link::NavListProps::builder() -> Self::Builder
@@ -531,8 +530,8 @@ pub struct yew_nav_link::NavTabPanelProps
 pub yew_nav_link::NavTabPanelProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavTabPanelProps::classes: yew::html::classes::Classes
 pub yew_nav_link::NavTabPanelProps::hidden: bool
-pub yew_nav_link::NavTabPanelProps::id: core::option::Option<&'static str>
-pub yew_nav_link::NavTabPanelProps::labelled_by: core::option::Option<&'static str>
+pub yew_nav_link::NavTabPanelProps::id: core::option::Option<yew::virtual_dom::AttrValue>
+pub yew_nav_link::NavTabPanelProps::labelled_by: core::option::Option<yew::virtual_dom::AttrValue>
 impl yew::html::component::properties::Properties for yew_nav_link::NavTabPanelProps
 pub type yew_nav_link::NavTabPanelProps::Builder = NavTabPanelPropsBuilder
 pub fn yew_nav_link::NavTabPanelProps::builder() -> Self::Builder
@@ -541,9 +540,9 @@ pub yew_nav_link::NavTabProps::active: bool
 pub yew_nav_link::NavTabProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavTabProps::classes: yew::html::classes::Classes
 pub yew_nav_link::NavTabProps::disabled: bool
-pub yew_nav_link::NavTabProps::id: core::option::Option<&'static str>
+pub yew_nav_link::NavTabProps::id: core::option::Option<yew::virtual_dom::AttrValue>
 pub yew_nav_link::NavTabProps::onclick: core::option::Option<yew::callback::Callback<web_sys::features::gen_MouseEvent::MouseEvent>>
-pub yew_nav_link::NavTabProps::panel_id: core::option::Option<&'static str>
+pub yew_nav_link::NavTabProps::panel_id: core::option::Option<yew::virtual_dom::AttrValue>
 impl yew::html::component::properties::Properties for yew_nav_link::NavTabProps
 pub type yew_nav_link::NavTabProps::Builder = NavTabPropsBuilder
 pub fn yew_nav_link::NavTabProps::builder() -> Self::Builder
@@ -555,8 +554,8 @@ pub struct yew_nav_link::NavTabsProps
 pub yew_nav_link::NavTabsProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavTabsProps::classes: yew::html::classes::Classes
 pub yew_nav_link::NavTabsProps::full_width: bool
-pub yew_nav_link::NavTabsProps::id: core::option::Option<&'static str>
-pub yew_nav_link::NavTabsProps::role: &'static str
+pub yew_nav_link::NavTabsProps::id: core::option::Option<yew::virtual_dom::AttrValue>
+pub yew_nav_link::NavTabsProps::role: yew::virtual_dom::AttrValue
 impl yew::html::component::properties::Properties for yew_nav_link::NavTabsProps
 pub type yew_nav_link::NavTabsProps::Builder = NavTabsPropsBuilder
 pub fn yew_nav_link::NavTabsProps::builder() -> Self::Builder
@@ -566,7 +565,7 @@ pub type yew_nav_link::NavText::Properties = yew_nav_link::NavTextProps
 pub fn yew_nav_link::NavText::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
 pub struct yew_nav_link::NavTextProps
 pub yew_nav_link::NavTextProps::classes: yew::html::classes::Classes
-pub yew_nav_link::NavTextProps::text: &'static str
+pub yew_nav_link::NavTextProps::text: yew::virtual_dom::AttrValue
 impl yew::html::component::properties::Properties for yew_nav_link::NavTextProps
 pub type yew_nav_link::NavTextProps::Builder = NavTextPropsBuilder
 pub fn yew_nav_link::NavTextProps::builder() -> Self::Builder
@@ -586,7 +585,6 @@ pub yew_nav_link::PageItemProps::active: bool
 pub yew_nav_link::PageItemProps::children: yew::html::component::children::Children
 pub yew_nav_link::PageItemProps::classes: yew::html::classes::Classes
 pub yew_nav_link::PageItemProps::disabled: bool
-pub yew_nav_link::PageItemProps::page: u32
 impl yew::html::component::properties::Properties for yew_nav_link::PageItemProps
 pub type yew_nav_link::PageItemProps::Builder = PageItemPropsBuilder
 pub fn yew_nav_link::PageItemProps::builder() -> Self::Builder
@@ -597,7 +595,7 @@ pub fn yew_nav_link::PageLink::run(&mut yew::functional::HookContext, &Self::Pro
 pub struct yew_nav_link::PageLinkProps
 pub yew_nav_link::PageLinkProps::children: yew::html::component::children::Children
 pub yew_nav_link::PageLinkProps::classes: yew::html::classes::Classes
-pub yew_nav_link::PageLinkProps::href: core::option::Option<&'static str>
+pub yew_nav_link::PageLinkProps::href: core::option::Option<yew::virtual_dom::AttrValue>
 impl yew::html::component::properties::Properties for yew_nav_link::PageLinkProps
 pub type yew_nav_link::PageLinkProps::Builder = PageLinkPropsBuilder
 pub fn yew_nav_link::PageLinkProps::builder() -> Self::Builder

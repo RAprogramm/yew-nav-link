@@ -5,7 +5,7 @@ SPDX-License-Identifier: MIT
 
 # 0001 — `class` and `active_class` are `&'static str`
 
-- **Status:** accepted
+- **Status:** superseded by [0006](0006-attrvalue-string-props.md)
 - **Date:** 2026-05-12
 - **Deciders:** RAprogramm
 

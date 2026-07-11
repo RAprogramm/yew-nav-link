@@ -57,7 +57,7 @@ pub fn NavLink<R: Routable + PartialEq + Clone + 'static>(props: &NavLinkProps<R
         })
     };
 
-    let class = build_class(is_active, props.class, props.active_class);
+    let class = build_class(is_active, &props.class, &props.active_class);
     let aria_current = if is_active { Some("page") } else { None };
 
     html! {
