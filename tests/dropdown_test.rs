@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: RAprogramm <andrey.rozanov.vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
+//! Native tests for the dropdown prop types.
+
 #![cfg(all(test, not(target_arch = "wasm32")))]
 
 use yew::prelude::*;

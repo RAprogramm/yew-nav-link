@@ -28,8 +28,9 @@ branches:
       required_status_checks:
         strict: true
         contexts:
-          - "CI Pipeline"
-          - "Security Scanning"
+          - "CI Success"
+          - "codecov/project"
+          - "codecov/patch"
       required_pull_request_reviews:
         required_approving_review_count: 1
         dismiss_stale_reviews: true
@@ -37,22 +38,8 @@ branches:
         restriction_type: users
         users:
           - RAprogramm
-      enforce_admins: false
+      enforce_admins: true
       restrictions: null
-      required_linear_history: true
-      allow_force_pushes: false
-      allow_deletions: false
-  - name: develop
-    protection:
-      required_status_checks:
-        strict: true
-        contexts:
-          - "CI Pipeline"
-      required_pull_request_reviews:
-        required_approving_review_count: 0
-        dismiss_stale_reviews: false
-        require_code_owner_reviews: false
-      enforce_admins: false
       required_linear_history: true
       allow_force_pushes: false
       allow_deletions: false

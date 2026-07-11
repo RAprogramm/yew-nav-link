@@ -6,10 +6,13 @@
 # the source and reports those that survive the test suite — a survived
 # mutant is a behaviour the tests do not exercise.
 #
-# This job runs nightly (cron) and on demand (workflow_dispatch). It is
-# intentionally out of the PR critical path: a single full mutants run
-# can take 30-60 minutes, and the right cadence for the signal is daily,
-# not per-PR.
+# The full run happens nightly (cron) and on demand (workflow_dispatch);
+# a single full mutants run can take 30-60 minutes, so it stays out of
+# the PR critical path. Pull requests get a scoped `--in-diff` pass
+# instead: only mutants touching the PR's changed code are generated,
+# which keeps the signal per-change without the full-run cost. The
+# in-diff pass is advisory (continue-on-error) until its runtime on this
+# repo's PR sizes is established.
 
 name: Mutants
 
@@ -17,6 +20,9 @@ on:
   schedule:
     - cron: "0 4 * * *"
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -35,7 +41,9 @@ jobs:
     timeout-minutes: 90
     steps:
       - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v6
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
 
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88 # master
@@ -49,7 +57,7 @@ jobs:
           save-if: true
 
       - name: Install cargo-mutants
-        uses: taiki-e/install-action@4684b8405694ae9dd42c9f39ba901a70ae83f4a3 # v2
+        uses: taiki-e/install-action@4684b8405694ae9dd42c9f39ba901a70ae83f4a3 # v2.82.9
         with:
           tool: cargo-mutants
 
@@ -89,3 +97,69 @@ jobs:
           name: mutants-report
           path: mutants.out/
           retention-days: 30
+
+  mutants-diff:
+    name: cargo-mutants (PR diff)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    if: github.event_name == 'pull_request'
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@fa04a1451ff1842e2626ccb99004d0195b455a88 # master
+        with:
+          toolchain: stable
+
+      - name: Load cached target directory
+        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        with:
+          key: mutants-diff
+          save-if: false
+
+      - name: Install cargo-mutants
+        uses: taiki-e/install-action@4684b8405694ae9dd42c9f39ba901a70ae83f4a3 # v2.82.9
+        with:
+          tool: cargo-mutants
+
+      - name: Compute the PR diff
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git diff "$BASE_SHA"...HEAD > pr.diff
+
+      - name: Run cargo-mutants on the diff
+        run: cargo mutants --no-shuffle --timeout-multiplier 2 --in-diff pr.diff --output mutants.out
+
+      - name: Append mutants summary to workflow output
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ -f mutants.out/outcomes.json ]; then
+            total=$(jq '[.outcomes[]] | length' mutants.out/outcomes.json)
+            caught=$(jq '[.outcomes[] | select(.summary == "CaughtMutant")] | length' mutants.out/outcomes.json)
+            missed=$(jq '[.outcomes[] | select(.summary == "MissedMutant")] | length' mutants.out/outcomes.json)
+            {
+              echo "## Mutation testing (PR diff)"
+              echo
+              printf '| Metric | Count |\n'
+              printf '|---|---:|\n'
+              printf '| Total mutants in diff | %s |\n' "$total"
+              printf '| Caught | %s |\n' "$caught"
+              printf '| Missed (survived) | %s |\n' "$missed"
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No mutants report produced" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload mutants report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: mutants-diff-report
+          path: mutants.out
+          retention-days: 14

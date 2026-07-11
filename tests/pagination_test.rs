@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: RAprogramm <andrey.rozanov.vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
+//! Native tests for `PaginationProps`: defaults, custom values, equality,
+//! and callback plumbing.
+
 #![cfg(all(test, not(target_arch = "wasm32")))]
 
 mod pagination_test {

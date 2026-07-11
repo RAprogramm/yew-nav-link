@@ -67,3 +67,12 @@ harness = false
 
 [lib]
 crate-type = ["rlib"]
+
+# Mirror of CI's clippy invocation so `cargo clippy` reproduces the gate
+# locally; CI escalates these to errors with `-D warnings`.
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+
+[lints.rust]
+missing_docs = "warn"

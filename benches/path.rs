@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: RAprogramm <andrey.rozanov.vl@gmail.com>
 // SPDX-License-Identifier: MIT
 
+//! Criterion benchmarks for the segment-wise `is_path_prefix` matcher.
+
 use std::hint::black_box;
 
 use criterion::{Criterion, criterion_group, criterion_main};
