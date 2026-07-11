@@ -14,7 +14,7 @@ test.describe('Pagination', () => {
     await expect(pagination).toBeVisible();
 
     // The active page button is the only descendant carrying
-    // aria-current="page" (Pagination emits "page" / "false" per item).
+    // aria-current="page" (inactive items omit the attribute entirely).
     const active = pagination.locator('button[aria-current="page"]');
     await expect(active).toHaveCount(1);
   });
