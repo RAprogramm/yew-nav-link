@@ -106,7 +106,7 @@ maps to the tool that enforces it and the workflow that runs it.
 
 ```toml
 [dependencies]
-yew-nav-link = "0.11"
+yew-nav-link = "0.12"
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
