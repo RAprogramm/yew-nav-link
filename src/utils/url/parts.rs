@@ -237,6 +237,14 @@ mod tests {
     }
 
     #[test]
+    fn url_parts_parse_relative_path_gains_leading_slash() {
+        let parts = UrlParts::parse("docs/api?x=1");
+        assert_eq!(parts.path, "/docs/api");
+        assert_eq!(parts.query, Some("x=1".to_string()));
+        assert!(parts.host.is_none());
+    }
+
+    #[test]
     fn url_parts_parse_ipv6_host_with_port() {
         let parts = UrlParts::parse("https://[::1]:8080/api");
         assert_eq!(parts.host, Some("[::1]".to_string()));

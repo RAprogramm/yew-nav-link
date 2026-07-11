@@ -452,6 +452,21 @@ mod tests {
         let _root = use_breadcrumbs::<RootOnlyRoute>();
     }
 
+    // ===== BreadcrumbLabelProviderContext API tests =====
+
+    #[test]
+    fn context_new_and_provider_round_trip() {
+        let ctx = BreadcrumbLabelProviderContext::new(Rc::new(TestLabelProvider));
+        let provider = ctx.provider();
+        assert_eq!(provider.label_for_path("/docs"), "Docs");
+    }
+
+    #[test]
+    fn context_provider_clones_share_the_same_rc() {
+        let ctx = BreadcrumbLabelProviderContext::new(Rc::new(TestLabelProvider));
+        assert!(Rc::ptr_eq(&ctx.provider(), &ctx.provider()));
+    }
+
     // ===== display_path tests =====
 
     #[test]

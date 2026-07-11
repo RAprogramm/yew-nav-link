@@ -164,6 +164,12 @@ mod tests {
     }
 
     #[test]
+    fn normalize_returns_empty_for_fully_resolved_relative_paths() {
+        assert_eq!(normalize_path("foo/.."), "");
+        assert_eq!(normalize_path("./."), "");
+    }
+
+    #[test]
     fn normalize_preserves_leading_parent_segments_of_relative_paths() {
         assert_eq!(normalize_path("../foo"), "../foo");
         assert_eq!(normalize_path("../../foo"), "../../foo");
