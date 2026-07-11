@@ -373,7 +373,7 @@ Define your own `nav-link` and `active` styles:
 
 ## Architecture
 
-<img src="docs/assets/architecture.svg" alt="Layered module architecture: lib.rs on top; hooks and components in the middle; active_link and nav render primitives below; utils, attrs and errors as the Yew-free leaf. Each layer depends only on the layers beneath it." width="820">
+<img src="docs/assets/architecture.svg" alt="Layered module architecture: lib.rs on top; hooks and components in the middle; active_link and nav render primitives below; utils and errors as the Yew-free leaf. Each layer depends only on the layers beneath it." width="820">
 
 ```text
 yew-nav-link
@@ -382,7 +382,6 @@ yew-nav-link
 ├── components        # UI: Badge, Dropdown, Icon, Tabs, Pagination
 ├── hooks             # Reactive and programmatic route/navigation helpers
 ├── utils             # Path, URL, keyboard navigation utilities
-├── attrs             # Type-safe attribute builders
 └── errors            # NavError, NavResult types
 ```
 

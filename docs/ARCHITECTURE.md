@@ -10,7 +10,7 @@ This is a design rationale, not a tutorial. For the *what*, read the
 
 ## 1. Crate layout
 
-![Layered module architecture: lib.rs on top; hooks (route_info, navigation) and components in the middle; active_link and nav render primitives below; utils, attrs and errors as the Yew-free leaf. Each layer depends only on the layers beneath it.](assets/architecture.svg)
+![Layered module architecture: lib.rs on top; hooks (route_info, navigation) and components in the middle; active_link and nav render primitives below; utils and errors as the Yew-free leaf. Each layer depends only on the layers beneath it.](assets/architecture.svg)
 
 ```text
 src/
@@ -32,8 +32,6 @@ src/
 │                     state) and navigation/ (effects + query params).
 ├── utils/            Pure functions (paths, URL codec, keyboard helpers).
 │                     No yew dependency.
-├── attrs.rs          Type-safe attribute builders for consumers who roll
-│                     their own elements.
 └── errors.rs         NavError + NavResult<T>.
 ```
 

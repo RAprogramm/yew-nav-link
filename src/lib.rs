@@ -118,9 +118,6 @@
 //! - Yew 0.23+
 //! - yew-router 0.20+
 
-/// HTML attribute builders for navigation components.
-pub mod attrs;
-
 /// Reusable navigation UI components (badges, dropdowns, tabs, pagination).
 pub mod components;
 
@@ -147,7 +144,6 @@ pub mod utils;
 pub struct ReadmeDoctests;
 
 pub use active_link::{Match, NavLink, NavLinkProps, nav_link};
-pub use attrs::{NavItemAttrs, NavLinkAttrs, NavListAttrs};
 pub use components::{
     NavBadge, NavBadgeProps, NavDropdown, NavDropdownDivider, NavDropdownItem, NavDropdownProps,
     NavHeader, NavHeaderProps, NavIcon, NavIconProps, NavIconSize, NavLinkWithIcon,

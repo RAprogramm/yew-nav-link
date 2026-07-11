@@ -45,40 +45,6 @@ pub type yew_nav_link::active_link::props::NavLinkProps<R>::Builder = NavLinkPro
 pub fn yew_nav_link::active_link::props::NavLinkProps<R>::builder() -> Self::Builder
 pub fn yew_nav_link::active_link::is_path_prefix(&str, &str) -> bool
 pub fn yew_nav_link::active_link::nav_link<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>(R, &str, yew_nav_link::active_link::mode::Match) -> yew::html::Html
-pub mod yew_nav_link::attrs
-pub struct yew_nav_link::attrs::NavItemAttrs
-pub yew_nav_link::attrs::NavItemAttrs::class: yew::html::classes::Classes
-pub yew_nav_link::attrs::NavItemAttrs::disabled: bool
-pub yew_nav_link::attrs::NavItemAttrs::id: core::option::Option<&'static str>
-pub yew_nav_link::attrs::NavItemAttrs::role: core::option::Option<&'static str>
-impl yew_nav_link::attrs::NavItemAttrs
-pub const fn yew_nav_link::attrs::NavItemAttrs::disabled(self) -> Self
-pub fn yew_nav_link::attrs::NavItemAttrs::new() -> Self
-pub fn yew_nav_link::attrs::NavItemAttrs::with_class(self, impl core::convert::Into<yew::html::classes::Classes>) -> Self
-pub const fn yew_nav_link::attrs::NavItemAttrs::with_id(self, &'static str) -> Self
-pub const fn yew_nav_link::attrs::NavItemAttrs::with_role(self, &'static str) -> Self
-pub struct yew_nav_link::attrs::NavLinkAttrs
-pub yew_nav_link::attrs::NavLinkAttrs::aria_current: core::option::Option<&'static str>
-pub yew_nav_link::attrs::NavLinkAttrs::class: yew::html::classes::Classes
-pub yew_nav_link::attrs::NavLinkAttrs::data_toggle: core::option::Option<&'static str>
-pub yew_nav_link::attrs::NavLinkAttrs::id: core::option::Option<&'static str>
-pub yew_nav_link::attrs::NavLinkAttrs::role: core::option::Option<&'static str>
-impl yew_nav_link::attrs::NavLinkAttrs
-pub fn yew_nav_link::attrs::NavLinkAttrs::new() -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_aria_current(self, &'static str) -> Self
-pub fn yew_nav_link::attrs::NavLinkAttrs::with_class(self, impl core::convert::Into<yew::html::classes::Classes>) -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_data_toggle(self, &'static str) -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_id(self, &'static str) -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_role(self, &'static str) -> Self
-pub struct yew_nav_link::attrs::NavListAttrs
-pub yew_nav_link::attrs::NavListAttrs::aria_label: core::option::Option<&'static str>
-pub yew_nav_link::attrs::NavListAttrs::class: yew::html::classes::Classes
-pub yew_nav_link::attrs::NavListAttrs::id: core::option::Option<&'static str>
-impl yew_nav_link::attrs::NavListAttrs
-pub fn yew_nav_link::attrs::NavListAttrs::new() -> Self
-pub const fn yew_nav_link::attrs::NavListAttrs::with_aria_label(self, &'static str) -> Self
-pub fn yew_nav_link::attrs::NavListAttrs::with_class(self, impl core::convert::Into<yew::html::classes::Classes>) -> Self
-pub const fn yew_nav_link::attrs::NavListAttrs::with_id(self, &'static str) -> Self
 pub mod yew_nav_link::components
 pub enum yew_nav_link::components::NavIconSize
 pub yew_nav_link::components::NavIconSize::Large
@@ -510,17 +476,6 @@ pub struct yew_nav_link::NavItem
 impl yew::functional::FunctionProvider for yew_nav_link::NavItem
 pub type yew_nav_link::NavItem::Properties = yew_nav_link::NavItemProps
 pub fn yew_nav_link::NavItem::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
-pub struct yew_nav_link::NavItemAttrs
-pub yew_nav_link::NavItemAttrs::class: yew::html::classes::Classes
-pub yew_nav_link::NavItemAttrs::disabled: bool
-pub yew_nav_link::NavItemAttrs::id: core::option::Option<&'static str>
-pub yew_nav_link::NavItemAttrs::role: core::option::Option<&'static str>
-impl yew_nav_link::attrs::NavItemAttrs
-pub const fn yew_nav_link::attrs::NavItemAttrs::disabled(self) -> Self
-pub fn yew_nav_link::attrs::NavItemAttrs::new() -> Self
-pub fn yew_nav_link::attrs::NavItemAttrs::with_class(self, impl core::convert::Into<yew::html::classes::Classes>) -> Self
-pub const fn yew_nav_link::attrs::NavItemAttrs::with_id(self, &'static str) -> Self
-pub const fn yew_nav_link::attrs::NavItemAttrs::with_role(self, &'static str) -> Self
 pub struct yew_nav_link::NavItemProps
 pub yew_nav_link::NavItemProps::children: yew::html::component::children::Children
 pub yew_nav_link::NavItemProps::classes: yew::html::classes::Classes
@@ -532,19 +487,6 @@ pub struct yew_nav_link::NavLink<R: yew_router::routable::Routable + core::cmp::
 impl<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static> yew::functional::FunctionProvider for yew_nav_link::active_link::nav_link::NavLink<R>
 pub type yew_nav_link::active_link::nav_link::NavLink<R>::Properties = yew_nav_link::active_link::props::NavLinkProps<R>
 pub fn yew_nav_link::active_link::nav_link::NavLink<R>::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
-pub struct yew_nav_link::NavLinkAttrs
-pub yew_nav_link::NavLinkAttrs::aria_current: core::option::Option<&'static str>
-pub yew_nav_link::NavLinkAttrs::class: yew::html::classes::Classes
-pub yew_nav_link::NavLinkAttrs::data_toggle: core::option::Option<&'static str>
-pub yew_nav_link::NavLinkAttrs::id: core::option::Option<&'static str>
-pub yew_nav_link::NavLinkAttrs::role: core::option::Option<&'static str>
-impl yew_nav_link::attrs::NavLinkAttrs
-pub fn yew_nav_link::attrs::NavLinkAttrs::new() -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_aria_current(self, &'static str) -> Self
-pub fn yew_nav_link::attrs::NavLinkAttrs::with_class(self, impl core::convert::Into<yew::html::classes::Classes>) -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_data_toggle(self, &'static str) -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_id(self, &'static str) -> Self
-pub const fn yew_nav_link::attrs::NavLinkAttrs::with_role(self, &'static str) -> Self
 pub struct yew_nav_link::NavLinkProps<R: yew_router::routable::Routable + core::cmp::PartialEq + core::clone::Clone + 'static>
 pub yew_nav_link::NavLinkProps::active_class: &'static str
 pub yew_nav_link::NavLinkProps::children: yew::html::component::children::Children
@@ -569,15 +511,6 @@ pub struct yew_nav_link::NavList
 impl yew::functional::FunctionProvider for yew_nav_link::NavList
 pub type yew_nav_link::NavList::Properties = yew_nav_link::NavListProps
 pub fn yew_nav_link::NavList::run(&mut yew::functional::HookContext, &Self::Properties) -> yew::html::HtmlResult
-pub struct yew_nav_link::NavListAttrs
-pub yew_nav_link::NavListAttrs::aria_label: core::option::Option<&'static str>
-pub yew_nav_link::NavListAttrs::class: yew::html::classes::Classes
-pub yew_nav_link::NavListAttrs::id: core::option::Option<&'static str>
-impl yew_nav_link::attrs::NavListAttrs
-pub fn yew_nav_link::attrs::NavListAttrs::new() -> Self
-pub const fn yew_nav_link::attrs::NavListAttrs::with_aria_label(self, &'static str) -> Self
-pub fn yew_nav_link::attrs::NavListAttrs::with_class(self, impl core::convert::Into<yew::html::classes::Classes>) -> Self
-pub const fn yew_nav_link::attrs::NavListAttrs::with_id(self, &'static str) -> Self
 pub struct yew_nav_link::NavListProps
 pub yew_nav_link::NavListProps::aria_label: core::option::Option<&'static str>
 pub yew_nav_link::NavListProps::children: yew::html::component::children::Children
