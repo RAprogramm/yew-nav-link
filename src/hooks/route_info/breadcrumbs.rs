@@ -9,7 +9,17 @@ use yew_router::prelude::*;
 /// A trait for providing custom breadcrumb labels.
 pub trait BreadcrumbLabelProvider: Send + Sync {
     /// Returns a human-readable label for the given path.
+    ///
+    /// The path arrives percent-decoded (`/users/hello world`, not
+    /// `/users/hello%20world`), so implementations match against the
+    /// human-readable form.
     fn label_for_path(&self, path: &str) -> String;
+}
+
+/// Percent-decodes a path for display, keeping the raw text when the decoded
+/// bytes are not valid UTF-8.
+fn display_path(path: &str) -> String {
+    crate::utils::percent_decode(path).unwrap_or_else(|| path.to_string())
 }
 
 /// Yew context wrapper around a [`BreadcrumbLabelProvider`].
@@ -83,6 +93,10 @@ where
 /// routes. When a prefix does not correspond to any route in `R` (e.g.
 /// `/users` when only `/users/:id` exists), the item falls back to the
 /// current route, even when `R` declares a `#[not_found]` route.
+///
+/// Labels are percent-decoded: a route serialized as `/users/hello%20world`
+/// yields the default label `/users/hello world`, and a
+/// [`BreadcrumbLabelProvider`] receives the decoded path as well.
 #[hook]
 pub fn use_breadcrumbs<R>() -> Vec<BreadcrumbItem<R>>
 where
@@ -109,9 +123,10 @@ where
             built.push('/');
             built.push_str(segment);
             let is_last = i + 1 == total;
+            let readable = display_path(&built);
             let label = provider
                 .as_ref()
-                .map_or_else(|| built.clone(), |p| p.0.label_for_path(&built));
+                .map_or_else(|| readable.clone(), |p| p.0.label_for_path(&readable));
             items.push(BreadcrumbItem {
                 route: recognized_or(&built, &route),
                 label,
@@ -435,6 +450,23 @@ mod tests {
         let _simple = use_breadcrumbs::<SimpleRoute>();
         let _param = use_breadcrumbs::<ParamRoute>();
         let _root = use_breadcrumbs::<RootOnlyRoute>();
+    }
+
+    // ===== display_path tests =====
+
+    #[test]
+    fn display_path_decodes_percent_sequences() {
+        assert_eq!(display_path("/users/hello%20world"), "/users/hello world");
+    }
+
+    #[test]
+    fn display_path_keeps_literal_plus() {
+        assert_eq!(display_path("/lang/c++"), "/lang/c++");
+    }
+
+    #[test]
+    fn display_path_keeps_raw_text_on_invalid_utf8() {
+        assert_eq!(display_path("/bad/%FF"), "/bad/%FF");
     }
 
     // ===== recognized_or tests =====

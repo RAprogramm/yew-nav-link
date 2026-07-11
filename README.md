@@ -330,7 +330,8 @@ live under the `utils` module (`yew_nav_link::utils::…`).
 | `join_paths(a, b)` | crate root | Join two path segments safely |
 | `normalize_path(path)` | crate root | Collapse duplicate slashes and resolve `.`/`..`; a single trailing slash is preserved |
 | `urlencoding_encode(s)` | `utils::` | Percent-encode a string for URLs |
-| `urlencoding_decode(s)` | `utils::` | Decode a percent-encoded string (`None` on invalid UTF-8) |
+| `urlencoding_decode(s)` | `utils::` | Decode a percent-encoded string, `+` becomes a space (`None` on invalid UTF-8) |
+| `percent_decode(s)` | `utils::` | Decode `%XX` sequences keeping `+` literal — for path components (`None` on invalid UTF-8) |
 | `handle_arrow_key(config, key)` | `utils::` | Keyboard navigation handler |
 | `handle_home_end(config, key)` | `utils::` | Home/End key handler for navigation |
 

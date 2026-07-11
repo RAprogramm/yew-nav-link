@@ -364,6 +364,8 @@ impl yew_nav_link::utils::KeyboardNavConfig
 pub const fn yew_nav_link::utils::KeyboardNavConfig::new() -> Self
 pub const fn yew_nav_link::utils::KeyboardNavConfig::with_vertical(self, bool) -> Self
 pub const fn yew_nav_link::utils::KeyboardNavConfig::with_wrap(self, bool) -> Self
+impl core::default::Default for yew_nav_link::utils::KeyboardNavConfig
+pub fn yew_nav_link::utils::KeyboardNavConfig::default() -> Self
 pub struct yew_nav_link::utils::QueryParams
 impl yew_nav_link::utils::QueryParams
 pub fn yew_nav_link::utils::QueryParams::contains_key(&self, &str) -> bool
@@ -405,6 +407,7 @@ pub fn yew_nav_link::utils::is_activation_key(&str) -> bool
 pub fn yew_nav_link::utils::is_navigation_key(&str) -> bool
 pub fn yew_nav_link::utils::join_paths(&str, &str) -> alloc::string::String
 pub fn yew_nav_link::utils::normalize_path(&str) -> alloc::string::String
+pub fn yew_nav_link::utils::percent_decode(&str) -> core::option::Option<alloc::string::String>
 pub fn yew_nav_link::utils::urlencoding_decode(&str) -> core::option::Option<alloc::string::String>
 pub fn yew_nav_link::utils::urlencoding_encode(&str) -> alloc::string::String
 pub enum yew_nav_link::Match

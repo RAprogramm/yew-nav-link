@@ -15,4 +15,4 @@ pub use keyboard::{
     is_navigation_key
 };
 pub use path::{is_absolute, join_paths, normalize_path};
-pub use url::{QueryParams, UrlParts, urlencoding_decode, urlencoding_encode};
+pub use url::{QueryParams, UrlParts, percent_decode, urlencoding_decode, urlencoding_encode};

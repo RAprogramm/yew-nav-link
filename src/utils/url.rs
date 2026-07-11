@@ -9,6 +9,6 @@ mod codec;
 mod parts;
 mod query;
 
-pub use codec::{urlencoding_decode, urlencoding_encode};
+pub use codec::{percent_decode, urlencoding_decode, urlencoding_encode};
 pub use parts::UrlParts;
 pub use query::QueryParams;
