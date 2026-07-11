@@ -25,7 +25,7 @@ target on every render:
 | `partial` | Match condition |
 |-----------|-----------------|
 | `false` (default) | exact equality between `current` and `to` |
-| `true` | `to.to_path()` is a path-segment prefix of `current.to_path()` |
+| `true` | `to.to_path()` is a path-segment prefix of `current.to_path()`; a root target (`"/"`) matches only the root path |
 
 **FR-NL-3.** Apply two CSS classes to the rendered anchor:
 
@@ -59,7 +59,8 @@ matched route, or `None` when no registered route matches.
 alias return `true` iff the current route equals `route`.
 
 **FR-HK-3.** `use_is_partial_active(route)` returns `true` iff
-`route.to_path()` is a path-segment prefix of the current path.
+`route.to_path()` is a path-segment prefix of the current path; a root
+target (`"/"`) matches only the root path.
 
 **FR-HK-4.** `use_navigation::<R>() -> Navigation<R>` returns a value-type
 struct. `go_back` and `go_forward` are ready-made `Callback<()>` fields;

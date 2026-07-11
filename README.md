@@ -422,7 +422,7 @@ Open <http://127.0.0.1:3000> (port set in [`example/trunk.toml`](example/trunk.t
 |------|------|---------|-------------|
 | `to` | `R: Routable` | required | Target route |
 | `children` | `Children` | required | Link content |
-| `partial` | `bool` | `false` | Enable prefix matching |
+| `partial` | `bool` | `false` | Enable prefix matching (a root route matches only the root path) |
 | `class` | `&str` | `"nav-link"` | Custom CSS class (replaces default) |
 | `active_class` | `&str` | `"active"` | Custom active state class |
 

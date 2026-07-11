@@ -18,6 +18,9 @@ pub struct NavLinkProps<R: Routable + PartialEq + Clone + 'static> {
     pub children: Children,
 
     /// Enable partial (prefix) path matching.
+    ///
+    /// A root route (`"/"`) matches only the root path even in partial mode,
+    /// so a Home link is not highlighted on every page.
     #[prop_or(false)]
     pub partial: bool,
 
