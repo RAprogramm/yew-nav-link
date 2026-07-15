@@ -24,7 +24,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: release-attestations-${{ github.event.release.tag_name || inputs.tag }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: false
 
 jobs:

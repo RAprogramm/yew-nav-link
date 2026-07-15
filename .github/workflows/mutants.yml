@@ -28,8 +28,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: mutants-${{ github.ref }}
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
 
 env:
   CARGO_INCREMENTAL: 0

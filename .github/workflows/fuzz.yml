@@ -16,8 +16,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: fuzz-${{ github.ref }}
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
 
 env:
   CARGO_INCREMENTAL: 0
