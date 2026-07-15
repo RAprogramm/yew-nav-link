@@ -16,7 +16,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: changelog-refresh
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: false
 
 jobs:

@@ -43,7 +43,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: release-plz-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: false
 
 jobs:

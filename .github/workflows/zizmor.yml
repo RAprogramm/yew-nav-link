@@ -20,8 +20,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: zizmor-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   zizmor:
