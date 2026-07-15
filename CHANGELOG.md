@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.3](https://github.com/RAprogramm/yew-nav-link/compare/v0.12.2...v0.12.3) - 2026-07-15
+
+### CI
+
+- normalize concurrency settings ([#245](https://github.com/RAprogramm/yew-nav-link/issues/245))
+
 ## [0.12.2](https://github.com/RAprogramm/yew-nav-link/compare/v0.12.1...v0.12.2) - 2026-07-13
 
 ### CI
