@@ -1,6 +1,12 @@
 <a id="top"></a>
 
-# yew-nav-link
+<div align="center">
+
+<a href="https://www.kaicode.org/2026.html"><img src="https://www.kaicode.org/images/2026/yew-nav-link.svg" alt="Winner of the KaiCode 2026 Open Source Festival — first place, Perfect tier" width="170"></a>
+
+<h1>yew-nav-link</h1>
+
+</div>
 
 Enterprise-grade navigation library for [Yew](https://yew.rs) — automatic active state detection and a complete component system.
 
