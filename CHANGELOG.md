@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.4](https://github.com/RAprogramm/yew-nav-link/compare/v0.12.3...v0.12.4) - 2026-07-18
+
+### Documentation
+
+- add KaiCode 2026 winner badge to README ([#249](https://github.com/RAprogramm/yew-nav-link/issues/249))
+
 ## [0.12.3](https://github.com/RAprogramm/yew-nav-link/compare/v0.12.2...v0.12.3) - 2026-07-15
 
 ### CI
