@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.5](https://github.com/RAprogramm/yew-nav-link/compare/v0.12.4...v0.12.5) - 2026-07-20
+
+### CI
+
+- *(deps)* bump the actions group with 9 updates ([#251](https://github.com/RAprogramm/yew-nav-link/issues/251))
+
 ### CI
 
 - ![dependabot](https://github.com/dependabot.png?size=20) **deps:** bump the actions group with 9 updates ([#251](https://github.com/RAprogramm/yew-nav-link/issues/251))
