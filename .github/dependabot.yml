@@ -6,7 +6,9 @@ updates:
   # =====================================================
   
   - package-ecosystem: cargo
-    directory: /
+    directories:
+      - /
+      - /example
     schedule:
       interval: weekly
       day: monday
