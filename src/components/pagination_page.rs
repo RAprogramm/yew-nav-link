@@ -116,7 +116,7 @@ mod tests {
     #[test]
     fn generate_pages_middle_page() {
         let pages = generate_pages(5, 10, 1);
-        assert!(!pages.is_empty());
+        assert_ne!(pages, Vec::<u32>::new());
         assert!(pages.contains(&5));
         assert_eq!(pages, vec![1, 0, 4, 5, 6, 0, 10]);
     }
@@ -124,14 +124,14 @@ mod tests {
     #[test]
     fn generate_pages_with_ellipsis() {
         let pages = generate_pages(5, 10, 1);
-        assert!(!pages.is_empty());
+        assert_ne!(pages, Vec::<u32>::new());
         assert!(pages.contains(&0));
     }
 
     #[test]
     fn generate_pages_many_siblings() {
         let pages = generate_pages(5, 20, 3);
-        assert!(!pages.is_empty());
+        assert_ne!(pages, Vec::<u32>::new());
         assert_eq!(pages, vec![1, 2, 3, 4, 5, 6, 7, 8, 0, 20]);
     }
 
@@ -202,8 +202,8 @@ mod tests {
 
     #[test]
     fn generate_pages_total_zero_returns_empty() {
-        assert!(generate_pages(1, 0, 0).is_empty());
-        assert!(generate_pages(5, 0, 3).is_empty());
+        assert_eq!(generate_pages(1, 0, 0), Vec::<u32>::new());
+        assert_eq!(generate_pages(5, 0, 3), Vec::<u32>::new());
     }
 
     #[test]

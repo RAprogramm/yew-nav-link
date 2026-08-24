@@ -217,7 +217,7 @@ mod tests {
     #[test]
     fn url_parts_default() {
         let parts = UrlParts::default();
-        assert!(parts.path.is_empty());
+        assert_eq!(parts.path, "");
         assert!(parts.scheme.is_none());
         assert!(parts.host.is_none());
     }
