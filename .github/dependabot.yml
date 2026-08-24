@@ -123,14 +123,3 @@ updates:
   # Auto-close PRs when dependencies are updated manually
   # Dependabot will automatically close PRs when it detects
   # that the dependency has been updated manually
-
-# =====================================================
-# SECURITY SETTINGS
-# =====================================================
-
-# Dependabot security updates
-security_updates_enabled: true
-
-# Alert on vulnerable dependencies
-vulnerability-alerts:
-  enabled: true
