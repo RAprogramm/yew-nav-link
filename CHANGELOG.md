@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.6](https://github.com/RAprogramm/yew-nav-link/compare/v0.12.5...v0.12.6) - 2026-08-24
+
+### CI
+
+- retire changelog-refresh cron, release-plz is the single changelog writer ([#274](https://github.com/RAprogramm/yew-nav-link/issues/274))
+- *(deps)* bump the actions group across 1 directory with 8 updates ([#270](https://github.com/RAprogramm/yew-nav-link/issues/270))
+- use bare types as dependabot commit prefixes ([#272](https://github.com/RAprogramm/yew-nav-link/issues/272))
+- use a valid pull-request-branch-name separator in dependabot config ([#269](https://github.com/RAprogramm/yew-nav-link/issues/269))
+- drop invalid top-level keys from dependabot config ([#267](https://github.com/RAprogramm/yew-nav-link/issues/267))
+- *(deps)* bump the actions group with 9 updates ([#255](https://github.com/RAprogramm/yew-nav-link/issues/255))
+
 ## [0.12.5](https://github.com/RAprogramm/yew-nav-link/compare/v0.12.4...v0.12.5) - 2026-07-20
 
 ### CI
