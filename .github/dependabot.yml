@@ -15,7 +15,7 @@ updates:
       time: "09:00"
       timezone: Europe/Moscow
     commit-message:
-      prefix: "deps(cargo)"
+      prefix: "chore"
       include: "scope"
     labels:
       - dependencies
@@ -86,7 +86,7 @@ updates:
       time: "09:00"
       timezone: Europe/Moscow
     commit-message:
-      prefix: "ci(deps)"
+      prefix: "ci"
       include: "scope"
     labels:
       - dependencies
