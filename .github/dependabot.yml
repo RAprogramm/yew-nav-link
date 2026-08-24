@@ -22,7 +22,7 @@ updates:
       - rust
     open-pull-requests-limit: 10
     pull-request-branch-name:
-      separator: /-
+      separator: /
     rebase-strategy: auto
     
     # Version update groups
@@ -94,7 +94,7 @@ updates:
       - github-actions
     open-pull-requests-limit: 5
     pull-request-branch-name:
-      separator: /-
+      separator: /
     rebase-strategy: auto
     
     groups:
