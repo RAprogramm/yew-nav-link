@@ -691,9 +691,8 @@ jobs:
         run: |
           # Generate the [Unreleased] section from conventional commits and
           # surface it in the workflow run summary so every push to main
-          # shows reviewers exactly what git-cliff sees. We do not mutate
-          # CHANGELOG.md here; the dedicated changelog-refresh.yml workflow
-          # opens a PR for that on a weekly cron.
+          # shows reviewers exactly what git-cliff sees. CHANGELOG.md itself
+          # is written only by release-plz inside the release PR.
           {
             echo "## CHANGELOG preview (Unreleased)"
             echo
