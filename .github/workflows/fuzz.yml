@@ -55,7 +55,7 @@ jobs:
           save-if: true
 
       - name: Install cargo-fuzz
-        uses: taiki-e/install-action@ba47c86ac325773530516bb756137ac718732518 # v2.86.5
+        uses: taiki-e/install-action@4076c08d76dba979c11a7285295b0716c1d67908 # v2.87.15
         with:
           tool: cargo-fuzz
 
