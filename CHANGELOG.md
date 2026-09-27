@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.7](https://github.com/RAprogramm/yew-nav-link/compare/v0.12.6...v0.12.7) - 2026-09-27
+
+### CI
+
+- *(deps)* bump dtolnay/rust-toolchain ([#275](https://github.com/RAprogramm/yew-nav-link/issues/275))
+
 ## [0.12.6](https://github.com/RAprogramm/yew-nav-link/compare/v0.12.5...v0.12.6) - 2026-08-24
 
 ### CI
