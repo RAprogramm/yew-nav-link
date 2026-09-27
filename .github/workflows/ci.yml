@@ -82,7 +82,7 @@ jobs:
           components: rustfmt, clippy
 
       - name: Load cached target directory
-        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
         with:
           key: ${{ matrix.rust }}-${{ matrix.os }}-check
           save-if: ${{ github.ref == 'refs/heads/main' }}
@@ -127,7 +127,7 @@ jobs:
           components: rustfmt
 
       - name: Load cached target directory
-        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
         with:
           key: fmt
           save-if: ${{ github.ref == 'refs/heads/main' }}
@@ -151,7 +151,7 @@ jobs:
           components: rust-docs
 
       - name: Load cached target directory
-        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
         with:
           key: docs
           save-if: ${{ github.ref == 'refs/heads/main' }}
@@ -179,7 +179,7 @@ jobs:
           toolchain: stable
 
       - name: Load cached target directory
-        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
         with:
           key: semver-checks
           save-if: ${{ github.ref == 'refs/heads/main' }}
@@ -231,7 +231,7 @@ jobs:
           toolchain: nightly
 
       - name: Load cached target directory
-        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
         with:
           key: public-api
           save-if: ${{ github.ref == 'refs/heads/main' }}
@@ -286,7 +286,7 @@ jobs:
           toolchain: stable
 
       - name: Load cached target directory
-        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
         with:
           key: security
           save-if: ${{ github.ref == 'refs/heads/main' }}
@@ -358,7 +358,7 @@ jobs:
           toolchain: ${{ needs.msrv.outputs.msrv }}
 
       - name: Load cached target directory
-        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
         with:
           key: ${{ needs.msrv.outputs.msrv }}-test
           save-if: ${{ github.ref == 'refs/heads/main' }}
@@ -391,7 +391,7 @@ jobs:
           targets: wasm32-unknown-unknown
 
       - name: Load cached target directory
-        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
         with:
           key: wasm-tests
           save-if: ${{ github.ref == 'refs/heads/main' }}
@@ -433,7 +433,7 @@ jobs:
           components: llvm-tools-preview
 
       - name: Load cached target directory
-        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
         with:
           key: coverage
           save-if: ${{ github.ref == 'refs/heads/main' }}
@@ -478,7 +478,7 @@ jobs:
           targets: wasm32-unknown-unknown
 
       - name: Load cached target directory
-        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
         with:
           workspaces: example
           key: wasm-example
@@ -541,7 +541,7 @@ jobs:
           targets: wasm32-unknown-unknown
 
       - name: Load cached target directory
-        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
         with:
           workspaces: example
           key: e2e-example
@@ -605,7 +605,7 @@ jobs:
           targets: wasm32-unknown-unknown
 
       - name: Load cached target directory
-        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
         with:
           workspaces: example
           key: lighthouse-example
@@ -644,7 +644,7 @@ jobs:
           toolchain: stable
 
       - name: Load cached target directory
-        uses: Swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+        uses: Swatinem/rust-cache@f0d9c3887740aee45f6153b24b3a6b815192ec16 # v2
         with:
           key: benchmarks
           save-if: ${{ github.ref == 'refs/heads/main' }}
